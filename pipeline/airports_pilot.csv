@@ -1,0 +1,21 @@
+icao,iem_id,name,tz,country,cat_ils,cat_ils_confidence
+KSFO,SFO,San Francisco Intl,America/Los_Angeles,US,CATIII,verify
+KFAT,FAT,Fresno Yosemite Intl,America/Los_Angeles,US,CATI,verify
+KSEA,SEA,Seattle-Tacoma Intl,America/Los_Angeles,US,CATIII,verify
+KORD,ORD,Chicago O'Hare Intl,America/Chicago,US,CATIII,verify
+KMEM,MEM,Memphis Intl,America/Chicago,US,CATIII,verify
+KBOS,BOS,Boston Logan Intl,America/New_York,US,CATIII,verify
+KTEB,TEB,Teterboro,America/New_York,US,CATI,verify
+EGLL,EGLL,London Heathrow,Europe/London,GB,CATIII,curated
+LFPG,LFPG,Paris Charles de Gaulle,Europe/Paris,FR,CATIII,curated
+EDDM,EDDM,Munich,Europe/Berlin,DE,CATIII,curated
+LIMC,LIMC,Milan Malpensa,Europe/Rome,IT,CATIII,curated
+EHAM,EHAM,Amsterdam Schiphol,Europe/Amsterdam,NL,CATIII,curated
+LSZH,LSZH,Zurich,Europe/Zurich,CH,CATIII,curated
+VIDP,VIDP,Delhi Indira Gandhi Intl,Asia/Kolkata,IN,CATIII,curated
+ZBAA,ZBAA,Beijing Capital Intl,Asia/Shanghai,CN,CATII,unknown
+ZSPD,ZSPD,Shanghai Pudong Intl,Asia/Shanghai,CN,CATII,unknown
+UUEE,UUEE,Moscow Sheremetyevo,Europe/Moscow,RU,CATIII,unknown
+SPJC,SPIM,Lima Jorge Chavez Intl,America/Lima,PE,CATI,unknown
+SBGR,SBGR,Sao Paulo Guarulhos Intl,America/Sao_Paulo,BR,CATII,unknown
+YMML,YMML,Melbourne,Australia/Melbourne,AU,CATIII,curated
