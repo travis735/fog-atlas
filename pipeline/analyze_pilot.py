@@ -30,7 +30,8 @@ def main():
     files = sorted(RAW.glob("*.csv"))
     if not files:
         sys.exit("no raw data in pipeline/data/raw — run fetch_iem.py first")
-    with open(HERE / "airports_pilot.csv") as f:
+    list_name = sys.argv[sys.argv.index("--list") + 1] if "--list" in sys.argv else "airports_pilot.csv"
+    with open(HERE / list_name) as f:
         airports = {a["icao"]: a for a in csv.DictReader(f)}
 
     con = duckdb.connect()
@@ -41,38 +42,32 @@ def main():
     for icao, a in airports.items():
         con.execute("INSERT INTO tzmap VALUES (?, ?, ?)", [icao, a["tz"], a["cat_ils"]])
 
-    con.execute(f"""
-        CREATE TABLE obs AS
-        SELECT
-            regexp_extract(filename, '([A-Z0-9]+)\\.csv$', 1) AS icao,
-            strptime(valid, '%Y-%m-%d %H:%M') AS ts_utc,
-            TRY_CAST(vsby AS DOUBLE) AS vsby,
-            COALESCE(wxcodes, '') AS wx,
-            TRY_CAST(tmpf AS DOUBLE) AS tmpf,
-            TRY_CAST(dwpf AS DOUBLE) AS dwpf
-        FROM read_csv_auto('{RAW}/*.csv', filename=true, all_varchar=true)
-    """)
-
-    # one ob per UTC hour: the last routine report in the hour
-    con.execute("""
-        CREATE TABLE hourly AS
-        SELECT * EXCLUDE (rn) FROM (
-            SELECT *, row_number() OVER (
-                PARTITION BY icao, date_trunc('hour', ts_utc)
-                ORDER BY ts_utc DESC) AS rn
-            FROM obs
-        ) WHERE rn = 1
-    """)
-
+    # single streaming statement: only the compact classified table is
+    # materialized (raw obs at full scale are hundreds of millions of rows)
     con.execute(f"""
         CREATE TABLE classified AS
+        WITH obs AS (
+            SELECT
+                regexp_extract(filename, '([A-Z0-9]+)\\.csv$', 1) AS icao,
+                strptime(valid, '%Y-%m-%d %H:%M') AS ts_utc,
+                TRY_CAST(vsby AS DOUBLE) AS vsby,
+                COALESCE(wxcodes, '') AS wx
+            FROM read_csv_auto('{RAW}/*.csv', filename=true, all_varchar=true,
+                               union_by_name=true)
+        ),
+        -- one ob per UTC hour: the last routine report in the hour
+        hourly AS (
+            SELECT * EXCLUDE (rn) FROM (
+                SELECT *, row_number() OVER (
+                    PARTITION BY icao, date_trunc('hour', ts_utc)
+                    ORDER BY ts_utc DESC) AS rn
+                FROM obs
+            ) WHERE rn = 1
+        )
         SELECT
             h.icao,
-            h.ts_utc,
-            timezone(t.tz, h.ts_utc::TIMESTAMPTZ) AS ts_local,
             month(timezone(t.tz, h.ts_utc::TIMESTAMPTZ)) AS mon,
             hour(timezone(t.tz, h.ts_utc::TIMESTAMPTZ)) AS hr,
-            h.vsby,
             CASE
                 WHEN h.vsby IS NULL THEN 'missing'
                 WHEN h.vsby < {EFVS_FLOOR_SM} THEN 'below'
@@ -120,18 +115,19 @@ def main():
     """).df()
     print(causes.to_string(index=False))
 
-    print("\n=== Monthly sub-CAT-I frequency (% of hours, by airport) ===")
-    monthly = con.execute("""
-        PIVOT (
-            SELECT icao, mon,
-                   round(100.0 * count(*) FILTER (band IN ('efvs','below'))
-                         / count(*) FILTER (band != 'missing'), 2) AS pct
-            FROM classified GROUP BY icao, mon
-        ) ON mon USING first(pct) GROUP BY icao ORDER BY icao
-    """).df()
-    print(monthly.to_string(index=False))
+    if len(summary) <= 25:
+        print("\n=== Monthly sub-CAT-I frequency (% of hours, by airport) ===")
+        monthly = con.execute("""
+            PIVOT (
+                SELECT icao, mon,
+                       round(100.0 * count(*) FILTER (band IN ('efvs','below'))
+                             / count(*) FILTER (band != 'missing'), 2) AS pct
+                FROM classified GROUP BY icao, mon
+            ) ON mon USING first(pct) GROUP BY icao ORDER BY icao
+        """).df()
+        print(monthly.to_string(index=False))
 
-    for icao in summary.icao:
+    for icao in (summary.icao if len(summary) <= 25 else summary.icao[:5]):
         print(f"\n=== {icao}: month x local-hour sub-CAT-I % (peak structure) ===")
         grid = con.execute(f"""
             PIVOT (

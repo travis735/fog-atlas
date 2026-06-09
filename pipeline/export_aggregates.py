@@ -15,6 +15,7 @@ Grids are [month][hour] = percent of hours, local time, months 1-12 -> idx 0-11.
 
 import csv
 import json
+import sys
 from pathlib import Path
 
 import duckdb
@@ -33,7 +34,8 @@ def grid_from_rows(rows, value_idx):
 
 def main():
     (APP / "detail").mkdir(parents=True, exist_ok=True)
-    with open(HERE / "airports_pilot.csv") as f:
+    list_name = sys.argv[sys.argv.index("--list") + 1] if "--list" in sys.argv else "airports_pilot.csv"
+    with open(HERE / list_name) as f:
         meta = {a["icao"]: a for a in csv.DictReader(f)}
 
     con = duckdb.connect()

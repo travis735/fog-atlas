@@ -162,7 +162,7 @@ async function openAirport(icao: string) {
       <div class="stat"><div class="v">${Math.round(a.belowHoursPerYear)}</div><div class="k">below 300 m hrs / yr</div></div>
       <div class="stat"><div class="v">${detail.coveragePct}%</div><div class="k">archive coverage</div></div>
     </div>
-    <h3>When it closes — % of hours below CAT I, by month × local hour</h3>
+    <h3 id="heatmap-title">When it closes — % of hours below CAT I, by month × local hour</h3>
     <div id="heatmap"></div>
     <h3>Cause of low visibility</h3>
     <div id="causes"></div>
@@ -174,6 +174,11 @@ async function openAirport(icao: string) {
     for (let h = 0; h < 24; h++)
       cells.push({ hr: h, mon: MONTHS_S[m], pct: (detail.efvsGrid[m][h] ?? 0) + (detail.belowGrid[m][h] ?? 0) });
 
+  // scale the ramp to this airport's own peak — a fixed worldwide domain
+  // crushes everything but Delhi into the dark end
+  const peak = Math.max(5, ...cells.map((c) => c.pct));
+  $("#heatmap-title").textContent =
+    `When it closes — % of hours below CAT I, by month × local hour (scale 0–${Math.ceil(peak)}%)`;
   const heat = Plot.plot({
     width: 386,
     height: 230,
@@ -181,7 +186,12 @@ async function openAirport(icao: string) {
     style: { background: "transparent", color: "#5d6b78", fontSize: "9px" },
     x: { label: "local hour", ticks: [0, 6, 12, 18, 23] },
     y: { label: null, domain: MONTHS_S },
-    color: { type: "sqrt", domain: [0, 65], range: ["#0d1218", "#e8f6ff"], clamp: true },
+    color: {
+      type: "sqrt",
+      domain: [0, peak],
+      range: ["#1d2a38", "#f2faff"],
+      clamp: true,
+    },
     marks: [Plot.cell(cells, { x: "hr", y: "mon", fill: "pct", inset: 0.4, tip: false })],
   });
   $("#heatmap").replaceChildren(heat);
