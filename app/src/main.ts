@@ -36,7 +36,7 @@ function scrubIdx() { return state.mon * 24 + state.hr; }
 function pctExpr(): any { return ["at", scrubIdx(), ["get", "g"]]; }
 
 const GLOW_COLOR: any = (e: any) => ["interpolate", ["linear"], e,
-  0, "#2a3744", 2, "#3e6b8a", 8, "#6fb4dd", 25, "#b9e6ff", 55, "#ffffff"];
+  0, "#46586a", 2, "#4f7ea3", 8, "#6fb4dd", 25, "#b9e6ff", 55, "#ffffff"];
 const GLOW_OPACITY: any = (e: any) => ["interpolate", ["linear"], e,
   0, 0.05, 3, 0.45, 15, 0.75, 40, 0.95];
 
@@ -77,11 +77,12 @@ map.on("load", async () => {
     type: "circle",
     source: "airports",
     paint: {
-      "circle-radius": radius,
+      "circle-radius": ["max", radius, 3.5],
       "circle-color": GLOW_COLOR(pctExpr()),
-      "circle-opacity": 0.92,
-      "circle-stroke-width": 0.6,
-      "circle-stroke-color": "#0d1218",
+      "circle-opacity": 0.95,
+      "circle-stroke-width": 0.7,
+      "circle-stroke-color": "#7e93a8",
+      "circle-stroke-opacity": 0.55,
     },
   });
 
@@ -213,6 +214,7 @@ applyScrub();
 // debug API
 (window as any).__fogatlas = {
   state,
+  map,
   setScrub(mon: number, hr: number) { state.mon = mon; state.hr = hr; monEl.value = String(mon); hrEl.value = String(hr); applyScrub(); },
   openAirport,
 };
