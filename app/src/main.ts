@@ -36,7 +36,7 @@ function scrubIdx() { return state.mon * 24 + state.hr; }
 function pctExpr(): any { return ["at", scrubIdx(), ["get", "g"]]; }
 
 const GLOW_COLOR: any = (e: any) => ["interpolate", ["linear"], e,
-  0, "#46586a", 2, "#4f7ea3", 8, "#6fb4dd", 25, "#b9e6ff", 55, "#ffffff"];
+  0, "#5d7589", 2, "#5e93bb", 8, "#7fc0e8", 25, "#c4eaff", 55, "#ffffff"];
 const GLOW_OPACITY: any = (e: any) => ["interpolate", ["linear"], e,
   0, 0.05, 3, 0.45, 15, 0.75, 40, 0.95];
 
@@ -59,14 +59,19 @@ map.on("load", async () => {
   };
   map.addSource("airports", { data: fc as any, type: "geojson" });
 
-  const radius: any = ["+", 3, ["*", 0.5, ["sqrt", ["get", "annual"]]]];
+  const base: any = ["max", ["+", 3, ["*", 0.5, ["sqrt", ["get", "annual"]]]], 3.5];
+  // grow dots as the map zooms in, or they get lost at street level.
+  // NB: maplibre only allows ["zoom"] in a TOP-LEVEL interpolate, so the
+  // per-layer multiplier must live inside the stops, not wrap the result.
+  const radius = (mult: number): any => ["interpolate", ["linear"], ["zoom"],
+    3, ["*", base, mult], 6, ["*", base, 1.8 * mult], 10, ["*", base, 3.2 * mult]];
 
   map.addLayer({
     id: "glow",
     type: "circle",
     source: "airports",
     paint: {
-      "circle-radius": ["*", radius, 2.6],
+      "circle-radius": radius(2.6),
       "circle-blur": 1.4,
       "circle-color": GLOW_COLOR(pctExpr()),
       "circle-opacity": GLOW_OPACITY(pctExpr()),
@@ -77,12 +82,25 @@ map.on("load", async () => {
     type: "circle",
     source: "airports",
     paint: {
-      "circle-radius": ["max", radius, 3.5],
+      "circle-radius": radius(1),
       "circle-color": GLOW_COLOR(pctExpr()),
-      "circle-opacity": 0.95,
+      "circle-opacity": 1,
       "circle-stroke-width": 0.7,
-      "circle-stroke-color": "#7e93a8",
-      "circle-stroke-opacity": 0.55,
+      "circle-stroke-color": "#8fa6bc",
+      "circle-stroke-opacity": 0.6,
+    },
+  });
+  // specular highlight offset up-left — cheap 3D-sphere read on every dot
+  map.addLayer({
+    id: "sheen",
+    type: "circle",
+    source: "airports",
+    paint: {
+      "circle-radius": radius(0.42),
+      "circle-blur": 0.7,
+      "circle-color": "#ffffff",
+      "circle-opacity": 0.65,
+      "circle-translate": [-2, -2],
     },
   });
 
