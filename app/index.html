@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Fog Atlas — where the sky closes</title>
+    <meta name="description" content="Ten years of METAR observations distilled into when and where airports drop below approach minima — and how much of it EFVS gets back." />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <header id="brand">
+      <h1>FOG ATLAS</h1>
+      <p>where the sky closes &middot; 2016&ndash;2025 METAR climatology</p>
+    </header>
+
+    <div id="legend">
+      <div class="legend-row"><span class="dot annual"></span> dot size — sub-CAT-I hours / year</div>
+      <div class="legend-row"><span class="dot glow"></span> glow — % of hours below CAT I at scrubbed month &amp; local hour</div>
+    </div>
+
+    <footer id="scrub">
+      <button id="play" aria-label="play">&#9654;</button>
+      <div class="sliders">
+        <label>month <input id="mon" type="range" min="0" max="11" value="0" /></label>
+        <label>local hour <input id="hr" type="range" min="0" max="23" value="6" /></label>
+      </div>
+      <div id="readout">January &middot; 06:00</div>
+    </footer>
+
+    <aside id="panel" hidden>
+      <button id="close" aria-label="close">&times;</button>
+      <div id="panel-content"></div>
+    </aside>
+
+    <a id="methodology" href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">methodology &amp; caveats</a>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
