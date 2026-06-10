@@ -3721,3 +3721,1695 @@
   RKTY: 2245 rows
   OKAJ: only 0 rows — no feed, marked missing
 -- 3100/5014 (316 stations/hr)
+  OKAS: 45206 rows
+  MWCB: 45566 rows
+  MWCL: only 0 rows — no feed, marked missing
+  UAAH: 40350 rows
+  UAAT: 31293 rows
+-- 3105/5014 (316 stations/hr)
+  UAON: only 0 rows — no feed, marked missing
+  UASA: only 0 rows — no feed, marked missing
+  UASB: only 0 rows — no feed, marked missing
+  UASD: only 0 rows — no feed, marked missing
+  UATR: only 0 rows — no feed, marked missing
+-- 3110/5014 (316 stations/hr)
+  VLBK: only 0 rows — no feed, marked missing
+  VLSK: 41488 rows
+  VLSN: only 0 rows — no feed, marked missing
+  OLKA: only 0 rows — no feed, marked missing
+  OLRA: only 0 rows — no feed, marked missing
+-- 3115/5014 (316 stations/hr)
+  TLPC: 49039 rows
+  VCCA: only 0 rows — no feed, marked missing
+  VCCB: only 0 rows — no feed, marked missing
+  VCCG: only 0 rows — no feed, marked missing
+  VCCH: only 0 rows — no feed, marked missing
+-- 3120/5014 (317 stations/hr)
+  VCCK: only 0 rows — no feed, marked missing
+  VCCT: only 0 rows — no feed, marked missing
+  GLGE: only 0 rows — no feed, marked missing
+  GLMR: only 0 rows — no feed, marked missing
+  EYKD: only 0 rows — no feed, marked missing
+-- 3125/5014 (317 stations/hr)
+  EYPP: only 0 rows — no feed, marked missing
+  EYSA: 81936 rows
+  EYSB: only 0 rows — no feed, marked missing
+  EVJA: only 0 rows — no feed, marked missing
+  EVKA: only 0 rows — no feed, marked missing
+-- 3130/5014 (317 stations/hr)
+  HLBU: only 0 rows — no feed, marked missing
+  HLGT: only 78 rows — no feed, marked missing
+  HLKF: only 39 rows — no feed, marked missing
+  HLLS: only 87 rows — no feed, marked missing
+  HLMB: only 0 rows — no feed, marked missing
+-- 3135/5014 (318 stations/hr)
+  HLTD: only 1 rows — no feed, marked missing
+  GMAT: 47789 rows
+  GMFB: 28918 rows
+  GMFK: 84334 rows
+  GMFM: 78918 rows
+-- 3140/5014 (318 stations/hr)
+  GMMI: 69538 rows
+  GMMP: only 31 rows — no feed, marked missing
+  GMTA: 85785 rows
+  LUBL: only 1 rows — no feed, marked missing
+  LUBM: 4703 rows
+-- 3145/5014 (318 stations/hr)
+  LUCH: only 0 rows — no feed, marked missing
+  LUTR: only 0 rows — no feed, marked missing
+  LYTV: 83429 rows
+  TFFG: only 0 rows — no feed, marked missing
+  FMMN: only 0 rows — no feed, marked missing
+-- 3150/5014 (318 stations/hr)
+  FMMS: 10195 rows
+  FMMV: only 0 rows — no feed, marked missing
+  FMNA: 34173 rows
+  FMNC: only 0 rows — no feed, marked missing
+  FMND: only 0 rows — no feed, marked missing
+-- 3155/5014 (318 stations/hr)
+  FMNH: only 0 rows — no feed, marked missing
+  FMNL: only 0 rows — no feed, marked missing
+  FMNQ: only 0 rows — no feed, marked missing
+  FMNR: only 0 rows — no feed, marked missing
+  FMNS: only 0 rows — no feed, marked missing
+-- 3160/5014 (319 stations/hr)
+  FMNV: only 0 rows — no feed, marked missing
+  FMNW: only 0 rows — no feed, marked missing
+  FMSD: 85107 rows
+  FMSF: only 0 rows — no feed, marked missing
+  FMSK: only 0 rows — no feed, marked missing
+-- 3165/5014 (319 stations/hr)
+  FMSM: only 0 rows — no feed, marked missing
+  FMSR: only 0 rows — no feed, marked missing
+  FMST: only 0 rows — no feed, marked missing
+  PKWA: 87131 rows
+  GAGO: 2707 rows
+-- 3170/5014 (319 stations/hr)
+  GAKD: 34539 rows
+  GAMB: 32984 rows
+  VYDW: only 0 rows — no feed, marked missing
+  VYHH: only 0 rows — no feed, marked missing
+  VYKG: only 0 rows — no feed, marked missing
+-- 3175/5014 (319 stations/hr)
+  VYKP: only 0 rows — no feed, marked missing
+  VYKT: only 0 rows — no feed, marked missing
+  VYLK: only 0 rows — no feed, marked missing
+  VYLS: only 0 rows — no feed, marked missing
+  VYME: only 0 rows — no feed, marked missing
+-- 3180/5014 (320 stations/hr)
+  VYMK: only 0 rows — no feed, marked missing
+  VYML: only 0 rows — no feed, marked missing
+  VYMO: only 0 rows — no feed, marked missing
+  VYMS: only 0 rows — no feed, marked missing
+  VYNP: only 0 rows — no feed, marked missing
+-- 3185/5014 (320 stations/hr)
+  VYNS: only 0 rows — no feed, marked missing
+  VYPT: only 0 rows — no feed, marked missing
+  VYST: only 0 rows — no feed, marked missing
+  VYSW: only 0 rows — no feed, marked missing
+  VYTD: only 0 rows — no feed, marked missing
+-- 3190/5014 (320 stations/hr)
+  VYTL: only 0 rows — no feed, marked missing
+  ZMAH: only 0 rows — no feed, marked missing
+  ZMAT: only 0 rows — no feed, marked missing
+  ZMBH: only 0 rows — no feed, marked missing
+  ZMBN: only 0 rows — no feed, marked missing
+-- 3195/5014 (320 stations/hr)
+  ZMBU: only 0 rows — no feed, marked missing
+  ZMCD: only 0 rows — no feed, marked missing
+  ZMDZ: only 0 rows — no feed, marked missing
+  ZMKD: only 0 rows — no feed, marked missing
+  ZMMN: only 0 rows — no feed, marked missing
+-- 3200/5014 (321 stations/hr)
+  ZMUG: only 0 rows — no feed, marked missing
+  ZMUL: only 0 rows — no feed, marked missing
+  PGSN: only 0 rows — no feed, marked missing
+  PGWT: only 0 rows — no feed, marked missing
+  GQPA: 7819 rows
+-- 3205/5014 (321 stations/hr)
+  GQPZ: 4377 rows
+  FIMR: 26841 rows
+  VRMK: only 0 rows — no feed, marked missing
+  VRMT: only 0 rows — no feed, marked missing
+  VRMV: only 0 rows — no feed, marked missing
+-- 3210/5014 (321 stations/hr)
+  FWDW: only 0 rows — no feed, marked missing
+  FWKA: only 55 rows — no feed, marked missing
+  FWUU: only 188 rows — no feed, marked missing
+  MMAN: 57167 rows
+  MMCB: 17970 rows
+-- 3215/5014 (322 stations/hr)
+  MMCC: only 0 rows — no feed, marked missing
+  MMCE: 24998 rows
+  MMCM: 19324 rows
+  MMCN: 25241 rows
+  MMCP: 23254 rows
+-- 3220/5014 (322 stations/hr)
+  MMCV: 28880 rows
+  MMCY: only 0 rows — no feed, marked missing
+  MMDO: 19233 rows
+  MMEP: 17970 rows
+  MMES: only 127 rows — no feed, marked missing
+-- 3225/5014 (322 stations/hr)
+  MMGA: 6520 rows
+  MMGM: 24252 rows
+  MMIA: 29755 rows
+  MMIO: 15596 rows
+  MMIT: only 118 rows — no feed, marked missing
+-- 3230/5014 (322 stations/hr)
+  MMJA: only 0 rows — no feed, marked missing
+  MMLC: only 0 rows — no feed, marked missing
+  MMLM: 30011 rows
+  MMLP: 35856 rows
+  MMMA: 24821 rows
+-- 3235/5014 (323 stations/hr)
+  MMML: 30464 rows
+  MMMT: 23489 rows
+  MMMV: 19529 rows
+  MMNG: only 0 rows — no feed, marked missing
+  MMNL: 31260 rows
+-- 3240/5014 (323 stations/hr)
+  MMPA: 22921 rows
+  MMPG: 30582 rows
+  MMPN: 27201 rows
+  MMPS: 24044 rows
+  MMRX: 22990 rows
+-- 3245/5014 (323 stations/hr)
+  MMSL: 25187 rows
+  MMSP: 37873 rows
+  MMTB: only 78 rows — no feed, marked missing
+  MMTC: 32909 rows
+  MMTG: 24682 rows
+-- 3250/5014 (323 stations/hr)
+  MMTM: 26328 rows
+  MMTP: 47043 rows
+  MMZC: 42406 rows
+  MMZO: 23909 rows
+  WBGB: 87568 rows
+-- 3255/5014 (323 stations/hr)
+  WBGJ: only 0 rows — no feed, marked missing
+  WBGK: only 0 rows — no feed, marked missing
+  WBGM: only 0 rows — no feed, marked missing
+  WBGR: 87549 rows
+  WBGS: 87479 rows
+-- 3260/5014 (323 stations/hr)
+  WBGZ: only 0 rows — no feed, marked missing
+  WBKD: only 0 rows — no feed, marked missing
+  WBKL: 87554 rows
+  WBKS: 87547 rows
+  WBKW: 87367 rows
+-- 3265/5014 (323 stations/hr)
+  WBMU: only 0 rows — no feed, marked missing
+  WMAP: only 0 rows — no feed, marked missing
+  WMBT: only 0 rows — no feed, marked missing
+  WMKA: 87277 rows
+  WMKB: 87386 rows
+-- 3270/5014 (324 stations/hr)
+  WMKC: 87486 rows
+  WMKD: 87527 rows
+  WMKE: 82783 rows
+  WMKM: 87496 rows
+  WMKN: 87444 rows
+-- 3275/5014 (323 stations/hr)
+  FQCH: 69478 rows
+  FQIN: 47472 rows
+  FQLC: 54526 rows
+  FQMD: only 0 rows — no feed, marked missing
+  FQMP: only 21 rows — no feed, marked missing
+-- 3280/5014 (323 stations/hr)
+  FQNC: 18653 rows
+  FQPB: 67541 rows
+  FQQL: 71583 rows
+  FQVL: 40057 rows
+  FYAR: only 0 rows — no feed, marked missing
+-- 3285/5014 (324 stations/hr)
+  FYGF: 56654 rows
+  FYKM: 49770 rows
+  FYKT: 56160 rows
+  FYLZ: 66319 rows
+  FYML: 29858 rows
+-- 3290/5014 (324 stations/hr)
+  FYOA: 47632 rows
+  FYOG: 13210 rows
+  FYRU: 49825 rows
+  FYTF: only 0 rows — no feed, marked missing
+  FYTM: only 0 rows — no feed, marked missing
+-- 3295/5014 (324 stations/hr)
+  FYWE: 50524 rows
+  NWWA: only 0 rows — no feed, marked missing
+  NWWD: only 0 rows — no feed, marked missing
+  NWWE: only 0 rows — no feed, marked missing
+  NWWL: only 0 rows — no feed, marked missing
+-- 3300/5014 (324 stations/hr)
+  NWWM: only 0 rows — no feed, marked missing
+  NWWR: only 0 rows — no feed, marked missing
+  NWWU: only 0 rows — no feed, marked missing
+  NWWV: only 0 rows — no feed, marked missing
+  DRRM: 28150 rows
+-- 3305/5014 (324 stations/hr)
+  DRRT: 36035 rows
+  DRZA: 49634 rows
+  DRZR: 38934 rows
+  YSNF: 86811 rows
+  DNAI: only 0 rows — no feed, marked missing
+-- 3310/5014 (324 stations/hr)
+  DNAK: 8557 rows
+  DNBE: 6177 rows
+  DNBY: only 0 rows — no feed, marked missing
+  DNCA: 4523 rows
+  DNGO: 9699 rows
+-- 3315/5014 (325 stations/hr)
+  DNGU: only 0 rows — no feed, marked missing
+  DNIB: 16174 rows
+  DNIM: 12051 rows
+  DNJO: 7316 rows
+  DNKT: 8893 rows
+-- 3320/5014 (325 stations/hr)
+  DNMK: only 22 rows — no feed, marked missing
+  DNMN: 26287 rows
+  DNPM: only 0 rows — no feed, marked missing
+  DNSU: only 0 rows — no feed, marked missing
+  DNYO: 12731 rows
+-- 3325/5014 (325 stations/hr)
+  DNZA: 6195 rows
+  MNBL: 39181 rows
+  MNPC: 35981 rows
+  EHBD: only 0 rows — no feed, marked missing
+  EHDL: 85835 rows
+-- 3330/5014 (325 stations/hr)
+  EHGR: 82429 rows
+  EHKD: 79167 rows
+  EHLE: 53899 rows
+  EHLW: 83023 rows
+  EHTW: only 0 rows — no feed, marked missing
+-- 3335/5014 (325 stations/hr)
+  EHVK: 83114 rows
+  EHWO: 83412 rows
+  ENAN: 86739 rows
+  ENAT: 86454 rows
+  ENBN: 86360 rows
+-- 3340/5014 (325 stations/hr)
+  ENBS: 54534 rows
+  ENBV: 53768 rows
+  ENDU: 87365 rows
+  ENFL: 86753 rows
+  ENHD: 86988 rows
+-- 3345/5014 (325 stations/hr)
+  ENHF: 86113 rows
+  ENHV: 51916 rows
+  ENKB: 87354 rows
+  ENKR: 87135 rows
+  ENLK: 53007 rows
+-- 3350/5014 (325 stations/hr)
+  ENMH: 51079 rows
+  ENML: 86520 rows
+  ENMS: 63999 rows
+  ENNA: 86714 rows
+  ENNO: 30788 rows
+-- 3355/5014 (325 stations/hr)
+  ENOL: 86756 rows
+  ENOV: 63469 rows
+  ENRA: 65231 rows
+  ENRM: 54572 rows
+  ENRO: 85672 rows
+-- 3360/5014 (326 stations/hr)
+  ENRY: 85746 rows
+  ENSB: 84961 rows
+  ENSH: 57659 rows
+  ENSK: 62150 rows
+  ENSN: only 0 rows — no feed, marked missing
+-- 3365/5014 (326 stations/hr)
+  ENSO: 32224 rows
+  ENSR: 44335 rows
+  ENSS: 50384 rows
+  ENST: 54190 rows
+  ENVD: 67936 rows
+-- 3370/5014 (326 stations/hr)
+  VNJP: only 0 rows — no feed, marked missing
+  VNLK: only 0 rows — no feed, marked missing
+  VNNG: only 0 rows — no feed, marked missing
+  VNPK: only 0 rows — no feed, marked missing
+  VNTJ: only 0 rows — no feed, marked missing
+-- 3375/5014 (326 stations/hr)
+  VNVT: only 0 rows — no feed, marked missing
+  ANYN: 21359 rows
+  NIUE: 82863 rows
+  NZAP: only 0 rows — no feed, marked missing
+  NZAR: only 0 rows — no feed, marked missing
+-- 3380/5014 (326 stations/hr)
+  NZCI: only 0 rows — no feed, marked missing
+  NZDN: 2145 rows
+  NZGS: only 0 rows — no feed, marked missing
+  NZGT: only 0 rows — no feed, marked missing
+  NZHK: only 0 rows — no feed, marked missing
+-- 3385/5014 (326 stations/hr)
+  NZHN: 2147 rows
+  NZKK: only 0 rows — no feed, marked missing
+  NZKT: only 0 rows — no feed, marked missing
+  NZLX: only 0 rows — no feed, marked missing
+  NZMC: only 0 rows — no feed, marked missing
+-- 3390/5014 (327 stations/hr)
+  NZMO: only 0 rows — no feed, marked missing
+  NZMS: only 0 rows — no feed, marked missing
+  NZNP: only 0 rows — no feed, marked missing
+  NZNR: only 0 rows — no feed, marked missing
+  NZNS: only 0 rows — no feed, marked missing
+-- 3395/5014 (327 stations/hr)
+  NZNV: only 0 rows — no feed, marked missing
+  NZOH: 2320 rows
+  NZOU: only 0 rows — no feed, marked missing
+  NZPM: only 0 rows — no feed, marked missing
+  NZPP: only 0 rows — no feed, marked missing
+-- 3400/5014 (327 stations/hr)
+  NZRO: only 0 rows — no feed, marked missing
+  NZTG: only 0 rows — no feed, marked missing
+  NZTU: only 0 rows — no feed, marked missing
+  NZUK: only 0 rows — no feed, marked missing
+  NZWB: only 0 rows — no feed, marked missing
+-- 3405/5014 (328 stations/hr)
+  NZWF: only 0 rows — no feed, marked missing
+  NZWK: only 0 rows — no feed, marked missing
+  NZWO: only 0 rows — no feed, marked missing
+  NZWP: only 82 rows — no feed, marked missing
+  NZWR: only 0 rows — no feed, marked missing
+-- 3410/5014 (328 stations/hr)
+  NZWS: only 0 rows — no feed, marked missing
+  NZWU: only 0 rows — no feed, marked missing
+  OOKB: 33061 rows
+  OOMA: only 0 rows — no feed, marked missing
+  OOMN: only 0 rows — no feed, marked missing
+-- 3415/5014 (328 stations/hr)
+  OORH: only 0 rows — no feed, marked missing
+  OOTH: only 1 rows — no feed, marked missing
+  MPBO: 30248 rows
+  MPCE: only 2 rows — no feed, marked missing
+  MPCH: only 11 rows — no feed, marked missing
+-- 3420/5014 (329 stations/hr)
+  MPDA: 49849 rows
+  MPEJ: only 525 rows — no feed, marked missing
+  MPMG: 72941 rows
+  MPSA: only 3 rows — no feed, marked missing
+  SPAY: only 168 rows — no feed, marked missing
+-- 3425/5014 (329 stations/hr)
+  SPBC: only 0 rows — no feed, marked missing
+  SPBR: only 0 rows — no feed, marked missing
+  SPEO: 13144 rows
+  SPHO: 47092 rows
+  SPHZ: 4891 rows
+-- 3430/5014 (329 stations/hr)
+  SPJA: only 50 rows — no feed, marked missing
+  SPJE: 7903 rows
+  SPJI: 22974 rows
+  SPJJ: 13773 rows
+  SPJR: 48916 rows
+-- 3435/5014 (329 stations/hr)
+  SPLO: 27667 rows
+  SPME: 48703 rows
+  SPMS: 37021 rows
+  SPNC: 19259 rows
+  SPPY: 15067 rows
+-- 3440/5014 (329 stations/hr)
+  SPST: 54506 rows
+  SPTN: 70525 rows
+  SPTU: 42641 rows
+  SPUR: 24441 rows
+  SPYL: 40449 rows
+-- 3445/5014 (330 stations/hr)
+  SPZA: only 94 rows — no feed, marked missing
+  NTAR: only 0 rows — no feed, marked missing
+  NTAT: 85373 rows
+  NTGA: only 0 rows — no feed, marked missing
+  NTGB: only 0 rows — no feed, marked missing
+-- 3450/5014 (330 stations/hr)
+  NTGC: only 0 rows — no feed, marked missing
+  NTGE: only 0 rows — no feed, marked missing
+  NTGF: only 0 rows — no feed, marked missing
+  NTGI: only 0 rows — no feed, marked missing
+  NTGJ: only 0 rows — no feed, marked missing
+-- 3455/5014 (330 stations/hr)
+  NTGK: only 0 rows — no feed, marked missing
+  NTGM: only 0 rows — no feed, marked missing
+  NTGT: only 0 rows — no feed, marked missing
+  NTGU: only 0 rows — no feed, marked missing
+  NTGV: only 0 rows — no feed, marked missing
+-- 3460/5014 (330 stations/hr)
+  NTHE: only 0 rows — no feed, marked missing
+  NTKR: only 0 rows — no feed, marked missing
+  NTMD: only 0 rows — no feed, marked missing
+  NTMN: only 0 rows — no feed, marked missing
+  NTTB: 10432 rows
+-- 3465/5014 (331 stations/hr)
+  NTTG: only 0 rows — no feed, marked missing
+  NTTH: only 0 rows — no feed, marked missing
+  NTTM: only 0 rows — no feed, marked missing
+  NTTO: 10054 rows
+  NTTP: only 0 rows — no feed, marked missing
+-- 3470/5014 (331 stations/hr)
+  NTTR: only 0 rows — no feed, marked missing
+  AYBA: only 0 rows — no feed, marked missing
+  AYBK: only 0 rows — no feed, marked missing
+  AYBM: only 0 rows — no feed, marked missing
+  AYCH: only 0 rows — no feed, marked missing
+-- 3475/5014 (331 stations/hr)
+  AYDU: only 0 rows — no feed, marked missing
+  AYGA: only 0 rows — no feed, marked missing
+  AYGN: only 815 rows — no feed, marked missing
+  AYGR: only 0 rows — no feed, marked missing
+  AYHK: only 0 rows — no feed, marked missing
+-- 3480/5014 (332 stations/hr)
+  AYKM: only 0 rows — no feed, marked missing
+  AYKV: only 0 rows — no feed, marked missing
+  AYMD: only 0 rows — no feed, marked missing
+  AYMH: 34244 rows
+  AYMN: only 0 rows — no feed, marked missing
+-- 3485/5014 (332 stations/hr)
+  AYMO: 2604 rows
+  AYTK: only 0 rows — no feed, marked missing
+  AYVN: only 304 rows — no feed, marked missing
+  AYWD: only 0 rows — no feed, marked missing
+  AYWK: 1316 rows
+-- 3490/5014 (332 stations/hr)
+  RPLH: only 0 rows — no feed, marked missing
+  RPLS: only 0 rows — no feed, marked missing
+  RPLT: only 0 rows — no feed, marked missing
+  RPLU: only 0 rows — no feed, marked missing
+  RPMA: only 0 rows — no feed, marked missing
+-- 3495/5014 (332 stations/hr)
+  RPMB: only 0 rows — no feed, marked missing
+  RPMC: only 0 rows — no feed, marked missing
+  RPME: only 0 rows — no feed, marked missing
+  RPMF: only 0 rows — no feed, marked missing
+  RPMG: only 0 rows — no feed, marked missing
+-- 3500/5014 (333 stations/hr)
+  RPMH: only 0 rows — no feed, marked missing
+  RPMJ: only 0 rows — no feed, marked missing
+  RPMN: only 0 rows — no feed, marked missing
+  RPMO: only 0 rows — no feed, marked missing
+  RPMP: only 0 rows — no feed, marked missing
+-- 3505/5014 (333 stations/hr)
+  RPMQ: only 0 rows — no feed, marked missing
+  RPMS: only 0 rows — no feed, marked missing
+  RPMW: only 0 rows — no feed, marked missing
+  RPUB: only 0 rows — no feed, marked missing
+  RPUD: only 0 rows — no feed, marked missing
+-- 3510/5014 (333 stations/hr)
+  RPUH: only 0 rows — no feed, marked missing
+  RPUM: only 0 rows — no feed, marked missing
+  RPUN: only 0 rows — no feed, marked missing
+  RPUO: only 0 rows — no feed, marked missing
+  RPUR: only 0 rows — no feed, marked missing
+-- 3515/5014 (334 stations/hr)
+  RPUS: only 0 rows — no feed, marked missing
+  RPUT: only 0 rows — no feed, marked missing
+  RPUV: only 0 rows — no feed, marked missing
+  RPUW: only 0 rows — no feed, marked missing
+  RPUY: only 0 rows — no feed, marked missing
+-- 3520/5014 (334 stations/hr)
+  RPVA: only 0 rows — no feed, marked missing
+  RPVC: only 0 rows — no feed, marked missing
+  RPVD: 43897 rows
+  RPVE: only 0 rows — no feed, marked missing
+  RPVF: only 0 rows — no feed, marked missing
+-- 3525/5014 (334 stations/hr)
+  RPVJ: only 0 rows — no feed, marked missing
+  RPVO: only 4 rows — no feed, marked missing
+  RPVR: only 0 rows — no feed, marked missing
+  RPVS: only 0 rows — no feed, marked missing
+  RPVU: only 0 rows — no feed, marked missing
+-- 3530/5014 (335 stations/hr)
+  RPVV: only 0 rows — no feed, marked missing
+  OPBW: only 0 rows — no feed, marked missing
+  OPCH: only 0 rows — no feed, marked missing
+  OPDG: only 0 rows — no feed, marked missing
+  OPDI: only 0 rows — no feed, marked missing
+-- 3535/5014 (335 stations/hr)
+  OPGT: only 0 rows — no feed, marked missing
+  OPJA: only 0 rows — no feed, marked missing
+  OPMA: only 0 rows — no feed, marked missing
+  OPMI: only 0 rows — no feed, marked missing
+  OPMJ: only 0 rows — no feed, marked missing
+-- 3540/5014 (335 stations/hr)
+  OPMR: only 0 rows — no feed, marked missing
+  OPMS: only 0 rows — no feed, marked missing
+  OPNH: 50749 rows
+  OPPG: only 0 rows — no feed, marked missing
+  OPPI: only 0 rows — no feed, marked missing
+-- 3545/5014 (335 stations/hr)
+  OPRK: only 0 rows — no feed, marked missing
+  OPRN: 10894 rows
+  OPRQ: only 0 rows — no feed, marked missing
+  OPRS: only 0 rows — no feed, marked missing
+  OPRT: only 0 rows — no feed, marked missing
+-- 3550/5014 (336 stations/hr)
+  OPSF: only 0 rows — no feed, marked missing
+  OPSK: 61240 rows
+  OPSN: only 0 rows — no feed, marked missing
+  OPSR: only 0 rows — no feed, marked missing
+  OPSS: only 0 rows — no feed, marked missing
+-- 3555/5014 (336 stations/hr)
+  OPSU: only 0 rows — no feed, marked missing
+  OPZB: only 0 rows — no feed, marked missing
+  EPBY: 87590 rows
+  EPCE: only 0 rows — no feed, marked missing
+  EPDE: only 0 rows — no feed, marked missing
+-- 3560/5014 (336 stations/hr)
+  EPIR: only 0 rows — no feed, marked missing
+  EPKS: only 0 rows — no feed, marked missing
+  EPLK: only 0 rows — no feed, marked missing
+  EPLY: only 0 rows — no feed, marked missing
+  EPMB: only 0 rows — no feed, marked missing
+-- 3565/5014 (336 stations/hr)
+  EPMI: only 0 rows — no feed, marked missing
+  EPMM: only 0 rows — no feed, marked missing
+  EPPW: only 0 rows — no feed, marked missing
+  EPRA: 45815 rows
+  EPSN: only 0 rows — no feed, marked missing
+-- 3570/5014 (337 stations/hr)
+  EPSY: 74019 rows
+  EPTM: only 0 rows — no feed, marked missing
+  EPZG: 66152 rows
+  LFVP: 86967 rows
+  TJAB: only 0 rows — no feed, marked missing
+-- 3575/5014 (337 stations/hr)
+  TJBQ: only 0 rows — no feed, marked missing
+  TJCP: only 0 rows — no feed, marked missing
+  TJIG: only 0 rows — no feed, marked missing
+  TJMZ: only 0 rows — no feed, marked missing
+  TJPS: only 0 rows — no feed, marked missing
+-- 3580/5014 (337 stations/hr)
+  TJRV: only 0 rows — no feed, marked missing
+  TJVQ: only 0 rows — no feed, marked missing
+  LPAR: 18661 rows
+  LPAZ: 85646 rows
+  LPBG: only 0 rows — no feed, marked missing
+-- 3585/5014 (337 stations/hr)
+  LPBJ: 86920 rows
+  LPBR: only 0 rows — no feed, marked missing
+  LPCB: only 0 rows — no feed, marked missing
+  LPCO: only 0 rows — no feed, marked missing
+  LPCS: 39233 rows
+-- 3590/5014 (337 stations/hr)
+  LPEV: only 0 rows — no feed, marked missing
+  LPFL: 40871 rows
+  LPGR: only 0 rows — no feed, marked missing
+  LPHR: 57072 rows
+  LPLA: 87228 rows
+-- 3595/5014 (337 stations/hr)
+  LPMR: 72589 rows
+  LPMT: 73158 rows
+  LPOV: 52485 rows
+  LPPI: only 0 rows — no feed, marked missing
+  LPPM: only 0 rows — no feed, marked missing
+-- 3600/5014 (337 stations/hr)
+  LPPS: 87473 rows
+  LPSJ: only 0 rows — no feed, marked missing
+  LPSO: only 0 rows — no feed, marked missing
+  LPST: 22024 rows
+  LPTN: only 0 rows — no feed, marked missing
+-- 3605/5014 (337 stations/hr)
+  LPVL: only 0 rows — no feed, marked missing
+  LPVR: only 0 rows — no feed, marked missing
+  LPVZ: only 0 rows — no feed, marked missing
+  SGAY: only 0 rows — no feed, marked missing
+  SGCO: 4100 rows
+-- 3610/5014 (338 stations/hr)
+  SGGR: 2118 rows
+  SGIB: only 0 rows — no feed, marked missing
+  SGME: 2436 rows
+  SGOV: only 0 rows — no feed, marked missing
+  SGPI: 2407 rows
+-- 3615/5014 (338 stations/hr)
+  SGPJ: 2486 rows
+  SGST: only 0 rows — no feed, marked missing
+  SGVM: only 0 rows — no feed, marked missing
+  OTBH: 66360 rows
+  LRAR: 84096 rows
+-- 3620/5014 (338 stations/hr)
+  LRBM: 87171 rows
+  LRBO: only 0 rows — no feed, marked missing
+  LRCS: only 0 rows — no feed, marked missing
+  LRCT: 56384 rows
+  LRFT: only 0 rows — no feed, marked missing
+-- 3625/5014 (338 stations/hr)
+  LRSM: 87131 rows
+  LRTC: 87454 rows
+  LRTM: 87495 rows
+  LYBT: 87160 rows
+  LYKV: 86876 rows
+-- 3630/5014 (338 stations/hr)
+  LYUZ: 50805 rows
+  UELL: only 0 rows — no feed, marked missing
+  UEMA: only 0 rows — no feed, marked missing
+  UEMM: only 0 rows — no feed, marked missing
+  UEMO: only 0 rows — no feed, marked missing
+-- 3635/5014 (338 stations/hr)
+  UEMT: only 0 rows — no feed, marked missing
+  UENK: only 0 rows — no feed, marked missing
+  UENW: only 0 rows — no feed, marked missing
+  UERA: only 0 rows — no feed, marked missing
+  UERL: only 0 rows — no feed, marked missing
+-- 3640/5014 (339 stations/hr)
+  UERP: 56428 rows
+  UERR: 64986 rows
+  UERS: only 0 rows — no feed, marked missing
+  UESG: only 0 rows — no feed, marked missing
+  UESK: only 0 rows — no feed, marked missing
+-- 3645/5014 (339 stations/hr)
+  UESO: only 0 rows — no feed, marked missing
+  UESS: only 0 rows — no feed, marked missing
+  UEST: only 0 rows — no feed, marked missing
+  UESU: only 0 rows — no feed, marked missing
+  UEVV: only 0 rows — no feed, marked missing
+-- 3650/5014 (339 stations/hr)
+  UHBB: 86582 rows
+  UHHH: 87339 rows
+  UHII: only 0 rows — no feed, marked missing
+  UHKD: only 0 rows — no feed, marked missing
+  UHKG: only 0 rows — no feed, marked missing
+-- 3655/5014 (339 stations/hr)
+  UHKK: only 0 rows — no feed, marked missing
+  UHKM: only 0 rows — no feed, marked missing
+  UHMA: 78853 rows
+  UHMD: 23807 rows
+  UHMF: only 0 rows — no feed, marked missing
+-- 3660/5014 (339 stations/hr)
+  UHMG: only 0 rows — no feed, marked missing
+  UHMK: only 0 rows — no feed, marked missing
+  UHMM: 86450 rows
+  UHMP: only 0 rows — no feed, marked missing
+  UHMS: only 0 rows — no feed, marked missing
+-- 3665/5014 (340 stations/hr)
+  UHMT: only 0 rows — no feed, marked missing
+  UHMW: only 0 rows — no feed, marked missing
+  UHNN: only 0 rows — no feed, marked missing
+  UHOO: only 0 rows — no feed, marked missing
+  UHPL: only 0 rows — no feed, marked missing
+-- 3670/5014 (340 stations/hr)
+  UHWV: only 0 rows — no feed, marked missing
+  UIAE: only 0 rows — no feed, marked missing
+  UIAG: only 0 rows — no feed, marked missing
+  UIAI: only 0 rows — no feed, marked missing
+  UIBB: 86757 rows
+-- 3675/5014 (340 stations/hr)
+  UIBV: only 0 rows — no feed, marked missing
+  UIID: only 0 rows — no feed, marked missing
+  UIIR: only 0 rows — no feed, marked missing
+  UITT: only 0 rows — no feed, marked missing
+  ULAA: 80149 rows
+-- 3680/5014 (340 stations/hr)
+  ULAH: only 0 rows — no feed, marked missing
+  ULAM: only 0 rows — no feed, marked missing
+  ULDA: only 0 rows — no feed, marked missing
+  ULDD: only 0 rows — no feed, marked missing
+  ULKK: only 0 rows — no feed, marked missing
+-- 3685/5014 (341 stations/hr)
+  ULLK: only 0 rows — no feed, marked missing
+  ULLP: only 0 rows — no feed, marked missing
+  ULNR: only 0 rows — no feed, marked missing
+  ULOL: only 0 rows — no feed, marked missing
+  ULOO: 54408 rows
+-- 3690/5014 (341 stations/hr)
+  ULPB: 54186 rows
+  ULPP: only 0 rows — no feed, marked missing
+  ULWC: 67751 rows
+  ULWU: only 0 rows — no feed, marked missing
+  ULWW: only 0 rows — no feed, marked missing
+-- 3695/5014 (341 stations/hr)
+  UNBG: only 0 rows — no feed, marked missing
+  UNIB: only 0 rows — no feed, marked missing
+  UNII: only 0 rows — no feed, marked missing
+  UNIP: only 0 rows — no feed, marked missing
+  UNIS: only 0 rows — no feed, marked missing
+-- 3700/5014 (341 stations/hr)
+  UNIW: only 0 rows — no feed, marked missing
+  UNKM: only 0 rows — no feed, marked missing
+  UNKS: only 0 rows — no feed, marked missing
+  UNKY: only 0 rows — no feed, marked missing
+  UNNE: only 0 rows — no feed, marked missing
+-- 3705/5014 (341 stations/hr)
+  UNOS: only 0 rows — no feed, marked missing
+  UNSS: only 0 rows — no feed, marked missing
+  UNWW: 38483 rows
+  UODD: only 0 rows — no feed, marked missing
+  UODN: only 0 rows — no feed, marked missing
+-- 3710/5014 (342 stations/hr)
+  UOHH: only 0 rows — no feed, marked missing
+  UOIG: only 0 rows — no feed, marked missing
+  UOII: only 0 rows — no feed, marked missing
+  URKA: 86636 rows
+  URKE: only 0 rows — no feed, marked missing
+-- 3715/5014 (342 stations/hr)
+  URKG: only 0 rows — no feed, marked missing
+  URMB: only 0 rows — no feed, marked missing
+  URMN: 85652 rows
+  URMO: 70161 rows
+  URMS: only 0 rows — no feed, marked missing
+-- 3720/5014 (342 stations/hr)
+  URMT: 86589 rows
+  UROD: only 0 rows — no feed, marked missing
+  URRT: only 0 rows — no feed, marked missing
+  URWI: 85447 rows
+  USCU: only 0 rows — no feed, marked missing
+-- 3725/5014 (342 stations/hr)
+  USDA: 38315 rows
+  USDB: only 0 rows — no feed, marked missing
+  USDD: 13796 rows
+  USHB: only 0 rows — no feed, marked missing
+  USHH: 86535 rows
+-- 3730/5014 (342 stations/hr)
+  USHN: only 0 rows — no feed, marked missing
+  USHQ: only 0 rows — no feed, marked missing
+  USHS: only 0 rows — no feed, marked missing
+  USHU: only 0 rows — no feed, marked missing
+  USII: only 0 rows — no feed, marked missing
+-- 3735/5014 (342 stations/hr)
+  USKK: only 0 rows — no feed, marked missing
+  USMM: only 0 rows — no feed, marked missing
+  USMQ: only 0 rows — no feed, marked missing
+  USMU: only 7 rows — no feed, marked missing
+  USRK: only 5 rows — no feed, marked missing
+-- 3740/5014 (343 stations/hr)
+  USRN: only 0 rows — no feed, marked missing
+  USRO: only 0 rows — no feed, marked missing
+  USSK: only 0 rows — no feed, marked missing
+  USTJ: only 0 rows — no feed, marked missing
+  USUU: only 0 rows — no feed, marked missing
+-- 3745/5014 (343 stations/hr)
+  UUBA: only 0 rows — no feed, marked missing
+  UUBC: 86428 rows
+  UUBD: only 0 rows — no feed, marked missing
+  UUBI: only 0 rows — no feed, marked missing
+  UUBK: only 0 rows — no feed, marked missing
+-- 3750/5014 (343 stations/hr)
+  UUBL: only 0 rows — no feed, marked missing
+  UUBM: only 0 rows — no feed, marked missing
+  UUBP: 44702 rows
+  UUEM: only 0 rows — no feed, marked missing
+  UUFO: only 0 rows — no feed, marked missing
+-- 3755/5014 (343 stations/hr)
+  UUMB: only 0 rows — no feed, marked missing
+  UUMT: only 0 rows — no feed, marked missing
+  UUMU: only 0 rows — no feed, marked missing
+  UUOB: 86530 rows
+  UUOK: 70338 rows
+-- 3760/5014 (343 stations/hr)
+  UUOL: 62857 rows
+  UUOO: 86366 rows
+  UUOT: only 0 rows — no feed, marked missing
+  UUWE: only 0 rows — no feed, marked missing
+  UUYH: only 0 rows — no feed, marked missing
+-- 3765/5014 (343 stations/hr)
+  UUYI: only 0 rows — no feed, marked missing
+  UUYK: only 0 rows — no feed, marked missing
+  UUYP: only 0 rows — no feed, marked missing
+  UUYS: only 0 rows — no feed, marked missing
+  UUYV: only 0 rows — no feed, marked missing
+-- 3770/5014 (344 stations/hr)
+  UUYW: only 0 rows — no feed, marked missing
+  UUYX: only 0 rows — no feed, marked missing
+  UUYY: 85601 rows
+  UWKB: only 0 rows — no feed, marked missing
+  UWKE: 86572 rows
+-- 3775/5014 (344 stations/hr)
+  UWKG: only 0 rows — no feed, marked missing
+  UWKJ: only 0 rows — no feed, marked missing
+  UWKS: 86527 rows
+  UWLL: 38472 rows
+  UWLW: 85385 rows
+-- 3780/5014 (344 stations/hr)
+  UWOO: 86669 rows
+  UWOR: 86358 rows
+  UWPP: only 0 rows — no feed, marked missing
+  UWSB: only 0 rows — no feed, marked missing
+  UWWB: only 0 rows — no feed, marked missing
+-- 3785/5014 (344 stations/hr)
+  UWWG: only 0 rows — no feed, marked missing
+  XHIS: only 0 rows — no feed, marked missing
+  XHSO: only 0 rows — no feed, marked missing
+  XIAB: only 0 rows — no feed, marked missing
+  XIAS: only 0 rows — no feed, marked missing
+-- 3790/5014 (345 stations/hr)
+  XIUW: only 0 rows — no feed, marked missing
+  XLLL: only 0 rows — no feed, marked missing
+  XNKG: only 0 rows — no feed, marked missing
+  XRMU: only 0 rows — no feed, marked missing
+  XRWL: only 0 rows — no feed, marked missing
+-- 3795/5014 (345 stations/hr)
+  XSSJ: only 0 rows — no feed, marked missing
+  XWKD: only 0 rows — no feed, marked missing
+  XWSB: only 0 rows — no feed, marked missing
+  XWWO: only 0 rows — no feed, marked missing
+  HRYG: 22562 rows
+-- 3800/5014 (345 stations/hr)
+  HRZA: 5129 rows
+  OEAD: only 0 rows — no feed, marked missing
+  OEBA: 87375 rows
+  OEBH: 86917 rows
+  OEDM: 66928 rows
+-- 3805/5014 (345 stations/hr)
+  OEGN: 87254 rows
+  OEGT: 87119 rows
+  OEJB: 32967 rows
+  OEJF: only 0 rows — no feed, marked missing
+  OEKK: 9077 rows
+-- 3810/5014 (345 stations/hr)
+  OEKM: 86222 rows
+  OENG: 86566 rows
+  OEPS: 44645 rows
+  OERF: 87268 rows
+  OERM: only 0 rows — no feed, marked missing
+-- 3815/5014 (345 stations/hr)
+  OERR: 87323 rows
+  OERT: only 0 rows — no feed, marked missing
+  OESH: 86607 rows
+  OESN: only 0 rows — no feed, marked missing
+  OETN: only 0 rows — no feed, marked missing
+-- 3820/5014 (345 stations/hr)
+  OETR: 87324 rows
+  OEWD: 86004 rows
+  OEWJ: 87054 rows
+  AGGM: 14753 rows
+  FSPP: 10985 rows
+-- 3825/5014 (345 stations/hr)
+  HSDN: 1224 rows
+  HSFS: only 496 rows — no feed, marked missing
+  HSKA: only 0 rows — no feed, marked missing
+  HSMN: only 0 rows — no feed, marked missing
+  HSNN: 10685 rows
+-- 3830/5014 (345 stations/hr)
+  HSOB: 11573 rows
+  HSSG: only 0 rows — no feed, marked missing
+  ESCF: 86519 rows
+  ESDF: 86777 rows
+  ESFR: only 0 rows — no feed, marked missing
+-- 3835/5014 (345 stations/hr)
+  ESGJ: 87007 rows
+  ESGP: 44030 rows
+  ESGR: 53647 rows
+  ESGT: 73084 rows
+  ESIB: 87180 rows
+-- 3840/5014 (345 stations/hr)
+  ESKK: only 0 rows — no feed, marked missing
+  ESKM: 86924 rows
+  ESMK: 86954 rows
+  ESMQ: 87025 rows
+  ESMT: 86956 rows
+-- 3845/5014 (345 stations/hr)
+  ESMX: 87400 rows
+  ESNG: 86636 rows
+  ESNK: 85780 rows
+  ESNL: 85938 rows
+  ESNN: 87311 rows
+-- 3850/5014 (345 stations/hr)
+  ESNO: 87080 rows
+  ESNS: 87187 rows
+  ESNV: 85923 rows
+  ESNX: 86103 rows
+  ESNY: only 0 rows — no feed, marked missing
+-- 3855/5014 (345 stations/hr)
+  ESNZ: 87291 rows
+  ESOE: 86512 rows
+  ESOK: 87123 rows
+  ESSB: 86980 rows
+  ESSD: 86898 rows
+-- 3860/5014 (344 stations/hr)
+  ESSK: only 0 rows — no feed, marked missing
+  ESSP: 87059 rows
+  ESST: 85526 rows
+  ESSU: only 0 rows — no feed, marked missing
+  ESTA: 87308 rows
+-- 3865/5014 (344 stations/hr)
+  ESTL: 82804 rows
+  ESUD: 18852 rows
+  WSAC: only 0 rows — no feed, marked missing
+  WSAG: only 0 rows — no feed, marked missing
+  WSAP: 84627 rows
+-- 3870/5014 (344 stations/hr)
+  WSAT: only 0 rows — no feed, marked missing
+  WSSL: 84656 rows
+  FHAW: 27491 rows
+  FHSH: only 0 rows — no feed, marked missing
+  LJCE: 87346 rows
+-- 3875/5014 (344 stations/hr)
+  LJMB: 87486 rows
+  LJPZ: 87503 rows
+  LZKZ: 87620 rows
+  LZMC: only 0 rows — no feed, marked missing
+  LZPP: 87602 rows
+-- 3880/5014 (344 stations/hr)
+  LZSL: 43814 rows
+  LZTT: 87621 rows
+  LZZI: 87592 rows
+  GFBO: only 0 rows — no feed, marked missing
+  GFKE: only 0 rows — no feed, marked missing
+-- 3885/5014 (344 stations/hr)
+  GFYE: only 0 rows — no feed, marked missing
+  GOGG: 74998 rows
+  GOGS: 61990 rows
+  GOOK: 48553 rows
+  GOSM: 51812 rows
+-- 3890/5014 (344 stations/hr)
+  GOSS: 74276 rows
+  GOTB: only 0 rows — no feed, marked missing
+  GOTK: 40004 rows
+  GOTT: 67806 rows
+  HCMI: only 0 rows — no feed, marked missing
+-- 3895/5014 (344 stations/hr)
+  HCMK: only 0 rows — no feed, marked missing
+  HJPH: only 0 rows — no feed, marked missing
+  HSSM: only 0 rows — no feed, marked missing
+  HSWW: only 0 rows — no feed, marked missing
+  FPPR: only 0 rows — no feed, marked missing
+-- 3900/5014 (345 stations/hr)
+  MSSS: 50026 rows
+  OSDZ: only 0 rows — no feed, marked missing
+  OSKL: 40246 rows
+  OSLK: 70906 rows
+  OSPR: only 0 rows — no feed, marked missing
+-- 3905/5014 (345 stations/hr)
+  FDMS: 17462 rows
+  MBGT: 21602 rows
+  MBNC: only 0 rows — no feed, marked missing
+  MBSC: only 724 rows — no feed, marked missing
+  FTFY: only 0 rows — no feed, marked missing
+-- 3910/5014 (345 stations/hr)
+  FTTC: 14009 rows
+  FTTD: 16136 rows
+  FTTY: 12536 rows
+  VTBK: only 0 rows — no feed, marked missing
+  VTBL: only 0 rows — no feed, marked missing
+-- 3915/5014 (345 stations/hr)
+  VTBO: 38945 rows
+  VTCH: 43961 rows
+  VTCL: 51638 rows
+  VTCN: 50838 rows
+  VTCP: 52497 rows
+-- 3920/5014 (345 stations/hr)
+  VTPB: 37073 rows
+  VTPH: 48291 rows
+  VTPI: only 0 rows — no feed, marked missing
+  VTPM: 42447 rows
+  VTPO: 45050 rows
+-- 3925/5014 (346 stations/hr)
+  VTPP: 55704 rows
+  VTPT: 20482 rows
+  VTSB: 65743 rows
+  VTSC: 40308 rows
+  VTSE: 48710 rows
+-- 3930/5014 (346 stations/hr)
+  VTSF: 58212 rows
+  VTSH: 18823 rows
+  VTSK: 5878 rows
+  VTSN: only 0 rows — no feed, marked missing
+  VTSR: 46144 rows
+-- 3935/5014 (346 stations/hr)
+  VTST: 49001 rows
+  VTSY: 11590 rows
+  VTUI: 60576 rows
+  VTUJ: only 0 rows — no feed, marked missing
+  VTUK: 84835 rows
+-- 3940/5014 (346 stations/hr)
+  VTUL: 51762 rows
+  VTUO: 49261 rows
+  VTUQ: 60379 rows
+  VTUU: 86944 rows
+  VTUV: 52270 rows
+-- 3945/5014 (346 stations/hr)
+  VTUW: 52282 rows
+  WPDB: only 0 rows — no feed, marked missing
+  WPEC: only 0 rows — no feed, marked missing
+  UTAK: 86870 rows
+  UTAM: 86809 rows
+-- 3950/5014 (346 stations/hr)
+  UTAN: 5356 rows
+  DTKA: 84359 rows
+  DTMB: 84664 rows
+  DTNH: 85066 rows
+  DTTB: 81588 rows
+-- 3955/5014 (346 stations/hr)
+  DTTD: 83055 rows
+  DTTF: 82206 rows
+  DTTG: 83947 rows
+  DTTR: 48988 rows
+  DTTX: 84014 rows
+-- 3960/5014 (346 stations/hr)
+  DTTZ: 84309 rows
+  NFTL: 48710 rows
+  LTAD: 1195 rows
+  LTAE: 49084 rows
+  LTAG: 87415 rows
+-- 3965/5014 (346 stations/hr)
+  LTAH: only 309 rows — no feed, marked missing
+  LTAL: 27032 rows
+  LTAS: 32389 rows
+  LTAT: 87522 rows
+  LTAV: only 603 rows — no feed, marked missing
+-- 3970/5014 (346 stations/hr)
+  LTAW: 30988 rows
+  LTAY: 86808 rows
+  LTBF: 87385 rows
+  LTBG: 1636 rows
+  LTBH: 81750 rows
+-- 3975/5014 (346 stations/hr)
+  LTBI: 1085 rows
+  LTBL: 1573 rows
+  LTBN: only 0 rows — no feed, marked missing
+  LTBO: 34264 rows
+  LTBQ: 87424 rows
+-- 3980/5014 (346 stations/hr)
+  LTBR: 87567 rows
+  LTBT: 1212 rows
+  LTBU: 87599 rows
+  LTBX: only 19 rows — no feed, marked missing
+  LTCA: 87501 rows
+-- 3985/5014 (346 stations/hr)
+  LTCB: 85915 rows
+  LTCC: 87550 rows
+  LTCD: 87449 rows
+  LTCE: 87315 rows
+  LTCF: 87462 rows
+-- 3990/5014 (346 stations/hr)
+  LTCG: 87277 rows
+  LTCI: 87493 rows
+  LTCJ: 87394 rows
+  LTCK: 43548 rows
+  LTCL: 31321 rows
+-- 3995/5014 (346 stations/hr)
+  LTCM: 31771 rows
+  LTCN: 87418 rows
+  LTCO: 37996 rows
+  LTCP: 41973 rows
+  LTCR: 56019 rows
+-- 4000/5014 (346 stations/hr)
+  LTCT: 56660 rows
+  LTCV: 55147 rows
+  LTCW: 52987 rows
+  LTDA: 87250 rows
+  LTFC: 87570 rows
+-- 4005/5014 (346 stations/hr)
+  LTFG: 85421 rows
+  LTFH: 85336 rows
+  LTFL: only 0 rows — no feed, marked missing
+  NGFU: 81911 rows
+  RCAY: only 0 rows — no feed, marked missing
+-- 4010/5014 (345 stations/hr)
+  RCBS: only 0 rows — no feed, marked missing
+  RCDC: only 0 rows — no feed, marked missing
+  RCFG: only 0 rows — no feed, marked missing
+  RCFN: 53298 rows
+  RCKU: only 0 rows — no feed, marked missing
+-- 4015/5014 (346 stations/hr)
+  RCKW: only 0 rows — no feed, marked missing
+  RCLY: only 0 rows — no feed, marked missing
+  RCMT: only 0 rows — no feed, marked missing
+  RCPO: only 0 rows — no feed, marked missing
+  RCQS: only 0 rows — no feed, marked missing
+-- 4020/5014 (346 stations/hr)
+  RCSQ: only 0 rows — no feed, marked missing
+  HTAR: 54002 rows
+  HTDO: 54095 rows
+  HTGW: only 423 rows — no feed, marked missing
+  HTIR: 54225 rows
+-- 4025/5014 (346 stations/hr)
+  HTLM: only 0 rows — no feed, marked missing
+  HTMT: 24159 rows
+  HTPE: only 248 rows — no feed, marked missing
+  HTTG: only 255 rows — no feed, marked missing
+  UKBB: 53873 rows
+-- 4030/5014 (346 stations/hr)
+  UKBC: only 0 rows — no feed, marked missing
+  UKCM: only 0 rows — no feed, marked missing
+  UKDB: only 0 rows — no feed, marked missing
+  UKDD: 53821 rows
+  UKDM: only 0 rows — no feed, marked missing
+-- 4035/5014 (347 stations/hr)
+  UKDR: 52471 rows
+  UKFB: only 0 rows — no feed, marked missing
+  UKFG: only 0 rows — no feed, marked missing
+  UKFI: only 0 rows — no feed, marked missing
+  UKFY: only 0 rows — no feed, marked missing
+-- 4040/5014 (347 stations/hr)
+  UKHH: 52095 rows
+  UKKA: only 0 rows — no feed, marked missing
+  UKKE: only 1 rows — no feed, marked missing
+  UKKM: 52591 rows
+  UKKO: only 0 rows — no feed, marked missing
+-- 4045/5014 (347 stations/hr)
+  UKLH: only 0 rows — no feed, marked missing
+  UKLI: 41498 rows
+  UKLN: 27575 rows
+  UKLR: 28519 rows
+  UKOD: only 0 rows — no feed, marked missing
+-- 4050/5014 (347 stations/hr)
+  UKOH: 34838 rows
+  UKRN: only 0 rows — no feed, marked missing
+  UKWW: 36717 rows
+  HUAR: only 0 rows — no feed, marked missing
+  HUGU: only 0 rows — no feed, marked missing
+-- 4055/5014 (347 stations/hr)
+  HUSO: 1392 rows
+  PMDY: 77812 rows
+  PWAK: 69479 rows
+  KABE: 86848 rows
+  KABI: 87546 rows
+-- 4060/5014 (346 stations/hr)
+  KABR: 87182 rows
+  KABY: 86989 rows
+  KACK: 87192 rows
+  KACT: 86304 rows
+  KACV: 87373 rows
+-- 4065/5014 (346 stations/hr)
+  KACY: 87242 rows
+  KADH: 78894 rows
+  KADW: 85740 rows
+  KAEG: 63589 rows
+  KAEX: 87494 rows
+-- 4070/5014 (345 stations/hr)
+  KAFW: 87518 rows
+  KAGC: 87098 rows
+  KAGS: 86590 rows
+  KAHN: 87100 rows
+  KAIA: 87228 rows
+-- 4075/5014 (344 stations/hr)
+  KAKR: 86853 rows
+  KALI: 80437 rows
+  KALM: 85847 rows
+  KALN: 63023 rows
+  KALO: 87172 rows
+-- 4080/5014 (343 stations/hr)
+  KALS: 86792 rows
+  KALW: 87565 rows
+  KAMA: 87577 rows
+  KANB: 86033 rows
+  KAND: 87154 rows
+-- 4085/5014 (342 stations/hr)
+  KAOO: 87573 rows
+  KAPA: 87559 rows
+  KAPF: 87293 rows
+  KAPG: 44102 rows
+  KAPN: 86874 rows
+-- 4090/5014 (341 stations/hr)
+  KARA: 86379 rows
+  KART: 87228 rows
+  KASE: 87317 rows
+  KAST: 85063 rows
+  KATW: 72410 rows
+-- 4095/5014 (341 stations/hr)
+  KATY: 87323 rows
+  KAUG: 86829 rows
+  KAUW: 84299 rows
+  KAVL: 87174 rows
+  KAVP: 87014 rows
+-- 4100/5014 (340 stations/hr)
+  KAWO: 82372 rows
+  KAXN: 86379 rows
+  KAZO: 87273 rows
+  KBAB: 83159 rows
+  KBAD: 84868 rows
+-- 4105/5014 (339 stations/hr)
+  KBAF: 86894 rows
+  KBAK: 45456 rows
+  KBAZ: 87402 rows
+  KBBD: 65861 rows
+  KBBG: 67632 rows
+-- 4110/5014 (339 stations/hr)
+  KBCE: 87277 rows
+  KBCT: 45009 rows
+  KBDE: 87362 rows
+  KBDR: 86735 rows
+  KBED: 81675 rows
+-- 4115/5014 (338 stations/hr)
+  KBFD: 87425 rows
+  KBFF: 87569 rows
+  KBFI: 87529 rows
+  KBFL: 87473 rows
+  KBFM: 87278 rows
+-- 4120/5014 (338 stations/hr)
+  KBGM: 86797 rows
+  KBGR: 87557 rows
+  KBHB: 83702 rows
+  KBIF: 82717 rows
+  KBIH: 86809 rows
+-- 4125/5014 (337 stations/hr)
+  KBIL: 87578 rows
+  KBIS: 87509 rows
+  KBIX: 85495 rows
+  KBJC: 47763 rows
+  KBJI: 75488 rows
+-- 4130/5014 (337 stations/hr)
+  KBKE: 85253 rows
+  KBKF: 86551 rows
+  KBKL: 87515 rows
+  KBKW: 87070 rows
+  KBLF: 86419 rows
+-- 4135/5014 (336 stations/hr)
+  KBLH: 79633 rows
+  KBLI: 87523 rows
+  KBLV: 84852 rows
+  KBMG: 87453 rows
+  KBMI: 87096 rows
+-- 4140/5014 (336 stations/hr)
+  KBNO: 87051 rows
+  KBPI: 87508 rows
+  KBPK: 83583 rows
+  KBPT: 87481 rows
+  KBQK: 86720 rows
+-- 4145/5014 (335 stations/hr)
+  KBRD: 87468 rows
+  KBRL: 87152 rows
+  KBRO: 87064 rows
+  KBTL: 87283 rows
+  KBTM: 87378 rows
+-- 4150/5014 (334 stations/hr)
+  KBTR: 87557 rows
+  KBTV: 87347 rows
+  KBVI: 65277 rows
+  KBVU: 86814 rows
+  KBVY: 87203 rows
+-- 4155/5014 (333 stations/hr)
+  KBWG: 86447 rows
+  KBXM: 9504 rows
+  KBYH: 5304 rows
+  KBYI: 87375 rows
+  KBYS: 80689 rows
+-- 4160/5014 (333 stations/hr)
+  KBZN: 87292 rows
+  KCAE: 87494 rows
+  KCAK: 87543 rows
+  KCAR: 87320 rows
+  KCBM: 84198 rows
+-- 4165/5014 (333 stations/hr)
+  KCCR: 87567 rows
+  KCCY: 86189 rows
+  KCDC: 87537 rows
+  KCDR: 86982 rows
+  KCDS: 87476 rows
+-- 4170/5014 (332 stations/hr)
+  KCEC: 86294 rows
+  KCEF: 85637 rows
+  KCEW: 86977 rows
+  KCEZ: 86735 rows
+  KCGF: 69680 rows
+-- 4175/5014 (331 stations/hr)
+  KCGI: 86486 rows
+  KCHA: 87616 rows
+  KCHO: 86976 rows
+  KCID: 87535 rows
+  KCIU: 84599 rows
+-- 4180/5014 (330 stations/hr)
+  KCKB: 87270 rows
+  KCLL: 87441 rows
+  KCLM: 87551 rows
+  KCMA: 74872 rows
+  KCMI: 87136 rows
+-- 4185/5014 (329 stations/hr)
+  KCMX: 86979 rows
+  KCNM: 87070 rows
+  KCNU: 87487 rows
+  KCNY: 87534 rows
+  KCOD: 84899 rows
+-- 4190/5014 (329 stations/hr)
+  KCOE: 84636 rows
+  KCOF: 84472 rows
+  KCON: 87082 rows
+  KCOU: 87481 rows
+  KCPR: 87444 rows
+-- 4195/5014 (328 stations/hr)
+  KCRE: 87323 rows
+  KCRG: 87358 rows
+  KCRP: 87549 rows
+  KCRQ: 87073 rows
+  KCRW: 87579 rows
+-- 4200/5014 (327 stations/hr)
+  KCSG: 86613 rows
+  KCSV: 85506 rows
+  KCTB: 86783 rows
+  KCUB: 86592 rows
+  KCVN: 82349 rows
+-- 4205/5014 (327 stations/hr)
+  KCVO: 77451 rows
+  KCVS: 82853 rows
+  KCWA: 61092 rows
+  KCXO: 87567 rows
+  KCXP: 98103 rows
+-- 4210/5014 (326 stations/hr)
+  KCYS: 87562 rows
+  KDAA: 84613 rows
+  KDAB: 87625 rows
+  KDAG: 83249 rows
+  KDAN: 87148 rows
+-- 4215/5014 (325 stations/hr)
+  KDAY: 87644 rows
+  KDBQ: 87486 rows
+  KDDC: 87266 rows
+  KDEC: 87187 rows
+  KDET: 87490 rows
+-- 4220/5014 (324 stations/hr)
+  KDHN: 87330 rows
+  KDHT: 87215 rows
+  KDIK: 86887 rows
+  KDLF: 78090 rows
+  KDLH: 87538 rows
+-- 4225/5014 (324 stations/hr)
+  KDLS: 86104 rows
+  KDMA: 83700 rows
+  KDMN: 87122 rows
+  KDNL: 86178 rows
+  KDOV: 85191 rows
+-- 4230/5014 (323 stations/hr)
+  KDPA: 87132 rows
+  KDRA: only 0 rows — no feed, marked missing
+  KDRI: 84978 rows
+  KDRO: 87177 rows
+  KDRT: 86624 rows
+-- 4235/5014 (323 stations/hr)
+  KDTS: 86212 rows
+  KDUA: 86595 rows
+  KDUG: 63781 rows
+  KDUJ: 87437 rows
+  KDVL: 86749 rows
+-- 4240/5014 (322 stations/hr)
+  KDXR: 87181 rows
+  KDYS: 85504 rows
+  KEAR: 76145 rows
+  KEAT: 87179 rows
+  KEAU: 87589 rows
+-- 4245/5014 (322 stations/hr)
+  KECG: 86786 rows
+  KECP: 87359 rows
+  KEDC: 83708 rows
+  KEDW: 83489 rows
+  KEED: 86705 rows
+-- 4250/5014 (321 stations/hr)
+  KEEN: 85413 rows
+  KEET: 87123 rows
+  KEFD: 77722 rows
+  KEGE: 82691 rows
+  KEGI: 73895 rows
+-- 4255/5014 (320 stations/hr)
+  KEKA: 15218 rows
+  KEKN: 87125 rows
+  KEKO: 87422 rows
+  KELD: 86371 rows
+  KELM: 87557 rows
+-- 4260/5014 (320 stations/hr)
+  KELO: 81396 rows
+  KELY: 86855 rows
+  KEND: 83213 rows
+  KENV: 80074 rows
+  KENW: 85260 rows
+-- 4265/5014 (319 stations/hr)
+  KERI: 87540 rows
+  KESC: 84554 rows
+  KESF: 86119 rows
+  KEUG: 87421 rows
+  KEVV: 87522 rows
+-- 4270/5014 (318 stations/hr)
+  KEVW: 86856 rows
+  KEWB: 87378 rows
+  KEWN: 87014 rows
+  KEYW: 87164 rows
+  KFAF: 83688 rows
+-- 4275/5014 (317 stations/hr)
+  KFAR: 87366 rows
+  KFAY: 87412 rows
+  KFBG: 84942 rows
+  KFCS: 81875 rows
+  KFDY: 87207 rows
+-- 4280/5014 (317 stations/hr)
+  KFFO: 85756 rows
+  KFHR: 87030 rows
+  KFHU: 85880 rows
+  KFKL: 79594 rows
+  KFLG: 87441 rows
+-- 4285/5014 (316 stations/hr)
+  KFLO: 87054 rows
+  KFME: 66144 rows
+  KFMN: 87379 rows
+  KFMY: 87200 rows
+  KFNL: 82612 rows
+-- 4290/5014 (316 stations/hr)
+  KFNT: 86935 rows
+  KFOD: 86248 rows
+  KFOE: 86946 rows
+  KFPR: 86765 rows
+  KFRG: 86872 rows
+-- 4295/5014 (315 stations/hr)
+  KFRI: 84530 rows
+  KFSD: 87640 rows
+  KFSI: 77285 rows
+  KFSM: 87026 rows
+  KFST: 87427 rows
+-- 4300/5014 (314 stations/hr)
+  KFTK: 83551 rows
+  KFTW: 87363 rows
+  KFTY: 87469 rows
+  KFWA: 87604 rows
+  KFXE: 86261 rows
+-- 4305/5014 (314 stations/hr)
+  KFYV: 87043 rows
+  KGCC: 85825 rows
+  KGCK: 87170 rows
+  KGCN: 87575 rows
+  KGDV: 85088 rows
+-- 4310/5014 (313 stations/hr)
+  KGFK: 87477 rows
+  KGFL: 87121 rows
+  KGGG: 87421 rows
+  KGGW: 85871 rows
+  KGJT: 87462 rows
+-- 4315/5014 (313 stations/hr)
+  KGLD: 86582 rows
+  KGLH: 86062 rows
+  KGLS: 86298 rows
+  KGMU: 87006 rows
+  KGNV: 87438 rows
+-- 4320/5014 (312 stations/hr)
+  KGON: 87306 rows
+  KGPI: 86422 rows
+  KGPT: 87534 rows
+  KGRB: 87474 rows
+  KGRF: 82546 rows
+-- 4325/5014 (312 stations/hr)
+  KGRI: 87552 rows
+  KGRK: 82520 rows
+  KGSB: 83750 rows
+  KGSP: 86866 rows
+  KGTB: 85454 rows
+-- 4330/5014 (311 stations/hr)
+  KGTF: 87028 rows
+  KGTR: 73634 rows
+  KGUC: 84053 rows
+  KGUP: 86462 rows
+  KGUS: 84975 rows
+-- 4335/5014 (311 stations/hr)
+  KGUY: 85556 rows
+  KGWO: 86981 rows
+  KGYI: 78313 rows
+  KGYY: 71818 rows
+  KHBG: 86654 rows
+-- 4340/5014 (310 stations/hr)
+  KHBR: 85216 rows
+  KHDN: 79809 rows
+  KHEF: 78020 rows
+  KHFD: 87425 rows
+  KHGR: 86566 rows
+-- 4345/5014 (310 stations/hr)
+  KHHR: 87509 rows
+  KHIB: 87517 rows
+  KHIF: 83527 rows
+  KHII: 86352 rows
+  KHIO: 87099 rows
+-- 4350/5014 (309 stations/hr)
+  KHKY: 86323 rows
+  KHLG: 86846 rows
+  KHLN: 87347 rows
+  KHMN: 82173 rows
+  KHOB: 59740 rows
+-- 4355/5014 (309 stations/hr)
+  KHON: 85730 rows
+  KHOP: 85698 rows
+  KHOT: 85926 rows
+  KHPN: 87526 rows
+  KHQM: 87364 rows
+-- 4360/5014 (308 stations/hr)
+  KHRL: 87486 rows
+  KHRO: 86538 rows
+  KHRT: 80858 rows
+  KHST: 85299 rows
+  KHSV: 87382 rows
+-- 4365/5014 (308 stations/hr)
+  KHTS: 87371 rows
+  KHUA: 66595 rows
+  KHUF: 87326 rows
+  KHUL: 86423 rows
+  KHUT: 87160 rows
+-- 4370/5014 (307 stations/hr)
+  KHVN: 87282 rows
+  KHVR: 87543 rows
+  KHWO: 86597 rows
+  KHXD: 62322 rows
+  KHYA: 87428 rows
+-- 4375/5014 (307 stations/hr)
+  KHYI: 75858 rows
+  KHYR: 86477 rows
+  KHYS: 84610 rows
+  KHZY: 86644 rows
+  KIAB: 85170 rows
+-- 4380/5014 (307 stations/hr)
+  KIAG: 87521 rows
+  KICT: 87497 rows
+  KIDA: 87569 rows
+  KIFP: 63453 rows
+  KIGM: 87538 rows
+-- 4385/5014 (306 stations/hr)
+  KIKK: 77792 rows
+  KILG: 87039 rows
+  KILM: 87381 rows
+  KILN: 87372 rows
+  KIMT: 86886 rows
+-- 4390/5014 (306 stations/hr)
+  KINK: 80838 rows
+  KINL: 85315 rows
+  KINT: 86390 rows
+  KINW: 86780 rows
+  KIPL: 85927 rows
+-- 4395/5014 (305 stations/hr)
+  KIPT: 87206 rows
+  KIRK: 85653 rows
+  KISM: 83624 rows
+  KISO: 65326 rows
+  KISP: 87479 rows
+-- 4400/5014 (305 stations/hr)
+  KITH: 85605 rows
+  KIWA: 56936 rows
+  KJAC: 76390 rows
+  KJAN: 87292 rows
+  KJBR: 84828 rows
+-- 4405/5014 (304 stations/hr)
+  KJCT: 87429 rows
+  KJHW: 82626 rows
+  KJKL: 87012 rows
+  KJLN: 87595 rows
+  KJMS: 87084 rows
+-- 4410/5014 (304 stations/hr)
+  KJNX: 75640 rows
+  KJQF: 57479 rows
+  KJST: 87071 rows
+  KJWY: 83462 rows
+  KJXN: 87401 rows
+-- 4415/5014 (303 stations/hr)
+  KKLS: 85381 rows
+  KLAA: 84609 rows
+  KLAF: 87163 rows
+  KLAL: 60202 rows
+  KLAN: 87429 rows
+-- 4420/5014 (303 stations/hr)
+  KLAR: 87216 rows
+  KLAW: 87127 rows
+  KLBB: 87571 rows
+  KLBE: 59009 rows
+  KLBF: 86927 rows
+-- 4425/5014 (302 stations/hr)
+  KLBL: 82942 rows
+  KLBT: 56109 rows
+  KLBX: 84766 rows
+  KLCH: 86890 rows
+  KLCK: 85800 rows
+-- 4430/5014 (302 stations/hr)
+  KLEB: 87222 rows
+  KLEE: 87073 rows
+  KLEX: 87058 rows
+  KLFI: 84650 rows
+  KLFK: 87029 rows
+-- 4435/5014 (301 stations/hr)
+  KLFT: 87340 rows
+  KLGU: 86524 rows
+  KLIT: 87383 rows
+  KLLQ: 85923 rows
+  KLMT: 87461 rows
+-- 4440/5014 (301 stations/hr)
+  KLND: 87002 rows
+  KLNK: 86954 rows
+  KLNS: 87595 rows
+  KLOL: 86447 rows
+  KLOU: 87216 rows
+-- 4445/5014 (300 stations/hr)
+  KLOZ: 86803 rows
+  KLRD: 86880 rows
+  KLRF: 85118 rows
+  KLRU: 86567 rows
+  KLSE: 86478 rows
+-- 4450/5014 (300 stations/hr)
+  KLSF: 84118 rows
+  KLSV: 80270 rows
+  KLTS: 84931 rows
+  KLUF: 82474 rows
+  KLUK: 87559 rows
+-- 4455/5014 (300 stations/hr)
+  KLVM: 87063 rows
+  KLVS: 83853 rows
+  KLWB: 75866 rows
+  KLWM: 86689 rows
+  KLWS: 87580 rows
+-- 4460/5014 (299 stations/hr)
+  KLWT: 86114 rows
+  KLYH: 87119 rows
+  KMAF: 87291 rows
+  KMBG: 86444 rows
+  KMBS: 87000 rows
+-- 4465/5014 (299 stations/hr)
+  KMCB: 85908 rows
+  KMCC: 91927 rows
+  KMCE: 86840 rows
+  KMCF: 84854 rows
+  KMCK: 86158 rows
+-- 4470/5014 (298 stations/hr)
+  KMCN: 87356 rows
+  KMCW: 87400 rows
+  KMDH: 85836 rows
+  KMDT: 87418 rows
+  KMEI: 86711 rows
+-- 4475/5014 (298 stations/hr)
+  KMER: 54354 rows
+  KMFD: 87348 rows
+  KMFE: 87207 rows
+  KMFR: 87514 rows
+  KMGC: 83655 rows
+-- 4480/5014 (297 stations/hr)
+  KMGE: 84748 rows
+  KMGM: 86881 rows
+  KMGW: 87096 rows
+  KMHK: 86755 rows
+  KMHR: 60485 rows
+-- 4485/5014 (297 stations/hr)
+  KMHT: 87558 rows
+  KMHV: 82361 rows
+  KMIB: 84332 rows
+  KMIE: 87306 rows
+  KMIV: 86542 rows
+-- 4490/5014 (297 stations/hr)
+  KMKC: 87597 rows
+  KMKG: 82285 rows
+  KMKL: 87382 rows
+  KMLB: 87280 rows
+  KMLC: 87086 rows
+-- 4495/5014 (296 stations/hr)
+  KMLI: 87594 rows
+  KMLS: 87028 rows
+  KMLU: 87150 rows
+  KMMH: 74419 rows
+  KMMT: 84327 rows
+-- 4500/5014 (296 stations/hr)
+  KMMU: 74822 rows
+  KMMV: 85050 rows
+  KMOB: 87017 rows
+  KMOD: 86857 rows
+  KMOT: 87279 rows
+-- 4505/5014 (295 stations/hr)
+  KMPV: 86102 rows
+  KMQY: 86266 rows
+  KMRB: 87233 rows
+  KMRY: 87143 rows
+  KMSL: 85352 rows
+-- 4510/5014 (295 stations/hr)
