@@ -66,7 +66,7 @@ map.on("load", async () => {
         // carries the picture and only exceptional airports get a dot;
         // everything else resolves as you zoom in
         tier: a.efvsHoursPerYear + a.belowHoursPerYear >= 300 ? 0
-            : a.efvsHoursPerYear + a.belowHoursPerYear >= 60 ? 1 : 2,
+            : a.efvsHoursPerYear + a.belowHoursPerYear >= 150 ? 1 : 2,
         g: a.grid.flat(),
       },
     })),
@@ -79,12 +79,12 @@ map.on("load", async () => {
     id: "fogheat",
     type: "heatmap",
     source: "airports",
-    maxzoom: 5.5,
+    maxzoom: 6.5,
     paint: {
       "heatmap-weight": heatWeight(),
       "heatmap-intensity": 0.7,
-      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1, 13, 3, 22, 5, 40],
-      "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 4, 0.9, 5.4, 0],
+      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1, 13, 3, 22, 6, 46],
+      "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.9, 6.2, 0],
       "heatmap-color": ["interpolate", ["linear"], ["heatmap-density"],
         0, "rgba(20,40,60,0)",
         0.25, "rgba(38,78,110,0.55)",
@@ -107,16 +107,17 @@ map.on("load", async () => {
     id: "presence",
     type: "circle",
     source: "airports",
-    maxzoom: 4.8,
+    maxzoom: 6.2,
     paint: {
-      "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 4, 1.8],
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 4, 1.8, 6, 2.4],
       "circle-color": "#7d92a6",
-      "circle-opacity": ["interpolate", ["linear"], ["zoom"], 3.2, 0.5, 4.6, 0],
+      "circle-opacity": ["interpolate", ["linear"], ["zoom"], 3.2, 0.5, 5.4, 0.45, 6.1, 0],
     },
   });
 
-  // no bubbles at world zoom — the fog field carries it; dots return on zoom
-  for (const [suffix, tier, minzoom] of [["", 0, 3], ["2", 1, 3.8], ["3", 2, 4.8]] as const) {
+  // no bubbles at world zoom — the fog field carries it; dots return on
+  // zoom, and quiet airports (<60 h/yr) hold as pinpricks until z6
+  for (const [suffix, tier, minzoom] of [["", 0, 3], ["2", 1, 4.2], ["3", 2, 6]] as const) {
     const filter: any = ["==", ["get", "tier"], tier];
     map.addLayer({
       id: "glow" + suffix, type: "circle", source: "airports", filter, minzoom,
