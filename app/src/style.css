@@ -1,8 +1,8 @@
 :root {
   --bg: #080b0f;
   --panel: #0d1218e6;
-  --ink: #c9d4dd;
-  --ink-dim: #5d6b78;
+  --ink: #dde7f0;
+  --ink-dim: #8da0b2;
   --accent: #9fd8ff;
   --accent-hot: #e8f6ff;
   --hairline: #1b242e;
@@ -90,6 +90,17 @@ input[type="range"] { width: 190px; accent-color: var(--accent); }
 }
 #panel figure { margin: 0; }
 #panel svg { background: transparent !important; }
+
+#heatmap-legend {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin-top: 6px; font-size: 9.5px; color: var(--ink-dim); letter-spacing: 0.04em;
+}
+#heatmap-legend .bin { display: inline-flex; align-items: center; gap: 4px; }
+#heatmap-legend .bin i {
+  width: 10px; height: 10px; border-radius: 2px; display: inline-block;
+  border: 1px solid #ffffff1a;
+}
+#heatmap-legend .bin-unit { margin-left: auto; }
 
 .note { font-size: 10.5px; color: var(--ink-dim); line-height: 1.6; margin-top: 24px; }
 .note a { color: var(--accent); text-decoration: none; }

@@ -194,6 +194,7 @@ async function openAirport(icao: string) {
     </div>
     <h3 id="heatmap-title">When it closes — % of hours below CAT I, by month × local hour</h3>
     <div id="heatmap"></div>
+    <div id="heatmap-legend"></div>
     <h3>Cause of low visibility</h3>
     <div id="causes"></div>
     <p class="note">Prevailing visibility is a climatological proxy for RVR — read as relative risk, not operating minima. Hours are local (${a.tz}). 2016–2025 routine METARs. <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">Full methodology</a>.</p>
@@ -204,27 +205,31 @@ async function openAirport(icao: string) {
     for (let h = 0; h < 24; h++)
       cells.push({ hr: h, mon: MONTHS_S[m], pct: (detail.efvsGrid[m][h] ?? 0) + (detail.belowGrid[m][h] ?? 0) });
 
-  // scale the ramp to this airport's own peak — a fixed worldwide domain
-  // crushes everything but Delhi into the dark end
-  const peak = Math.max(5, ...cells.map((c) => c.pct));
+  // fixed discrete bins: the shade is read against a labeled legend (not
+  // eyeballed on a gradient) and means the same thing at every airport
+  const BIN_EDGES = [0.5, 2, 5, 12, 25, 50];
+  const BIN_COLORS = ["#1c2935", "#33506a", "#3f76a3", "#62a8d8", "#9fd4f2", "#dff3ff", "#ffffff"];
+  const BIN_LABELS = ["<0.5", "0.5–2", "2–5", "5–12", "12–25", "25–50", "50+"];
+  const peak = Math.max(...cells.map((c) => c.pct));
   $("#heatmap-title").textContent =
-    `When it closes — % of hours below CAT I, by month × local hour (scale 0–${Math.ceil(peak)}%)`;
+    `When it closes — % of hours below CAT I, by month × local hour (peak ${peak < 1 ? peak.toFixed(1) : Math.round(peak)}%)`;
   const heat = Plot.plot({
     width: 386,
     height: 230,
     marginLeft: 34,
-    style: { background: "transparent", color: "#5d6b78", fontSize: "9px" },
+    style: { background: "transparent", color: "#8294a3", fontSize: "9px" },
     x: { label: "local hour", ticks: [0, 6, 12, 18, 23] },
     y: { label: null, domain: MONTHS_S },
-    color: {
-      type: "sqrt",
-      domain: [0, peak],
-      range: ["#1d2a38", "#f2faff"],
-      clamp: true,
-    },
-    marks: [Plot.cell(cells, { x: "hr", y: "mon", fill: "pct", inset: 0.4, tip: false })],
+    color: { type: "threshold", domain: BIN_EDGES, range: BIN_COLORS },
+    marks: [Plot.cell(cells, {
+      x: "hr", y: "mon", fill: "pct", inset: 0.4,
+      title: (d: any) => `${d.mon} ${String(d.hr).padStart(2, "0")}:00 — ${d.pct.toFixed(1)}%`,
+    })],
   });
   $("#heatmap").replaceChildren(heat);
+  $("#heatmap-legend").innerHTML = BIN_LABELS.map((l, i) => `
+    <span class="bin"><i style="background:${BIN_COLORS[i]}"></i>${l}</span>`).join("") +
+    `<span class="bin-unit">% of hours</span>`;
 
   $("#causes").innerHTML = causes.map(([k, v]) => `
     <div style="display:flex;align-items:center;gap:10px;margin:5px 0;font-size:11px">
