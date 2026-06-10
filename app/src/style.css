@@ -91,6 +91,9 @@ input[type="range"] { width: 190px; accent-color: var(--accent); }
 #panel figure { margin: 0; }
 #panel svg { background: transparent !important; }
 
+#heatmap [aria-label="tip"] path { fill: #10161d; stroke: #2c3a48; }
+#heatmap [aria-label="tip"] text { fill: var(--ink); }
+
 #heatmap-legend {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   margin-top: 6px; font-size: 9.5px; color: var(--ink-dim); letter-spacing: 0.04em;

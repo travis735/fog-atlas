@@ -86,6 +86,7 @@ def main():
             "tz": m["tz"],
             "catIls": m["cat_ils"],
             "catConfidence": m["cat_ils_confidence"],
+            "size": m.get("size", "large"),
             "efvsHoursPerYear": efvs_hpy,
             "belowHoursPerYear": below_hpy,
             "causes": causes,

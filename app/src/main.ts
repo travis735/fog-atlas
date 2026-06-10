@@ -8,7 +8,7 @@ const MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","N
 
 interface Airport {
   icao: string; name: string; lat: number; lon: number; country: string; tz: string;
-  catIls: string; catConfidence: string;
+  catIls: string; catConfidence: string; size?: string;
   efvsHoursPerYear: number; belowHoursPerYear: number;
   causes: Record<string, number>;
   grid: number[][]; // [month][hour] sub-CAT-I %
@@ -59,6 +59,9 @@ map.on("load", async () => {
         icao: a.icao,
         name: a.name,
         annual: a.efvsHoursPerYear + a.belowHoursPerYear,
+        // tier 0 always shows; tier 1 (medium airports without a serious
+        // fog story) fades in past z4 so Europe stays readable at world zoom
+        tier: a.size === "large" || a.efvsHoursPerYear + a.belowHoursPerYear >= 150 ? 0 : 1,
         g: a.grid.flat(),
       },
     })),
@@ -72,61 +75,61 @@ map.on("load", async () => {
   const radius = (mult: number): any => ["interpolate", ["linear"], ["zoom"],
     3, ["*", base, mult], 6, ["*", base, 1.8 * mult], 10, ["*", base, 3.2 * mult]];
 
-  map.addLayer({
-    id: "glow",
-    type: "circle",
-    source: "airports",
-    paint: {
-      "circle-radius": radius(1.9),
-      "circle-blur": 1.4,
-      "circle-color": GLOW_COLOR(pctExpr()),
-      "circle-opacity": glowOpacityZ(),
-    },
-  });
-  map.addLayer({
-    id: "core",
-    type: "circle",
-    source: "airports",
-    paint: {
-      "circle-radius": radius(1),
-      "circle-color": GLOW_COLOR(pctExpr()),
-      "circle-opacity": 1,
-      "circle-stroke-width": 0.7,
-      "circle-stroke-color": "#8fa6bc",
-      "circle-stroke-opacity": 0.6,
-    },
-  });
-  // specular highlight offset up-left — cheap 3D-sphere read on every dot
-  map.addLayer({
-    id: "sheen",
-    type: "circle",
-    source: "airports",
-    paint: {
-      "circle-radius": radius(0.42),
-      "circle-blur": 0.7,
-      "circle-color": "#ffffff",
-      "circle-opacity": 0.65,
-      "circle-translate": [-2, -2],
-    },
-  });
+  for (const [suffix, tier] of [["", 0], ["2", 1]] as const) {
+    const filter: any = ["==", ["get", "tier"], tier];
+    const minzoom = tier === 1 ? 4 : 0;
+    map.addLayer({
+      id: "glow" + suffix, type: "circle", source: "airports", filter, minzoom,
+      paint: {
+        "circle-radius": radius(1.9),
+        "circle-blur": 1.4,
+        "circle-color": GLOW_COLOR(pctExpr()),
+        "circle-opacity": glowOpacityZ(),
+      },
+    });
+    map.addLayer({
+      id: "core" + suffix, type: "circle", source: "airports", filter, minzoom,
+      paint: {
+        "circle-radius": radius(1),
+        "circle-color": GLOW_COLOR(pctExpr()),
+        "circle-opacity": 1,
+        "circle-stroke-width": 0.7,
+        "circle-stroke-color": "#8fa6bc",
+        "circle-stroke-opacity": 0.6,
+      },
+    });
+    // specular highlight offset up-left — cheap 3D-sphere read on every dot
+    map.addLayer({
+      id: "sheen" + suffix, type: "circle", source: "airports", filter, minzoom,
+      paint: {
+        "circle-radius": radius(0.42),
+        "circle-blur": 0.7,
+        "circle-color": "#ffffff",
+        "circle-opacity": 0.65,
+        "circle-translate": [-2, -2],
+      },
+    });
+  }
 
   const tip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 10, className: "tip" });
-  map.on("mousemove", "core", (e) => {
-    map.getCanvas().style.cursor = "pointer";
-    const f = e.features?.[0];
-    if (!f) return;
-    const g = JSON.parse(JSON.stringify(f.properties.g));
-    const arr = typeof g === "string" ? JSON.parse(g) : g;
-    const pct = arr[scrubIdx()];
-    tip.setLngLat(e.lngLat)
-      .setHTML(`<b>${f.properties.icao}</b> ${f.properties.name}<br>${MONTHS_S[state.mon]} ${String(state.hr).padStart(2, "0")}:00 local — <b>${pct}%</b> sub-CAT-I`)
-      .addTo(map);
-  });
-  map.on("mouseleave", "core", () => { map.getCanvas().style.cursor = ""; tip.remove(); });
-  map.on("click", "core", (e) => {
-    const icao = e.features?.[0]?.properties.icao;
-    if (icao) openAirport(icao);
-  });
+  for (const layer of ["core", "core2"]) {
+    map.on("mousemove", layer, (e) => {
+      map.getCanvas().style.cursor = "pointer";
+      const f = e.features?.[0];
+      if (!f) return;
+      const g = JSON.parse(JSON.stringify(f.properties.g));
+      const arr = typeof g === "string" ? JSON.parse(g) : g;
+      const pct = arr[scrubIdx()];
+      tip.setLngLat(e.lngLat)
+        .setHTML(`<b>${f.properties.icao}</b> ${f.properties.name}<br>${MONTHS_S[state.mon]} ${String(state.hr).padStart(2, "0")}:00 local — <b>${pct}%</b> sub-CAT-I`)
+        .addTo(map);
+    });
+    map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; tip.remove(); });
+    map.on("click", layer, (e) => {
+      const icao = e.features?.[0]?.properties.icao;
+      if (icao) openAirport(icao);
+    });
+  }
 
   if (location.hash.length > 1) openAirport(location.hash.slice(1).toUpperCase());
 });
@@ -134,9 +137,11 @@ map.on("load", async () => {
 function applyScrub() {
   readout.textContent = `${MONTHS[state.mon]} · ${String(state.hr).padStart(2, "0")}:00`;
   if (!map.getLayer("glow")) return;
-  map.setPaintProperty("glow", "circle-color", GLOW_COLOR(pctExpr()));
-  map.setPaintProperty("glow", "circle-opacity", glowOpacityZ());
-  map.setPaintProperty("core", "circle-color", GLOW_COLOR(pctExpr()));
+  for (const s of ["", "2"]) {
+    map.setPaintProperty("glow" + s, "circle-color", GLOW_COLOR(pctExpr()));
+    map.setPaintProperty("glow" + s, "circle-opacity", glowOpacityZ());
+    map.setPaintProperty("core" + s, "circle-color", GLOW_COLOR(pctExpr()));
+  }
 }
 
 monEl.addEventListener("input", () => { state.mon = +monEl.value; applyScrub(); });
@@ -221,10 +226,13 @@ async function openAirport(icao: string) {
     x: { label: "local hour", ticks: [0, 6, 12, 18, 23] },
     y: { label: null, domain: MONTHS_S },
     color: { type: "threshold", domain: BIN_EDGES, range: BIN_COLORS },
-    marks: [Plot.cell(cells, {
-      x: "hr", y: "mon", fill: "pct", inset: 0.4,
-      title: (d: any) => `${d.mon} ${String(d.hr).padStart(2, "0")}:00 — ${d.pct.toFixed(1)}%`,
-    })],
+    marks: [
+      Plot.cell(cells, { x: "hr", y: "mon", fill: "pct", inset: 0.4 }),
+      Plot.tip(cells, Plot.pointer({
+        x: "hr", y: "mon",
+        title: (d: any) => `${d.mon} ${String(d.hr).padStart(2, "0")}:00 — ${d.pct.toFixed(1)}% of hours`,
+      })),
+    ],
   });
   $("#heatmap").replaceChildren(heat);
   $("#heatmap-legend").innerHTML = BIN_LABELS.map((l, i) => `
