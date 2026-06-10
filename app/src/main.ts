@@ -47,7 +47,7 @@ const glowOpacityZ = (): any => ["interpolate", ["linear"], ["zoom"],
   4.5, GLOW_OPACITY(pctExpr())];
 
 const heatWeight = (): any => ["interpolate", ["linear"], pctExpr(),
-  0, 0, 3, 0.25, 12, 0.6, 40, 1];
+  0, 0, 1, 0.12, 3, 0.35, 12, 0.7, 40, 1];
 
 map.on("load", async () => {
   const data = await (await fetch("/data/airports.json")).json();
@@ -82,8 +82,8 @@ map.on("load", async () => {
     maxzoom: 5.5,
     paint: {
       "heatmap-weight": heatWeight(),
-      "heatmap-intensity": 1.1,
-      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1, 16, 3, 26, 5, 44],
+      "heatmap-intensity": 1.35,
+      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1, 18, 3, 30, 5, 48],
       "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 4, 0.9, 5.4, 0],
       "heatmap-color": ["interpolate", ["linear"], ["heatmap-density"],
         0, "rgba(20,40,60,0)",
@@ -101,7 +101,22 @@ map.on("load", async () => {
   const radius = (mult: number): any => ["interpolate", ["linear"], ["zoom"],
     3, ["*", base, mult], 6, ["*", base, 1.8 * mult], 10, ["*", base, 3.2 * mult]];
 
-  for (const [suffix, tier, minzoom] of [["", 0, 0], ["2", 1, 3.5], ["3", 2, 4.8]] as const) {
+  // every analyzed airport gets a faint pinprick at world zoom — honest
+  // "we have data here" presence, visually distinct from fog luminance
+  map.addLayer({
+    id: "presence",
+    type: "circle",
+    source: "airports",
+    maxzoom: 4.8,
+    paint: {
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 4, 1.8],
+      "circle-color": "#7d92a6",
+      "circle-opacity": ["interpolate", ["linear"], ["zoom"], 3.2, 0.5, 4.6, 0],
+    },
+  });
+
+  // no bubbles at world zoom — the fog field carries it; dots return on zoom
+  for (const [suffix, tier, minzoom] of [["", 0, 3], ["2", 1, 3.8], ["3", 2, 4.8]] as const) {
     const filter: any = ["==", ["get", "tier"], tier];
     map.addLayer({
       id: "glow" + suffix, type: "circle", source: "airports", filter, minzoom,

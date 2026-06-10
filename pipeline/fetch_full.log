@@ -1723,3 +1723,81 @@
   YYNG: only 0 rows — no feed, marked missing
   UBBI: only 0 rows — no feed, marked missing
 -- 1435/5014 (239 stations/hr)
+  UBBQ: 84534 rows
+  UBBS: only 0 rows — no feed, marked missing
+  UBBY: 84717 rows
+  UBLC: 5728 rows
+  UBTT: only 2 rows — no feed, marked missing
+-- 1440/5014 (239 stations/hr)
+  VGBR: only 0 rows — no feed, marked missing
+  VGCB: only 0 rows — no feed, marked missing
+  VGIS: only 0 rows — no feed, marked missing
+  VGJR: only 0 rows — no feed, marked missing
+  VGRJ: only 0 rows — no feed, marked missing
+-- 1445/5014 (240 stations/hr)
+  VGSD: only 0 rows — no feed, marked missing
+  EBAW: 87561 rows
+  EBBE: 83103 rows
+  EBBL: 82973 rows
+  EBCV: 82572 rows
+-- 1450/5014 (239 stations/hr)
+  EBFN: 83082 rows
+  EBFS: 82836 rows
+  EBKT: only 0 rows — no feed, marked missing
+  EBLG: 87466 rows
+  LBGO: 87589 rows
+-- 1455/5014 (238 stations/hr)
+  LBIA: 67558 rows
+  LBPG: 68667 rows
+  LBPL: 67922 rows
+  LBWB: 16868 rows
+  OBBS: only 0 rows — no feed, marked missing
+-- 1460/5014 (238 stations/hr)
+  HBBE: only 0 rows — no feed, marked missing
+  TFFJ: 19126 rows
+  SLBJ: only 0 rows — no feed, marked missing
+  SLCO: 43616 rows
+  SLET: 9114 rows
+-- 1465/5014 (238 stations/hr)
+  SLGM: only 40 rows — no feed, marked missing
+  SLPO: 21885 rows
+  SLPS: 37206 rows
+  SLRI: 48790 rows
+  SLSA: 47767 rows
+-- 1470/5014 (238 stations/hr)
+  SLSU: 1864 rows
+  SLSV: only 51 rows — no feed, marked missing
+  SLTJ: 57289 rows
+  SLTR: 51266 rows
+  SLVM: 24518 rows
+-- 1475/5014 (239 stations/hr)
+  SLYA: 34499 rows
+  TNCE: 73287 rows
+  TNCS: only 0 rows — no feed, marked missing
+  SBAA: 15219 rows
+  SBAC: only 0 rows — no feed, marked missing
+-- 1480/5014 (239 stations/hr)
+  SBAE: only 0 rows — no feed, marked missing
+  SBAF: 57560 rows
+  SBAN: 83259 rows
+  SBAQ: 5918 rows
+  SBAR: 87341 rows
+-- 1485/5014 (239 stations/hr)
+  SBAT: 33328 rows
+  SBAU: 12283 rows
+  SBAX: 54295 rows
+  SBBG: 57744 rows
+  SBBH: 75549 rows
+-- 1490/5014 (239 stations/hr)
+  SBBI: 54266 rows
+  SBBQ: 45833 rows
+  SBBW: 32446 rows
+  SBCA: 42199 rows
+  SBCC: 38506 rows
+-- 1495/5014 (239 stations/hr)
+  SBCG: 87296 rows
+  SBCH: 58570 rows
+  SBCI: 22440 rows
+  SBCJ: 43458 rows
+  SBCO: 67485 rows
+-- 1500/5014 (239 stations/hr)
