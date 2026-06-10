@@ -8,7 +8,7 @@ const MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","N
 
 interface Airport {
   icao: string; name: string; lat: number; lon: number; country: string; tz: string;
-  catIls: string; catConfidence: string; size?: string;
+  catIls: string; catConfidence: string; size?: string; coveragePct?: number;
   efvsHoursPerYear: number; belowHoursPerYear: number;
   causes: Record<string, number>;
   grid: number[][]; // [month][hour] sub-CAT-I %
@@ -241,7 +241,10 @@ let rankCatIOnly = true;
 
 function openRankings() {
   history.replaceState(null, "", "#rankings");
+  // a 6%-coverage station can't support a frequency claim — keep thin
+  // archives out of the league table (they stay on the map and in search)
   const rows = state.airports
+    .filter((a) => (a.coveragePct ?? 100) >= 50)
     .filter((a) => !rankCatIOnly || (a.catIls !== "CATIII" && a.catIls !== "CATII"))
     .sort((a, b) => b.efvsHoursPerYear - a.efvsHoursPerYear)
     .slice(0, 50);

@@ -1801,3 +1801,57 @@
   SBCJ: 43458 rows
   SBCO: 67485 rows
 -- 1500/5014 (239 stations/hr)
+  SBCP: 51047 rows
+  SBCR: 45155 rows
+  SBCX: 24828 rows
+  SBCZ: 52349 rows
+  SBDN: 79837 rows
+-- 1505/5014 (239 stations/hr)
+  SBEK: 14137 rows
+  SBFN: 69650 rows
+  SBGM: 26811 rows
+  SBGV: only 0 rows — no feed, marked missing
+  SBGW: 48209 rows
+-- 1510/5014 (239 stations/hr)
+  SBHT: 45641 rows
+  SBIC: 10159 rows
+  SBIH: 39553 rows
+  SBIL: 64955 rows
+  SBIP: 59947 rows
+-- 1515/5014 (239 stations/hr)
+  SBIZ: 57731 rows
+  SBJE: only 276 rows — no feed, marked missing
+  SBJF: 5692 rows
+  SBJH: only 0 rows — no feed, marked missing
+  SBJR: 48403 rows
+-- 1520/5014 (239 stations/hr)
+  SBJV: 59341 rows
+  SBKG: 73118 rows
+  SBLJ: only 0 rows — no feed, marked missing
+  SBLO: 85189 rows
+  SBLP: 15090 rows
+-- 1525/5014 (239 stations/hr)
+  SBMA: 82891 rows
+  SBMD: 8307 rows
+  SBME: 80386 rows
+  SBMG: 71876 rows
+  SBMK: 68079 rows
+-- 1530/5014 (239 stations/hr)
+  SBML: 11539 rows
+  SBMN: 87376 rows
+  SBMQ: 87323 rows
+  SBMS: 41867 rows
+  SBMT: 61188 rows
+-- 1535/5014 (239 stations/hr)
+  SBMY: 24866 rows
+  SBNM: 32072 rows
+  SBNT: 86076 rows
+  SBOI: 42134 rows
+  SBPB: 36858 rows
+-- 1540/5014 (239 stations/hr)
+  SBPC: 19068 rows
+  SBPF: 28179 rows
+  SBPG: 10199 rows
+  SBPJ: 83366 rows
+  SBPK: 45365 rows
+-- 1545/5014 (239 stations/hr)

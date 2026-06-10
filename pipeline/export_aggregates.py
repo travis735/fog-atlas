@@ -87,6 +87,7 @@ def main():
             "catIls": m["cat_ils"],
             "catConfidence": m["cat_ils_confidence"],
             "size": m.get("size", "large"),
+            "coveragePct": round(100.0 * valid_hours / 87672, 1),
             "efvsHoursPerYear": efvs_hpy,
             "belowHoursPerYear": below_hpy,
             "causes": causes,
