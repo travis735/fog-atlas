@@ -82,8 +82,8 @@ map.on("load", async () => {
     maxzoom: 5.5,
     paint: {
       "heatmap-weight": heatWeight(),
-      "heatmap-intensity": 1.35,
-      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1, 18, 3, 30, 5, 48],
+      "heatmap-intensity": 0.7,
+      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1, 13, 3, 22, 5, 40],
       "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 4, 0.9, 5.4, 0],
       "heatmap-color": ["interpolate", ["linear"], ["heatmap-density"],
         0, "rgba(20,40,60,0)",
