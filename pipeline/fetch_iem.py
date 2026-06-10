@@ -22,11 +22,15 @@ from pathlib import Path
 
 BASE = "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py"
 HERE = Path(__file__).parent
-RAW = HERE / "data" / "raw"
+SKY = "--sky" in sys.argv  # second pass: sky condition (ceiling) fields
+if SKY:
+    sys.argv.remove("--sky")
+RAW = HERE / "data" / ("raw_sky" if SKY else "raw")
 MISSING = RAW / "_missing.txt"
 START = dict(year1=2016, month1=1, day1=1)
 END = dict(year2=2026, month2=1, day2=1)  # exclusive: full years 2016-2025
-FIELDS = ["tmpf", "dwpf", "sknt", "vsby", "wxcodes"]
+FIELDS = (["skyc1", "skyc2", "skyc3", "skyl1", "skyl2", "skyl3"] if SKY
+          else ["tmpf", "dwpf", "sknt", "vsby", "wxcodes"])
 BATCH = 5
 PAUSE_BETWEEN = 20   # seconds between batch requests
 MIN_ROWS = 1000      # fewer rows than this over 10 years = no usable feed
