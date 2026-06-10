@@ -131,8 +131,139 @@ map.on("load", async () => {
     });
   }
 
-  if (location.hash.length > 1) openAirport(location.hash.slice(1).toUpperCase());
+  const hash = location.hash.slice(1);
+  if (hash === "rankings") openRankings();
+  else if (hash === "methodology") openMethodology();
+  else if (hash.length > 1) openAirport(hash.toUpperCase());
 });
+
+// ---------- search ----------
+const searchInput = $<HTMLInputElement>("#search-input");
+const searchResults = $("#search-results");
+let searchSel = 0;
+
+function runSearch() {
+  const q = searchInput.value.trim().toLowerCase();
+  if (q.length < 2) { searchResults.hidden = true; return; }
+  const hits = state.airports
+    .filter((a) =>
+      a.icao.toLowerCase().includes(q) ||
+      a.name.toLowerCase().includes(q) ||
+      a.country.toLowerCase() === q)
+    .sort((a, b) => {
+      const ax = a.icao.toLowerCase() === q ? 0 : 1;
+      const bx = b.icao.toLowerCase() === q ? 0 : 1;
+      return ax - bx || (b.efvsHoursPerYear + b.belowHoursPerYear) - (a.efvsHoursPerYear + a.belowHoursPerYear);
+    })
+    .slice(0, 12);
+  searchSel = 0;
+  searchResults.innerHTML = hits.map((a, i) => `
+    <div class="search-row${i === 0 ? " active" : ""}" data-icao="${a.icao}">
+      <b>${a.icao}</b><span>${a.name}</span>
+      <em>${a.country} · ${Math.round(a.efvsHoursPerYear + a.belowHoursPerYear)} h/yr</em>
+    </div>`).join("");
+  searchResults.hidden = hits.length === 0;
+}
+
+function pickSearch(icao: string) {
+  const a = state.airports.find((x) => x.icao === icao);
+  if (!a) return;
+  searchResults.hidden = true;
+  searchInput.value = "";
+  map.flyTo({ center: [a.lon, a.lat], zoom: 6, duration: 1600 });
+  openAirport(icao);
+}
+
+searchInput.addEventListener("input", runSearch);
+searchInput.addEventListener("keydown", (e) => {
+  const rows = [...searchResults.querySelectorAll(".search-row")];
+  if (e.key === "Enter" && rows.length) {
+    pickSearch((rows[searchSel] as HTMLElement).dataset.icao!);
+  } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    searchSel = (searchSel + (e.key === "ArrowDown" ? 1 : rows.length - 1)) % rows.length;
+    rows.forEach((r, i) => r.classList.toggle("active", i === searchSel));
+  } else if (e.key === "Escape") {
+    searchResults.hidden = true;
+    searchInput.blur();
+  }
+});
+searchResults.addEventListener("click", (e) => {
+  const row = (e.target as HTMLElement).closest(".search-row") as HTMLElement | null;
+  if (row) pickSearch(row.dataset.icao!);
+});
+document.addEventListener("click", (e) => {
+  if (!(e.target as HTMLElement).closest("#search")) searchResults.hidden = true;
+});
+
+// ---------- rankings ----------
+let rankCatIOnly = true;
+
+function openRankings() {
+  history.replaceState(null, "", "#rankings");
+  const rows = state.airports
+    .filter((a) => !rankCatIOnly || (a.catIls !== "CATIII" && a.catIls !== "CATII"))
+    .sort((a, b) => b.efvsHoursPerYear - a.efvsHoursPerYear)
+    .slice(0, 50);
+  panelContent.innerHTML = `
+    <h2>Where EFVS buys the most</h2>
+    <p class="sub">Top airports by EFVS-recoverable hours (300–800 m) per year · ${state.airports.length} airports analyzed so far</p>
+    <label class="rank-filter">
+      <input id="rank-cat1" type="checkbox" ${rankCatIOnly ? "checked" : ""} />
+      only airports without CAT II/III (no autoland fallback — the strongest EFVS case)
+    </label>
+    <table class="rank-table">
+      <thead><tr><th>#</th><th>airport</th><th class="num">EFVS h/yr</th><th class="num">&lt;300 m</th><th>ILS</th></tr></thead>
+      <tbody>
+        ${rows.map((a, i) => `
+          <tr data-icao="${a.icao}">
+            <td class="num">${i + 1}</td>
+            <td><b>${a.icao}</b> ${a.name.length > 26 ? a.name.slice(0, 25) + "…" : a.name} <em style="color:var(--ink-dim)">${a.country}</em></td>
+            <td class="num efvs">${Math.round(a.efvsHoursPerYear)}</td>
+            <td class="num">${Math.round(a.belowHoursPerYear)}</td>
+            <td>${a.catIls === "CATIII" || a.catIls === "CATII" ? a.catIls.replace("CAT", "") : "I"}</td>
+          </tr>`).join("")}
+      </tbody>
+    </table>
+    <p class="note">Ranked by hours below CAT I minima but within the EFVS-usable band. Airports still downloading are missing from this list until the next data pass.</p>
+  `;
+  panelContent.querySelector("#rank-cat1")!.addEventListener("change", (e) => {
+    rankCatIOnly = (e.target as HTMLInputElement).checked;
+    openRankings();
+  });
+  panelContent.querySelectorAll("tr[data-icao]").forEach((tr) =>
+    tr.addEventListener("click", () => {
+      const icao = (tr as HTMLElement).dataset.icao!;
+      const a = state.airports.find((x) => x.icao === icao)!;
+      map.flyTo({ center: [a.lon, a.lat], zoom: 6, duration: 1600 });
+      openAirport(icao);
+    }));
+  panel.hidden = false;
+}
+
+$("#rankings-btn").addEventListener("click", openRankings);
+$("#methodology").addEventListener("click", (e) => { e.preventDefault(); openMethodology(); });
+
+// ---------- methodology ----------
+function openMethodology() {
+  history.replaceState(null, "", "#methodology");
+  panelContent.innerHTML = `
+    <h2>Methodology</h2>
+    <p class="sub">what this map can and cannot tell you</p>
+    <h3>Observation basis</h3>
+    <p class="note" style="margin-top:6px">Routine hourly METARs 2016–2025 (Iowa Environmental Mesonet archive), one observation per hour — the last routine report in each UTC hour. SPECIs are deliberately excluded so frequencies are an unbiased sample of hours. "% of hours" uses hours with a valid visibility report as the denominator; per-airport archive coverage is shown in each deep-dive.</p>
+    <h3>The three bands</h3>
+    <p class="note" style="margin-top:6px"><b style="color:var(--ink)">Normal</b> ≥ ½ SM (~800 m) — typical CAT I visibility minima.<br/>
+    <b style="color:var(--accent)">EFVS-recoverable</b> 300–800 m — below CAT I but within the range where EFVS operations (FAA 91.176) commonly remain workable.<br/>
+    <b style="color:var(--ink)">Below all</b> &lt; 300 m — CAT III autoland territory.</p>
+    <h3>Honest limitations</h3>
+    <p class="note" style="margin-top:6px">METAR prevailing visibility is a proxy for RVR — RVR on a lit runway is often better, so the bands understate what's flyable; read them as a climatological index, not operating minima. Thresholds are global constants, not per-runway minima. CAT II/III flags are authoritative for the US (FAA CIFP), hand-curated internationally, and "assumed CAT I" elsewhere — confidence is shown per airport. The cause chart folds BR (mist) into fog: BR officially means vis ≥ 800 m, so BR on a sub-CAT-I observation is conservatively-coded fog.</p>
+    <h3>Why CAT II/III matters</h3>
+    <p class="note" style="margin-top:6px">At a CAT III airport, suitably equipped airliners already land in fog. EFVS value concentrates where low visibility is frequent <i>and</i> CAT II/III is absent — use the rankings filter to see exactly that intersection.</p>
+    <p class="note">Full methodology with sources: <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">github.com/travis735/fog-atlas</a></p>
+  `;
+  panel.hidden = false;
+}
 
 function applyScrub() {
   readout.textContent = `${MONTHS[state.mon]} · ${String(state.hr).padStart(2, "0")}:00`;
@@ -259,4 +390,6 @@ applyScrub();
   map,
   setScrub(mon: number, hr: number) { state.mon = mon; state.hr = hr; monEl.value = String(mon); hrEl.value = String(hr); applyScrub(); },
   openAirport,
+  openRankings,
+  openMethodology,
 };

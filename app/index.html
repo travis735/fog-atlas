@@ -14,6 +14,14 @@
       <p>where the sky closes &middot; 2016&ndash;2025 METAR climatology</p>
     </header>
 
+    <div id="topbar">
+      <div id="search">
+        <input id="search-input" type="text" placeholder="search airport — ICAO, name, country" autocomplete="off" spellcheck="false" />
+        <div id="search-results" hidden></div>
+      </div>
+      <button id="rankings-btn">rankings</button>
+    </div>
+
     <div id="legend">
       <div class="legend-row"><span class="dot annual"></span> dot size — sub-CAT-I hours / year</div>
       <div class="legend-row"><span class="dot glow"></span> glow — % of hours below CAT I at scrubbed month &amp; local hour</div>
@@ -33,7 +41,7 @@
       <div id="panel-content"></div>
     </aside>
 
-    <a id="methodology" href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">methodology &amp; caveats</a>
+    <a id="methodology" href="#methodology">methodology &amp; caveats</a>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
