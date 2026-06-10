@@ -363,8 +363,20 @@ async function openAirport(icao: string) {
     <h2>${a.icao}</h2>
     <p class="sub">${a.name} · ${a.country}</p>
     <div>
-      <span class="badge ${cat3 ? "cat3" : "cat1"}">${a.catIls}</span>
-      <span class="badge conf">${a.catConfidence}</span>
+      <span class="badge ${cat3 ? "cat3" : "cat1"}" title="${cat3
+        ? "This airport has CAT II/III ILS — suitably equipped airliners can already land in low visibility"
+        : "Best available approach assumed CAT I — visibility below ~800 m forces a missed approach without EFVS"}">${cat3 ? a.catIls.replace("CAT", "CAT ") : "CAT I"}</span>
+      <span class="badge conf" title="${{
+        curated: "Capability confirmed from AIPs / FAA publications",
+        verify: "Capability confirmed from AIPs / FAA publications",
+        assumed: "Not yet curated — assumed CAT I; treat the badge as provisional",
+        unknown: "Capability not yet determined for this airport",
+      }[a.catConfidence] ?? ""}">${{
+        curated: "capability curated",
+        verify: "capability curated",
+        assumed: "capability assumed — not yet curated",
+        unknown: "capability unknown",
+      }[a.catConfidence] ?? a.catConfidence}</span>
       ${!cat3 ? `<span class="badge cat1">high EFVS value — no CAT II/III fallback</span>` : ""}
     </div>
     <div class="stats">

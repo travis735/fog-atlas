@@ -1037,7 +1037,7 @@ KBDL,BDL,Bradley International Airport,41.9386,-72.688,America/New_York,US,CATI,
 KBHM,BHM,Birmingham-Shuttlesworth International Airport,33.5629,-86.7507,America/Chicago,US,CATI,assumed,large
 KBNA,BNA,Nashville International Airport,36.1245,-86.6782,America/Chicago,US,CATI,assumed,large
 KBOI,BOI,Boise Air Terminal/Gowen Field,43.5644,-116.223,America/Boise,US,CATI,assumed,large
-KBOS,BOS,Boston Logan International Airport,42.362,-71.0079,America/New_York,US,CATIII,verify,large
+KBOS,BOS,Boston Logan International Airport,42.362,-71.0079,America/New_York,US,CATIII,curated,large
 KBUF,BUF,Buffalo Niagara International Airport,42.9405,-78.7322,America/New_York,US,CATI,assumed,large
 KBUR,BUR,Hollywood Burbank/Bob Hope Airport,34.2028,-118.3581,America/Los_Angeles,US,CATI,assumed,large
 KBWI,BWI,Baltimore/Washington International Thurgood Marshall Airport,39.1754,-76.6683,America/New_York,US,CATI,assumed,large
@@ -1055,7 +1055,7 @@ KDSM,DSM,Des Moines International Airport,41.534,-93.6567,America/Chicago,US,CAT
 KDTW,DTW,Detroit Metropolitan Wayne County Airport,42.2138,-83.3538,America/Detroit,US,CATI,assumed,large
 KELP,ELP,El Paso International Airport,31.8099,-106.3756,America/Denver,US,CATI,assumed,large
 KEWR,EWR,Newark Liberty International Airport,40.6894,-74.1705,America/New_York,US,CATI,assumed,large
-KFAT,FAT,Fresno Yosemite International Airport,36.7758,-119.718,America/Los_Angeles,US,CATI,verify,large
+KFAT,FAT,Fresno Yosemite International Airport,36.7758,-119.718,America/Los_Angeles,US,CATI,curated,large
 KFLL,FLL,Fort Lauderdale Hollywood International Airport,26.0726,-80.1527,America/New_York,US,CATI,assumed,large
 KGEG,GEG,Spokane International Airport,47.6199,-117.534,America/Los_Angeles,US,CATI,assumed,large
 KGRR,GRR,Gerald R. Ford International Airport,42.8808,-85.5228,America/Detroit,US,CATI,assumed,large
@@ -1073,7 +1073,7 @@ KLGB,LGB,Long Beach International Airport,33.8165,-118.1499,America/Los_Angeles,
 KMCI,MCI,Kansas City International Airport,39.3017,-94.7139,America/Chicago,US,CATI,assumed,large
 KMCO,MCO,Orlando International Airport,28.4294,-81.309,America/New_York,US,CATI,assumed,large
 KMDW,MDW,Chicago Midway International Airport,41.786,-87.7524,America/Chicago,US,CATI,assumed,large
-KMEM,MEM,Memphis International Airport,35.0438,-89.9763,America/Chicago,US,CATIII,verify,large
+KMEM,MEM,Memphis International Airport,35.0438,-89.9763,America/Chicago,US,CATIII,curated,large
 KMIA,MIA,Miami International Airport,25.796,-80.2898,America/New_York,US,CATI,assumed,large
 KMKE,MKE,General Mitchell International Airport,42.9472,-87.8966,America/Chicago,US,CATI,assumed,large
 KMSP,MSP,Minneapolis–Saint Paul International Airport / Wold–Chamberlain Field,44.8801,-93.2217,America/Chicago,US,CATI,assumed,large
@@ -1083,7 +1083,7 @@ KOAK,OAK,San Francisco Bay Oakland International Airport,37.7201,-122.2212,Ameri
 KOKC,OKC,OKC Will Rogers World Airport,35.3934,-97.5982,America/Chicago,US,CATI,assumed,large
 KOMA,OMA,Eppley Airfield,41.3032,-95.8941,America/Chicago,US,CATI,assumed,large
 KONT,ONT,Ontario International Airport,34.056,-117.601,America/Los_Angeles,US,CATI,assumed,large
-KORD,ORD,Chicago O'Hare International Airport,41.9786,-87.9048,America/Chicago,US,CATIII,verify,large
+KORD,ORD,Chicago O'Hare International Airport,41.9786,-87.9048,America/Chicago,US,CATIII,curated,large
 KORF,ORF,Norfolk International Airport,36.8953,-76.201,America/New_York,US,CATI,assumed,large
 KPBI,PBI,Palm Beach International Airport,26.6832,-80.0956,America/New_York,US,CATI,assumed,large
 KPDX,PDX,Portland International Airport,45.5887,-122.598,America/Los_Angeles,US,CATI,assumed,large
@@ -1105,9 +1105,9 @@ KSAT,SAT,San Antonio International Airport,29.5337,-98.4698,America/Chicago,US,C
 KSAV,SAV,Savannah Hilton Head International Airport,32.1266,-81.2,America/New_York,US,CATI,assumed,large
 KSBD,SBD,San Bernardino International Airport,34.0967,-117.2366,America/Los_Angeles,US,CATI,assumed,large
 KSDF,SDF,Louisville Muhammad Ali International Airport,38.1706,-85.7351,America/Kentucky/Louisville,US,CATI,assumed,large
-KSEA,SEA,Seattle–Tacoma International Airport,47.4479,-122.3103,America/Los_Angeles,US,CATIII,verify,large
+KSEA,SEA,Seattle–Tacoma International Airport,47.4479,-122.3103,America/Los_Angeles,US,CATIII,curated,large
 KSFB,SFB,Orlando Sanford International Airport,28.7743,-81.2346,America/New_York,US,CATI,assumed,large
-KSFO,SFO,San Francisco International Airport,37.6198,-122.3748,America/Los_Angeles,US,CATIII,verify,large
+KSFO,SFO,San Francisco International Airport,37.6198,-122.3748,America/Los_Angeles,US,CATIII,curated,large
 KSJC,SJC,Norman Y. Mineta San Jose International Airport,37.3625,-121.9292,America/Los_Angeles,US,CATI,assumed,large
 KSLC,SLC,Salt Lake City International Airport,40.7889,-111.9799,America/Denver,US,CATI,assumed,large
 KSMF,SMF,Sacramento International Airport,38.6954,-121.591,America/Los_Angeles,US,CATI,assumed,large
@@ -4735,7 +4735,7 @@ KTCC,TCC,Tucumcari Municipal Airport,35.1828,-103.603,America/Denver,US,CATI,ass
 KTCL,TCL,Tuscaloosa National Airport,33.2206,-87.6114,America/Chicago,US,CATI,assumed,medium
 KTCM,TCM,McChord Air Force Base,47.1377,-122.476,America/Los_Angeles,US,CATI,assumed,medium
 KTCS,TCS,Truth or Consequences Municipal Airport,33.2369,-107.272,America/Denver,US,CATI,assumed,medium
-KTEB,TEB,Teterboro Airport,40.8501,-74.0608,America/New_York,US,CATI,verify,medium
+KTEB,TEB,Teterboro Airport,40.8501,-74.0608,America/New_York,US,CATI,curated,medium
 KTEX,TEX,Telluride Regional Airport,37.9538,-107.908,America/Denver,US,CATI,assumed,medium
 KTIK,TIK,Tinker Air Force Base,35.4147,-97.3866,America/Chicago,US,CATI,assumed,medium
 KTIW,TIW,Tacoma Narrows Airport,47.2674,-122.5773,America/Los_Angeles,US,CATI,assumed,medium

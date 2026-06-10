@@ -1,11 +1,11 @@
 icao,iem_id,name,lat,lon,tz,country,cat_ils,cat_ils_confidence
-KSFO,SFO,San Francisco Intl,37.6188,-122.3754,America/Los_Angeles,US,CATIII,verify
-KFAT,FAT,Fresno Yosemite Intl,36.7762,-119.7181,America/Los_Angeles,US,CATI,verify
-KSEA,SEA,Seattle-Tacoma Intl,47.4489,-122.3094,America/Los_Angeles,US,CATIII,verify
-KORD,ORD,Chicago O'Hare Intl,41.9742,-87.9073,America/Chicago,US,CATIII,verify
-KMEM,MEM,Memphis Intl,35.0424,-89.9767,America/Chicago,US,CATIII,verify
-KBOS,BOS,Boston Logan Intl,42.3656,-71.0096,America/New_York,US,CATIII,verify
-KTEB,TEB,Teterboro,40.8501,-74.0608,America/New_York,US,CATI,verify
+KSFO,SFO,San Francisco Intl,37.6188,-122.3754,America/Los_Angeles,US,CATIII,curated
+KFAT,FAT,Fresno Yosemite Intl,36.7762,-119.7181,America/Los_Angeles,US,CATI,curated
+KSEA,SEA,Seattle-Tacoma Intl,47.4489,-122.3094,America/Los_Angeles,US,CATIII,curated
+KORD,ORD,Chicago O'Hare Intl,41.9742,-87.9073,America/Chicago,US,CATIII,curated
+KMEM,MEM,Memphis Intl,35.0424,-89.9767,America/Chicago,US,CATIII,curated
+KBOS,BOS,Boston Logan Intl,42.3656,-71.0096,America/New_York,US,CATIII,curated
+KTEB,TEB,Teterboro,40.8501,-74.0608,America/New_York,US,CATI,curated
 EGLL,EGLL,London Heathrow,51.4700,-0.4543,Europe/London,GB,CATIII,curated
 LFPG,LFPG,Paris Charles de Gaulle,49.0097,2.5479,Europe/Paris,FR,CATIII,curated
 EDDM,EDDM,Munich,48.3538,11.7861,Europe/Berlin,DE,CATIII,curated
