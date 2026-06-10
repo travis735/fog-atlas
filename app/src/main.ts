@@ -301,10 +301,11 @@ function openMethodology() {
     <p class="sub">what this map can and cannot tell you</p>
     <h3>Observation basis</h3>
     <p class="note" style="margin-top:6px">Routine hourly METARs 2016–2025 (Iowa Environmental Mesonet archive), one observation per hour — the last routine report in each UTC hour. SPECIs are deliberately excluded so frequencies are an unbiased sample of hours. "% of hours" uses hours with a valid visibility report as the denominator; per-airport archive coverage is shown in each deep-dive.</p>
-    <h3>The three bands</h3>
-    <p class="note" style="margin-top:6px"><b style="color:var(--ink)">Normal</b> ≥ ½ SM (~800 m) — typical CAT I visibility minima.<br/>
-    <b style="color:var(--accent)">EFVS-recoverable</b> 300–800 m — below CAT I but within the range where EFVS operations (FAA 91.176) commonly remain workable.<br/>
-    <b style="color:var(--ink)">Below all</b> &lt; 300 m — CAT III autoland territory.</p>
+    <h3>The three bands (visibility OR ceiling)</h3>
+    <p class="note" style="margin-top:6px">A CAT I approach needs visibility above minima AND ceiling above the ~200 ft decision height; both terms enter the bands.<br/>
+    <b style="color:var(--ink)">Normal</b> — vis ≥ ½ SM (~800 m) and ceiling ≥ 200 ft.<br/>
+    <b style="color:var(--accent)">EFVS-recoverable</b> — vis 300–800 m, or ceiling &lt; 200 ft with workable visibility (a thin low deck is exactly what EFVS sees through; FAA 91.176).<br/>
+    <b style="color:var(--ink)">Below all</b> &lt; 300 m vis — CAT III autoland territory; ceiling-only events never land here.</p>
     <h3>Honest limitations</h3>
     <p class="note" style="margin-top:6px">METAR prevailing visibility is a proxy for RVR — RVR on a lit runway is often better, so the bands understate what's flyable; read them as a climatological index, not operating minima. Thresholds are global constants, not per-runway minima. CAT II/III flags are authoritative for the US (FAA CIFP), hand-curated internationally, and "assumed CAT I" elsewhere — confidence is shown per airport. The cause chart folds BR (mist) into fog: BR officially means vis ≥ 800 m, so BR on a sub-CAT-I observation is conservatively-coded fog.</p>
     <h3>Why CAT II/III matters</h3>
@@ -363,7 +364,7 @@ async function openAirport(icao: string) {
   const causes = Object.entries(merged)
     .filter(([k, v]) => !["none", "other"].includes(k) && v > 0)
     .sort((x, y) => y[1] - x[1]);
-  const causeLabel: Record<string, string> = { FG: "fog / mist", "HZ/FU": "haze / smoke", SN: "snow" };
+  const causeLabel: Record<string, string> = { FG: "fog / mist", "HZ/FU": "haze / smoke", SN: "snow", CEIL: "low ceiling (stratus)" };
 
   panelContent.innerHTML = `
     <h2>${a.icao}</h2>
@@ -399,7 +400,7 @@ async function openAirport(icao: string) {
     <div id="heatmap-legend"></div>
     <h3>Cause of low visibility</h3>
     <div id="causes"></div>
-    <p class="note">Prevailing visibility is a climatological proxy for RVR — read as relative risk, not operating minima. Hours are local (${a.tz}). 2016–2025 routine METARs. <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">Full methodology</a>.</p>
+    <p class="note">Sub-CAT-I = prevailing visibility below ~800 m or ceiling below 200 ft. Visibility is a climatological proxy for RVR — read as relative risk, not operating minima. Hours are local (${a.tz}). 2016–2025 routine METARs. <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">Full methodology</a>.</p>
   `;
 
   const cells: { hr: number; mon: string; pct: number }[] = [];

@@ -8,13 +8,17 @@ Fog Atlas trades per-runway precision for honest, worldwide comparability. Every
 - **Hourly dedup:** the last routine report in each UTC hour (US stations file at ~:53–:56; many international stations file at :00/:30).
 - **Statistic:** "% of hours" = hours in band ÷ hours with a valid visibility report. Station outages reduce the denominator, not the frequency. Coverage is reported per airport.
 
-## Visibility bands
+## Bands (visibility OR ceiling)
+
+A CAT I approach needs both visibility above minima **and** ceiling at or above the ~200 ft decision height, so both terms enter the classification (ceiling = lowest BKN/OVC/VV layer from the sky-condition fields, joined per hour):
 
 | Band | Threshold | Rationale |
 |---|---|---|
-| Normal | ≥ ½ SM (~800 m) | At or above typical CAT I visibility minima |
-| EFVS-recoverable | 300–800 m | Below CAT I, but within the range where EFVS operations (e.g. FAA 91.176) commonly remain workable |
-| Below all | < 300 m | Approaching CAT III / RVR-1000-and-below territory; EFVS dispatch value assumed nil |
+| Normal | vis ≥ ½ SM (~800 m) and ceiling ≥ 200 ft | CAT I workable |
+| EFVS-recoverable | vis 300–800 m, **or** ceiling < 200 ft with workable visibility | Below CAT I minima but within the range where EFVS operations (e.g. FAA 91.176) commonly remain workable; a thin low deck is exactly what EFVS sees through |
+| Below all | vis < 300 m | Approaching CAT III / RVR-1000-and-below territory; EFVS dispatch value assumed nil. Ceiling-only events never land here |
+
+Empirical note: ceiling-only hours (vis fine, ceiling < 200 ft) are rare everywhere — single digits to a few dozen hours per year even at stratus-prone airports — because in fog, visibility and ceiling collapse together and the visibility term already catches the hour. The famous counterexample cuts the other way: San Francisco's marine stratus sits at 500–1,500 ft, well above the decision height, so SFO shows almost no sub-CAT-I hours **even with ceilings included**. Its fog problem is arrival *capacity* (no paired visual approaches under the deck), not approach minima — a distinction this map now makes verifiably rather than by omission.
 
 Known approximations:
 

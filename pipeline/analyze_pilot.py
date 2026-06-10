@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-"""Pilot analysis: classify METARs into EFVS visibility bands and print
-validation climatology for whatever stations exist in data/raw/.
+"""Classify METARs into EFVS bands and print validation climatology.
 
-Bands (prevailing visibility as RVR proxy — documented approximation):
-  normal   >= 0.50 SM (~800 m)   conventional CAT I workable
-  efvs     0.19-0.50 SM (300-800 m)  below CAT I minima, EFVS-usable
-  below    < 0.19 SM (~300 m)    too low for EFVS
+A CAT I approach needs BOTH visibility above minima AND ceiling above the
+~200 ft decision height, so the bands use vis OR ceiling (ceiling from the
+sky-condition pass in data/raw_sky/, joined per hour; stations without sky
+data fall back to vis-only):
+
+  normal  vis >= 0.50 SM (~800 m) AND ceiling >= 200 ft (or unknown)
+  efvs    vis 0.19-0.50 SM, OR ceiling < 200 ft with workable vis —
+          below CAT I minima but EFVS-recoverable (91.176)
+  below   vis < 0.19 SM (~300 m) — beyond EFVS dispatch value.
+          Ceiling-only events are never 'below': EFVS sees through a
+          thin deck; it's deep fog that defeats it.
 
 Hourly basis: last routine ob in each UTC hour (US stations report ~:53-:56,
 many intl stations report :00/:30 — taking the last keeps one ob per hour).
@@ -19,10 +25,12 @@ import duckdb
 
 HERE = Path(__file__).parent
 RAW = HERE / "data" / "raw"
+RAW_SKY = HERE / "data" / "raw_sky"
 OUT = HERE / "out"
 
 EFVS_FLOOR_SM = 0.19   # ~300 m
 CAT1_MIN_SM = 0.50     # ~800 m
+CAT1_DH_FT = 200       # CAT I decision height
 
 
 def main():
@@ -44,6 +52,36 @@ def main():
 
     # single streaming statement: only the compact classified table is
     # materialized (raw obs at full scale are hundreds of millions of rows)
+    sky_files = list(RAW_SKY.glob("*.csv"))
+    sky_join = f"""
+        , sky AS (
+            SELECT
+                regexp_extract(filename, '([A-Z0-9]+)\\.csv$', 1) AS icao,
+                strptime(valid, '%Y-%m-%d %H:%M') AS ts_utc,
+                least(
+                    CASE WHEN skyc1 IN ('BKN','OVC','VV') THEN TRY_CAST(skyl1 AS DOUBLE) END,
+                    CASE WHEN skyc2 IN ('BKN','OVC','VV') THEN TRY_CAST(skyl2 AS DOUBLE) END,
+                    CASE WHEN skyc3 IN ('BKN','OVC','VV') THEN TRY_CAST(skyl3 AS DOUBLE) END
+                ) AS ceil_ft
+            FROM read_csv_auto('{RAW_SKY}/*.csv', filename=true, all_varchar=true,
+                               union_by_name=true)
+        ),
+        sky_hourly AS (
+            SELECT * EXCLUDE (rn) FROM (
+                SELECT *, row_number() OVER (
+                    PARTITION BY icao, date_trunc('hour', ts_utc)
+                    ORDER BY ts_utc DESC) AS rn
+                FROM sky
+            ) WHERE rn = 1
+        )
+    """ if sky_files else ""
+    sky_select = ("s.ceil_ft" if sky_files else "NULL::DOUBLE AS ceil_ft")
+    sky_from = (f"""
+        LEFT JOIN sky_hourly s
+          ON s.icao = h.icao
+         AND date_trunc('hour', s.ts_utc) = date_trunc('hour', h.ts_utc)
+    """ if sky_files else "")
+
     con.execute(f"""
         CREATE TABLE classified AS
         WITH obs AS (
@@ -64,6 +102,7 @@ def main():
                 FROM obs
             ) WHERE rn = 1
         )
+        {sky_join}
         SELECT
             h.icao,
             month(timezone(t.tz, h.ts_utc::TIMESTAMPTZ)) AS mon,
@@ -73,9 +112,12 @@ def main():
                 WHEN h.vsby IS NULL THEN 'missing'
                 WHEN h.vsby < {EFVS_FLOOR_SM} THEN 'below'
                 WHEN h.vsby < {CAT1_MIN_SM} THEN 'efvs'
+                WHEN {sky_select.split(' AS ')[0]} < {CAT1_DH_FT} THEN 'efvs'
                 ELSE 'normal'
             END AS band,
             CASE
+                WHEN h.vsby >= {CAT1_MIN_SM}
+                     AND {sky_select.split(' AS ')[0]} < {CAT1_DH_FT} THEN 'CEIL'
                 WHEN h.wx LIKE '%FG%' THEN 'FG'
                 WHEN h.wx LIKE '%SN%' THEN 'SN'
                 WHEN h.wx LIKE '%FU%' OR h.wx LIKE '%HZ%' THEN 'HZ/FU'
@@ -85,6 +127,7 @@ def main():
             END AS cause,
             t.cat_ils
         FROM hourly h JOIN tzmap t USING (icao)
+        {sky_from}
     """)
 
     print("=== Coverage & band split (per airport, all hours 2016-2025) ===")
