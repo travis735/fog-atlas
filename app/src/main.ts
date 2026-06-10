@@ -46,6 +46,9 @@ const glowOpacityZ = (): any => ["interpolate", ["linear"], ["zoom"],
   2, ["*", 0.55, GLOW_OPACITY(pctExpr())] as any,
   4.5, GLOW_OPACITY(pctExpr())];
 
+const heatWeight = (): any => ["interpolate", ["linear"], pctExpr(),
+  0, 0, 3, 0.25, 12, 0.6, 40, 1];
+
 map.on("load", async () => {
   const data = await (await fetch("/data/airports.json")).json();
   state.airports = data.airports;
@@ -59,14 +62,37 @@ map.on("load", async () => {
         icao: a.icao,
         name: a.name,
         annual: a.efvsHoursPerYear + a.belowHoursPerYear,
-        // tier 0 always shows; tier 1 (medium airports without a serious
-        // fog story) fades in past z4 so Europe stays readable at world zoom
-        tier: a.size === "large" || a.efvsHoursPerYear + a.belowHoursPerYear >= 150 ? 0 : 1,
+        // tiers are FOG-driven, not size-driven: at world zoom the fog FIELD
+        // carries the picture and only exceptional airports get a dot;
+        // everything else resolves as you zoom in
+        tier: a.efvsHoursPerYear + a.belowHoursPerYear >= 300 ? 0
+            : a.efvsHoursPerYear + a.belowHoursPerYear >= 60 ? 1 : 2,
         g: a.grid.flat(),
       },
     })),
   };
   map.addSource("airports", { data: fc as any, type: "geojson" });
+
+  // world-zoom fog field: a continuous luminous layer weighted by the
+  // scrubbed fog % — fog banks, not bubble soup; fades out as dots fade in
+  map.addLayer({
+    id: "fogheat",
+    type: "heatmap",
+    source: "airports",
+    maxzoom: 5.5,
+    paint: {
+      "heatmap-weight": heatWeight(),
+      "heatmap-intensity": 1.1,
+      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1, 16, 3, 26, 5, 44],
+      "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 4, 0.9, 5.4, 0],
+      "heatmap-color": ["interpolate", ["linear"], ["heatmap-density"],
+        0, "rgba(20,40,60,0)",
+        0.25, "rgba(38,78,110,0.55)",
+        0.5, "rgba(79,142,184,0.75)",
+        0.75, "rgba(159,216,255,0.9)",
+        1, "rgba(238,250,255,0.95)"],
+    },
+  });
 
   const base: any = ["max", ["+", 3, ["*", 0.5, ["sqrt", ["get", "annual"]]]], 3.5];
   // grow dots as the map zooms in, or they get lost at street level.
@@ -75,9 +101,8 @@ map.on("load", async () => {
   const radius = (mult: number): any => ["interpolate", ["linear"], ["zoom"],
     3, ["*", base, mult], 6, ["*", base, 1.8 * mult], 10, ["*", base, 3.2 * mult]];
 
-  for (const [suffix, tier] of [["", 0], ["2", 1]] as const) {
+  for (const [suffix, tier, minzoom] of [["", 0, 0], ["2", 1, 3.5], ["3", 2, 4.8]] as const) {
     const filter: any = ["==", ["get", "tier"], tier];
-    const minzoom = tier === 1 ? 4 : 0;
     map.addLayer({
       id: "glow" + suffix, type: "circle", source: "airports", filter, minzoom,
       paint: {
@@ -112,7 +137,7 @@ map.on("load", async () => {
   }
 
   const tip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 10, className: "tip" });
-  for (const layer of ["core", "core2"]) {
+  for (const layer of ["core", "core2", "core3"]) {
     map.on("mousemove", layer, (e) => {
       map.getCanvas().style.cursor = "pointer";
       const f = e.features?.[0];
@@ -268,7 +293,8 @@ function openMethodology() {
 function applyScrub() {
   readout.textContent = `${MONTHS[state.mon]} · ${String(state.hr).padStart(2, "0")}:00`;
   if (!map.getLayer("glow")) return;
-  for (const s of ["", "2"]) {
+  map.setPaintProperty("fogheat", "heatmap-weight", heatWeight());
+  for (const s of ["", "2", "3"]) {
     map.setPaintProperty("glow" + s, "circle-color", GLOW_COLOR(pctExpr()));
     map.setPaintProperty("glow" + s, "circle-opacity", glowOpacityZ());
     map.setPaintProperty("core" + s, "circle-color", GLOW_COLOR(pctExpr()));
