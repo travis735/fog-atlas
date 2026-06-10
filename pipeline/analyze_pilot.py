@@ -68,6 +68,7 @@ def main():
             h.icao,
             month(timezone(t.tz, h.ts_utc::TIMESTAMPTZ)) AS mon,
             hour(timezone(t.tz, h.ts_utc::TIMESTAMPTZ)) AS hr,
+            (h.vsby IS NOT NULL AND h.vsby <= 0.01) AS vzero,
             CASE
                 WHEN h.vsby IS NULL THEN 'missing'
                 WHEN h.vsby < {EFVS_FLOOR_SM} THEN 'below'

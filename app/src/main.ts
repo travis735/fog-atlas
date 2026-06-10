@@ -9,6 +9,7 @@ const MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","N
 interface Airport {
   icao: string; name: string; lat: number; lon: number; country: string; tz: string;
   catIls: string; catConfidence: string; size?: string; coveragePct?: number;
+  reliability?: string;
   efvsHoursPerYear: number; belowHoursPerYear: number;
   causes: Record<string, number>;
   grid: number[][]; // [month][hour] sub-CAT-I %
@@ -46,8 +47,8 @@ const glowOpacityZ = (): any => ["interpolate", ["linear"], ["zoom"],
   2, ["*", 0.55, GLOW_OPACITY(pctExpr())] as any,
   4.5, GLOW_OPACITY(pctExpr())];
 
-const heatWeight = (): any => ["interpolate", ["linear"], pctExpr(),
-  0, 0, 1, 0.12, 3, 0.35, 12, 0.7, 40, 1];
+const heatWeight = (): any => ["*", ["get", "reliable"],
+  ["interpolate", ["linear"], pctExpr(), 0, 0, 1, 0.12, 3, 0.35, 12, 0.7, 40, 1]];
 
 map.on("load", async () => {
   const data = await (await fetch("/data/airports.json")).json();
@@ -65,8 +66,12 @@ map.on("load", async () => {
         // tiers are FOG-driven, not size-driven: at world zoom the fog FIELD
         // carries the picture and only exceptional airports get a dot;
         // everything else resolves as you zoom in
-        tier: a.efvsHoursPerYear + a.belowHoursPerYear >= 300 ? 0
+        tier: (a.reliability ?? "ok") !== "ok" ? 2
+            : a.efvsHoursPerYear + a.belowHoursPerYear >= 300 ? 0
             : a.efvsHoursPerYear + a.belowHoursPerYear >= 150 ? 1 : 2,
+        // unreliable reporters are excluded from the fog field — their
+        // frequencies are artifacts, not weather
+        reliable: (a.reliability ?? "ok") === "ok" ? 1 : 0,
         g: a.grid.flat(),
       },
     })),
@@ -242,10 +247,10 @@ let rankCatIOnly = true;
 
 function openRankings() {
   history.replaceState(null, "", "#rankings");
-  // a 6%-coverage station can't support a frequency claim — keep thin
-  // archives out of the league table (they stay on the map and in search)
+  // a 6%-coverage or anomalous-reporting station can't support a frequency
+  // claim — keep them out of the league table (still on the map and search)
   const rows = state.airports
-    .filter((a) => (a.coveragePct ?? 100) >= 50)
+    .filter((a) => (a.coveragePct ?? 100) >= 50 && (a.reliability ?? "ok") === "ok")
     .filter((a) => !rankCatIOnly || (a.catIls !== "CATIII" && a.catIls !== "CATII"))
     .sort((a, b) => b.efvsHoursPerYear - a.efvsHoursPerYear)
     .slice(0, 50);
@@ -380,6 +385,10 @@ async function openAirport(icao: string) {
       }[a.catConfidence] ?? a.catConfidence}</span>
       ${!cat3 ? `<span class="badge cat1">high EFVS value — no CAT II/III fallback</span>` : ""}
     </div>
+    ${(a.reliability ?? "ok") !== "ok" ? `
+    <div class="warn-banner">${a.reliability === "low-coverage"
+      ? `⚠ Archive coverage is only ${a.coveragePct}% — too thin to support frequency claims. Numbers below are shown for completeness, not for decisions.`
+      : `⚠ Reporting anomaly detected: this station's low-visibility observations are dominated by literal-zero values with no diurnal structure — the signature of an encoding artifact, not weather. Treat all frequencies here as unreliable.`}</div>` : ""}
     <div class="stats">
       <div class="stat efvs"><div class="v">${Math.round(a.efvsHoursPerYear)}</div><div class="k">EFVS-recoverable hrs / yr (300–800 m)</div></div>
       <div class="stat"><div class="v">${Math.round(a.belowHoursPerYear)}</div><div class="k">below 300 m hrs / yr</div></div>

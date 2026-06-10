@@ -5689,3 +5689,63 @@
   KTWF: 87502 rows
   KTXK: 87011 rows
 -- 4740/5014 (280 stations/hr)
+  KTYR: 85716 rows
+  KUAO: 87264 rows
+  KUIN: 86933 rows
+  KUKI: 87499 rows
+  KUNV: 69646 rows
+-- 4745/5014 (280 stations/hr)
+  KUOX: 84018 rows
+  KUTS: 87349 rows
+  KUUU: 87033 rows
+  KVAD: 83376 rows
+  KVBG: 74634 rows
+-- 4750/5014 (280 stations/hr)
+  KVCT: 87413 rows
+  KVEL: 87232 rows
+  KVGT: 87098 rows
+  KVIS: 86524 rows
+  KVLD: 86811 rows
+-- 4755/5014 (279 stations/hr)
+  KVNY: 86957 rows
+  KVOK: 83080 rows
+  KVPS: 81354 rows
+  KVPZ: 86311 rows
+  KVQQ: 68846 rows
+-- 4760/5014 (279 stations/hr)
+  KVRB: 87535 rows
+  KVTN: 86426 rows
+  KWJF: 87195 rows
+  KWMC: 84145 rows
+  KWRB: 85359 rows
+-- 4765/5014 (279 stations/hr)
+  KWRI: 85682 rows
+  KWRL: 87585 rows
+  KWST: 86694 rows
+  KWWD: 80861 rows
+  KWWR: 87538 rows
+-- 4770/5014 (278 stations/hr)
+  KWYS: 58227 rows
+  KXMR: 84052 rows
+  KXNA: 84223 rows
+  KXTA: only 0 rows — no feed, marked missing
+  KXWA: 51903 rows
+-- 4775/5014 (278 stations/hr)
+  KYIP: 87332 rows
+  KYKM: 87227 rows
+  KYKN: 84188 rows
+  KYNG: 87555 rows
+  KZZV: 86396 rows
+-- 4780/5014 (278 stations/hr)
+  PAAQ: only 0 rows — no feed, marked missing
+  PABA: only 0 rows — no feed, marked missing
+  PABE: only 0 rows — no feed, marked missing
+  PABI: only 0 rows — no feed, marked missing
+  PABR: only 0 rows — no feed, marked missing
+-- 4785/5014 (278 stations/hr)
+  PABV: only 0 rows — no feed, marked missing
+  PACD: only 0 rows — no feed, marked missing
+  PACL: only 0 rows — no feed, marked missing
+  PACV: only 0 rows — no feed, marked missing
+  PACZ: only 0 rows — no feed, marked missing
+-- 4790/5014 (279 stations/hr)

@@ -55,6 +55,28 @@ def main():
             continue
         valid_hours, total_hours, efvs_hpy, below_hpy = stats
 
+        # reliability: low coverage, or the MYAF signature — sub-CAT-I obs
+        # dominated by literal-zero visibility with NO diurnal structure
+        # (real fog is morning-skewed; encoding artifacts are flat)
+        cov = 100.0 * valid_hours / 87672
+        zr = con.execute("""
+            SELECT count(*) FILTER (band IN ('efvs','below')) AS n_sub,
+                   count(*) FILTER (band IN ('efvs','below') AND vzero) AS n_zero,
+                   100.0 * count(*) FILTER (band IN ('efvs','below') AND hr BETWEEN 3 AND 9)
+                       / nullif(count(*) FILTER (band != 'missing' AND hr BETWEEN 3 AND 9), 0) AS morn,
+                   100.0 * count(*) FILTER (band IN ('efvs','below') AND hr BETWEEN 12 AND 18)
+                       / nullif(count(*) FILTER (band != 'missing' AND hr BETWEEN 12 AND 18), 0) AS aft
+            FROM c WHERE icao = ?
+        """, [icao]).fetchone()
+        n_sub, n_zero, morn, aft = zr
+        if cov < 40:
+            reliability = "low-coverage"
+        elif (n_sub >= 50 and n_zero / n_sub > 0.5
+              and (morn or 0) / max(aft or 0, 0.01) < 1.5):
+            reliability = "suspect-reporting"
+        else:
+            reliability = "ok"
+
         causes = dict(con.execute("""
             SELECT cause, round(100.0 * count(*) / sum(count(*)) OVER (), 1)
             FROM c WHERE icao = ? AND band IN ('efvs','below') GROUP BY cause
@@ -87,7 +109,8 @@ def main():
             "catIls": m["cat_ils"],
             "catConfidence": m["cat_ils_confidence"],
             "size": m.get("size", "large"),
-            "coveragePct": round(100.0 * valid_hours / 87672, 1),
+            "coveragePct": round(cov, 1),
+            "reliability": reliability,
             "efvsHoursPerYear": efvs_hpy,
             "belowHoursPerYear": below_hpy,
             "causes": causes,

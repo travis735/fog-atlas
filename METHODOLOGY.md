@@ -28,6 +28,15 @@ Present-weather codes, first match in priority order: `FG` (incl. FZFG) → `SN`
 
 The app's cause chart folds `BR` (mist) into the fog family: by definition `BR` is reported when visibility is ≥ 800 m, so a `BR` code attached to a sub-CAT-I observation is fog that the observer/algorithm coded conservatively. The pipeline output keeps the raw distinction.
 
+## Reporting reliability
+
+"% of hours" assumes observations sample hours impartially. Two failure modes are detected per station and flagged:
+
+1. **Low coverage** (< 40% of possible hours in the archive): too thin to support frequency claims.
+2. **Suspect reporting** — the signature of an encoding artifact rather than weather: a majority of sub-CAT-I observations at literal-zero visibility combined with no diurnal structure (real fog is strongly morning-skewed; haze and marine advection fog are flatter, so the threshold is deliberately loose).
+
+Flagged stations are excluded from the fog field and rankings, demoted on the map, and carry a warning banner in their deep-dive. Their raw numbers remain visible for completeness.
+
 ## CAT II/III capability
 
 - **US:** derived from FAA CIFP approach data (machine-readable, authoritative).

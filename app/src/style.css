@@ -120,6 +120,12 @@ input[type="range"] { width: 190px; accent-color: var(--accent); }
 .badge.cat1 { border-color: #7a5a2e; color: #e8b96a; }
 .badge.conf { color: var(--ink-dim); }
 
+.warn-banner {
+  margin-top: 12px; padding: 10px 13px; border-radius: 8px;
+  border: 1px solid #6e5a26; background: #2a230f66;
+  color: #e8c46a; font-size: 11.5px; line-height: 1.55;
+}
+
 .stats { display: flex; gap: 12px; margin: 18px 0; }
 .stat {
   flex: 1; border: 1px solid var(--hairline); border-radius: 10px; padding: 12px 14px;
