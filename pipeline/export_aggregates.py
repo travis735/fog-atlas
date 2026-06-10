@@ -28,7 +28,8 @@ APP = OUT / "app"
 def grid_from_rows(rows, value_idx):
     g = [[0.0] * 24 for _ in range(12)]
     for r in rows:
-        g[int(r[0]) - 1][int(r[1])] = round(float(r[value_idx]), 1)
+        if r[value_idx] is not None:  # cell can be all-missing (archive gap)
+            g[int(r[0]) - 1][int(r[1])] = round(float(r[value_idx]), 1)
     return g
 
 

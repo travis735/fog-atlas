@@ -40,6 +40,12 @@ const GLOW_COLOR: any = (e: any) => ["interpolate", ["linear"], e,
 const GLOW_OPACITY: any = (e: any) => ["interpolate", ["linear"], e,
   0, 0.05, 3, 0.45, 15, 0.75, 40, 0.95];
 
+// tame the halo at world zoom or dense regions (Europe) merge into a blob;
+// zoom must be the OUTERMOST interpolate, data expr nests inside the stops
+const glowOpacityZ = (): any => ["interpolate", ["linear"], ["zoom"],
+  2, ["*", 0.55, GLOW_OPACITY(pctExpr())] as any,
+  4.5, GLOW_OPACITY(pctExpr())];
+
 map.on("load", async () => {
   const data = await (await fetch("/data/airports.json")).json();
   state.airports = data.airports;
@@ -71,10 +77,10 @@ map.on("load", async () => {
     type: "circle",
     source: "airports",
     paint: {
-      "circle-radius": radius(2.6),
+      "circle-radius": radius(1.9),
       "circle-blur": 1.4,
       "circle-color": GLOW_COLOR(pctExpr()),
-      "circle-opacity": GLOW_OPACITY(pctExpr()),
+      "circle-opacity": glowOpacityZ(),
     },
   });
   map.addLayer({
@@ -129,7 +135,7 @@ function applyScrub() {
   readout.textContent = `${MONTHS[state.mon]} · ${String(state.hr).padStart(2, "0")}:00`;
   if (!map.getLayer("glow")) return;
   map.setPaintProperty("glow", "circle-color", GLOW_COLOR(pctExpr()));
-  map.setPaintProperty("glow", "circle-opacity", GLOW_OPACITY(pctExpr()));
+  map.setPaintProperty("glow", "circle-opacity", glowOpacityZ());
   map.setPaintProperty("core", "circle-color", GLOW_COLOR(pctExpr()));
 }
 
@@ -163,10 +169,15 @@ async function openAirport(icao: string) {
   history.replaceState(null, "", `#${icao}`);
 
   const cat3 = a.catIls === "CATIII" || a.catIls === "CATII";
-  const causes = Object.entries(a.causes)
-    .filter(([k]) => !["none", "other"].includes(k))
+  // BR officially means vis >= 800m, so BR on a sub-CAT-I ob is fog that was
+  // coded conservatively — present them as one family
+  const merged: Record<string, number> = { ...a.causes };
+  merged.FG = Math.round(((merged.FG ?? 0) + (merged.BR ?? 0)) * 10) / 10;
+  delete merged.BR;
+  const causes = Object.entries(merged)
+    .filter(([k, v]) => !["none", "other"].includes(k) && v > 0)
     .sort((x, y) => y[1] - x[1]);
-  const causeLabel: Record<string, string> = { FG: "fog", BR: "mist", "HZ/FU": "haze / smoke", SN: "snow" };
+  const causeLabel: Record<string, string> = { FG: "fog / mist", "HZ/FU": "haze / smoke", SN: "snow" };
 
   panelContent.innerHTML = `
     <h2>${a.icao}</h2>

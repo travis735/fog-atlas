@@ -26,6 +26,8 @@ Known approximations:
 
 Present-weather codes, first match in priority order: `FG` (incl. FZFG) → `SN` → `HZ`/`FU` → `BR` → other/none. An observation with multiple phenomena is attributed to the highest-priority one.
 
+The app's cause chart folds `BR` (mist) into the fog family: by definition `BR` is reported when visibility is ≥ 800 m, so a `BR` code attached to a sub-CAT-I observation is fog that the observer/algorithm coded conservatively. The pipeline output keeps the raw distinction.
+
 ## CAT II/III capability
 
 - **US:** derived from FAA CIFP approach data (machine-readable, authoritative).
