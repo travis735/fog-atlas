@@ -32,6 +32,6 @@ METAR prevailing visibility is a proxy for RVR, not a substitute. Band threshold
 - `pipeline/` — Python + DuckDB ingestion and aggregation (offline; produces static JSON)
 - `app/` — static web app (Vite + MapLibre GL + Observable Plot)
 
-## Status
+## Live
 
-Pilot phase: 20-airport slice to validate the band classification against documented fog climatology (Delhi, Paris CDG, San Francisco, Central Valley tule fog) before scaling to ~2,500 airports.
+**https://fog-atlas.pages.dev** — 3,394 airports × 10 years (2016–2025), visibility + ceiling bands, validated against documented climatology, runway-measured RVR (SFO cross-check), and 13.9M US flight records (flights scheduled during EFVS-recoverable hours were weather-cancelled at 5.2× baseline).
