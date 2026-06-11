@@ -1,0 +1,171 @@
+{
+ "window": "2023-2024",
+ "bands": {
+  "below": {
+   "flights": 11637,
+   "wxCancelPct": 2.2
+  },
+  "efvs": {
+   "flights": 40759,
+   "wxCancelPct": 3.805
+  },
+  "normal": {
+   "flights": 13401786,
+   "wxCancelPct": 0.728
+  }
+ },
+ "multiplier_efvs": 5.2,
+ "multiplier_below": 3.0,
+ "perAirport": [
+  {
+   "faa": "DEN",
+   "exposed": 4617,
+   "wxSubCat1": 6.65,
+   "wxNormal": 0.71
+  },
+  {
+   "faa": "SEA",
+   "exposed": 3096,
+   "wxSubCat1": 0.32,
+   "wxNormal": 0.22
+  },
+  {
+   "faa": "LAX",
+   "exposed": 2578,
+   "wxSubCat1": 0.27,
+   "wxNormal": 0.28
+  },
+  {
+   "faa": "ATL",
+   "exposed": 2442,
+   "wxSubCat1": 0.57,
+   "wxNormal": 0.36
+  },
+  {
+   "faa": "BOS",
+   "exposed": 2059,
+   "wxSubCat1": 1.41,
+   "wxNormal": 0.69
+  },
+  {
+   "faa": "JFK",
+   "exposed": 2030,
+   "wxSubCat1": 0.05,
+   "wxNormal": 0.65
+  },
+  {
+   "faa": "DTW",
+   "exposed": 1450,
+   "wxSubCat1": 5.45,
+   "wxNormal": 0.57
+  },
+  {
+   "faa": "ORD",
+   "exposed": 1314,
+   "wxSubCat1": 4.11,
+   "wxNormal": 0.77
+  },
+  {
+   "faa": "DFW",
+   "exposed": 1263,
+   "wxSubCat1": 1.98,
+   "wxNormal": 1.42
+  },
+  {
+   "faa": "PDX",
+   "exposed": 1191,
+   "wxSubCat1": 1.51,
+   "wxNormal": 0.45
+  },
+  {
+   "faa": "LGA",
+   "exposed": 1138,
+   "wxSubCat1": 1.14,
+   "wxNormal": 1.07
+  },
+  {
+   "faa": "CLT",
+   "exposed": 1096,
+   "wxSubCat1": 1.19,
+   "wxNormal": 0.86
+  },
+  {
+   "faa": "GEG",
+   "exposed": 1084,
+   "wxSubCat1": 1.48,
+   "wxNormal": 0.2
+  },
+  {
+   "faa": "MCI",
+   "exposed": 1081,
+   "wxSubCat1": 1.02,
+   "wxNormal": 0.65
+  },
+  {
+   "faa": "IAH",
+   "exposed": 972,
+   "wxSubCat1": 2.37,
+   "wxNormal": 0.78
+  },
+  {
+   "faa": "AUS",
+   "exposed": 949,
+   "wxSubCat1": 0.53,
+   "wxNormal": 0.69
+  },
+  {
+   "faa": "SLC",
+   "exposed": 827,
+   "wxSubCat1": 0.12,
+   "wxNormal": 0.26
+  },
+  {
+   "faa": "RDU",
+   "exposed": 822,
+   "wxSubCat1": 0.73,
+   "wxNormal": 0.66
+  },
+  {
+   "faa": "SMF",
+   "exposed": 699,
+   "wxSubCat1": 0.29,
+   "wxNormal": 0.37
+  },
+  {
+   "faa": "MCO",
+   "exposed": 677,
+   "wxSubCat1": 1.62,
+   "wxNormal": 0.85
+  },
+  {
+   "faa": "BWI",
+   "exposed": 659,
+   "wxSubCat1": 0.61,
+   "wxNormal": 0.64
+  },
+  {
+   "faa": "BOI",
+   "exposed": 523,
+   "wxSubCat1": 3.25,
+   "wxNormal": 0.25
+  },
+  {
+   "faa": "HPN",
+   "exposed": 485,
+   "wxSubCat1": 3.92,
+   "wxNormal": 0.94
+  },
+  {
+   "faa": "MSP",
+   "exposed": 459,
+   "wxSubCat1": 0.87,
+   "wxNormal": 0.6
+  },
+  {
+   "faa": "TPA",
+   "exposed": 449,
+   "wxSubCat1": 0.45,
+   "wxNormal": 1.31
+  }
+ ]
+}

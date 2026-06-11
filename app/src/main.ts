@@ -331,11 +331,25 @@ function openMethodology() {
     <b style="color:var(--ink)">Below all</b> &lt; 300 m vis — CAT III autoland territory; ceiling-only events never land here.</p>
     <h3>Honest limitations</h3>
     <p class="note" style="margin-top:6px">METAR prevailing visibility is a proxy for RVR — RVR on a lit runway is often better, so the bands understate what's flyable; read them as a climatological index, not operating minima. Thresholds are global constants, not per-runway minima. CAT II/III flags are authoritative for the US (FAA CIFP), hand-curated internationally, and "assumed CAT I" elsewhere — confidence is shown per airport. The cause chart folds BR (mist) into fog: BR officially means vis ≥ 800 m, so BR on a sub-CAT-I observation is conservatively-coded fog.</p>
+    <h3>Does it predict real cancellations?</h3>
+    <p class="note" id="bts-note" style="margin-top:6px">Loading validation…</p>
     <h3>Why CAT II/III matters</h3>
     <p class="note" style="margin-top:6px">At a CAT III airport, suitably equipped airliners already land in fog. EFVS value concentrates where low visibility is frequent <i>and</i> CAT II/III is absent — use the rankings filter to see exactly that intersection.</p>
     <p class="note">Full methodology with sources: <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">github.com/travis735/fog-atlas</a></p>
   `;
   panel.hidden = false;
+  fetch("/data/bts_validation.json").then((r) => r.json()).then((v) => {
+    const el = panelContent.querySelector("#bts-note");
+    if (!el) return;
+    el.innerHTML = `Yes — joined against US DOT/BTS on-time data (${v.window}, ` +
+      `${(Object.values(v.bands) as any[]).reduce((s, b) => s + b.flights, 0).toLocaleString()} departures): ` +
+      `flights scheduled during EFVS-recoverable hours at their origin were weather-cancelled at ` +
+      `<b style="color:var(--accent)">${v.multiplier_efvs}× the baseline rate</b> ` +
+      `(${v.bands.efvs.wxCancelPct}% vs ${v.bands.normal.wxCancelPct}%). ` +
+      `Below-300m hours run ${v.multiplier_below}× — lower than the EFVS band because that exposure ` +
+      `concentrates at CAT III hubs where autoland keeps operating: the no-fallback thesis, visible in cancellation data. ` +
+      `BTS "weather" is generic (snow counts too) — read as validation, not a fog-specific cost model.`;
+  }).catch(() => {});
 }
 
 function applyScrub() {

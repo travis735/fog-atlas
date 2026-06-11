@@ -47,9 +47,17 @@ Flagged stations are excluded from the fog field and rankings, demoted on the ma
 - **International:** the FAA's published OpSpec C060 list of foreign facilities approved for CAT II/III operations — 158 airports. Everything else is **assumed CAT I** and labeled accordingly; the C060 list reflects FAA approval for US carriers, so a foreign airport with CAT II/III capability not used by US carriers may be missing.
 - The EFVS-value framing: at a CAT III airport, suitably equipped airlines already land in fog — EFVS value concentrates where low visibility is frequent *and* CAT II/III is absent.
 
-## Cancellation validation (US only, phase 1.5)
+## Cancellation validation (US only)
 
-US DOT BTS on-time data provides cancellations with a generic "weather" cause — not fog-specific. We use it only as a correlation check (cancellation rate on sub-CAT-I mornings vs. baseline), never as a global layer.
+US DOT/BTS on-time data (2023–2024, 13.9M scheduled departures) joined to our hourly bands at each flight's origin airport:
+
+| Band at scheduled departure hour | Flights | Weather-cancel rate |
+|---|---|---|
+| Normal | 13,401,786 | 0.73% |
+| EFVS-recoverable | 40,759 | 3.81% — **5.2× baseline** |
+| Below 300 m | 11,637 | 2.20% — 3.0× baseline |
+
+Two honest readings of the structure. First, the below-300m multiplier being *lower* than the EFVS band's looks backwards until you notice where that exposure lives: mostly at CAT III-equipped hubs (ORD, DTW, SEA) where autoland keeps the operation running — which is the CAT II/III-absence thesis showing up in cancellation data. Second, BTS "weather" cancellations are generic: Denver's high multiplier is blizzard-driven, not fog-driven; treat the aggregate as validation that the bands mark operationally hostile hours, not as a fog-specific cost model. JFK's *below-baseline* rate during sub-CAT-I hours (0.05%) likely reflects proactive schedule thinning being coded as carrier/NAS rather than weather.
 
 ## Sources
 
