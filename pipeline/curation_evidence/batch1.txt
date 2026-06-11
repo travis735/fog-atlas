@@ -1,0 +1,15 @@
+EGOM | ils=no | cat=none | conf=high | source=https://www.raf.mod.uk/our-organisation/stations/raf-spadeadam/ | note=EW range; 533m strip; no navaids or instrument approaches
+LYUZ | ils=no | cat=none | conf=high | source=https://aerodromponikve.rs/wp-content/uploads/2020/09/VFR_LY_AD_2_LYUZ_en.pdf | note=SMATSA VFR AIP; daylight only; no ILS listed
+EDGS | ils=yes | cat=I | conf=med | source=https://www.siegerland-airport.de/en/pilot-information/fbo-and-other-local-regulations/ | note=Airport confirms ILS RWY 31; category unstated, CAT I default
+LFVP | ils=yes | cat=III | conf=med | source=https://www.sia.aviation-civile.gouv.fr/pub/media/store/documents/file/c/a/carsamnam_sup_a_2017_002_en.pdf | note=SIA SUP: RWY 26 ILS approved CAT I/II/III
+UEEE | ils=yes | cat=II | conf=high | source=https://yks.aero/aircompany/characteristic | note=Official airport site: RWY 23 precision approach CAT I/II
+UOOO | ils=yes | cat=I | conf=low | source=https://vatrus.info/airport/UOOO?lang=eng | note=ILS both ends; CAT II RWY19 reported but unverified
+SCVD | ils=yes | cat=I | conf=high | source=https://aipchile.dgac.gob.cl/dasa/aip_chile_con_contenido/aipmap/SCVD/SCVD%20IAC1.pdf | note=Chile AIP chart ILS o LOC RWY 35
+LEVX | ils=yes | cat=III | conf=high | source=https://aip.enaire.es/AIP/contenido_AIP/AD/AD2/LEVX/LE_AD_2_LEVX_en.pdf | note=ENAIRE AIP: LOC 19 ILS CAT III, LVP procedures
+ETSB | ils=no | cat=none | conf=low | source=https://knowledgebase.vatsim-germany.org/books/sops-fir-langen/chapter/etsb-buchel-airbase/export/html | note=TACAN-only approaches; PAR withdrawn; MIL AIP not public
+RJCK | ils=yes | cat=III | conf=high | source=https://www.hokkaido-airports.com/en/kushiro/mist/ | note=Operator: CAT IIIa 1995, CAT IIIb since 2006
+CYQI | ils=no | cat=none | conf=med | source=https://en.wikipedia.org/wiki/Yarmouth_Airport | note=CAT I ILS decommissioned 2013; fltplan shows RNAV only
+EFRO | ils=yes | cat=II | conf=high | source=https://www.ais.fi/eaip/006-2024_2024_11_28/documents/Root_WePub/ANSFI/Charts/AD/EFRO/EF_AD_2_EFRO_21_ILSZ.pdf | note=Finnish AIP chart ILS Z CAT II RWY 21
+LKNA | ils=yes | cat=I | conf=high | source=https://aim.rlp.cz/ais_data/aip/data/valid/a2-na-text.pdf | note=Czech AIP: LOC 30 ILS CAT I 111.350 MHz
+SCQP | ils=yes | cat=III | conf=high | source=https://www.dgac.gob.cl/aerodromo-la-araucania-freire/ | note=DGAC: airport has ILS CAT IIIB system
+EGDR | ils=yes | cat=I | conf=high | source=https://www.aidu.mod.uk/aip/pdf/ad/EGDR-Culdrose-Combined.pdf | note=UK MIL AIP: ILS RWY 29; CAT II/III nil

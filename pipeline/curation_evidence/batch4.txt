@@ -1,0 +1,15 @@
+ETHN | ils=yes | cat=I | conf=high | source=https://navigraph.com/airport/ETHN/Niederstetten | note=ILS+COPTER ILS RWY 25 per MIL AIP charts; PAR also
+BGGH | ils=yes | cat=I | conf=high | source=https://navigraph.com/airport/BGGH/Nuuk | note=ILS both ends since Nov 2024 runway; no CAT II source
+ESOK | ils=yes | cat=I | conf=high | source=https://aro.lfv.se/content/eaip/AIRAC%20AIP%20AMDT%204-2026_2026_06_11/eAIP/ES-AD%202%20ESOK%20KARLSTAD%201-en-GB.html | note=AIP AD 2.19: ILS CAT I both RWY 03/21
+LRSV | ils=yes | cat=II | conf=high | source=https://aisro.ro/aip/2026-01-01/DOCS/AIP/AD/AD2/AD_2_14_LRSV/LR_AD_2_LRSV_en.pdf | note=AIP: RWY 34 ILS CAT II approved, LVP established
+ESNK | ils=yes | cat=I | conf=high | source=https://aro.lfv.se/content/eaip/AIRAC%20AIP%20AMDT%204-2026_2026_06_11/eAIP/ES-AD%202%20ESNK%20KRAMFORS-SOLLEFTE%C3%85%201-en-GB.html | note=AIP: ILS CAT I RWY 35; LOC-only RWY 17
+ETNH | ils=yes | cat=I | conf=high | source=https://navigraph.com/airport/ETNH/Hohn | note=ILS RWY 26 only; TACAN+PAR both runways
+URMT | ils=yes | cat=I | conf=med | source=https://vatrus.info/airport/URMT?lang=eng | note=AIP-mirror charts show ILS CAT I RWY 07 and 25
+ESST | ils=no | cat=none | conf=high | source=https://aro.lfv.se/content/eaip/AIRAC%20AIP%20AMDT%204-2026_2026_06_11/eAIP/ES-AD%202%20ESST%20TORSBY%201-en-GB.html | note=AIP: localizers only, no glidepath; LOC/NDB/RNP approaches
+ENTO | ils=yes | cat=II | conf=high | source=https://torp.no/wp-content/uploads/2022/09/Torp.no_OPS-info-for-ENTO-and-Torp-CTR_v2.4_EN_2022-09-05.pdf | note=ILS CAT II RWY 18 since 2018; RWY 36 CAT I
+ETNS | ils=no | cat=none | conf=high | source=https://navigraph.com/airport/ETNS/Schleswig | note=TACAN/RNP/PAR only; no ILS chart; IVAO concurs
+YWGT | ils=no | cat=none | conf=high | source=https://www.airservicesaustralia.com/aip/current/ersa/FAC_YWGT_19MAR2026.pdf | note=ERSA: CTAF aerodrome, no navaids; RNAV GNSS only
+UKDR | ils=yes | cat=I | conf=med | source=https://navigraph.com/airport/UKDR/Kryvyi-Rih | note=Prewar ILS RWY 36; struck 2022, airspace closed since
+CYRT | ils=no | cat=none | conf=med | source=https://navigraph.com/airport/CYRT/Rankin-Inlet | note=RNAV/VOR approaches only; Wikipedia ILS claim unsupported
+BGKK | ils=no | cat=none | conf=med | source=https://navigraph.com/airport/BGKK/Kulusuk | note=NDB/RNP approaches only; gravel runway
+ESMQ | ils=yes | cat=I | conf=high | source=https://aro.lfv.se/content/eaip/AIRAC%20AIP%20AMDT%204-2026_2026_06_11/eAIP/ES-AD%202%20ESMQ%20KALMAR%201-en-GB.html | note=AIP: ILS CAT I RWY 16 only; RWY 34 none

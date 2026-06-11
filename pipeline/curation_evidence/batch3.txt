@@ -1,0 +1,15 @@
+ESNO | ils=yes | cat=I | conf=low | source=https://api.flightplandatabase.com/nav/airport/ESNO | note=ILS RWY12 110.10; official LFV AIP unreachable, nav-database only
+ETMN | ils=yes | cat=I | conf=med | source=https://knowledgebase.vatsim-germany.org/books/sops-fir-bremen/chapter/etmn-nordholz/export/html | note=mil AIP not public; ILS both RWYs plus TACAN/PAR
+ENRY | ils=yes | cat=II | conf=high | source=https://ais.avinor.no/en/AIP/View/111/2021-12-02-AIRAC/html/eAIP/EN-AD-2.ENRY-en-GB.html | note=AIP Norway: ILS CAT II RWY30 only; military since 2016
+ESMX | ils=yes | cat=I | conf=med | source=https://docplayer.net/13555780-Esmx-vaxjo-kronoberg.html | note=AIP copy: ILS CAT I RWY19; live LFV AIP unreachable
+LZSL | ils=unknown | cat=I | conf=low | source=https://api.flightplandatabase.com/nav/airport/LZSL | note=closed for runway rebuild to 2027; historic ILS CAT I RWY36
+LFBX | ils=no | cat=none | conf=high | source=https://perigueux.aeroport.fr/en/pilot-information-perigueux-airport/ | note=official site: RNP 29 only; Wikipedia ILS claim outdated
+UASK | ils=yes | cat=I | conf=high | source=https://www.ans.kz/AIP/eAIP/2026-02-19-AIRAC/html/eAIP/UA-AD-2.UASK-en-GB.html | note=official AIP: ILS/DME CAT I both RWY 12 and 30
+EGJA | ils=no | cat=none | conf=high | source=https://www.aurora.nats.co.uk/htmlAIP/Publications/2024-04-18-AIRAC/html/eAIP/EG-AD-2.EGJA-en-GB.html | note=AIP: NDB and GNSS approaches only; no ILS
+VEBN | ils=yes | cat=I | conf=high | source=https://aim-india.aai.aero/eaip-v2-06-2024/eAIP/IN-AD%202.1VEBN-en-GB.html | note=AAI eAIP: ILS CAT I RWY27, LOC 109.9 IVNS
+LEDA | ils=yes | cat=I | conf=high | source=https://aip.enaire.es/aip/contenido_AIP/AD/AD2/LEDA/LE_AD_2_LEDA_en.pdf | note=ENAIRE AIP: LOC 31 ILS CAT I, ILL 110.9
+EGJB | ils=yes | cat=I | conf=high | source=https://www.aurora.nats.co.uk/htmlAIP/Publications/2021-02-25-AIRAC/html/eAIP/EG-AD-2.EGJB-en-GB.html | note=AIP: CAT I both ends; not equipped CAT II/III
+OITL | ils=yes | cat=I | conf=med | source=https://samanplatinum.com/wp-content/uploads/2023/08/OITL-Ardabil.pdf | note=Iran AIP copy shows LLZ/GP RWY33; nav DB corroborates
+LRCT | ils=unknown | cat=none | conf=low | source=none | note=military; no public AIP; no ILS evidence found anywhere
+EFUT | ils=yes | cat=I | conf=high | source=https://www.ais.fi/eaip/001-2024_2024_01_25/eAIP/EF-AD%202%20EFUT%20-%20UTTI%201-en-GB.html | note=Finnish AIP: ILS CAT I RWY25, LOC 110.5
+UKDD | ils=yes | cat=I | conf=med | source=https://vacc-ua.org/static/files/charts/UKDD.pdf | note=prewar ILS RWY08/26 CAT I; airport destroyed April 2022

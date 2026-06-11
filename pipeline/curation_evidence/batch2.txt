@@ -1,0 +1,15 @@
+LSZG | ils=no | cat=none | conf=med | source=https://www.vacc.ch/en/airports_and_charts/LSZG | note=Only VOR/DME and RNP approaches RWY 24, no ILS
+USDA | ils=yes | cat=I | conf=med | source=https://vatrus.info/airport/USDA | note=ILS CAT I RWY 04 per Russian AIP charts
+ETSI | ils=yes | cat=I | conf=high | source=https://etsi-airport.de/en/info | note=Operator lists ILS; Mil AIP ILS Z/Y RWY 25L
+YLIS | ils=no | cat=none | conf=high | source=https://www.airservicesaustralia.com/aip/pending/dap/LISGN02-181_27NOV2025.pdf | note=Airservices DAP publishes RNP approaches only
+EIKN | ils=yes | cat=II | conf=high | source=https://www.airnav.ie/AIRAC/2026-06-11-AIRAC/html/eAIP/EI-AD-2.EIKN-en-IE.html | note=eAIP: ILS CAT I and II RWY 26
+LQTZ | ils=yes | cat=I | conf=high | source=https://eaip.bhansa.gov.ba/2026-03-19-AIRAC/html/eAIP/LQ-AD-2.LQTZ-en-GB.html | note=eAIP AD 2.19: ILS CAT I RWY 09
+OPST | ils=yes | cat=I | conf=low | source=https://www.airport-technology.com/projects/sialkot/ | note=ILS installed at build; Jeppesen ILS RWY 04; AIP unverified
+ETSN | ils=yes | cat=I | conf=med | source=https://de.ivao.aero/special-operations/militaerische-luftfahrt/flugplaetze-und-geschwader/etsn/ | note=Mil-AIP-based procedures list ILS RWY 27 plus TACAN/PAR
+ESMK | ils=yes | cat=I | conf=high | source=https://kidairport.com/en/visiting-crew/ | note=Airport official site: ILS CAT 1
+URMN | ils=yes | cat=I | conf=med | source=https://vatrus.info/airport/URMN | note=ILS CAT I RWY 24 (111.5) per AIP charts
+URWI | ils=yes | cat=I | conf=med | source=https://vatrus.info/airport/URWI | note=ILS CAT I RWY 09 per AIP charts; reopened 2024
+LJCE | ils=yes | cat=I | conf=med | source=https://www.gov.si/assets/ministrstva/MO/Dogodki/2021/marec/Zakljucek-prve-faze-prenove-letalisca-Cerklje.pdf | note=ILS CAT I installed 2021 during base modernization
+ETSL | ils=no | cat=none | conf=med | source=https://de.ivao.aero/special-operations/militaerische-luftfahrt/flugplaetze-und-geschwader/etsl/ | note=TACAN/RNP/PAR/SRA only, no ILS
+CYBX | ils=no | cat=none | conf=low | source=https://metar-taf.com/airport/CYBX-lourdes-de-blanc-sablon-airport | note=NDB/DME plus RNAV GNSS only; no ILS listed
+ETHL | ils=no | cat=none | conf=med | source=https://de.ivao.aero/special-operations/militaerische-luftfahrt/flugplaetze-und-geschwader/ethl/ | note=COPTER-RNP/NDB/PAR/SRA only, no ILS

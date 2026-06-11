@@ -111,9 +111,11 @@ def main():
             "size": m.get("size", "large"),
             "coveragePct": round(cov, 1),
             "reliability": reliability,
-            # ILS presence: authoritative for the US (NASR) and the C060
-            # list; everything else is unknown, NOT no
-            "ils": ("yes" if m["cat_ils_confidence"] in ("faa-nasr", "faa-c060", "curated", "verify")
+            # ILS presence: authoritative for the US (NASR), the C060 list,
+            # and AIP-curated internationals; cat NONE = verified no ILS;
+            # everything else is unknown, NOT no
+            "ils": ("no" if m["cat_ils"] == "NONE"
+                    else "yes" if m["cat_ils_confidence"] in ("faa-nasr", "faa-c060", "curated", "verify", "aip")
                     else "no" if m["country"] == "US" else "unknown"),
             "efvsHoursPerYear": efvs_hpy,
             "belowHoursPerYear": below_hpy,

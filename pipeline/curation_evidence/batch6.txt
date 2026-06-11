@@ -1,0 +1,15 @@
+EGDM | ils=yes | cat=I | conf=high | source=https://www.aidu.mod.uk/aip/pdf/ad/EGDM-Boscombe-Down-Combined.pdf | note=UK Mil AIP: ILS/DME RWY 23 I-BOD, Cat I DH; plus TACAN/PAR
+OPMT | ils=yes | cat=I | conf=high | source=https://paawebadmin.paa.gov.pk/media/eaip/02-25/eAIP/AD/multan_data.pdf | note=Pakistan AIP AD 2.19: ILS/LOC CAT I RWY 36, IMT 110.3
+LIPO | ils=yes | cat=III | conf=med | source=https://www.aeroportobrescia.it/cargo/caratteristiche-tecniche.html | note=Official site states CAT IIIB RWY 32; 2012 saw temporary downgrade
+ESGP | ils=no | cat=none | conf=high | source=https://aro.lfv.se/Content/eaip/AIP_OFFLINE.zip | note=Swedish AIP: AD 2.19 empty, VFR-only aerodrome, no ILS
+ESTL | ils=yes | cat=I | conf=high | source=https://aro.lfv.se/Content/eaip/AIP_OFFLINE.zip | note=Swedish AIP: ILS CAT I RWY 29L, LOC DA 108.55
+SKPS | ils=yes | cat=I | conf=high | source=https://eaip-colombia.atnaerocivil.gov.co/eaip/A%2069-25_2025_10_02/documents/Root_WePub/Colombia/CHARTS/AD/SKPS/AMDT66/IAC%20-%20ICAO%20-%20ILS%20X%20CAT%20I%20RWY%2020%20(Tabular%20description).pdf | note=Colombian eAIP charts: ILS X/Y CAT I RWY 20
+CYSJ | ils=yes | cat=I | conf=high | source=https://imageserver.fltplan.com/afd/Canada/26DEC2024/CYSJ-2500.PDF | note=CFS: ILS ISJ 110.5 RWY 23, IDM 108.3 RWY 05
+ETNT | ils=yes | cat=I | conf=low | source=https://knowledgebase.vatsim-germany.org/books/sops-fir-bremen/chapter/etnt-wittmundhafen | note=MilAIP-derived mirrors: ILS RWY 25 plus TACAN/PAR/SRA; MilAIP registration-walled
+ETHS | ils=no | cat=none | conf=low | source=https://de.ivao.aero/special-operations/militaerische-luftfahrt/flugplaetze-und-geschwader/eths/ | note=No published IFR approaches; NDB/PAR only, consistent across mirrors
+EHDL | ils=yes | cat=I | conf=high | source=https://english.defensie.nl/site/binaries/site-content/collections/documents/2026/04/28/milaip-06-26-part-3-ad1/milaip-06-2026split-ad-deel-1-dp-dl-eh-gr-kd.pdf | note=Current MilAIP: ILS RWY 19 DNS 108.7; also TACAN
+EHGG | ils=yes | cat=I | conf=high | source=https://opennav.com/pdf/EHGG/EH-AD-2.EHGG-IAC-23-1.pdf | note=AIP Netherlands chart: ILS CAT I/DME RWY 23, GRO 109.9
+EGNM | ils=yes | cat=III | conf=high | source=https://www.aurora.nats.co.uk/htmlAIP/Publications/2026-06-11-AIRAC/html/eAIP/EG-AD-2.EGNM-en-GB.html | note=UK eAIP AD 2.19: RWY 32 ILS CAT III, RWY 14 CAT I
+LTCK | ils=yes | cat=I | conf=high | source=https://www.dhmi.gov.tr/AIPDocuments/LT_AD_2_LTCK_en.pdf | note=Türkiye AIP: ILS CAT I RWY 29R IMUS 108.5; also TACAN
+LRBC | ils=yes | cat=II | conf=high | source=https://www.bacauairport.ro/comunicat-de-presa-10/ | note=Official airport: ILS CAT II operational both RWY 16/34
+UKDE | ils=yes | cat=I | conf=low | source=https://www.universalweather.com/airports/UKDE-OZH-MOKRAYA-AIRPORT-ZAPORIZHZHIA-ZAPORIZHZHIA-UKRAINE/ | note=Prewar ILS RWY 02; closed since 2022 invasion, terminal destroyed 2024

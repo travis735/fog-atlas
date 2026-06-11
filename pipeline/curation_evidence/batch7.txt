@@ -1,0 +1,15 @@
+RJSA | ils=yes | cat=III | conf=med | source=https://yinlei.org/it-iot/doc/RJSA.pdf | note=AIP Japan charts: ILS RWY 24 CAT II & III (IIIa)
+CYRB | ils=yes | cat=I | conf=high | source=https://www.navcanada.ca/en/ils-integrity-flight-inspection-performance.pdf | note=NAV CANADA lists ILS IRB 110.3 RWY 35 (true)
+EBFS | ils=yes | cat=I | conf=high | source=https://ops.skeyes.be/html/belgocontrol_static/eaip/eAIP_Main/html/eAIP/EB-AD-2.EBFS-en-GB.html | note=Belgian eAIP: ILS CAT I RWY 26R and 08L
+EKSP | ils=yes | cat=I | conf=med | source=https://aim.naviair.dk/media/files/a3xj03ekhra/EK_AD_2_EKSP_en.pdf | note=Naviair: RWY 10L/28R precision CAT I (PA-1); ILS charted
+ESMT | ils=yes | cat=I | conf=high | source=https://www.aro.lfv.se/Editorial/View/12957/ES_AD_2_ESMT_en | note=Swedish AIP: ILS CAT I LOC 19 MT 110.10
+LOWL | ils=yes | cat=III | conf=high | source=https://www.linz-airport.com/magazin/Luftfahrt-ABC_bba_831965 | note=Official airport: RWY 26 CAT IIIb, RWY 08 CAT I
+EGUW | ils=yes | cat=I | conf=high | source=https://www.aidu.mod.uk/aip/pdf/ad/EGUW-Wattisham-Combined.pdf | note=UK MIL AIP: ILS/DME RWY 23; CAT II/III nil
+EHLW | ils=yes | cat=I | conf=high | source=https://nl.ivao.aero/downloads/specops_loa/ehlw.pdf | note=MilAIP NL: ILS RWYs 05/23/09/27 plus TACAN
+CYQX | ils=yes | cat=I | conf=high | source=https://www.navcanada.ca/en/ils-integrity-flight-inspection-performance.pdf | note=ILS RWY 03 and 13 both classified CAT I only
+ETNL | ils=yes | cat=I | conf=high | source=https://rostock-airport.de/wp-content/uploads/2022/02/flughafen-daten-fakten-zahlen-1.pdf | note=Official airport: ILS CAT I on RWY 10 and 28
+OPLA | ils=yes | cat=III | conf=med | source=https://www.dawn.com/news/1223065 | note=CAT IIIB RWY 36R; corroborated by Pakistan AAIB report
+LOXZ | ils=unknown | cat=none | conf=low | source=https://web.archive.org/web/20220926022256/https://at.ivao.aero/fir/BETA_procedures/loxz-ops.pdf | note=Sources conflict; RNAV/PAR/SRA documented, no ILS frequency verifiable
+UCFO | ils=yes | cat=I | conf=high | source=http://kan.kg/ais/eaip/2025-04-17-AIRAC/html/eAIP/UC-AD-2.UCFO-en-GB.html | note=Kyrgyz eAIP: ILS RWY 12 IOU 111.1, no CAT stated
+SBPP | ils=no | cat=none | conf=high | source=https://aisweb.decea.mil.br/?i=aerodromos&codigo=SBPP | note=DECEA AISWEB: only NDB and RNP approaches published
+LRCK | ils=yes | cat=II | conf=med | source=http://www.aisro.ro/aip/2014-04-03/DOCS/AIP/AD/AD2/AD_2_8_LRCK/LR_AD_2_LRCK_en.pdf | note=AIP Romania (2014 archive): LOC 36 ILS CAT II

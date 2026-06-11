@@ -1,0 +1,15 @@
+URWW | ils=yes | cat=III | conf=med | source=https://vatrus.info/airport/URWW | note=AIP charts ILS Z RWY06 CAT I/II/III; ru.wiki ICAO IIIA cert
+LTCW | ils=no | cat=none | conf=med | source=https://navigraph.com/airport/LTCW | note=LOC-only RWY29 plus RNP/VOR/NDB; no full ILS published
+YCOM | ils=no | cat=none | conf=high | source=https://navigraph.com/airport/YCOM | note=RNP and NDB approaches only; no ILS installed
+YSRI | ils=yes | cat=I | conf=high | source=https://ais-af.airforce.gov.au/sites/default/files/current-ad2/2504%20Richmond%20FIHA%20AD2%20Supp.pdf | note=Military field with ILS RWY 28 plus TACAN approaches
+EPSY | ils=yes | cat=II | conf=high | source=https://www.ais.pansa.pl/eAIPIFR/AIRAC%20AMDT%2010-25_2025_10_02/eAIP/AD%202%20EPSY%201-en-GB.html | note=Polish eAIP AD 2.19: ILS LOC 01 CAT II
+EFLP | ils=yes | cat=I | conf=high | source=https://www.ais.fi/eaip/006-2023_2023_11_30/eAIP/EF-AD%202%20EFLP%20-%20LAPPEENRANTA%201-en-GB.html | note=Finnish eAIP: ILS CAT I RWY 06 only
+URMG | ils=yes | cat=I | conf=med | source=https://vatrus.info/airport/URMG | note=ILS CAT I RWY 26 only; RWY 08 non-precision
+LIPL | ils=yes | cat=I | conf=med | source=https://navigraph.com/airport/LIPL | note=ILS/LOC RWY 31L per AIRAC charts, plus TACAN/PAR
+LYKV | ils=no | cat=none | conf=med | source=https://navigraph.com/airport/LYKV | note=Only RNP and VOR approaches in Serbian AIP charts
+LFBA | ils=yes | cat=I | conf=high | source=https://www.dircam.dsae.defense.gouv.fr/images/Stories/Doc/MIAC1/miac1_agen_lfba.pdf | note=ILS or LOC RWY 29 with DME AG
+EKVG | ils=yes | cat=I | conf=med | source=https://navigraph.com/airport/EKVG | note=ILS/LOC RWY 30; offset localizer, 3.5-degree glidepath
+ESKS | ils=yes | cat=III | conf=high | source=https://aro.lfv.se/content/eaip/AIRAC%20AIP%20AMDT%204-2026_2026_06_11/eAIP/ES-AD%202%20ESKS%20S%C3%84LEN-SCANDINAVIAN%20MOUNTAINS%201-en-GB.html | note=eAIP: LOC 15 and 33 both ILS CAT III (2020)
+URMO | ils=yes | cat=I | conf=med | source=https://vatrus.info/airport/URMO | note=ILS CAT I both runways; CAT II claims unverified
+LDZA | ils=yes | cat=III | conf=high | source=https://www.crocontrol.hr/UserDocsImages/AIS%20produkti/eAIP/2025-10-02-AIRAC/html/eAIP/LD-AD-2.LDZA-en-HR.html | note=eAIP CAT II/III ops RWY 04; CAT IIIb since 2004
+EGPL | ils=no | cat=none | conf=high | source=https://www.aurora.nats.co.uk/htmlAIP/Publications/2026-05-14-AIRAC/html/eAIP/EG-AD-2.EGPL-en-GB.html | note=UK AIP: VOR/DME and NDB approaches only

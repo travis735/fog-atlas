@@ -318,7 +318,7 @@ function openRankings() {
             <td><b>${a.icao}</b> ${a.name.length > 26 ? a.name.slice(0, 25) + "…" : a.name} <em style="color:var(--ink-dim)">${a.country}</em></td>
             <td class="num efvs">${Math.round(a.efvsHoursPerYear)}</td>
             <td class="num">${Math.round(a.belowHoursPerYear)}</td>
-            <td>${a.catIls === "CATIII" || a.catIls === "CATII" ? a.catIls.replace("CAT", "") : "I"}</td>
+            <td>${a.catIls === "NONE" ? "—" : a.catIls === "CATIII" || a.catIls === "CATII" ? a.catIls.replace("CAT", "") : "I"}</td>
           </tr>`).join("")}
       </tbody>
     </table>
@@ -465,6 +465,7 @@ async function openAirport(icao: string) {
   history.replaceState(null, "", `#${icao}`);
 
   const cat3 = a.catIls === "CATIII" || a.catIls === "CATII";
+  const noIls = a.catIls === "NONE";
   // BR officially means vis >= 800m, so BR on a sub-CAT-I ob is fog that was
   // coded conservatively — present them as one family
   const merged: Record<string, number> = { ...a.causes };
@@ -479,12 +480,15 @@ async function openAirport(icao: string) {
     <h2>${a.icao}</h2>
     <p class="sub">${a.name} · ${a.country}</p>
     <div>
-      <span class="badge ${cat3 ? "cat3" : "cat1"}" title="${cat3
+      <span class="badge ${cat3 ? "cat3" : "cat1"}" title="${noIls
+        ? "Verified: no ILS at this airport — RNAV/non-precision approaches only, so real minima sit ABOVE CAT I and these bands understate blocked hours"
+        : cat3
         ? "This airport has CAT II/III ILS — suitably equipped airliners can already land in low visibility"
-        : "Best available approach assumed CAT I — visibility below ~800 m forces a missed approach without EFVS"}">${cat3 ? a.catIls.replace("CAT", "CAT ") : "CAT I"}</span>
+        : "Best available approach CAT I — visibility below ~800 m forces a missed approach without EFVS"}">${noIls ? "NO ILS" : cat3 ? a.catIls.replace("CAT", "CAT ") : "CAT I"}</span>
       <span class="badge conf" title="${{
         "faa-nasr": "ILS category from the FAA NASR database (authoritative, US)",
         "faa-c060": "On the FAA OpSpec C060 list of foreign CAT II/III facilities",
+        aip: "ILS status researched from the national AIP / official sources and spot-audited",
         curated: "Capability confirmed from AIPs / FAA publications",
         verify: "Capability confirmed from AIPs / FAA publications",
         assumed: a.country === "US"
@@ -494,6 +498,7 @@ async function openAirport(icao: string) {
       }[a.catConfidence] ?? ""}">${{
         "faa-nasr": "confirmed · FAA NASR",
         "faa-c060": "confirmed · FAA C060",
+        aip: "confirmed · AIP / official",
         curated: "capability curated",
         verify: "capability curated",
         assumed: a.country === "US" ? "no ILS on record — RNAV only" : "assumed — not on FAA CAT II/III list",
