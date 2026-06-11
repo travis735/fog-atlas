@@ -464,6 +464,7 @@ function openRankings() {
       openAirport(icao);
     }));
   panel.hidden = false;
+  document.body.classList.add("panel-open");
 }
 
 $("#rankings-btn").addEventListener("click", openRankings);
@@ -491,6 +492,7 @@ function openMethodology() {
     <p class="note">Full methodology with sources: <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">github.com/travis735/fog-atlas</a></p>
   `;
   panel.hidden = false;
+  document.body.classList.add("panel-open");
   fetch("/data/bts_validation.json").then((r) => r.json()).then((v) => {
     const el = panelContent.querySelector("#bts-note");
     if (!el) return;
@@ -574,6 +576,7 @@ $("#play").addEventListener("click", () => {
 
 $("#close").addEventListener("click", () => {
   panel.hidden = true;
+  document.body.classList.remove("panel-open");
   history.replaceState(null, "", location.pathname);
 });
 
@@ -812,6 +815,7 @@ async function openAirport(icao: string) {
     </div>`).join("");
 
   panel.hidden = false;
+  document.body.classList.add("panel-open");
 }
 
 applyScrub();
