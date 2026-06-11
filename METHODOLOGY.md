@@ -28,6 +28,10 @@ Known approximations:
 2. **Thresholds are global constants.** Real minima vary per runway, per approach, per operator. ½ SM / 300 m are defensible central values, not authoritative ones.
 3. **Reporting granularity.** US ASOS reports fractions (¼ SM = ~400 m falls in the EFVS band; ⅛ SM = ~200 m falls below). International METARs report meters with their own steps. Band edges sit between common reporting steps where possible.
 
+## Persistence statistics (phase 2)
+
+An *event* is a maximal run of consecutive hourly observations below CAT I (a missing hour breaks the run, so durations are conservative). Per airport we report event-duration quartiles and the survival curve P(still below CAT I k hours after onset), overall and conditioned on season × time-of-day of onset where ≥ 20 events support the cell; airports with < 25 events in ten years get no persistence claims. The live "right now" line classifies the latest METAR (via NOAA AWC) with the same band rules; when an airport is currently below CAT I, the quoted lift odds use the matching season/time-of-day survival curve. Caveat: survival is measured from event *onset* — a continuing event that began hours ago has different remaining-duration odds than a fresh one, and a single METAR can't tell us the elapsed time.
+
 ## Cause attribution
 
 Present-weather codes, first match in priority order: `FG` (incl. FZFG) → `SN` → `HZ`/`FU` → `BR` → other/none. An observation with multiple phenomena is attributed to the highest-priority one.

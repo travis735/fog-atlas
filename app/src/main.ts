@@ -424,9 +424,18 @@ $("#close").addEventListener("click", () => {
   history.replaceState(null, "", location.pathname);
 });
 
+let persistenceTable: Record<string, any> | null | undefined;
+
+const SEASONS = ["DJF", "DJF", "MAM", "MAM", "MAM", "JJA", "JJA", "JJA", "SON", "SON", "SON", "DJF"];
+const TODS = ["night", "morning", "afternoon", "evening"];
+
 async function openAirport(icao: string) {
   const a = state.airports.find((x) => x.icao === icao);
   if (!a) return;
+  if (persistenceTable === undefined) {
+    persistenceTable = null; // only try once
+    try { persistenceTable = await (await fetch("/data/persistence.json")).json(); } catch {}
+  }
   const detail = await (await fetch(`/data/detail/${icao}.json`)).json();
   history.replaceState(null, "", `#${icao}`);
 
@@ -470,9 +479,11 @@ async function openAirport(icao: string) {
       <div class="stat"><div class="v">${Math.round(a.belowHoursPerYear)}</div><div class="k">below 300 m hrs / yr</div></div>
       <div class="stat"><div class="v">${detail.coveragePct}%</div><div class="k">archive coverage</div></div>
     </div>
+    <div id="live"></div>
     <h3 id="heatmap-title">When it closes — % of hours below CAT I, by month × local hour</h3>
     <div id="heatmap"></div>
     <div id="heatmap-legend"></div>
+    <div id="persist"></div>
     <h3>Cause of low visibility</h3>
     <div id="causes"></div>
     <p class="note">Sub-CAT-I = prevailing visibility below ~800 m or ceiling below 200 ft. Visibility is a climatological proxy for RVR — read as relative risk, not operating minima. Hours are local (${a.tz}). 2016–2025 routine METARs. <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">Full methodology</a>.</p>
@@ -511,6 +522,65 @@ async function openAirport(icao: string) {
   $("#heatmap-legend").innerHTML = BIN_LABELS.map((l, i) => `
     <span class="bin"><i style="background:${BIN_COLORS[i]}"></i>${l}</span>`).join("") +
     `<span class="bin-unit">% of hours</span>`;
+
+  // ---- phase 2: persistence ("once it closes, how long?") ----
+  const per = persistenceTable?.[icao];
+  if (per) {
+    const pts = [{ h: 0, p: 1 }, ...per.curve.map((p: number, i: number) => ({ h: i + 1, p }))];
+    const persistChart = Plot.plot({
+      width: 386, height: 120, marginLeft: 34,
+      style: { background: "transparent", color: "#8294a3", fontSize: "9px" },
+      x: { label: "hours after onset", ticks: [0, 2, 4, 6, 8] },
+      y: { label: null, domain: [0, 1], tickFormat: (d: number) => `${Math.round(d * 100)}%` },
+      marks: [
+        Plot.areaY(pts, { x: "h", y: "p", fill: "#9fd8ff18", curve: "monotone-x" }),
+        Plot.lineY(pts, { x: "h", y: "p", stroke: "#9fd8ff", strokeWidth: 1.5, curve: "monotone-x" }),
+        Plot.tip(pts, Plot.pointerX({ x: "h", y: "p",
+          title: (d: any) => `${Math.round(d.p * 100)}% of events still below CAT I ${d.h}h after onset` })),
+      ],
+    });
+    $("#persist").innerHTML = `
+      <h3>Once it closes — how long it stays closed</h3>
+      <div class="stats" style="margin:10px 0">
+        <div class="stat"><div class="v">${per.medianH}h</div><div class="k">median event</div></div>
+        <div class="stat"><div class="v">${per.p25H}–${per.p75H}h</div><div class="k">middle 50%</div></div>
+        <div class="stat"><div class="v">${per.n}</div><div class="k">events in 10 yrs</div></div>
+      </div>
+      <div id="persist-chart"></div>`;
+    $("#persist-chart").replaceChildren(persistChart);
+  } else {
+    $("#persist").innerHTML = `
+      <h3>Once it closes</h3>
+      <p class="note" style="margin-top:6px">Fewer than 25 sub-CAT-I events in ten years — not enough to support persistence statistics.</p>`;
+  }
+
+  // ---- phase 2: live current conditions via same-origin AWC proxy ----
+  fetch(`/api/metar?ids=${icao}`).then((r) => r.json()).then((arr) => {
+    const ob = arr?.[0];
+    if (!ob || !panelContent.querySelector("#live")) return;
+    const visRaw = ob.visib;
+    const vis = typeof visRaw === "string" ? (visRaw.includes("+") ? 99 : parseFloat(visRaw)) : visRaw;
+    const ceils = (ob.clouds ?? [])
+      .filter((c: any) => ["BKN", "OVC", "VV"].includes(c.cover) && c.base != null)
+      .map((c: any) => c.base);
+    const ceil = ceils.length ? Math.min(...ceils) : null;
+    const sub = (vis != null && vis < 0.5) || (ceil != null && ceil < 200);
+    const below = vis != null && vis < 0.19;
+    const when = (ob.rawOb?.match(/\d{6}Z/) ?? [""])[0];
+    let verdict: string;
+    if (below) verdict = `<b style="color:#ff9a9a">below 300 m — beyond EFVS</b>`;
+    else if (sub) verdict = `<b style="color:var(--accent)">below CAT I — EFVS-recoverable</b>`;
+    else verdict = `<b style="color:#7fd49a">normal ops</b>`;
+    let lift = "";
+    if (sub && per) {
+      const now = new Date();
+      const key = `${SEASONS[now.getMonth()]}-${TODS[Math.floor(now.getHours() / 6)]}`;
+      const c = per.buckets?.[key]?.curve ?? per.curve;
+      lift = ` Historically, ${Math.round((1 - c[1]) * 100)}% of events here are over within 2 h (median ${per.medianH} h).`;
+    }
+    panelContent.querySelector("#live")!.innerHTML = `
+      <div class="live-line">RIGHT NOW · ${when} — ${visRaw ?? "?"} SM${ceil != null ? `, ceiling ${ceil} ft` : ", no ceiling"} · ${verdict}.${lift}</div>`;
+  }).catch(() => {});
 
   $("#causes").innerHTML = causes.map(([k, v]) => `
     <div style="display:flex;align-items:center;gap:10px;margin:5px 0;font-size:11px">

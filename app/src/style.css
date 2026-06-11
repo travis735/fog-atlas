@@ -133,6 +133,13 @@ input[type="range"] { width: 232px; accent-color: var(--accent); }
 .badge.cat1 { border-color: #7a5a2e; color: #e8b96a; }
 .badge.conf { color: var(--ink-dim); }
 
+.live-line {
+  margin: 14px 0 4px; padding: 9px 13px; border-radius: 8px;
+  border: 1px solid var(--hairline); background: #10161d99;
+  font-size: 11.5px; line-height: 1.55; color: var(--ink);
+  letter-spacing: 0.03em;
+}
+
 .warn-banner {
   margin-top: 12px; padding: 10px 13px; border-radius: 8px;
   border: 1px solid #6e5a26; background: #2a230f66;
