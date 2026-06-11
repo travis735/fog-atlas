@@ -9,13 +9,13 @@ const MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","N
 interface Airport {
   icao: string; name: string; lat: number; lon: number; country: string; tz: string;
   catIls: string; catConfidence: string; size?: string; coveragePct?: number;
-  reliability?: string;
+  reliability?: string; ils?: string;
   efvsHoursPerYear: number; belowHoursPerYear: number;
   causes: Record<string, number>;
   grid: number[][]; // [month][hour] sub-CAT-I %
 }
 
-const state = { months: [0] as number[], hr: 6, playing: false, airports: [] as Airport[] };
+const state = { months: [0] as number[], hr: 6, playing: false, ilsOnly: false, airports: [] as Airport[] };
 
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
 const hrEl = $<HTMLInputElement>("#hr");
@@ -93,6 +93,7 @@ map.on("load", async () => {
         // unreliable reporters are excluded from the fog field — their
         // frequencies are artifacts, not weather
         reliable: (a.reliability ?? "ok") === "ok" ? 1 : 0,
+        ils: a.ils ?? "unknown",
         g: a.grid.flat(),
       },
     })),
@@ -206,6 +207,29 @@ map.on("load", async () => {
   else if (hash.length > 1) openAirport(hash.toUpperCase());
 });
 
+// "ILS only": hide airports KNOWN to have no ILS (US per NASR); intl
+// unknowns stay — absence of evidence isn't absence of an ILS
+const BASE_FILTERS: Record<string, any> = {
+  fogheat: null, presence: null,
+  glow: ["==", ["get", "tier"], 0], core: ["==", ["get", "tier"], 0], sheen: ["==", ["get", "tier"], 0],
+  glow2: ["==", ["get", "tier"], 1], core2: ["==", ["get", "tier"], 1], sheen2: ["==", ["get", "tier"], 1],
+  glow3: ["==", ["get", "tier"], 2], core3: ["==", ["get", "tier"], 2], sheen3: ["==", ["get", "tier"], 2],
+};
+
+function applyIlsFilter() {
+  if (!map.getLayer("glow")) return;
+  const noIls: any = ["!=", ["get", "ils"], "no"];
+  for (const [id, base] of Object.entries(BASE_FILTERS)) {
+    const f = state.ilsOnly ? (base ? ["all", base, noIls] : noIls) : base;
+    map.setFilter(id, f as any);
+  }
+}
+
+$<HTMLInputElement>("#ils-only").addEventListener("change", (e) => {
+  state.ilsOnly = (e.target as HTMLInputElement).checked;
+  applyIlsFilter();
+});
+
 // ---------- search ----------
 const searchInput = $<HTMLInputElement>("#search-input");
 const searchResults = $("#search-results");
@@ -274,6 +298,7 @@ function openRankings() {
   // claim — keep them out of the league table (still on the map and search)
   const rows = state.airports
     .filter((a) => (a.coveragePct ?? 100) >= 50 && (a.reliability ?? "ok") === "ok")
+    .filter((a) => !state.ilsOnly || (a.ils ?? "unknown") !== "no")
     .filter((a) => !rankCatIOnly || (a.catIls !== "CATIII" && a.catIls !== "CATII"))
     .sort((a, b) => b.efvsHoursPerYear - a.efvsHoursPerYear)
     .slice(0, 50);
@@ -458,14 +483,20 @@ async function openAirport(icao: string) {
         ? "This airport has CAT II/III ILS — suitably equipped airliners can already land in low visibility"
         : "Best available approach assumed CAT I — visibility below ~800 m forces a missed approach without EFVS"}">${cat3 ? a.catIls.replace("CAT", "CAT ") : "CAT I"}</span>
       <span class="badge conf" title="${{
+        "faa-nasr": "ILS category from the FAA NASR database (authoritative, US)",
+        "faa-c060": "On the FAA OpSpec C060 list of foreign CAT II/III facilities",
         curated: "Capability confirmed from AIPs / FAA publications",
         verify: "Capability confirmed from AIPs / FAA publications",
-        assumed: "Not yet curated — assumed CAT I; treat the badge as provisional",
+        assumed: a.country === "US"
+          ? "No ILS in the FAA NASR database — likely RNAV/non-precision approaches only"
+          : "Not on the FAA C060 CAT II/III list — assumed CAT I; the airport may have capability not approved for US carriers",
         unknown: "Capability not yet determined for this airport",
       }[a.catConfidence] ?? ""}">${{
+        "faa-nasr": "confirmed · FAA NASR",
+        "faa-c060": "confirmed · FAA C060",
         curated: "capability curated",
         verify: "capability curated",
-        assumed: "capability assumed — not yet curated",
+        assumed: a.country === "US" ? "no ILS on record — RNAV only" : "assumed — not on FAA CAT II/III list",
         unknown: "capability unknown",
       }[a.catConfidence] ?? a.catConfidence}</span>
       ${!cat3 ? `<span class="badge cat1">high EFVS value — no CAT II/III fallback</span>` : ""}

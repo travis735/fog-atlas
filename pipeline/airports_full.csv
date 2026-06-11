@@ -1029,8 +1029,8 @@ UKLL,UKLL,Lviv International Airport,49.8125,23.9561,Europe/Kyiv,UA,CATI,assumed
 UKLU,UKLU,Uzhhorod International Airport,48.6343,22.2634,Europe/Kyiv,UA,CATI,assumed,large
 UKOO,UKOO,Odesa International Airport,46.4272,30.6726,Europe/Kyiv,UA,CATI,assumed,large
 HUEN,HUEN,Entebbe International Airport,0.0424,32.4435,Africa/Kampala,UG,CATI,assumed,large
-KABQ,ABQ,Albuquerque International Sunport,35.04,-106.6089,America/Denver,US,CATI,assumed,large
-KALB,ALB,Albany International Airport,42.7483,-73.8017,America/New_York,US,CATI,assumed,large
+KABQ,ABQ,Albuquerque International Sunport,35.04,-106.6089,America/Denver,US,CATI,faa-nasr,large
+KALB,ALB,Albany International Airport,42.7483,-73.8017,America/New_York,US,CATI,faa-nasr,large
 KATL,ATL,Hartsfield Jackson Atlanta International Airport,33.6367,-84.4281,America/New_York,US,CATIII,faa-nasr,large
 KAUS,AUS,Austin Bergstrom International Airport,30.1975,-97.662,America/Chicago,US,CATIII,faa-nasr,large
 KBDL,BDL,Bradley International Airport,41.9386,-72.688,America/New_York,US,CATIII,faa-nasr,large
@@ -1038,14 +1038,14 @@ KBHM,BHM,Birmingham-Shuttlesworth International Airport,33.5629,-86.7507,America
 KBNA,BNA,Nashville International Airport,36.1245,-86.6782,America/Chicago,US,CATIII,faa-nasr,large
 KBOI,BOI,Boise Air Terminal/Gowen Field,43.5644,-116.223,America/Boise,US,CATIII,faa-nasr,large
 KBOS,BOS,Boston Logan International Airport,42.362,-71.0079,America/New_York,US,CATIII,faa-nasr,large
-KBUF,BUF,Buffalo Niagara International Airport,42.9405,-78.7322,America/New_York,US,CATI,assumed,large
-KBUR,BUR,Hollywood Burbank/Bob Hope Airport,34.2028,-118.3581,America/Los_Angeles,US,CATI,assumed,large
+KBUF,BUF,Buffalo Niagara International Airport,42.9405,-78.7322,America/New_York,US,CATI,faa-nasr,large
+KBUR,BUR,Hollywood Burbank/Bob Hope Airport,34.2028,-118.3581,America/Los_Angeles,US,CATI,faa-nasr,large
 KBWI,BWI,Baltimore/Washington International Thurgood Marshall Airport,39.1754,-76.6683,America/New_York,US,CATIII,faa-nasr,large
 KCHS,CHS,Charleston International Airport,32.8962,-80.0382,America/New_York,US,CATII,faa-nasr,large
 KCLE,CLE,Cleveland Hopkins International Airport,41.4117,-81.8498,America/New_York,US,CATIII,faa-nasr,large
 KCLT,CLT,Charlotte Douglas International Airport,35.214,-80.9431,America/New_York,US,CATIII,faa-nasr,large
-KCMH,CMH,John Glenn Columbus International Airport,39.998,-82.8919,America/New_York,US,CATI,assumed,large
-KCOS,COS,City of Colorado Springs Municipal Airport,38.8058,-104.701,America/Denver,US,CATI,assumed,large
+KCMH,CMH,John Glenn Columbus International Airport,39.998,-82.8919,America/New_York,US,CATI,faa-nasr,large
+KCOS,COS,City of Colorado Springs Municipal Airport,38.8058,-104.701,America/Denver,US,CATI,faa-nasr,large
 KCVG,CVG,Cincinnati Northern Kentucky International Airport,39.0488,-84.6678,America/New_York,US,CATIII,faa-nasr,large
 KDAL,DAL,Dallas Love Field,32.8448,-96.8477,America/Chicago,US,CATII,faa-nasr,large
 KDCA,DCA,Ronald Reagan Washington National Airport,38.8521,-77.0377,America/New_York,US,CATII,faa-nasr,large
@@ -1053,12 +1053,12 @@ KDEN,DEN,Denver International Airport,39.86,-104.6738,America/Denver,US,CATIII,f
 KDFW,DFW,Dallas Fort Worth International Airport,32.8968,-97.038,America/Chicago,US,CATIII,faa-nasr,large
 KDSM,DSM,Des Moines International Airport,41.534,-93.6567,America/Chicago,US,CATIII,faa-nasr,large
 KDTW,DTW,Detroit Metropolitan Wayne County Airport,42.2138,-83.3538,America/Detroit,US,CATIII,faa-nasr,large
-KELP,ELP,El Paso International Airport,31.8099,-106.3756,America/Denver,US,CATI,assumed,large
+KELP,ELP,El Paso International Airport,31.8099,-106.3756,America/Denver,US,CATI,faa-nasr,large
 KEWR,EWR,Newark Liberty International Airport,40.6894,-74.1705,America/New_York,US,CATIII,faa-nasr,large
 KFAT,FAT,Fresno Yosemite International Airport,36.7758,-119.718,America/Los_Angeles,US,CATIII,faa-nasr,large
-KFLL,FLL,Fort Lauderdale Hollywood International Airport,26.0726,-80.1527,America/New_York,US,CATI,assumed,large
+KFLL,FLL,Fort Lauderdale Hollywood International Airport,26.0726,-80.1527,America/New_York,US,CATI,faa-nasr,large
 KGEG,GEG,Spokane International Airport,47.6199,-117.534,America/Los_Angeles,US,CATIII,faa-nasr,large
-KGRR,GRR,Gerald R. Ford International Airport,42.8808,-85.5228,America/Detroit,US,CATI,assumed,large
+KGRR,GRR,Gerald R. Ford International Airport,42.8808,-85.5228,America/Detroit,US,CATI,faa-nasr,large
 KGSO,GSO,Piedmont Triad International Airport,36.0994,-79.9373,America/New_York,US,CATIII,faa-nasr,large
 KHOU,HOU,William P. Hobby Airport,29.6453,-95.2768,America/Chicago,US,CATIII,faa-nasr,large
 KIAD,IAD,Washington Dulles International Airport,38.9445,-77.4558,America/New_York,US,CATIII,faa-nasr,large
@@ -1066,64 +1066,64 @@ KIAH,IAH,George Bush Intercontinental Airport,29.9844,-95.3414,America/Chicago,U
 KIND,IND,Indianapolis International Airport,39.7173,-86.2944,America/Indiana/Indianapolis,US,CATIII,faa-nasr,large
 KJAX,JAX,Jacksonville International Airport,30.4925,-81.6878,America/New_York,US,CATIII,faa-nasr,large
 KJFK,JFK,John F. Kennedy International Airport,40.6394,-73.7793,America/New_York,US,CATIII,faa-nasr,large
-KLAS,LAS,Harry Reid International Airport,36.0834,-115.1518,America/Los_Angeles,US,CATI,assumed,large
+KLAS,LAS,Harry Reid International Airport,36.0834,-115.1518,America/Los_Angeles,US,CATI,faa-nasr,large
 KLAX,LAX,Los Angeles International Airport,33.9425,-118.408,America/Los_Angeles,US,CATIII,faa-nasr,large
-KLGA,LGA,LaGuardia Airport,40.7772,-73.8726,America/New_York,US,CATI,assumed,large
-KLGB,LGB,Long Beach International Airport,33.8165,-118.1499,America/Los_Angeles,US,CATI,assumed,large
+KLGA,LGA,LaGuardia Airport,40.7772,-73.8726,America/New_York,US,CATI,faa-nasr,large
+KLGB,LGB,Long Beach International Airport,33.8165,-118.1499,America/Los_Angeles,US,CATI,faa-nasr,large
 KMCI,MCI,Kansas City International Airport,39.3017,-94.7139,America/Chicago,US,CATIII,faa-nasr,large
 KMCO,MCO,Orlando International Airport,28.4294,-81.309,America/New_York,US,CATIII,faa-nasr,large
-KMDW,MDW,Chicago Midway International Airport,41.786,-87.7524,America/Chicago,US,CATI,assumed,large
+KMDW,MDW,Chicago Midway International Airport,41.786,-87.7524,America/Chicago,US,CATI,faa-nasr,large
 KMEM,MEM,Memphis International Airport,35.0438,-89.9763,America/Chicago,US,CATIII,faa-nasr,large
-KMIA,MIA,Miami International Airport,25.796,-80.2898,America/New_York,US,CATI,assumed,large
+KMIA,MIA,Miami International Airport,25.796,-80.2898,America/New_York,US,CATI,faa-nasr,large
 KMKE,MKE,General Mitchell International Airport,42.9472,-87.8966,America/Chicago,US,CATIII,faa-nasr,large
 KMSP,MSP,Minneapolis–Saint Paul International Airport / Wold–Chamberlain Field,44.8801,-93.2217,America/Chicago,US,CATIII,faa-nasr,large
 KMSY,MSY,Louis Armstrong New Orleans International Airport,29.9934,-90.2647,America/Chicago,US,CATIII,faa-nasr,large
-KMYR,MYR,Myrtle Beach International Airport,33.6797,-78.9283,America/New_York,US,CATI,assumed,large
+KMYR,MYR,Myrtle Beach International Airport,33.6797,-78.9283,America/New_York,US,CATI,faa-nasr,large
 KOAK,OAK,San Francisco Bay Oakland International Airport,37.7201,-122.2212,America/Los_Angeles,US,CATIII,faa-nasr,large
 KOKC,OKC,OKC Will Rogers World Airport,35.3934,-97.5982,America/Chicago,US,CATII,faa-nasr,large
 KOMA,OMA,Eppley Airfield,41.3032,-95.8941,America/Chicago,US,CATIII,faa-nasr,large
 KONT,ONT,Ontario International Airport,34.056,-117.601,America/Los_Angeles,US,CATIII,faa-nasr,large
 KORD,ORD,Chicago O'Hare International Airport,41.9786,-87.9048,America/Chicago,US,CATIII,faa-nasr,large
-KORF,ORF,Norfolk International Airport,36.8953,-76.201,America/New_York,US,CATI,assumed,large
-KPBI,PBI,Palm Beach International Airport,26.6832,-80.0956,America/New_York,US,CATI,assumed,large
+KORF,ORF,Norfolk International Airport,36.8953,-76.201,America/New_York,US,CATI,faa-nasr,large
+KPBI,PBI,Palm Beach International Airport,26.6832,-80.0956,America/New_York,US,CATI,faa-nasr,large
 KPDX,PDX,Portland International Airport,45.5887,-122.598,America/Los_Angeles,US,CATIII,faa-nasr,large
 KPHL,PHL,Philadelphia International Airport,39.8719,-75.2411,America/New_York,US,CATIII,faa-nasr,large
-KPHX,PHX,Phoenix Sky Harbor International Airport,33.4353,-112.0059,America/Phoenix,US,CATI,assumed,large
-KPIE,PIE,St. Petersburg Clearwater International Airport,27.9102,-82.6874,America/New_York,US,CATI,assumed,large
+KPHX,PHX,Phoenix Sky Harbor International Airport,33.4353,-112.0059,America/Phoenix,US,CATI,faa-nasr,large
+KPIE,PIE,St. Petersburg Clearwater International Airport,27.9102,-82.6874,America/New_York,US,CATI,faa-nasr,large
 KPIT,PIT,Pittsburgh International Airport,40.4915,-80.2329,America/New_York,US,CATIII,faa-nasr,large
-KPNS,PNS,Pensacola International Airport,30.4727,-87.1866,America/Chicago,US,CATI,assumed,large
+KPNS,PNS,Pensacola International Airport,30.4727,-87.1866,America/Chicago,US,CATI,faa-nasr,large
 KPSP,PSP,Palm Springs International Airport,33.8297,-116.507,America/Los_Angeles,US,CATI,assumed,large
 KPVD,PVD,Rhode Island T. F. Green International Airport,41.725,-71.4257,America/New_York,US,CATIII,faa-nasr,large
 KPWM,PWM,Portland International Jetport,43.6462,-70.3093,America/New_York,US,CATIII,faa-nasr,large
 KRDU,RDU,Raleigh-Durham International Airport,35.8787,-78.7873,America/New_York,US,CATIII,faa-nasr,large
 KRIC,RIC,Richmond International Airport,37.5052,-77.3197,America/New_York,US,CATIII,faa-nasr,large
-KRNO,RNO,Reno Tahoe International Airport,39.4991,-119.768,America/Los_Angeles,US,CATI,assumed,large
+KRNO,RNO,Reno Tahoe International Airport,39.4991,-119.768,America/Los_Angeles,US,CATI,faa-nasr,large
 KROC,ROC,Frederick Douglass Greater Rochester International Airport,43.1189,-77.6724,America/New_York,US,CATII,faa-nasr,large
-KRSW,RSW,Southwest Florida International Airport,26.5347,-81.7528,America/New_York,US,CATI,assumed,large
-KSAN,SAN,San Diego International Airport,32.7336,-117.19,America/Los_Angeles,US,CATI,assumed,large
+KRSW,RSW,Southwest Florida International Airport,26.5347,-81.7528,America/New_York,US,CATI,faa-nasr,large
+KSAN,SAN,San Diego International Airport,32.7336,-117.19,America/Los_Angeles,US,CATI,faa-nasr,large
 KSAT,SAT,San Antonio International Airport,29.5337,-98.4698,America/Chicago,US,CATII,faa-nasr,large
-KSAV,SAV,Savannah Hilton Head International Airport,32.1266,-81.2,America/New_York,US,CATI,assumed,large
-KSBD,SBD,San Bernardino International Airport,34.0967,-117.2366,America/Los_Angeles,US,CATI,assumed,large
+KSAV,SAV,Savannah Hilton Head International Airport,32.1266,-81.2,America/New_York,US,CATI,faa-nasr,large
+KSBD,SBD,San Bernardino International Airport,34.0967,-117.2366,America/Los_Angeles,US,CATI,faa-nasr,large
 KSDF,SDF,Louisville Muhammad Ali International Airport,38.1706,-85.7351,America/Kentucky/Louisville,US,CATIII,faa-nasr,large
 KSEA,SEA,Seattle–Tacoma International Airport,47.4479,-122.3103,America/Los_Angeles,US,CATIII,faa-nasr,large
-KSFB,SFB,Orlando Sanford International Airport,28.7743,-81.2346,America/New_York,US,CATI,assumed,large
+KSFB,SFB,Orlando Sanford International Airport,28.7743,-81.2346,America/New_York,US,CATI,faa-nasr,large
 KSFO,SFO,San Francisco International Airport,37.6198,-122.3748,America/Los_Angeles,US,CATIII,faa-nasr,large
-KSJC,SJC,Norman Y. Mineta San Jose International Airport,37.3625,-121.9292,America/Los_Angeles,US,CATI,assumed,large
+KSJC,SJC,Norman Y. Mineta San Jose International Airport,37.3625,-121.9292,America/Los_Angeles,US,CATI,faa-nasr,large
 KSLC,SLC,Salt Lake City International Airport,40.7889,-111.9799,America/Denver,US,CATIII,faa-nasr,large
 KSMF,SMF,Sacramento International Airport,38.6954,-121.591,America/Los_Angeles,US,CATIII,faa-nasr,large
-KSNA,SNA,John Wayne Orange County International Airport,33.6751,-117.8693,America/Los_Angeles,US,CATI,assumed,large
-KSRQ,SRQ,Sarasota Bradenton International Airport,27.3946,-82.5544,America/New_York,US,CATI,assumed,large
+KSNA,SNA,John Wayne Orange County International Airport,33.6751,-117.8693,America/Los_Angeles,US,CATI,faa-nasr,large
+KSRQ,SRQ,Sarasota Bradenton International Airport,27.3946,-82.5544,America/New_York,US,CATI,faa-nasr,large
 KSTL,STL,St. Louis Lambert International Airport,38.7487,-90.37,America/Chicago,US,CATIII,faa-nasr,large
 KSYR,SYR,Syracuse Hancock International Airport,43.1112,-76.1063,America/New_York,US,CATII,faa-nasr,large
 KTPA,TPA,Tampa International Airport,27.9755,-82.5332,America/New_York,US,CATIII,faa-nasr,large
 KTUL,TUL,Tulsa International Airport,36.1971,-95.8862,America/Chicago,US,CATII,faa-nasr,large
-KTUS,TUS,Tucson International Airport,32.115,-110.9381,America/Phoenix,US,CATI,assumed,large
+KTUS,TUS,Tucson International Airport,32.115,-110.9381,America/Phoenix,US,CATI,faa-nasr,large
 KTYS,TYS,McGhee Tyson Airport,35.811,-83.994,America/New_York,US,CATII,faa-nasr,large
 PANC,ANC,Ted Stevens Anchorage International Airport,61.179,-149.9926,America/Anchorage,US,CATIII,faa-nasr,large
-PHKO,KOA,Ellison Onizuka Kona International Airport at Keāhole,19.7388,-156.0456,Pacific/Honolulu,US,CATI,assumed,large
-PHLI,LIH,Lihue Airport,21.9744,-159.3371,Pacific/Honolulu,US,CATI,assumed,large
-PHNL,HNL,Daniel K. Inouye International Airport,21.3184,-157.9257,Pacific/Honolulu,US,CATI,assumed,large
-PHOG,OGG,Kahului International Airport,20.8963,-156.4318,Pacific/Honolulu,US,CATI,assumed,large
+PHKO,KOA,Ellison Onizuka Kona International Airport at Keāhole,19.7388,-156.0456,Pacific/Honolulu,US,CATI,faa-nasr,large
+PHLI,LIH,Lihue Airport,21.9744,-159.3371,Pacific/Honolulu,US,CATI,faa-nasr,large
+PHNL,HNL,Daniel K. Inouye International Airport,21.3184,-157.9257,Pacific/Honolulu,US,CATI,faa-nasr,large
+PHOG,OGG,Kahului International Airport,20.8963,-156.4318,Pacific/Honolulu,US,CATI,faa-nasr,large
 SUMU,SUMU,Carrasco General Cesáreo L. Berisso International Airport,-34.8356,-56.0265,America/Montevideo,UY,CATI,assumed,large
 UZFN,UZFN,Namangan International Airport,40.9846,71.5578,Asia/Tashkent,UZ,CATI,assumed,large
 UZNN,UZNN,Nukus International Airport,42.4884,59.6233,Asia/Samarkand,UZ,CATI,assumed,large
@@ -4076,749 +4076,749 @@ HUGU,HUGU,Gulu Airport,2.8056,32.2718,Africa/Kampala,UG,CATI,assumed,medium
 HUSO,HUSO,Soroti Airport,1.7277,33.6228,Africa/Kampala,UG,CATI,assumed,medium
 PMDY,PMDY,Henderson Field,28.2017,-177.381,Pacific/Midway,UM,CATI,assumed,medium
 PWAK,PWAK,Wake Island Airfield,19.2824,166.6366,Pacific/Wake,UM,CATI,assumed,medium
-KABE,ABE,Lehigh Valley International Airport,40.6518,-75.4428,America/New_York,US,CATI,assumed,medium
-KABI,ABI,Abilene Regional Airport,32.4113,-99.6819,America/Chicago,US,CATI,assumed,medium
-KABR,ABR,Aberdeen Regional Airport,45.4491,-98.4218,America/Chicago,US,CATI,assumed,medium
-KABY,ABY,Southwest Georgia Regional Airport,31.5329,-84.1962,America/New_York,US,CATI,assumed,medium
-KACK,ACK,Nantucket Memorial Airport,41.2531,-70.0602,America/New_York,US,CATI,assumed,medium
-KACT,ACT,Waco Regional Airport,31.6113,-97.2305,America/Chicago,US,CATI,assumed,medium
-KACV,ACV,California Redwood Coast-Humboldt County Airport,40.9781,-124.109,America/Los_Angeles,US,CATI,assumed,medium
-KACY,ACY,Atlantic City International Airport,39.4562,-74.5775,America/New_York,US,CATI,assumed,medium
+KABE,ABE,Lehigh Valley International Airport,40.6518,-75.4428,America/New_York,US,CATI,faa-nasr,medium
+KABI,ABI,Abilene Regional Airport,32.4113,-99.6819,America/Chicago,US,CATI,faa-nasr,medium
+KABR,ABR,Aberdeen Regional Airport,45.4491,-98.4218,America/Chicago,US,CATI,faa-nasr,medium
+KABY,ABY,Southwest Georgia Regional Airport,31.5329,-84.1962,America/New_York,US,CATI,faa-nasr,medium
+KACK,ACK,Nantucket Memorial Airport,41.2531,-70.0602,America/New_York,US,CATI,faa-nasr,medium
+KACT,ACT,Waco Regional Airport,31.6113,-97.2305,America/Chicago,US,CATI,faa-nasr,medium
+KACV,ACV,California Redwood Coast-Humboldt County Airport,40.9781,-124.109,America/Los_Angeles,US,CATI,faa-nasr,medium
+KACY,ACY,Atlantic City International Airport,39.4562,-74.5775,America/New_York,US,CATI,faa-nasr,medium
 KADH,ADH,Ada Regional Airport,34.8052,-96.672,America/Chicago,US,CATI,assumed,medium
 KADW,ADW,Joint Base Andrews,38.8108,-76.867,America/New_York,US,CATIII,faa-nasr,medium
-KAEG,AEG,Double Eagle II Airport,35.1452,-106.795,America/Denver,US,CATI,assumed,medium
-KAEX,AEX,Alexandria International Airport,31.3258,-92.5467,America/Chicago,US,CATI,assumed,medium
+KAEG,AEG,Double Eagle II Airport,35.1452,-106.795,America/Denver,US,CATI,faa-nasr,medium
+KAEX,AEX,Alexandria International Airport,31.3258,-92.5467,America/Chicago,US,CATI,faa-nasr,medium
 KAFW,AFW,Perot Field/Fort Worth Alliance Airport,32.9904,-97.3195,America/Chicago,US,CATIII,faa-nasr,medium
-KAGC,AGC,Allegheny County Airport,40.3544,-79.9302,America/New_York,US,CATI,assumed,medium
-KAGS,AGS,Augusta Regional At Bush Field,33.3699,-81.9645,America/New_York,US,CATI,assumed,medium
-KAHN,AHN,Athens Ben Epps Airport,33.9488,-83.3256,America/New_York,US,CATI,assumed,medium
-KAIA,AIA,Alliance Municipal Airport,42.0525,-102.804,America/Denver,US,CATI,assumed,medium
-KAKR,AKR,Akron Fulton International Airport,41.0374,-81.4678,America/New_York,US,CATI,assumed,medium
+KAGC,AGC,Allegheny County Airport,40.3544,-79.9302,America/New_York,US,CATI,faa-nasr,medium
+KAGS,AGS,Augusta Regional At Bush Field,33.3699,-81.9645,America/New_York,US,CATI,faa-nasr,medium
+KAHN,AHN,Athens Ben Epps Airport,33.9488,-83.3256,America/New_York,US,CATI,faa-nasr,medium
+KAIA,AIA,Alliance Municipal Airport,42.0525,-102.804,America/Denver,US,CATI,faa-nasr,medium
+KAKR,AKR,Akron Fulton International Airport,41.0374,-81.4678,America/New_York,US,CATI,faa-nasr,medium
 KALI,ALI,Alice International Airport,27.7409,-98.0269,America/Chicago,US,CATI,assumed,medium
 KALM,ALM,Alamogordo White Sands Regional Airport,32.8378,-105.9931,America/Denver,US,CATI,assumed,medium
-KALN,ALN,St Louis Regional Airport,38.8903,-90.046,America/Chicago,US,CATI,assumed,medium
-KALO,ALO,Waterloo Regional Airport,42.5571,-92.4003,America/Chicago,US,CATI,assumed,medium
-KALS,ALS,San Luis Valley Regional Airport/Bergman Field,37.4349,-105.867,America/Denver,US,CATI,assumed,medium
-KALW,ALW,Walla Walla Regional Airport,46.0949,-118.288,America/Los_Angeles,US,CATI,assumed,medium
-KAMA,AMA,Rick Husband Amarillo International Airport,35.2179,-101.7064,America/Chicago,US,CATI,assumed,medium
-KANB,ANB,Anniston Regional Airport,33.5882,-85.8581,America/Chicago,US,CATI,assumed,medium
-KAND,AND,Anderson Regional Airport,34.4946,-82.7094,America/New_York,US,CATI,assumed,medium
-KAOO,AOO,Altoona Blair County Airport,40.2964,-78.32,America/New_York,US,CATI,assumed,medium
-KAPA,APA,Centennial Airport,39.5701,-104.849,America/Denver,US,CATI,assumed,medium
+KALN,ALN,St Louis Regional Airport,38.8903,-90.046,America/Chicago,US,CATI,faa-nasr,medium
+KALO,ALO,Waterloo Regional Airport,42.5571,-92.4003,America/Chicago,US,CATI,faa-nasr,medium
+KALS,ALS,San Luis Valley Regional Airport/Bergman Field,37.4349,-105.867,America/Denver,US,CATI,faa-nasr,medium
+KALW,ALW,Walla Walla Regional Airport,46.0949,-118.288,America/Los_Angeles,US,CATI,faa-nasr,medium
+KAMA,AMA,Rick Husband Amarillo International Airport,35.2179,-101.7064,America/Chicago,US,CATI,faa-nasr,medium
+KANB,ANB,Anniston Regional Airport,33.5882,-85.8581,America/Chicago,US,CATI,faa-nasr,medium
+KAND,AND,Anderson Regional Airport,34.4946,-82.7094,America/New_York,US,CATI,faa-nasr,medium
+KAOO,AOO,Altoona Blair County Airport,40.2964,-78.32,America/New_York,US,CATI,faa-nasr,medium
+KAPA,APA,Centennial Airport,39.5701,-104.849,America/Denver,US,CATI,faa-nasr,medium
 KAPF,APF,Naples Municipal Airport,26.1526,-81.7753,America/New_York,US,CATI,assumed,medium
 KAPG,APG,Phillips Army Air Field,39.4662,-76.1688,America/New_York,US,CATI,assumed,medium
-KAPN,APN,Alpena County Regional Airport,45.0781,-83.5603,America/Detroit,US,CATI,assumed,medium
-KARA,ARA,Acadiana Regional Airport,30.0378,-91.8839,America/Chicago,US,CATI,assumed,medium
-KART,ART,Watertown International Airport,43.9919,-76.0217,America/New_York,US,CATI,assumed,medium
-KASE,ASE,Aspen-Pitkin County Airport (Sardy Field),39.2232,-106.869,America/Denver,US,CATI,assumed,medium
-KAST,AST,Astoria Regional Airport,46.158,-123.879,America/Los_Angeles,US,CATI,assumed,medium
-KATW,ATW,Appleton International Airport,44.2585,-88.519,America/Chicago,US,CATI,assumed,medium
-KATY,ATY,Watertown Regional Airport,44.914,-97.1547,America/Chicago,US,CATI,assumed,medium
-KAUG,AUG,Augusta State Airport,44.3206,-69.7973,America/New_York,US,CATI,assumed,medium
+KAPN,APN,Alpena County Regional Airport,45.0781,-83.5603,America/Detroit,US,CATI,faa-nasr,medium
+KARA,ARA,Acadiana Regional Airport,30.0378,-91.8839,America/Chicago,US,CATI,faa-nasr,medium
+KART,ART,Watertown International Airport,43.9919,-76.0217,America/New_York,US,CATI,faa-nasr,medium
+KASE,ASE,Aspen-Pitkin County Airport (Sardy Field),39.2232,-106.869,America/Denver,US,CATI,faa-nasr,medium
+KAST,AST,Astoria Regional Airport,46.158,-123.879,America/Los_Angeles,US,CATI,faa-nasr,medium
+KATW,ATW,Appleton International Airport,44.2585,-88.519,America/Chicago,US,CATI,faa-nasr,medium
+KATY,ATY,Watertown Regional Airport,44.914,-97.1547,America/Chicago,US,CATI,faa-nasr,medium
+KAUG,AUG,Augusta State Airport,44.3206,-69.7973,America/New_York,US,CATI,faa-nasr,medium
 KAUW,AUW,Wausau Downtown Airport,44.9262,-89.6266,America/Chicago,US,CATI,assumed,medium
-KAVL,AVL,Asheville Regional Airport,35.4355,-82.5419,America/New_York,US,CATI,assumed,medium
-KAVP,AVP,Wilkes-Barre/Scranton International Airport,41.3371,-75.7242,America/New_York,US,CATI,assumed,medium
+KAVL,AVL,Asheville Regional Airport,35.4355,-82.5419,America/New_York,US,CATI,faa-nasr,medium
+KAVP,AVP,Wilkes-Barre/Scranton International Airport,41.3371,-75.7242,America/New_York,US,CATI,faa-nasr,medium
 KAWO,AWO,Arlington Municipal Airport,48.1614,-122.1584,America/Los_Angeles,US,CATI,assumed,medium
-KAXN,AXN,Chandler Field,45.8663,-95.3947,America/Chicago,US,CATI,assumed,medium
-KAZO,AZO,Kalamazoo/Battle Creek International Airport,42.2321,-85.5496,America/Detroit,US,CATI,assumed,medium
-KBAB,BAB,Beale Air Force Base,39.1361,-121.437,America/Los_Angeles,US,CATI,assumed,medium
-KBAD,BAD,Barksdale Air Force Base,32.5018,-93.6627,America/Chicago,US,CATI,assumed,medium
-KBAF,BAF,Westfield-Barnes Regional Airport,42.1578,-72.7156,America/New_York,US,CATI,assumed,medium
-KBAK,BAK,Columbus Municipal Airport,39.2624,-85.8956,America/Indiana/Indianapolis,US,CATI,assumed,medium
+KAXN,AXN,Chandler Field,45.8663,-95.3947,America/Chicago,US,CATI,faa-nasr,medium
+KAZO,AZO,Kalamazoo/Battle Creek International Airport,42.2321,-85.5496,America/Detroit,US,CATI,faa-nasr,medium
+KBAB,BAB,Beale Air Force Base,39.1361,-121.437,America/Los_Angeles,US,CATI,faa-nasr,medium
+KBAD,BAD,Barksdale Air Force Base,32.5018,-93.6627,America/Chicago,US,CATI,faa-nasr,medium
+KBAF,BAF,Westfield-Barnes Regional Airport,42.1578,-72.7156,America/New_York,US,CATI,faa-nasr,medium
+KBAK,BAK,Columbus Municipal Airport,39.2624,-85.8956,America/Indiana/Indianapolis,US,CATI,faa-nasr,medium
 KBAZ,BAZ,New Braunfels National Airport,29.7045,-98.0422,America/Chicago,US,CATI,assumed,medium
 KBBD,BBD,Curtis Field,31.1789,-99.3247,America/Chicago,US,CATI,assumed,medium
-KBBG,BBG,Branson Airport,36.5321,-93.2005,America/Chicago,US,CATI,assumed,medium
+KBBG,BBG,Branson Airport,36.5321,-93.2005,America/Chicago,US,CATI,faa-nasr,medium
 KBCE,BCE,Bryce Canyon Airport,37.7064,-112.145,America/Denver,US,CATI,assumed,medium
 KBCT,BCT,Boca Raton Airport,26.3785,-80.1077,America/New_York,US,CATI,assumed,medium
-KBDE,BDE,Baudette International Airport,48.7284,-94.6122,America/Chicago,US,CATI,assumed,medium
-KBDR,BDR,Igor I Sikorsky Memorial Airport,41.1635,-73.1262,America/New_York,US,CATI,assumed,medium
-KBED,BED,Laurence G Hanscom Field,42.47,-71.289,America/New_York,US,CATI,assumed,medium
-KBFD,BFD,Bradford Regional Airport,41.8031,-78.6401,America/New_York,US,CATI,assumed,medium
-KBFF,BFF,Western Neb. Rgnl/William B. Heilig Airport,41.874,-103.596,America/Denver,US,CATI,assumed,medium
-KBFI,BFI,King County International Airport - Boeing Field,47.527,-122.2999,America/Los_Angeles,US,CATI,assumed,medium
-KBFL,BFL,Meadows Field,35.4336,-119.057,America/Los_Angeles,US,CATI,assumed,medium
-KBFM,BFM,Mobile Downtown Airport,30.6268,-88.0681,America/Chicago,US,CATI,assumed,medium
-KBGM,BGM,Greater Binghamton/Edwin A Link field,42.2087,-75.9798,America/New_York,US,CATI,assumed,medium
+KBDE,BDE,Baudette International Airport,48.7284,-94.6122,America/Chicago,US,CATI,faa-nasr,medium
+KBDR,BDR,Igor I Sikorsky Memorial Airport,41.1635,-73.1262,America/New_York,US,CATI,faa-nasr,medium
+KBED,BED,Laurence G Hanscom Field,42.47,-71.289,America/New_York,US,CATI,faa-nasr,medium
+KBFD,BFD,Bradford Regional Airport,41.8031,-78.6401,America/New_York,US,CATI,faa-nasr,medium
+KBFF,BFF,Western Neb. Rgnl/William B. Heilig Airport,41.874,-103.596,America/Denver,US,CATI,faa-nasr,medium
+KBFI,BFI,King County International Airport - Boeing Field,47.527,-122.2999,America/Los_Angeles,US,CATI,faa-nasr,medium
+KBFL,BFL,Meadows Field,35.4336,-119.057,America/Los_Angeles,US,CATI,faa-nasr,medium
+KBFM,BFM,Mobile Downtown Airport,30.6268,-88.0681,America/Chicago,US,CATI,faa-nasr,medium
+KBGM,BGM,Greater Binghamton/Edwin A Link field,42.2087,-75.9798,America/New_York,US,CATI,faa-nasr,medium
 KBGR,BGR,Bangor International Airport,44.8064,-68.8267,America/New_York,US,CATIII,faa-nasr,medium
-KBHB,BHB,Hancock County-Bar Harbor Airport,44.45,-68.3615,America/New_York,US,CATI,assumed,medium
-KBIF,BIF,Biggs Army Air Field (Fort Bliss),31.8495,-106.38,America/Denver,US,CATI,assumed,medium
-KBIH,BIH,Eastern Sierra Regional Airport,37.3731,-118.364,America/Los_Angeles,US,CATI,assumed,medium
-KBIL,BIL,Billings Logan International Airport,45.8089,-108.5412,America/Denver,US,CATI,assumed,medium
-KBIS,BIS,Bismarck Municipal Airport,46.7727,-100.7469,America/Chicago,US,CATI,assumed,medium
-KBIX,BIX,Keesler Air Force Base,30.4104,-88.9244,America/Chicago,US,CATI,assumed,medium
-KBJC,BJC,Rocky Mountain Metropolitan Airport,39.9088,-105.117,America/Denver,US,CATI,assumed,medium
-KBJI,BJI,Bemidji Regional Airport,47.5094,-94.9337,America/Chicago,US,CATI,assumed,medium
+KBHB,BHB,Hancock County-Bar Harbor Airport,44.45,-68.3615,America/New_York,US,CATI,faa-nasr,medium
+KBIF,BIF,Biggs Army Air Field (Fort Bliss),31.8495,-106.38,America/Denver,US,CATI,faa-nasr,medium
+KBIH,BIH,Eastern Sierra Regional Airport,37.3731,-118.364,America/Los_Angeles,US,CATI,faa-nasr,medium
+KBIL,BIL,Billings Logan International Airport,45.8089,-108.5412,America/Denver,US,CATI,faa-nasr,medium
+KBIS,BIS,Bismarck Municipal Airport,46.7727,-100.7469,America/Chicago,US,CATI,faa-nasr,medium
+KBIX,BIX,Keesler Air Force Base,30.4104,-88.9244,America/Chicago,US,CATI,faa-nasr,medium
+KBJC,BJC,Rocky Mountain Metropolitan Airport,39.9088,-105.117,America/Denver,US,CATI,faa-nasr,medium
+KBJI,BJI,Bemidji Regional Airport,47.5094,-94.9337,America/Chicago,US,CATI,faa-nasr,medium
 KBKE,BKE,Baker City Municipal Airport,44.8373,-117.809,America/Los_Angeles,US,CATI,assumed,medium
-KBKF,BKF,Buckley Space Force Base,39.7017,-104.752,America/Denver,US,CATI,assumed,medium
-KBKL,BKL,Burke Lakefront Airport,41.5175,-81.6833,America/New_York,US,CATI,assumed,medium
-KBKW,BKW,Raleigh County Memorial Airport,37.7873,-81.1242,America/New_York,US,CATI,assumed,medium
-KBLF,BLF,Mercer County Airport,37.2958,-81.2077,America/New_York,US,CATI,assumed,medium
+KBKF,BKF,Buckley Space Force Base,39.7017,-104.752,America/Denver,US,CATI,faa-nasr,medium
+KBKL,BKL,Burke Lakefront Airport,41.5175,-81.6833,America/New_York,US,CATI,faa-nasr,medium
+KBKW,BKW,Raleigh County Memorial Airport,37.7873,-81.1242,America/New_York,US,CATI,faa-nasr,medium
+KBLF,BLF,Mercer County Airport,37.2958,-81.2077,America/New_York,US,CATI,faa-nasr,medium
 KBLH,BLH,Blythe Airport,33.6192,-114.717,America/Los_Angeles,US,CATI,assumed,medium
-KBLI,BLI,Bellingham International Airport,48.7928,-122.538,America/Los_Angeles,US,CATI,assumed,medium
-KBLV,BLV,Scott AFB/Midamerica Airport,38.5452,-89.8352,America/Chicago,US,CATI,assumed,medium
-KBMG,BMG,Monroe County Airport,39.146,-86.6167,America/Indiana/Indianapolis,US,CATI,assumed,medium
+KBLI,BLI,Bellingham International Airport,48.7928,-122.538,America/Los_Angeles,US,CATI,faa-nasr,medium
+KBLV,BLV,Scott AFB/Midamerica Airport,38.5452,-89.8352,America/Chicago,US,CATI,faa-nasr,medium
+KBMG,BMG,Monroe County Airport,39.146,-86.6167,America/Indiana/Indianapolis,US,CATI,faa-nasr,medium
 KBMI,BMI,Central Illinois Regional Airport at Bloomington-Normal,40.4771,-88.9159,America/Chicago,US,CATII,faa-nasr,medium
 KBNO,BNO,Burns Municipal Airport,43.5905,-118.9552,America/Los_Angeles,US,CATI,assumed,medium
 KBPI,BPI,Miley Memorial Field,42.5851,-110.111,America/Denver,US,CATI,assumed,medium
-KBPK,BPK,Ozark Regional Airport,36.3689,-92.4705,America/Chicago,US,CATI,assumed,medium
-KBPT,BPT,Jack Brooks Regional Airport,29.9508,-94.0207,America/Chicago,US,CATI,assumed,medium
-KBQK,BQK,Brunswick Golden Isles Airport,31.2588,-81.4665,America/New_York,US,CATI,assumed,medium
-KBRD,BRD,Brainerd Lakes Regional Airport,46.4029,-94.1297,America/Chicago,US,CATI,assumed,medium
-KBRL,BRL,Southeast Iowa Regional Airport,40.7832,-91.1255,America/Chicago,US,CATI,assumed,medium
-KBRO,BRO,Brownsville South Padre Island International Airport,25.9072,-97.4252,America/Chicago,US,CATI,assumed,medium
-KBTL,BTL,Battle Creek Executive Airport at Kellogg Field,42.3073,-85.2515,America/Detroit,US,CATI,assumed,medium
-KBTM,BTM,Bert Mooney Airport,45.9548,-112.497,America/Denver,US,CATI,assumed,medium
-KBTR,BTR,Baton Rouge Metropolitan Airport,30.5332,-91.1496,America/Chicago,US,CATI,assumed,medium
-KBTV,BTV,Patrick Leahy Burlington International Airport,44.4719,-73.1533,America/New_York,US,CATI,assumed,medium
-KBVI,BVI,Beaver County Airport,40.7725,-80.3914,America/New_York,US,CATI,assumed,medium
+KBPK,BPK,Ozark Regional Airport,36.3689,-92.4705,America/Chicago,US,CATI,faa-nasr,medium
+KBPT,BPT,Jack Brooks Regional Airport,29.9508,-94.0207,America/Chicago,US,CATI,faa-nasr,medium
+KBQK,BQK,Brunswick Golden Isles Airport,31.2588,-81.4665,America/New_York,US,CATI,faa-nasr,medium
+KBRD,BRD,Brainerd Lakes Regional Airport,46.4029,-94.1297,America/Chicago,US,CATI,faa-nasr,medium
+KBRL,BRL,Southeast Iowa Regional Airport,40.7832,-91.1255,America/Chicago,US,CATI,faa-nasr,medium
+KBRO,BRO,Brownsville South Padre Island International Airport,25.9072,-97.4252,America/Chicago,US,CATI,faa-nasr,medium
+KBTL,BTL,Battle Creek Executive Airport at Kellogg Field,42.3073,-85.2515,America/Detroit,US,CATI,faa-nasr,medium
+KBTM,BTM,Bert Mooney Airport,45.9548,-112.497,America/Denver,US,CATI,faa-nasr,medium
+KBTR,BTR,Baton Rouge Metropolitan Airport,30.5332,-91.1496,America/Chicago,US,CATI,faa-nasr,medium
+KBTV,BTV,Patrick Leahy Burlington International Airport,44.4719,-73.1533,America/New_York,US,CATI,faa-nasr,medium
+KBVI,BVI,Beaver County Airport,40.7725,-80.3914,America/New_York,US,CATI,faa-nasr,medium
 KBVU,BVU,Boulder City Municipal Airport,35.9472,-114.8588,America/Los_Angeles,US,CATI,assumed,medium
 KBVY,BVY,Beverly Regional Airport,42.5842,-70.9165,America/New_York,US,CATI,assumed,medium
-KBWG,BWG,Bowling Green Warren County Regional Airport,36.9645,-86.4197,America/Chicago,US,CATI,assumed,medium
-KBXM,BXM,Brunswick Executive Airport,43.8922,-69.9386,America/New_York,US,CATI,assumed,medium
-KBYH,BYH,Arkansas International Airport,35.9643,-89.944,America/Chicago,US,CATI,assumed,medium
+KBWG,BWG,Bowling Green Warren County Regional Airport,36.9645,-86.4197,America/Chicago,US,CATI,faa-nasr,medium
+KBXM,BXM,Brunswick Executive Airport,43.8922,-69.9386,America/New_York,US,CATI,faa-nasr,medium
+KBYH,BYH,Arkansas International Airport,35.9643,-89.944,America/Chicago,US,CATI,faa-nasr,medium
 KBYI,BYI,Burley Municipal Airport,42.5426,-113.772,America/Boise,US,CATI,assumed,medium
 KBYS,BYS,Bicycle Lake Army Air Field,35.2805,-116.63,America/Los_Angeles,US,CATI,assumed,medium
 KBZN,BZN,Bozeman Yellowstone International Airport,45.7789,-111.1537,America/Denver,US,CATII,faa-nasr,medium
 KCAE,CAE,Columbia Metropolitan Airport,33.9382,-81.123,America/New_York,US,CATIII,faa-nasr,medium
-KCAK,CAK,Akron Canton Regional Airport,40.9161,-81.4422,America/New_York,US,CATI,assumed,medium
+KCAK,CAK,Akron Canton Regional Airport,40.9161,-81.4422,America/New_York,US,CATI,faa-nasr,medium
 KCAR,CAR,Caribou Municipal Airport,46.8715,-68.0179,America/New_York,US,CATI,assumed,medium
-KCBM,CBM,Columbus Air Force Base,33.6438,-88.4438,America/Chicago,US,CATI,assumed,medium
-KCCR,CCR,Buchanan Field,37.9897,-122.057,America/Los_Angeles,US,CATI,assumed,medium
+KCBM,CBM,Columbus Air Force Base,33.6438,-88.4438,America/Chicago,US,CATI,faa-nasr,medium
+KCCR,CCR,Buchanan Field,37.9897,-122.057,America/Los_Angeles,US,CATI,faa-nasr,medium
 KCCY,CCY,Northeast Iowa Regional Airport,43.0726,-92.6108,America/Chicago,US,CATI,assumed,medium
-KCDC,CDC,Cedar City Regional Airport,37.701,-113.099,America/Denver,US,CATI,assumed,medium
-KCDR,CDR,Chadron Municipal Airport,42.8376,-103.095,America/Denver,US,CATI,assumed,medium
+KCDC,CDC,Cedar City Regional Airport,37.701,-113.099,America/Denver,US,CATI,faa-nasr,medium
+KCDR,CDR,Chadron Municipal Airport,42.8376,-103.095,America/Denver,US,CATI,faa-nasr,medium
 KCDS,CDS,Childress Municipal Airport,34.4338,-100.288,America/Chicago,US,CATI,assumed,medium
-KCEC,CEC,Jack Mc Namara Field Airport,41.7789,-124.2364,America/Los_Angeles,US,CATI,assumed,medium
-KCEF,CEF,Westover Metropolitan Airport / Westover Air Reserve Base,42.194,-72.5348,America/New_York,US,CATI,assumed,medium
-KCEW,CEW,Bob Sikes Airport,30.7788,-86.5221,America/Chicago,US,CATI,assumed,medium
+KCEC,CEC,Jack Mc Namara Field Airport,41.7789,-124.2364,America/Los_Angeles,US,CATI,faa-nasr,medium
+KCEF,CEF,Westover Metropolitan Airport / Westover Air Reserve Base,42.194,-72.5348,America/New_York,US,CATI,faa-nasr,medium
+KCEW,CEW,Bob Sikes Airport,30.7788,-86.5221,America/Chicago,US,CATI,faa-nasr,medium
 KCEZ,CEZ,Cortez Municipal Airport,37.303,-108.628,America/Denver,US,CATI,assumed,medium
-KCGF,CGF,Cuyahoga County Airport,41.5651,-81.4864,America/New_York,US,CATI,assumed,medium
-KCGI,CGI,Cape Girardeau Regional Airport,37.2253,-89.5708,America/Chicago,US,CATI,assumed,medium
+KCGF,CGF,Cuyahoga County Airport,41.5651,-81.4864,America/New_York,US,CATI,faa-nasr,medium
+KCGI,CGI,Cape Girardeau Regional Airport,37.2253,-89.5708,America/Chicago,US,CATI,faa-nasr,medium
 KCHA,CHA,Chattanooga Metropolitan Airport (Lovell Field),35.0353,-85.2038,America/New_York,US,CATII,faa-nasr,medium
-KCHO,CHO,Charlottesville Albemarle Airport,38.1386,-78.4529,America/New_York,US,CATI,assumed,medium
-KCID,CID,The Eastern Iowa Airport,41.8847,-91.7108,America/Chicago,US,CATI,assumed,medium
-KCIU,CIU,Chippewa County International Airport,46.242,-84.4621,America/Detroit,US,CATI,assumed,medium
-KCKB,CKB,North Central West Virginia Airport,39.2966,-80.2281,America/New_York,US,CATI,assumed,medium
-KCLL,CLL,Easterwood Field,30.5886,-96.3638,America/Chicago,US,CATI,assumed,medium
-KCLM,CLM,William R Fairchild International Airport,48.1202,-123.5,America/Los_Angeles,US,CATI,assumed,medium
+KCHO,CHO,Charlottesville Albemarle Airport,38.1386,-78.4529,America/New_York,US,CATI,faa-nasr,medium
+KCID,CID,The Eastern Iowa Airport,41.8847,-91.7108,America/Chicago,US,CATI,faa-nasr,medium
+KCIU,CIU,Chippewa County International Airport,46.242,-84.4621,America/Detroit,US,CATI,faa-nasr,medium
+KCKB,CKB,North Central West Virginia Airport,39.2966,-80.2281,America/New_York,US,CATI,faa-nasr,medium
+KCLL,CLL,Easterwood Field,30.5886,-96.3638,America/Chicago,US,CATI,faa-nasr,medium
+KCLM,CLM,William R Fairchild International Airport,48.1202,-123.5,America/Los_Angeles,US,CATI,faa-nasr,medium
 KCMA,CMA,Camarillo International Airport,34.2137,-119.094,America/Los_Angeles,US,CATI,assumed,medium
-KCMI,CMI,University of Illinois Willard Airport,40.0398,-88.2762,America/Chicago,US,CATI,assumed,medium
-KCMX,CMX,Houghton County Memorial Airport,47.1684,-88.4891,America/Detroit,US,CATI,assumed,medium
-KCNM,CNM,Cavern City Air Terminal,32.3375,-104.263,America/Denver,US,CATI,assumed,medium
+KCMI,CMI,University of Illinois Willard Airport,40.0398,-88.2762,America/Chicago,US,CATI,faa-nasr,medium
+KCMX,CMX,Houghton County Memorial Airport,47.1684,-88.4891,America/Detroit,US,CATI,faa-nasr,medium
+KCNM,CNM,Cavern City Air Terminal,32.3375,-104.263,America/Denver,US,CATI,faa-nasr,medium
 KCNU,CNU,Chanute Martin Johnson Airport,37.6682,-95.4867,America/Chicago,US,CATI,assumed,medium
 KCNY,CNY,Canyonlands Regional Airport,38.755,-109.755,America/Denver,US,CATI,assumed,medium
 KCOD,COD,Yellowstone Regional Airport,44.5202,-109.024,America/Denver,US,CATI,assumed,medium
-KCOE,COE,Coeur D'Alene Airport - Pappy Boyington Field,47.7743,-116.82,America/Los_Angeles,US,CATI,assumed,medium
-KCOF,COF,Patrick Space Force Base,28.2349,-80.6101,America/New_York,US,CATI,assumed,medium
-KCON,CON,Concord Municipal Airport,43.2027,-71.5023,America/New_York,US,CATI,assumed,medium
-KCOU,COU,Columbia Regional Airport,38.8181,-92.2196,America/Chicago,US,CATI,assumed,medium
-KCPR,CPR,Casper-Natrona County International Airport,42.9074,-106.4616,America/Denver,US,CATI,assumed,medium
-KCRE,CRE,Grand Strand Airport,33.8117,-78.7239,America/New_York,US,CATI,assumed,medium
-KCRG,CRG,Jacksonville Executive at Craig Airport,30.3363,-81.5144,America/New_York,US,CATI,assumed,medium
-KCRP,CRP,Corpus Christi International Airport,27.7704,-97.5012,America/Chicago,US,CATI,assumed,medium
-KCRQ,CRQ,McClellan-Palomar Airport,33.1283,-117.28,America/Los_Angeles,US,CATI,assumed,medium
-KCRW,CRW,Yeager Airport,38.3731,-81.5932,America/New_York,US,CATI,assumed,medium
-KCSG,CSG,Columbus Airport,32.5164,-84.9396,America/New_York,US,CATI,assumed,medium
-KCSV,CSV,Crossville Memorial Airport Whitson Field,35.9513,-85.085,America/Chicago,US,CATI,assumed,medium
+KCOE,COE,Coeur D'Alene Airport - Pappy Boyington Field,47.7743,-116.82,America/Los_Angeles,US,CATI,faa-nasr,medium
+KCOF,COF,Patrick Space Force Base,28.2349,-80.6101,America/New_York,US,CATI,faa-nasr,medium
+KCON,CON,Concord Municipal Airport,43.2027,-71.5023,America/New_York,US,CATI,faa-nasr,medium
+KCOU,COU,Columbia Regional Airport,38.8181,-92.2196,America/Chicago,US,CATI,faa-nasr,medium
+KCPR,CPR,Casper-Natrona County International Airport,42.9074,-106.4616,America/Denver,US,CATI,faa-nasr,medium
+KCRE,CRE,Grand Strand Airport,33.8117,-78.7239,America/New_York,US,CATI,faa-nasr,medium
+KCRG,CRG,Jacksonville Executive at Craig Airport,30.3363,-81.5144,America/New_York,US,CATI,faa-nasr,medium
+KCRP,CRP,Corpus Christi International Airport,27.7704,-97.5012,America/Chicago,US,CATI,faa-nasr,medium
+KCRQ,CRQ,McClellan-Palomar Airport,33.1283,-117.28,America/Los_Angeles,US,CATI,faa-nasr,medium
+KCRW,CRW,Yeager Airport,38.3731,-81.5932,America/New_York,US,CATI,faa-nasr,medium
+KCSG,CSG,Columbus Airport,32.5164,-84.9396,America/New_York,US,CATI,faa-nasr,medium
+KCSV,CSV,Crossville Memorial Airport Whitson Field,35.9513,-85.085,America/Chicago,US,CATI,faa-nasr,medium
 KCTB,CTB,Cut Bank International Airport,48.6087,-112.3782,America/Denver,US,CATI,assumed,medium
-KCUB,CUB,Jim Hamilton L.B. Owens Airport,33.9705,-80.9952,America/New_York,US,CATI,assumed,medium
-KCVN,CVN,Clovis Municipal Airport,34.4266,-103.0788,America/Denver,US,CATI,assumed,medium
-KCVO,CVO,Corvallis Municipal Airport,44.4972,-123.29,America/Los_Angeles,US,CATI,assumed,medium
-KCVS,CVS,Cannon Air Force Base,34.3828,-103.322,America/Denver,US,CATI,assumed,medium
-KCWA,CWA,Central Wisconsin Airport,44.7774,-89.6702,America/Chicago,US,CATI,assumed,medium
-KCXO,CXO,Conroe-North Houston Regional Airport,30.3518,-95.4145,America/Chicago,US,CATI,assumed,medium
+KCUB,CUB,Jim Hamilton L.B. Owens Airport,33.9705,-80.9952,America/New_York,US,CATI,faa-nasr,medium
+KCVN,CVN,Clovis Municipal Airport,34.4266,-103.0788,America/Denver,US,CATI,faa-nasr,medium
+KCVO,CVO,Corvallis Municipal Airport,44.4972,-123.29,America/Los_Angeles,US,CATI,faa-nasr,medium
+KCVS,CVS,Cannon Air Force Base,34.3828,-103.322,America/Denver,US,CATI,faa-nasr,medium
+KCWA,CWA,Central Wisconsin Airport,44.7774,-89.6702,America/Chicago,US,CATI,faa-nasr,medium
+KCXO,CXO,Conroe-North Houston Regional Airport,30.3518,-95.4145,America/Chicago,US,CATI,faa-nasr,medium
 KCXP,CXP,Carson Airport,39.1943,-119.7343,America/Los_Angeles,US,CATI,assumed,medium
-KCYS,CYS,Cheyenne Regional Jerry Olson Field,41.1557,-104.812,America/Denver,US,CATI,assumed,medium
-KDAA,DAA,Davison Army Air Field,38.715,-77.181,America/New_York,US,CATI,assumed,medium
-KDAB,DAB,Daytona Beach International Airport,29.1825,-81.0595,America/New_York,US,CATI,assumed,medium
+KCYS,CYS,Cheyenne Regional Jerry Olson Field,41.1557,-104.812,America/Denver,US,CATI,faa-nasr,medium
+KDAA,DAA,Davison Army Air Field,38.715,-77.181,America/New_York,US,CATI,faa-nasr,medium
+KDAB,DAB,Daytona Beach International Airport,29.1825,-81.0595,America/New_York,US,CATI,faa-nasr,medium
 KDAG,DAG,Barstow Daggett Airport,34.8537,-116.787,America/Los_Angeles,US,CATI,assumed,medium
-KDAN,DAN,Danville Regional Airport,36.5729,-79.3361,America/New_York,US,CATI,assumed,medium
+KDAN,DAN,Danville Regional Airport,36.5729,-79.3361,America/New_York,US,CATI,faa-nasr,medium
 KDAY,DAY,James M. Cox Dayton International Airport,39.9024,-84.2194,America/New_York,US,CATIII,faa-nasr,medium
-KDBQ,DBQ,Dubuque Regional Airport,42.402,-90.7095,America/Chicago,US,CATI,assumed,medium
-KDDC,DDC,Dodge City Regional Airport,37.7634,-99.9656,America/Chicago,US,CATI,assumed,medium
-KDEC,DEC,Decatur Airport,39.8346,-88.8657,America/Chicago,US,CATI,assumed,medium
-KDET,DET,Coleman A. Young Municipal Airport,42.4092,-83.0099,America/Detroit,US,CATI,assumed,medium
-KDHN,DHN,Dothan Regional Airport,31.3213,-85.4496,America/Chicago,US,CATI,assumed,medium
+KDBQ,DBQ,Dubuque Regional Airport,42.402,-90.7095,America/Chicago,US,CATI,faa-nasr,medium
+KDDC,DDC,Dodge City Regional Airport,37.7634,-99.9656,America/Chicago,US,CATI,faa-nasr,medium
+KDEC,DEC,Decatur Airport,39.8346,-88.8657,America/Chicago,US,CATI,faa-nasr,medium
+KDET,DET,Coleman A. Young Municipal Airport,42.4092,-83.0099,America/Detroit,US,CATI,faa-nasr,medium
+KDHN,DHN,Dothan Regional Airport,31.3213,-85.4496,America/Chicago,US,CATI,faa-nasr,medium
 KDHT,DHT,Dalhart Municipal Airport,36.0226,-102.547,America/Chicago,US,CATI,assumed,medium
-KDIK,DIK,Dickinson Theodore Roosevelt Regional Airport,46.7975,-102.8019,America/Denver,US,CATI,assumed,medium
-KDLF,DLF,Laughlin Air Force Base,29.3595,-100.778,America/Chicago,US,CATI,assumed,medium
+KDIK,DIK,Dickinson Theodore Roosevelt Regional Airport,46.7975,-102.8019,America/Denver,US,CATI,faa-nasr,medium
+KDLF,DLF,Laughlin Air Force Base,29.3595,-100.778,America/Chicago,US,CATI,faa-nasr,medium
 KDLH,DLH,Duluth International Airport,46.8419,-92.1987,America/Chicago,US,CATII,faa-nasr,medium
-KDLS,DLS,Columbia Gorge Regional Airport,45.621,-121.1708,America/Los_Angeles,US,CATI,assumed,medium
-KDMA,DMA,Davis Monthan Air Force Base,32.1665,-110.883,America/Phoenix,US,CATI,assumed,medium
+KDLS,DLS,Columbia Gorge Regional Airport,45.621,-121.1708,America/Los_Angeles,US,CATI,faa-nasr,medium
+KDMA,DMA,Davis Monthan Air Force Base,32.1665,-110.883,America/Phoenix,US,CATI,faa-nasr,medium
 KDMN,DMN,Deming Municipal Airport,32.2623,-107.721,America/Denver,US,CATI,assumed,medium
 KDNL,DNL,Daniel Field,33.4665,-82.0394,America/New_York,US,CATI,assumed,medium
 KDOV,DOV,Dover Civil Air Terminal/Dover Air Force Base,39.1295,-75.466,America/New_York,US,CATII,faa-nasr,medium
-KDPA,DPA,Dupage Airport,41.9078,-88.2486,America/Chicago,US,CATI,assumed,medium
+KDPA,DPA,Dupage Airport,41.9078,-88.2486,America/Chicago,US,CATI,faa-nasr,medium
 KDRA,NV65,Desert Rock Airport,36.6194,-116.033,America/Los_Angeles,US,CATI,assumed,medium
 KDRI,DRI,Beauregard Regional Airport,30.8317,-93.3399,America/Chicago,US,CATI,assumed,medium
-KDRO,DRO,Durango La Plata County Airport,37.1515,-107.754,America/Denver,US,CATI,assumed,medium
-KDRT,DRT,Del Rio International Airport,29.3742,-100.927,America/Chicago,US,CATI,assumed,medium
+KDRO,DRO,Durango La Plata County Airport,37.1515,-107.754,America/Denver,US,CATI,faa-nasr,medium
+KDRT,DRT,Del Rio International Airport,29.3742,-100.927,America/Chicago,US,CATI,faa-nasr,medium
 KDTS,DTS,Destin Executive Airport,30.4001,-86.4715,America/Chicago,US,CATI,assumed,medium
 KDUA,DUA,Durant Regional Airport - Eaker Field,33.9397,-96.3951,America/Chicago,US,CATI,assumed,medium
 KDUG,DUG,Bisbee Douglas International Airport,31.4641,-109.6046,America/Phoenix,US,CATI,assumed,medium
-KDUJ,DUJ,DuBois Regional Airport,41.1783,-78.8987,America/New_York,US,CATI,assumed,medium
-KDVL,DVL,Devils Lake Regional Airport,48.1155,-98.9088,America/Chicago,US,CATI,assumed,medium
-KDXR,DXR,Danbury Municipal Airport,41.3717,-73.4822,America/New_York,US,CATI,assumed,medium
-KDYS,DYS,Dyess Air Force Base,32.4208,-99.8546,America/Chicago,US,CATI,assumed,medium
-KEAR,EAR,Kearney Regional Airport,40.727,-99.0068,America/Chicago,US,CATI,assumed,medium
-KEAT,EAT,Pangborn Memorial Airport,47.3989,-120.207,America/Los_Angeles,US,CATI,assumed,medium
-KEAU,EAU,Chippewa Valley Regional Airport,44.8658,-91.4843,America/Chicago,US,CATI,assumed,medium
-KECG,ECG,Elizabeth City Regional Airport & Coast Guard Air Station,36.2606,-76.1746,America/New_York,US,CATI,assumed,medium
-KECP,ECP,Northwest Florida Beaches International Airport,30.3571,-85.7954,America/Chicago,US,CATI,assumed,medium
+KDUJ,DUJ,DuBois Regional Airport,41.1783,-78.8987,America/New_York,US,CATI,faa-nasr,medium
+KDVL,DVL,Devils Lake Regional Airport,48.1155,-98.9088,America/Chicago,US,CATI,faa-nasr,medium
+KDXR,DXR,Danbury Municipal Airport,41.3717,-73.4822,America/New_York,US,CATI,faa-nasr,medium
+KDYS,DYS,Dyess Air Force Base,32.4208,-99.8546,America/Chicago,US,CATI,faa-nasr,medium
+KEAR,EAR,Kearney Regional Airport,40.727,-99.0068,America/Chicago,US,CATI,faa-nasr,medium
+KEAT,EAT,Pangborn Memorial Airport,47.3989,-120.207,America/Los_Angeles,US,CATI,faa-nasr,medium
+KEAU,EAU,Chippewa Valley Regional Airport,44.8658,-91.4843,America/Chicago,US,CATI,faa-nasr,medium
+KECG,ECG,Elizabeth City Regional Airport & Coast Guard Air Station,36.2606,-76.1746,America/New_York,US,CATI,faa-nasr,medium
+KECP,ECP,Northwest Florida Beaches International Airport,30.3571,-85.7954,America/Chicago,US,CATI,faa-nasr,medium
 KEDC,EDC,Austin Executive Airport,30.398,-97.5669,America/Chicago,US,CATI,assumed,medium
-KEDW,EDW,Edwards Air Force Base,34.9108,-117.8864,America/Los_Angeles,US,CATI,assumed,medium
+KEDW,EDW,Edwards Air Force Base,34.9108,-117.8864,America/Los_Angeles,US,CATI,faa-nasr,medium
 KEED,EED,Needles Airport,34.7663,-114.623,America/Los_Angeles,US,CATI,assumed,medium
-KEEN,EEN,Dillant Hopkins Airport,42.8984,-72.2708,America/New_York,US,CATI,assumed,medium
+KEEN,EEN,Dillant Hopkins Airport,42.8984,-72.2708,America/New_York,US,CATI,faa-nasr,medium
 KEET,EET,Shelby County Airport,33.177,-86.7828,America/Chicago,US,CATI,assumed,medium
-KEFD,EFD,Ellington Airport,29.6073,-95.1588,America/Chicago,US,CATI,assumed,medium
-KEGE,EGE,Eagle County Regional Airport,39.6426,-106.918,America/Denver,US,CATI,assumed,medium
-KEGI,EGI,Duke Field,30.6504,-86.5229,America/Chicago,US,CATI,assumed,medium
+KEFD,EFD,Ellington Airport,29.6073,-95.1588,America/Chicago,US,CATI,faa-nasr,medium
+KEGE,EGE,Eagle County Regional Airport,39.6426,-106.918,America/Denver,US,CATI,faa-nasr,medium
+KEGI,EGI,Duke Field,30.6504,-86.5229,America/Chicago,US,CATI,faa-nasr,medium
 KEKA,EKA,Murray Field,40.8034,-124.113,America/Los_Angeles,US,CATI,assumed,medium
-KEKN,EKN,Elkins-Randolph County Regional Airport,38.8898,-79.8577,America/New_York,US,CATI,assumed,medium
-KEKO,EKO,Elko Regional Airport,40.8249,-115.792,America/Los_Angeles,US,CATI,assumed,medium
-KELD,ELD,South Arkansas Regional Airport at Goodwin Field,33.221,-92.8133,America/Chicago,US,CATI,assumed,medium
-KELM,ELM,Elmira Corning Regional Airport,42.1599,-76.8916,America/New_York,US,CATI,assumed,medium
+KEKN,EKN,Elkins-Randolph County Regional Airport,38.8898,-79.8577,America/New_York,US,CATI,faa-nasr,medium
+KEKO,EKO,Elko Regional Airport,40.8249,-115.792,America/Los_Angeles,US,CATI,faa-nasr,medium
+KELD,ELD,South Arkansas Regional Airport at Goodwin Field,33.221,-92.8133,America/Chicago,US,CATI,faa-nasr,medium
+KELM,ELM,Elmira Corning Regional Airport,42.1599,-76.8916,America/New_York,US,CATI,faa-nasr,medium
 KELO,ELO,Ely Municipal Airport,47.8245,-91.8307,America/Chicago,US,CATI,assumed,medium
 KELY,ELY,Ely Airport Yelland Field,39.2997,-114.842,America/Los_Angeles,US,CATI,assumed,medium
-KEND,END,Vance Air Force Base,36.3392,-97.9165,America/Chicago,US,CATI,assumed,medium
+KEND,END,Vance Air Force Base,36.3392,-97.9165,America/Chicago,US,CATI,faa-nasr,medium
 KENV,ENV,Wendover Airport,40.7187,-114.031,America/Denver,US,CATI,assumed,medium
-KENW,ENW,Kenosha Regional Airport,42.5957,-87.9278,America/Chicago,US,CATI,assumed,medium
-KERI,ERI,Erie International Tom Ridge Field,42.0831,-80.1739,America/New_York,US,CATI,assumed,medium
-KESC,ESC,Delta County Airport,45.7232,-87.0886,America/Detroit,US,CATI,assumed,medium
-KESF,ESF,Esler Army Airfield / Esler Regional Airport,31.3943,-92.2941,America/Chicago,US,CATI,assumed,medium
+KENW,ENW,Kenosha Regional Airport,42.5957,-87.9278,America/Chicago,US,CATI,faa-nasr,medium
+KERI,ERI,Erie International Tom Ridge Field,42.0831,-80.1739,America/New_York,US,CATI,faa-nasr,medium
+KESC,ESC,Delta County Airport,45.7232,-87.0886,America/Detroit,US,CATI,faa-nasr,medium
+KESF,ESF,Esler Army Airfield / Esler Regional Airport,31.3943,-92.2941,America/Chicago,US,CATI,faa-nasr,medium
 KEUG,EUG,Eugene Airport,44.1246,-123.212,America/Los_Angeles,US,CATIII,faa-nasr,medium
-KEVV,EVV,Evansville Regional Airport,38.037,-87.5324,America/Chicago,US,CATI,assumed,medium
-KEVW,EVW,Evanston-Uinta County Airport-Burns Field,41.2748,-111.035,America/Denver,US,CATI,assumed,medium
-KEWB,EWB,New Bedford Regional Airport,41.6761,-70.9569,America/New_York,US,CATI,assumed,medium
-KEWN,EWN,Coastal Carolina Regional Airport,35.073,-77.0429,America/New_York,US,CATI,assumed,medium
+KEVV,EVV,Evansville Regional Airport,38.037,-87.5324,America/Chicago,US,CATI,faa-nasr,medium
+KEVW,EVW,Evanston-Uinta County Airport-Burns Field,41.2748,-111.035,America/Denver,US,CATI,faa-nasr,medium
+KEWB,EWB,New Bedford Regional Airport,41.6761,-70.9569,America/New_York,US,CATI,faa-nasr,medium
+KEWN,EWN,Coastal Carolina Regional Airport,35.073,-77.0429,America/New_York,US,CATI,faa-nasr,medium
 KEYW,EYW,Key West International Airport,24.5561,-81.7596,America/New_York,US,CATI,assumed,medium
 KFAF,FAF,Felker Army Air Field,37.1325,-76.6088,America/New_York,US,CATI,assumed,medium
-KFAR,FAR,Hector International Airport,46.9207,-96.8158,America/Chicago,US,CATI,assumed,medium
-KFAY,FAY,Fayetteville Regional Airport - Grannis Field,34.9912,-78.8803,America/New_York,US,CATI,assumed,medium
+KFAR,FAR,Hector International Airport,46.9207,-96.8158,America/Chicago,US,CATI,faa-nasr,medium
+KFAY,FAY,Fayetteville Regional Airport - Grannis Field,34.9912,-78.8803,America/New_York,US,CATI,faa-nasr,medium
 KFBG,FBG,Simmons Army Air Field,35.1318,-78.9367,America/New_York,US,CATI,assumed,medium
-KFCS,FCS,Butts AAF (Fort Carson) Air Field,38.6784,-104.757,America/Denver,US,CATI,assumed,medium
+KFCS,FCS,Butts AAF (Fort Carson) Air Field,38.6784,-104.757,America/Denver,US,CATI,faa-nasr,medium
 KFDY,FDY,Findlay Airport,41.0135,-83.6687,America/New_York,US,CATI,assumed,medium
-KFFO,FFO,Wright-Patterson Air Force Base,39.8261,-84.0483,America/New_York,US,CATI,assumed,medium
+KFFO,FFO,Wright-Patterson Air Force Base,39.8261,-84.0483,America/New_York,US,CATI,faa-nasr,medium
 KFHR,FHR,Friday Harbor Airport,48.5237,-123.0246,America/Los_Angeles,US,CATI,assumed,medium
-KFHU,FHU,Sierra Vista Municipal Airport / Libby Army Air Field,31.5874,-110.3482,America/Phoenix,US,CATI,assumed,medium
-KFKL,FKL,Venango Regional Airport,41.3779,-79.8604,America/New_York,US,CATI,assumed,medium
-KFLG,FLG,Flagstaff Pulliam Airport,35.1398,-111.6698,America/Phoenix,US,CATI,assumed,medium
-KFLO,FLO,Florence Regional Airport,34.1854,-79.7239,America/New_York,US,CATI,assumed,medium
+KFHU,FHU,Sierra Vista Municipal Airport / Libby Army Air Field,31.5874,-110.3482,America/Phoenix,US,CATI,faa-nasr,medium
+KFKL,FKL,Venango Regional Airport,41.3779,-79.8604,America/New_York,US,CATI,faa-nasr,medium
+KFLG,FLG,Flagstaff Pulliam Airport,35.1398,-111.6698,America/Phoenix,US,CATI,faa-nasr,medium
+KFLO,FLO,Florence Regional Airport,34.1854,-79.7239,America/New_York,US,CATI,faa-nasr,medium
 KFME,FME,Fort Meade Executive Airport,39.0854,-76.7594,America/New_York,US,CATI,assumed,medium
-KFMN,FMN,Four Corners Regional Airport,36.7412,-108.23,America/Denver,US,CATI,assumed,medium
-KFMY,FMY,Page Field,26.5866,-81.8633,America/New_York,US,CATI,assumed,medium
-KFNL,FNL,Northern Colorado Regional Airport,40.4497,-105.0113,America/Denver,US,CATI,assumed,medium
-KFNT,FNT,Bishop International Airport,42.9693,-83.7434,America/Detroit,US,CATI,assumed,medium
-KFOD,FOD,Fort Dodge Regional Airport,42.5526,-94.1912,America/Chicago,US,CATI,assumed,medium
-KFOE,FOE,Topeka Regional Airport,38.9509,-95.6636,America/Chicago,US,CATI,assumed,medium
-KFPR,FPR,Treasure Coast International Airport,27.4951,-80.3683,America/New_York,US,CATI,assumed,medium
-KFRG,FRG,Republic Airport,40.7286,-73.4143,America/New_York,US,CATI,assumed,medium
-KFRI,FRI,Marshall Army Air Field,39.053,-96.7642,America/Chicago,US,CATI,assumed,medium
-KFSD,FSD,Sioux Falls Regional Airport,43.5855,-96.7412,America/Chicago,US,CATI,assumed,medium
+KFMN,FMN,Four Corners Regional Airport,36.7412,-108.23,America/Denver,US,CATI,faa-nasr,medium
+KFMY,FMY,Page Field,26.5866,-81.8633,America/New_York,US,CATI,faa-nasr,medium
+KFNL,FNL,Northern Colorado Regional Airport,40.4497,-105.0113,America/Denver,US,CATI,faa-nasr,medium
+KFNT,FNT,Bishop International Airport,42.9693,-83.7434,America/Detroit,US,CATI,faa-nasr,medium
+KFOD,FOD,Fort Dodge Regional Airport,42.5526,-94.1912,America/Chicago,US,CATI,faa-nasr,medium
+KFOE,FOE,Topeka Regional Airport,38.9509,-95.6636,America/Chicago,US,CATI,faa-nasr,medium
+KFPR,FPR,Treasure Coast International Airport,27.4951,-80.3683,America/New_York,US,CATI,faa-nasr,medium
+KFRG,FRG,Republic Airport,40.7286,-73.4143,America/New_York,US,CATI,faa-nasr,medium
+KFRI,FRI,Marshall Army Air Field,39.053,-96.7642,America/Chicago,US,CATI,faa-nasr,medium
+KFSD,FSD,Sioux Falls Regional Airport,43.5855,-96.7412,America/Chicago,US,CATI,faa-nasr,medium
 KFSI,FSI,Henry Post Army Air Field,34.6498,-98.4022,America/Chicago,US,CATI,assumed,medium
-KFSM,FSM,Fort Smith Regional Airport,35.3366,-94.3674,America/Chicago,US,CATI,assumed,medium
+KFSM,FSM,Fort Smith Regional Airport,35.3366,-94.3674,America/Chicago,US,CATI,faa-nasr,medium
 KFST,FST,Fort Stockton Pecos County Airport,30.9157,-102.916,America/Chicago,US,CATI,assumed,medium
-KFTK,FTK,Godman Army Air Field,37.9071,-85.9721,America/New_York,US,CATI,assumed,medium
-KFTW,FTW,Fort Worth Meacham International Airport,32.8199,-97.3608,America/Chicago,US,CATI,assumed,medium
-KFTY,FTY,Fulton County Airport Brown Field,33.7791,-84.5214,America/New_York,US,CATI,assumed,medium
+KFTK,FTK,Godman Army Air Field,37.9071,-85.9721,America/New_York,US,CATI,faa-nasr,medium
+KFTW,FTW,Fort Worth Meacham International Airport,32.8199,-97.3608,America/Chicago,US,CATI,faa-nasr,medium
+KFTY,FTY,Fulton County Airport Brown Field,33.7791,-84.5214,America/New_York,US,CATI,faa-nasr,medium
 KFWA,FWA,Fort Wayne International Airport,40.9789,-85.1945,America/Indiana/Indianapolis,US,CATII,faa-nasr,medium
-KFXE,FXE,Fort Lauderdale Executive Airport,26.1973,-80.1707,America/New_York,US,CATI,assumed,medium
-KFYV,FYV,Drake Field,36.0051,-94.1701,America/Chicago,US,CATI,assumed,medium
-KGCC,GCC,Northeast Wyoming Regional Airport,44.3489,-105.539,America/Denver,US,CATI,assumed,medium
-KGCK,GCK,Garden City Regional Airport,37.9275,-100.724,America/Chicago,US,CATI,assumed,medium
-KGCN,GCN,Grand Canyon National Park Airport,35.9524,-112.147,America/Phoenix,US,CATI,assumed,medium
+KFXE,FXE,Fort Lauderdale Executive Airport,26.1973,-80.1707,America/New_York,US,CATI,faa-nasr,medium
+KFYV,FYV,Drake Field,36.0051,-94.1701,America/Chicago,US,CATI,faa-nasr,medium
+KGCC,GCC,Northeast Wyoming Regional Airport,44.3489,-105.539,America/Denver,US,CATI,faa-nasr,medium
+KGCK,GCK,Garden City Regional Airport,37.9275,-100.724,America/Chicago,US,CATI,faa-nasr,medium
+KGCN,GCN,Grand Canyon National Park Airport,35.9524,-112.147,America/Phoenix,US,CATI,faa-nasr,medium
 KGDV,GDV,Dawson Community Airport,47.1377,-104.8069,America/Denver,US,CATI,assumed,medium
-KGFK,GFK,Grand Forks International Airport,47.9493,-97.1761,America/Chicago,US,CATI,assumed,medium
-KGFL,GFL,Floyd Bennett Memorial Airport,43.3412,-73.6103,America/New_York,US,CATI,assumed,medium
-KGGG,GGG,East Texas Regional Airport,32.384,-94.7115,America/Chicago,US,CATI,assumed,medium
+KGFK,GFK,Grand Forks International Airport,47.9493,-97.1761,America/Chicago,US,CATI,faa-nasr,medium
+KGFL,GFL,Floyd Bennett Memorial Airport,43.3412,-73.6103,America/New_York,US,CATI,faa-nasr,medium
+KGGG,GGG,East Texas Regional Airport,32.384,-94.7115,America/Chicago,US,CATI,faa-nasr,medium
 KGGW,GGW,Glasgow Valley County Airport Wokal Field,48.2125,-106.615,America/Denver,US,CATI,assumed,medium
-KGJT,GJT,Grand Junction Regional Airport,39.1267,-108.5294,America/Denver,US,CATI,assumed,medium
-KGLD,GLD,Goodland Municipal Airport,39.3707,-101.6998,America/Denver,US,CATI,assumed,medium
-KGLH,GLH,Mid Delta Regional Airport,33.4829,-90.9856,America/Chicago,US,CATI,assumed,medium
-KGLS,GLS,Scholes International At Galveston Airport,29.2653,-94.8604,America/Chicago,US,CATI,assumed,medium
-KGMU,GMU,Greenville Downtown Airport,34.8479,-82.3502,America/New_York,US,CATI,assumed,medium
-KGNV,GNV,Gainesville Regional Airport,29.6901,-82.2718,America/New_York,US,CATI,assumed,medium
-KGON,GON,Groton New London Airport,41.3301,-72.0451,America/New_York,US,CATI,assumed,medium
-KGPI,GPI,Glacier Park International Airport,48.3105,-114.256,America/Denver,US,CATI,assumed,medium
-KGPT,GPT,Gulfport Biloxi International Airport,30.4056,-89.0698,America/Chicago,US,CATI,assumed,medium
-KGRB,GRB,Austin Straubel International Airport,44.4835,-88.1308,America/Chicago,US,CATI,assumed,medium
-KGRF,GRF,Gray Army Air Field,47.0792,-122.581,America/Los_Angeles,US,CATI,assumed,medium
-KGRI,GRI,Central Nebraska Regional Airport,40.9675,-98.3096,America/Chicago,US,CATI,assumed,medium
-KGRK,GRK,Killeen Regional Airport / Robert Gray Army Airfield,31.0672,-97.8289,America/Chicago,US,CATI,assumed,medium
-KGSB,GSB,Seymour Johnson Air Force Base,35.3394,-77.9606,America/New_York,US,CATI,assumed,medium
+KGJT,GJT,Grand Junction Regional Airport,39.1267,-108.5294,America/Denver,US,CATI,faa-nasr,medium
+KGLD,GLD,Goodland Municipal Airport,39.3707,-101.6998,America/Denver,US,CATI,faa-nasr,medium
+KGLH,GLH,Mid Delta Regional Airport,33.4829,-90.9856,America/Chicago,US,CATI,faa-nasr,medium
+KGLS,GLS,Scholes International At Galveston Airport,29.2653,-94.8604,America/Chicago,US,CATI,faa-nasr,medium
+KGMU,GMU,Greenville Downtown Airport,34.8479,-82.3502,America/New_York,US,CATI,faa-nasr,medium
+KGNV,GNV,Gainesville Regional Airport,29.6901,-82.2718,America/New_York,US,CATI,faa-nasr,medium
+KGON,GON,Groton New London Airport,41.3301,-72.0451,America/New_York,US,CATI,faa-nasr,medium
+KGPI,GPI,Glacier Park International Airport,48.3105,-114.256,America/Denver,US,CATI,faa-nasr,medium
+KGPT,GPT,Gulfport Biloxi International Airport,30.4056,-89.0698,America/Chicago,US,CATI,faa-nasr,medium
+KGRB,GRB,Austin Straubel International Airport,44.4835,-88.1308,America/Chicago,US,CATI,faa-nasr,medium
+KGRF,GRF,Gray Army Air Field,47.0792,-122.581,America/Los_Angeles,US,CATI,faa-nasr,medium
+KGRI,GRI,Central Nebraska Regional Airport,40.9675,-98.3096,America/Chicago,US,CATI,faa-nasr,medium
+KGRK,GRK,Killeen Regional Airport / Robert Gray Army Airfield,31.0672,-97.8289,America/Chicago,US,CATI,faa-nasr,medium
+KGSB,GSB,Seymour Johnson Air Force Base,35.3394,-77.9606,America/New_York,US,CATI,faa-nasr,medium
 KGSP,GSP,Greenville-Spartanburg International Airport,34.8957,-82.2189,America/New_York,US,CATIII,faa-nasr,medium
-KGTB,GTB,Wheeler Sack Army Air Field,44.0556,-75.7195,America/New_York,US,CATI,assumed,medium
+KGTB,GTB,Wheeler Sack Army Air Field,44.0556,-75.7195,America/New_York,US,CATI,faa-nasr,medium
 KGTF,GTF,Great Falls International Airport,47.482,-111.371,America/Denver,US,CATIII,faa-nasr,medium
-KGTR,GTR,Golden Triangle Regional Airport,33.4503,-88.5914,America/Chicago,US,CATI,assumed,medium
-KGUC,GUC,Gunnison Crested Butte Regional Airport,38.5347,-106.9346,America/Denver,US,CATI,assumed,medium
-KGUP,GUP,Gallup Municipal Airport,35.5117,-108.7882,America/Denver,US,CATI,assumed,medium
-KGUS,GUS,Grissom Air Reserve Base,40.6481,-86.1521,America/Indiana/Indianapolis,US,CATI,assumed,medium
+KGTR,GTR,Golden Triangle Regional Airport,33.4503,-88.5914,America/Chicago,US,CATI,faa-nasr,medium
+KGUC,GUC,Gunnison Crested Butte Regional Airport,38.5347,-106.9346,America/Denver,US,CATI,faa-nasr,medium
+KGUP,GUP,Gallup Municipal Airport,35.5117,-108.7882,America/Denver,US,CATI,faa-nasr,medium
+KGUS,GUS,Grissom Air Reserve Base,40.6481,-86.1521,America/Indiana/Indianapolis,US,CATI,faa-nasr,medium
 KGUY,GUY,Guymon Municipal Airport,36.6851,-101.508,America/Chicago,US,CATI,assumed,medium
-KGWO,GWO,Greenwood–Leflore Airport,33.495,-90.0882,America/Chicago,US,CATI,assumed,medium
-KGYI,GYI,North Texas Regional Airport Perrin Field,33.7141,-96.6737,America/Chicago,US,CATI,assumed,medium
-KGYY,GYY,Gary/Chicago International Airport,41.6171,-87.4132,America/Chicago,US,CATI,assumed,medium
+KGWO,GWO,Greenwood–Leflore Airport,33.495,-90.0882,America/Chicago,US,CATI,faa-nasr,medium
+KGYI,GYI,North Texas Regional Airport Perrin Field,33.7141,-96.6737,America/Chicago,US,CATI,faa-nasr,medium
+KGYY,GYY,Gary/Chicago International Airport,41.6171,-87.4132,America/Chicago,US,CATI,faa-nasr,medium
 KHBG,HBG,Hattiesburg Bobby L Chain Municipal Airport,31.2648,-89.2528,America/Chicago,US,CATI,assumed,medium
 KHBR,HBR,Hobart Regional Airport,34.9913,-99.0513,America/Chicago,US,CATI,assumed,medium
-KHDN,HDN,Yampa Valley Airport,40.4812,-107.218,America/Denver,US,CATI,assumed,medium
-KHEF,HEF,Manassas Regional Airport/Harry P. Davis Field,38.7214,-77.5154,America/New_York,US,CATI,assumed,medium
+KHDN,HDN,Yampa Valley Airport,40.4812,-107.218,America/Denver,US,CATI,faa-nasr,medium
+KHEF,HEF,Manassas Regional Airport/Harry P. Davis Field,38.7214,-77.5154,America/New_York,US,CATI,faa-nasr,medium
 KHFD,HFD,Hartford Brainard Airport,41.7367,-72.6494,America/New_York,US,CATI,assumed,medium
-KHGR,HGR,Hagerstown Regional Richard A Henson Field,39.7088,-77.728,America/New_York,US,CATI,assumed,medium
-KHHR,HHR,Jack Northrop Field Hawthorne Municipal Airport,33.9228,-118.335,America/Los_Angeles,US,CATI,assumed,medium
-KHIB,HIB,Range Regional Airport,47.3848,-92.8369,America/Chicago,US,CATI,assumed,medium
-KHIF,HIF,Hill Air Force Base,41.124,-111.9731,America/Denver,US,CATI,assumed,medium
+KHGR,HGR,Hagerstown Regional Richard A Henson Field,39.7088,-77.728,America/New_York,US,CATI,faa-nasr,medium
+KHHR,HHR,Jack Northrop Field Hawthorne Municipal Airport,33.9228,-118.335,America/Los_Angeles,US,CATI,faa-nasr,medium
+KHIB,HIB,Range Regional Airport,47.3848,-92.8369,America/Chicago,US,CATI,faa-nasr,medium
+KHIF,HIF,Hill Air Force Base,41.124,-111.9731,America/Denver,US,CATI,faa-nasr,medium
 KHII,HII,Lake Havasu City Airport,34.5705,-114.3577,America/Phoenix,US,CATI,assumed,medium
-KHIO,HIO,Portland Hillsboro Airport,45.5404,-122.95,America/Los_Angeles,US,CATI,assumed,medium
-KHKY,HKY,Hickory Regional Airport,35.7411,-81.3895,America/New_York,US,CATI,assumed,medium
-KHLG,HLG,Wheeling Ohio County Airport,40.175,-80.6463,America/New_York,US,CATI,assumed,medium
-KHLN,HLN,Helena Regional Airport,46.6068,-111.983,America/Denver,US,CATI,assumed,medium
-KHMN,HMN,Holloman Air Force Base,32.8525,-106.107,America/Denver,US,CATI,assumed,medium
-KHOB,HOB,Lea County Regional Airport,32.6875,-103.217,America/Denver,US,CATI,assumed,medium
-KHON,HON,Huron Regional Airport,44.3852,-98.2285,America/Chicago,US,CATI,assumed,medium
-KHOP,HOP,Campbell Army Airfield (Fort Campbell),36.6742,-87.4897,America/Chicago,US,CATI,assumed,medium
-KHOT,HOT,Memorial Field Airport,34.4788,-93.0963,America/Chicago,US,CATI,assumed,medium
-KHPN,HPN,Westchester County Airport,41.067,-73.7076,America/New_York,US,CATI,assumed,medium
-KHQM,HQM,Bowerman Airport,46.9712,-123.937,America/Los_Angeles,US,CATI,assumed,medium
+KHIO,HIO,Portland Hillsboro Airport,45.5404,-122.95,America/Los_Angeles,US,CATI,faa-nasr,medium
+KHKY,HKY,Hickory Regional Airport,35.7411,-81.3895,America/New_York,US,CATI,faa-nasr,medium
+KHLG,HLG,Wheeling Ohio County Airport,40.175,-80.6463,America/New_York,US,CATI,faa-nasr,medium
+KHLN,HLN,Helena Regional Airport,46.6068,-111.983,America/Denver,US,CATI,faa-nasr,medium
+KHMN,HMN,Holloman Air Force Base,32.8525,-106.107,America/Denver,US,CATI,faa-nasr,medium
+KHOB,HOB,Lea County Regional Airport,32.6875,-103.217,America/Denver,US,CATI,faa-nasr,medium
+KHON,HON,Huron Regional Airport,44.3852,-98.2285,America/Chicago,US,CATI,faa-nasr,medium
+KHOP,HOP,Campbell Army Airfield (Fort Campbell),36.6742,-87.4897,America/Chicago,US,CATI,faa-nasr,medium
+KHOT,HOT,Memorial Field Airport,34.4788,-93.0963,America/Chicago,US,CATI,faa-nasr,medium
+KHPN,HPN,Westchester County Airport,41.067,-73.7076,America/New_York,US,CATI,faa-nasr,medium
+KHQM,HQM,Bowerman Airport,46.9712,-123.937,America/Los_Angeles,US,CATI,faa-nasr,medium
 KHRL,HRL,Valley International Airport,26.2285,-97.6544,America/Chicago,US,CATII,faa-nasr,medium
-KHRO,HRO,Boone County Airport,36.2615,-93.1547,America/Chicago,US,CATI,assumed,medium
-KHRT,HRT,Hurlburt Field,30.4278,-86.6893,America/Chicago,US,CATI,assumed,medium
-KHST,HST,Homestead Air Reserve Base,25.4886,-80.3836,America/New_York,US,CATI,assumed,medium
+KHRO,HRO,Boone County Airport,36.2615,-93.1547,America/Chicago,US,CATI,faa-nasr,medium
+KHRT,HRT,Hurlburt Field,30.4278,-86.6893,America/Chicago,US,CATI,faa-nasr,medium
+KHST,HST,Homestead Air Reserve Base,25.4886,-80.3836,America/New_York,US,CATI,faa-nasr,medium
 KHSV,HSV,Huntsville International Airport,34.6362,-86.7744,America/Chicago,US,CATIII,faa-nasr,medium
-KHTS,HTS,Tri-State Airport / Milton J. Ferguson Field,38.3667,-82.558,America/New_York,US,CATI,assumed,medium
+KHTS,HTS,Tri-State Airport / Milton J. Ferguson Field,38.3667,-82.558,America/New_York,US,CATI,faa-nasr,medium
 KHUA,HUA,Redstone Army Air Field,34.6787,-86.6848,America/Chicago,US,CATI,assumed,medium
-KHUF,HUF,Terre Haute Regional Airport; Hulman Field,39.4515,-87.3076,America/Indiana/Indianapolis,US,CATI,assumed,medium
+KHUF,HUF,Terre Haute Regional Airport; Hulman Field,39.4515,-87.3076,America/Indiana/Indianapolis,US,CATI,faa-nasr,medium
 KHUL,HUL,Houlton International Airport,46.1231,-67.7921,America/New_York,US,CATI,assumed,medium
-KHUT,HUT,Hutchinson Municipal Airport,38.0655,-97.8606,America/Chicago,US,CATI,assumed,medium
-KHVN,HVN,Tweed New Haven Airport,41.2629,-72.8877,America/New_York,US,CATI,assumed,medium
+KHUT,HUT,Hutchinson Municipal Airport,38.0655,-97.8606,America/Chicago,US,CATI,faa-nasr,medium
+KHVN,HVN,Tweed New Haven Airport,41.2629,-72.8877,America/New_York,US,CATI,faa-nasr,medium
 KHVR,HVR,Havre City County Airport,48.5414,-109.7629,America/Denver,US,CATI,assumed,medium
 KHWO,HWO,North Perry Airport,26.0012,-80.2407,America/New_York,US,CATI,assumed,medium
-KHXD,HXD,Hilton Head Airport,32.2244,-80.6975,America/New_York,US,CATI,assumed,medium
-KHYA,HYA,Cape Cod Gateway Airport,41.6693,-70.2804,America/New_York,US,CATI,assumed,medium
-KHYI,HYI,San Marcos Regional Airport,29.8927,-97.863,America/Chicago,US,CATI,assumed,medium
-KHYR,HYR,Sawyer County Airport,46.0252,-91.4443,America/Chicago,US,CATI,assumed,medium
-KHYS,HYS,Hays Regional Airport,38.8445,-99.2731,America/Chicago,US,CATI,assumed,medium
+KHXD,HXD,Hilton Head Airport,32.2244,-80.6975,America/New_York,US,CATI,faa-nasr,medium
+KHYA,HYA,Cape Cod Gateway Airport,41.6693,-70.2804,America/New_York,US,CATI,faa-nasr,medium
+KHYI,HYI,San Marcos Regional Airport,29.8927,-97.863,America/Chicago,US,CATI,faa-nasr,medium
+KHYR,HYR,Sawyer County Airport,46.0252,-91.4443,America/Chicago,US,CATI,faa-nasr,medium
+KHYS,HYS,Hays Regional Airport,38.8445,-99.2731,America/Chicago,US,CATI,faa-nasr,medium
 KHZY,HZY,Northeast Ohio Regional Airport,41.778,-80.6955,America/New_York,US,CATI,assumed,medium
-KIAB,IAB,McConnell Air Force Base,37.6219,-97.2682,America/Chicago,US,CATI,assumed,medium
-KIAG,IAG,Niagara Falls International Airport,43.1073,-78.9462,America/New_York,US,CATI,assumed,medium
+KIAB,IAB,McConnell Air Force Base,37.6219,-97.2682,America/Chicago,US,CATI,faa-nasr,medium
+KIAG,IAG,Niagara Falls International Airport,43.1073,-78.9462,America/New_York,US,CATI,faa-nasr,medium
 KICT,ICT,Wichita Dwight D. Eisenhower National Airport,37.6503,-97.4286,America/Chicago,US,CATII,faa-nasr,medium
-KIDA,IDA,Idaho Falls Regional Airport,43.5146,-112.071,America/Boise,US,CATI,assumed,medium
+KIDA,IDA,Idaho Falls Regional Airport,43.5146,-112.071,America/Boise,US,CATI,faa-nasr,medium
 KIFP,IFP,Laughlin Bullhead International Airport,35.1547,-114.5593,America/Phoenix,US,CATI,assumed,medium
 KIGM,IGM,Kingman Airport,35.2595,-113.938,America/Phoenix,US,CATI,assumed,medium
-KIKK,IKK,Greater Kankakee Airport,41.0714,-87.8463,America/Chicago,US,CATI,assumed,medium
-KILG,ILG,Wilmington Airport,39.6787,-75.6065,America/New_York,US,CATI,assumed,medium
-KILM,ILM,Wilmington International Airport,34.2723,-77.9051,America/New_York,US,CATI,assumed,medium
+KIKK,IKK,Greater Kankakee Airport,41.0714,-87.8463,America/Chicago,US,CATI,faa-nasr,medium
+KILG,ILG,Wilmington Airport,39.6787,-75.6065,America/New_York,US,CATI,faa-nasr,medium
+KILM,ILM,Wilmington International Airport,34.2723,-77.9051,America/New_York,US,CATI,faa-nasr,medium
 KILN,ILN,Wilmington Airpark,39.4279,-83.7921,America/New_York,US,CATIII,faa-nasr,medium
-KIMT,IMT,Ford Airport,45.8191,-88.1146,America/Menominee,US,CATI,assumed,medium
+KIMT,IMT,Ford Airport,45.8191,-88.1146,America/Menominee,US,CATI,faa-nasr,medium
 KINK,INK,Winkler County Airport,31.7796,-103.201,America/Chicago,US,CATI,assumed,medium
-KINL,INL,Falls International Airport,48.5662,-93.4031,America/Chicago,US,CATI,assumed,medium
-KINT,INT,Smith Reynolds Airport,36.1337,-80.222,America/New_York,US,CATI,assumed,medium
+KINL,INL,Falls International Airport,48.5662,-93.4031,America/Chicago,US,CATI,faa-nasr,medium
+KINT,INT,Smith Reynolds Airport,36.1337,-80.222,America/New_York,US,CATI,faa-nasr,medium
 KINW,INW,Winslow Lindbergh Regional Airport,35.0219,-110.723,America/Phoenix,US,CATI,assumed,medium
 KIPL,IPL,Imperial County Airport,32.8354,-115.574,America/Los_Angeles,US,CATI,assumed,medium
-KIPT,IPT,Williamsport Regional Airport,41.2421,-76.9224,America/New_York,US,CATI,assumed,medium
-KIRK,IRK,Kirksville Regional Airport,40.0935,-92.5449,America/Chicago,US,CATI,assumed,medium
-KISM,ISM,Kissimmee Gateway Airport,28.2898,-81.4371,America/New_York,US,CATI,assumed,medium
-KISO,ISO,Kinston Regional Jetport At Stallings Field,35.3314,-77.6088,America/New_York,US,CATI,assumed,medium
-KISP,ISP,Long Island MacArthur Airport,40.7963,-73.1017,America/New_York,US,CATI,assumed,medium
-KITH,ITH,Ithaca Tompkins Regional Airport,42.491,-76.4584,America/New_York,US,CATI,assumed,medium
-KIWA,IWA,Mesa Gateway Airport,33.3078,-111.655,America/Phoenix,US,CATI,assumed,medium
-KJAC,JAC,Jackson Hole Airport,43.6073,-110.738,America/Denver,US,CATI,assumed,medium
+KIPT,IPT,Williamsport Regional Airport,41.2421,-76.9224,America/New_York,US,CATI,faa-nasr,medium
+KIRK,IRK,Kirksville Regional Airport,40.0935,-92.5449,America/Chicago,US,CATI,faa-nasr,medium
+KISM,ISM,Kissimmee Gateway Airport,28.2898,-81.4371,America/New_York,US,CATI,faa-nasr,medium
+KISO,ISO,Kinston Regional Jetport At Stallings Field,35.3314,-77.6088,America/New_York,US,CATI,faa-nasr,medium
+KISP,ISP,Long Island MacArthur Airport,40.7963,-73.1017,America/New_York,US,CATI,faa-nasr,medium
+KITH,ITH,Ithaca Tompkins Regional Airport,42.491,-76.4584,America/New_York,US,CATI,faa-nasr,medium
+KIWA,IWA,Mesa Gateway Airport,33.3078,-111.655,America/Phoenix,US,CATI,faa-nasr,medium
+KJAC,JAC,Jackson Hole Airport,43.6073,-110.738,America/Denver,US,CATI,faa-nasr,medium
 KJAN,JAN,Jackson-Medgar Wiley Evers International Airport,32.3112,-90.0759,America/Chicago,US,CATIII,faa-nasr,medium
-KJBR,JBR,Jonesboro Municipal Airport,35.8317,-90.6464,America/Chicago,US,CATI,assumed,medium
+KJBR,JBR,Jonesboro Municipal Airport,35.8317,-90.6464,America/Chicago,US,CATI,faa-nasr,medium
 KJCT,JCT,Kimble County Airport,30.5113,-99.7635,America/Chicago,US,CATI,assumed,medium
-KJHW,JHW,Chautauqua County-Jamestown Airport,42.1542,-79.254,America/New_York,US,CATI,assumed,medium
+KJHW,JHW,Chautauqua County-Jamestown Airport,42.1542,-79.254,America/New_York,US,CATI,faa-nasr,medium
 KJKL,JKL,Julian Carroll Airport,37.5939,-83.3173,America/New_York,US,CATI,assumed,medium
-KJLN,JLN,Joplin Regional Airport,37.1518,-94.4983,America/Chicago,US,CATI,assumed,medium
-KJMS,JMS,Jamestown Regional Airport,46.9297,-98.6782,America/Chicago,US,CATI,assumed,medium
-KJNX,JNX,Johnston Regional Airport,35.5409,-78.3903,America/New_York,US,CATI,assumed,medium
-KJQF,JQF,Concord-Padgett Regional Airport,35.3878,-80.7091,America/New_York,US,CATI,assumed,medium
-KJST,JST,John Murtha Johnstown Cambria County Airport,40.3161,-78.8339,America/New_York,US,CATI,assumed,medium
+KJLN,JLN,Joplin Regional Airport,37.1518,-94.4983,America/Chicago,US,CATI,faa-nasr,medium
+KJMS,JMS,Jamestown Regional Airport,46.9297,-98.6782,America/Chicago,US,CATI,faa-nasr,medium
+KJNX,JNX,Johnston Regional Airport,35.5409,-78.3903,America/New_York,US,CATI,faa-nasr,medium
+KJQF,JQF,Concord-Padgett Regional Airport,35.3878,-80.7091,America/New_York,US,CATI,faa-nasr,medium
+KJST,JST,John Murtha Johnstown Cambria County Airport,40.3161,-78.8339,America/New_York,US,CATI,faa-nasr,medium
 KJWY,JWY,Mid-Way Regional Airport,32.4587,-96.9124,America/Chicago,US,CATI,assumed,medium
-KJXN,JXN,Jackson County Airport/Reynolds Field,42.2605,-84.463,America/Detroit,US,CATI,assumed,medium
+KJXN,JXN,Jackson County Airport/Reynolds Field,42.2605,-84.463,America/Detroit,US,CATI,faa-nasr,medium
 KKLS,KLS,Southwest Washington Regional Airport,46.118,-122.898,America/Los_Angeles,US,CATI,assumed,medium
 KLAA,LAA,Southeast Colorado Regional Airport,38.0664,-102.6914,America/Denver,US,CATI,assumed,medium
-KLAF,LAF,Purdue University Airport,40.4129,-86.9394,America/Indiana/Indianapolis,US,CATI,assumed,medium
+KLAF,LAF,Purdue University Airport,40.4129,-86.9394,America/Indiana/Indianapolis,US,CATI,faa-nasr,medium
 KLAL,LAL,Lakeland Linder International Airport,27.9893,-82.0207,America/New_York,US,CATIII,faa-nasr,medium
-KLAN,LAN,Capital Region International Airport,42.7776,-84.5857,America/Detroit,US,CATI,assumed,medium
+KLAN,LAN,Capital Region International Airport,42.7776,-84.5857,America/Detroit,US,CATI,faa-nasr,medium
 KLAR,LAR,Laramie Regional Airport,41.3121,-105.675,America/Denver,US,CATI,assumed,medium
-KLAW,LAW,Lawton Fort Sill Regional Airport,34.5677,-98.4166,America/Chicago,US,CATI,assumed,medium
-KLBB,LBB,Lubbock Preston Smith International Airport,33.6636,-101.823,America/Chicago,US,CATI,assumed,medium
-KLBE,LBE,Arnold Palmer Regional Airport,40.2759,-79.4048,America/New_York,US,CATI,assumed,medium
-KLBF,LBF,North Platte Regional Airport Lee Bird Field,41.1262,-100.684,America/Chicago,US,CATI,assumed,medium
-KLBL,LBL,Liberal Mid-America Regional Airport,37.0442,-100.96,America/Chicago,US,CATI,assumed,medium
-KLBT,LBT,Lumberton Regional Airport,34.6108,-79.0594,America/New_York,US,CATI,assumed,medium
-KLBX,LBX,Texas Gulf Coast Regional Airport,29.1086,-95.4621,America/Chicago,US,CATI,assumed,medium
-KLCH,LCH,Lake Charles Regional Airport,30.1261,-93.2233,America/Chicago,US,CATI,assumed,medium
+KLAW,LAW,Lawton Fort Sill Regional Airport,34.5677,-98.4166,America/Chicago,US,CATI,faa-nasr,medium
+KLBB,LBB,Lubbock Preston Smith International Airport,33.6636,-101.823,America/Chicago,US,CATI,faa-nasr,medium
+KLBE,LBE,Arnold Palmer Regional Airport,40.2759,-79.4048,America/New_York,US,CATI,faa-nasr,medium
+KLBF,LBF,North Platte Regional Airport Lee Bird Field,41.1262,-100.684,America/Chicago,US,CATI,faa-nasr,medium
+KLBL,LBL,Liberal Mid-America Regional Airport,37.0442,-100.96,America/Chicago,US,CATI,faa-nasr,medium
+KLBT,LBT,Lumberton Regional Airport,34.6108,-79.0594,America/New_York,US,CATI,faa-nasr,medium
+KLBX,LBX,Texas Gulf Coast Regional Airport,29.1086,-95.4621,America/Chicago,US,CATI,faa-nasr,medium
+KLCH,LCH,Lake Charles Regional Airport,30.1261,-93.2233,America/Chicago,US,CATI,faa-nasr,medium
 KLCK,LCK,Rickenbacker International Airport,39.8138,-82.9278,America/New_York,US,CATII,faa-nasr,medium
-KLEB,LEB,Lebanon Municipal Airport,43.6261,-72.3042,America/New_York,US,CATI,assumed,medium
+KLEB,LEB,Lebanon Municipal Airport,43.6261,-72.3042,America/New_York,US,CATI,faa-nasr,medium
 KLEE,LEE,Leesburg International Airport,28.8231,-81.8087,America/New_York,US,CATI,assumed,medium
-KLEX,LEX,Blue Grass Airport,38.0351,-84.6067,America/New_York,US,CATI,assumed,medium
-KLFI,LFI,Langley Air Force Base,37.0829,-76.3605,America/New_York,US,CATI,assumed,medium
-KLFK,LFK,Angelina County Airport,31.234,-94.75,America/Chicago,US,CATI,assumed,medium
-KLFT,LFT,Lafayette Regional Airport,30.2053,-91.9876,America/Chicago,US,CATI,assumed,medium
-KLGU,LGU,Logan-Cache Airport,41.7912,-111.852,America/Denver,US,CATI,assumed,medium
+KLEX,LEX,Blue Grass Airport,38.0351,-84.6067,America/New_York,US,CATI,faa-nasr,medium
+KLFI,LFI,Langley Air Force Base,37.0829,-76.3605,America/New_York,US,CATI,faa-nasr,medium
+KLFK,LFK,Angelina County Airport,31.234,-94.75,America/Chicago,US,CATI,faa-nasr,medium
+KLFT,LFT,Lafayette Regional Airport,30.2053,-91.9876,America/Chicago,US,CATI,faa-nasr,medium
+KLGU,LGU,Logan-Cache Airport,41.7912,-111.852,America/Denver,US,CATI,faa-nasr,medium
 KLIT,LIT,Bill & Hillary Clinton National Airport/Adams Field,34.7292,-92.2236,America/Chicago,US,CATIII,faa-nasr,medium
 KLLQ,LLQ,Monticello Municipal Ellis Field,33.6386,-91.751,America/Chicago,US,CATI,assumed,medium
-KLMT,LMT,Crater Lake-Klamath Regional Airport,42.1561,-121.733,America/Los_Angeles,US,CATI,assumed,medium
+KLMT,LMT,Crater Lake-Klamath Regional Airport,42.1561,-121.733,America/Los_Angeles,US,CATI,faa-nasr,medium
 KLND,LND,Hunt Field,42.8152,-108.73,America/Denver,US,CATI,assumed,medium
-KLNK,LNK,Lincoln Airport,40.8449,-96.7618,America/Chicago,US,CATI,assumed,medium
-KLNS,LNS,Lancaster Airport,40.1217,-76.2961,America/New_York,US,CATI,assumed,medium
+KLNK,LNK,Lincoln Airport,40.8449,-96.7618,America/Chicago,US,CATI,faa-nasr,medium
+KLNS,LNS,Lancaster Airport,40.1217,-76.2961,America/New_York,US,CATI,faa-nasr,medium
 KLOL,LOL,Derby Field,40.0664,-118.565,America/Los_Angeles,US,CATI,assumed,medium
 KLOU,LOU,Bowman Field,38.228,-85.6637,America/Kentucky/Louisville,US,CATI,assumed,medium
-KLOZ,LOZ,London-Corbin Airport/Magee Field,37.0822,-84.0849,America/New_York,US,CATI,assumed,medium
-KLRD,LRD,Laredo International Airport,27.5438,-99.4616,America/Chicago,US,CATI,assumed,medium
-KLRF,LRF,Little Rock Air Force Base,34.9169,-92.1497,America/Chicago,US,CATI,assumed,medium
-KLRU,LRU,Las Cruces International Airport,32.2894,-106.922,America/Denver,US,CATI,assumed,medium
-KLSE,LSE,La Crosse Regional Airport,43.879,-91.2567,America/Chicago,US,CATI,assumed,medium
-KLSF,LSF,Lawson Army Air Field,32.3325,-84.988,America/New_York,US,CATI,assumed,medium
-KLSV,LSV,Nellis Air Force Base,36.2362,-115.034,America/Los_Angeles,US,CATI,assumed,medium
-KLTS,LTS,Altus Air Force Base,34.6671,-99.2667,America/Chicago,US,CATI,assumed,medium
-KLUF,LUF,Luke Air Force Base,33.535,-112.383,America/Phoenix,US,CATI,assumed,medium
-KLUK,LUK,Cincinnati Municipal Airport Lunken Field,39.1024,-84.4189,America/New_York,US,CATI,assumed,medium
+KLOZ,LOZ,London-Corbin Airport/Magee Field,37.0822,-84.0849,America/New_York,US,CATI,faa-nasr,medium
+KLRD,LRD,Laredo International Airport,27.5438,-99.4616,America/Chicago,US,CATI,faa-nasr,medium
+KLRF,LRF,Little Rock Air Force Base,34.9169,-92.1497,America/Chicago,US,CATI,faa-nasr,medium
+KLRU,LRU,Las Cruces International Airport,32.2894,-106.922,America/Denver,US,CATI,faa-nasr,medium
+KLSE,LSE,La Crosse Regional Airport,43.879,-91.2567,America/Chicago,US,CATI,faa-nasr,medium
+KLSF,LSF,Lawson Army Air Field,32.3325,-84.988,America/New_York,US,CATI,faa-nasr,medium
+KLSV,LSV,Nellis Air Force Base,36.2362,-115.034,America/Los_Angeles,US,CATI,faa-nasr,medium
+KLTS,LTS,Altus Air Force Base,34.6671,-99.2667,America/Chicago,US,CATI,faa-nasr,medium
+KLUF,LUF,Luke Air Force Base,33.535,-112.383,America/Phoenix,US,CATI,faa-nasr,medium
+KLUK,LUK,Cincinnati Municipal Airport Lunken Field,39.1024,-84.4189,America/New_York,US,CATI,faa-nasr,medium
 KLVM,LVM,Mission Field,45.6994,-110.448,America/Denver,US,CATI,assumed,medium
 KLVS,LVS,Las Vegas Municipal Airport,35.6542,-105.142,America/Denver,US,CATI,assumed,medium
-KLWB,LWB,Greenbrier Valley Airport,37.8579,-80.4004,America/New_York,US,CATI,assumed,medium
-KLWM,LWM,Lawrence Municipal Airport,42.7172,-71.1234,America/New_York,US,CATI,assumed,medium
-KLWS,LWS,Lewiston Nez Perce County Airport,46.3745,-117.015,America/Los_Angeles,US,CATI,assumed,medium
+KLWB,LWB,Greenbrier Valley Airport,37.8579,-80.4004,America/New_York,US,CATI,faa-nasr,medium
+KLWM,LWM,Lawrence Municipal Airport,42.7172,-71.1234,America/New_York,US,CATI,faa-nasr,medium
+KLWS,LWS,Lewiston Nez Perce County Airport,46.3745,-117.015,America/Los_Angeles,US,CATI,faa-nasr,medium
 KLWT,LWT,Lewistown Municipal Airport,47.0484,-109.4661,America/Denver,US,CATI,assumed,medium
-KLYH,LYH,Lynchburg Regional Airport - Preston Glenn Field,37.3267,-79.2004,America/New_York,US,CATI,assumed,medium
-KMAF,MAF,Midland International Air and Space Port,31.9425,-102.202,America/Chicago,US,CATI,assumed,medium
+KLYH,LYH,Lynchburg Regional Airport - Preston Glenn Field,37.3267,-79.2004,America/New_York,US,CATI,faa-nasr,medium
+KMAF,MAF,Midland International Air and Space Port,31.9425,-102.202,America/Chicago,US,CATI,faa-nasr,medium
 KMBG,MBG,Mobridge Municipal Airport,45.5465,-100.408,America/Chicago,US,CATI,assumed,medium
-KMBS,MBS,MBS International Airport,43.5332,-84.0831,America/Detroit,US,CATI,assumed,medium
-KMCB,MCB,McComb-Pike County Airport / John E Lewis Field,31.1785,-90.4719,America/Chicago,US,CATI,assumed,medium
-KMCC,MCC,McClellan Airfield,38.6676,-121.401,America/Los_Angeles,US,CATI,assumed,medium
-KMCE,MCE,Merced Regional Macready Field,37.2847,-120.514,America/Los_Angeles,US,CATI,assumed,medium
-KMCF,MCF,MacDill Air Force Base,27.8493,-82.5212,America/New_York,US,CATI,assumed,medium
-KMCK,MCK,McCook Ben Nelson Regional Airport,40.2078,-100.5928,America/Chicago,US,CATI,assumed,medium
-KMCN,MCN,Middle Georgia Regional Airport,32.6928,-83.6492,America/New_York,US,CATI,assumed,medium
-KMCW,MCW,Mason City Municipal Airport,43.1598,-93.3297,America/Chicago,US,CATI,assumed,medium
-KMDH,MDH,Southern Illinois Airport,37.7781,-89.252,America/Chicago,US,CATI,assumed,medium
+KMBS,MBS,MBS International Airport,43.5332,-84.0831,America/Detroit,US,CATI,faa-nasr,medium
+KMCB,MCB,McComb-Pike County Airport / John E Lewis Field,31.1785,-90.4719,America/Chicago,US,CATI,faa-nasr,medium
+KMCC,MCC,McClellan Airfield,38.6676,-121.401,America/Los_Angeles,US,CATI,faa-nasr,medium
+KMCE,MCE,Merced Regional Macready Field,37.2847,-120.514,America/Los_Angeles,US,CATI,faa-nasr,medium
+KMCF,MCF,MacDill Air Force Base,27.8493,-82.5212,America/New_York,US,CATI,faa-nasr,medium
+KMCK,MCK,McCook Ben Nelson Regional Airport,40.2078,-100.5928,America/Chicago,US,CATI,faa-nasr,medium
+KMCN,MCN,Middle Georgia Regional Airport,32.6928,-83.6492,America/New_York,US,CATI,faa-nasr,medium
+KMCW,MCW,Mason City Municipal Airport,43.1598,-93.3297,America/Chicago,US,CATI,faa-nasr,medium
+KMDH,MDH,Southern Illinois Airport,37.7781,-89.252,America/Chicago,US,CATI,faa-nasr,medium
 KMDT,MDT,Harrisburg International Airport,40.1928,-76.7623,America/New_York,US,CATIII,faa-nasr,medium
-KMEI,MEI,Key Field / Meridian Regional Airport,32.3326,-88.7519,America/Chicago,US,CATI,assumed,medium
-KMER,MER,Castle Airport,37.3805,-120.568,America/Los_Angeles,US,CATI,assumed,medium
-KMFD,MFD,Mansfield Lahm Regional Airport,40.8214,-82.5166,America/New_York,US,CATI,assumed,medium
-KMFE,MFE,McAllen Miller International Airport,26.1761,-98.238,America/Chicago,US,CATI,assumed,medium
-KMFR,MFR,Rogue Valley International-Medford Airport,42.3742,-122.873,America/Los_Angeles,US,CATI,assumed,medium
+KMEI,MEI,Key Field / Meridian Regional Airport,32.3326,-88.7519,America/Chicago,US,CATI,faa-nasr,medium
+KMER,MER,Castle Airport,37.3805,-120.568,America/Los_Angeles,US,CATI,faa-nasr,medium
+KMFD,MFD,Mansfield Lahm Regional Airport,40.8214,-82.5166,America/New_York,US,CATI,faa-nasr,medium
+KMFE,MFE,McAllen Miller International Airport,26.1761,-98.238,America/Chicago,US,CATI,faa-nasr,medium
+KMFR,MFR,Rogue Valley International-Medford Airport,42.3742,-122.873,America/Los_Angeles,US,CATI,faa-nasr,medium
 KMGC,MGC,Michigan City Municipal Airport,41.7033,-86.8212,America/Chicago,US,CATI,assumed,medium
-KMGE,MGE,Dobbins Air Reserve Base,33.9154,-84.5163,America/New_York,US,CATI,assumed,medium
-KMGM,MGM,Montgomery Regional (Dannelly Field) Airport,32.3006,-86.394,America/Chicago,US,CATI,assumed,medium
-KMGW,MGW,Morgantown Municipal Airport Walter L. (Bill) Hart Field,39.6433,-79.9176,America/New_York,US,CATI,assumed,medium
-KMHK,MHK,Manhattan Regional Airport,39.141,-96.6708,America/Chicago,US,CATI,assumed,medium
-KMHR,MHR,Sacramento Mather Airport,38.5547,-121.298,America/Los_Angeles,US,CATI,assumed,medium
+KMGE,MGE,Dobbins Air Reserve Base,33.9154,-84.5163,America/New_York,US,CATI,faa-nasr,medium
+KMGM,MGM,Montgomery Regional (Dannelly Field) Airport,32.3006,-86.394,America/Chicago,US,CATI,faa-nasr,medium
+KMGW,MGW,Morgantown Municipal Airport Walter L. (Bill) Hart Field,39.6433,-79.9176,America/New_York,US,CATI,faa-nasr,medium
+KMHK,MHK,Manhattan Regional Airport,39.141,-96.6708,America/Chicago,US,CATI,faa-nasr,medium
+KMHR,MHR,Sacramento Mather Airport,38.5547,-121.298,America/Los_Angeles,US,CATI,faa-nasr,medium
 KMHT,MHT,Manchester-Boston Regional Airport,42.9326,-71.4357,America/New_York,US,CATIII,faa-nasr,medium
 KMHV,MHV,Mojave Air &  Space Port,35.0564,-118.1453,America/Los_Angeles,US,CATI,assumed,medium
-KMIB,MIB,Minot Air Force Base,48.4156,-101.358,America/Chicago,US,CATI,assumed,medium
-KMIE,MIE,Delaware County Johnson Field,40.2423,-85.3959,America/Indiana/Indianapolis,US,CATI,assumed,medium
-KMIV,MIV,Millville Municipal Airport,39.3678,-75.0722,America/New_York,US,CATI,assumed,medium
-KMKC,MKC,Charles B. Wheeler Downtown Airport,39.1232,-94.5928,America/Chicago,US,CATI,assumed,medium
-KMKG,MKG,Muskegon County Airport,43.1695,-86.2382,America/Detroit,US,CATI,assumed,medium
-KMKL,MKL,McKellar-Sipes Regional Airport,35.5999,-88.9156,America/Chicago,US,CATI,assumed,medium
-KMLB,MLB,Melbourne Orlando International Airport,28.102,-80.6411,America/New_York,US,CATI,assumed,medium
+KMIB,MIB,Minot Air Force Base,48.4156,-101.358,America/Chicago,US,CATI,faa-nasr,medium
+KMIE,MIE,Delaware County Johnson Field,40.2423,-85.3959,America/Indiana/Indianapolis,US,CATI,faa-nasr,medium
+KMIV,MIV,Millville Municipal Airport,39.3678,-75.0722,America/New_York,US,CATI,faa-nasr,medium
+KMKC,MKC,Charles B. Wheeler Downtown Airport,39.1232,-94.5928,America/Chicago,US,CATI,faa-nasr,medium
+KMKG,MKG,Muskegon County Airport,43.1695,-86.2382,America/Detroit,US,CATI,faa-nasr,medium
+KMKL,MKL,McKellar-Sipes Regional Airport,35.5999,-88.9156,America/Chicago,US,CATI,faa-nasr,medium
+KMLB,MLB,Melbourne Orlando International Airport,28.102,-80.6411,America/New_York,US,CATI,faa-nasr,medium
 KMLC,MLC,Mc Alester Regional Airport,34.8824,-95.7835,America/Chicago,US,CATI,assumed,medium
-KMLI,MLI,Quad City International Airport,41.4485,-90.5075,America/Chicago,US,CATI,assumed,medium
+KMLI,MLI,Quad City International Airport,41.4485,-90.5075,America/Chicago,US,CATI,faa-nasr,medium
 KMLS,MLS,Miles City Airport - Frank Wiley Field,46.4273,-105.8854,America/Denver,US,CATI,assumed,medium
-KMLU,MLU,Monroe Regional Airport,32.5109,-92.0377,America/Chicago,US,CATI,assumed,medium
+KMLU,MLU,Monroe Regional Airport,32.5109,-92.0377,America/Chicago,US,CATI,faa-nasr,medium
 KMMH,MMH,Mammoth Yosemite Airport,37.6254,-118.8431,America/Los_Angeles,US,CATI,assumed,medium
-KMMT,MMT,Mc Entire Joint National Guard Base,33.9208,-80.8013,America/New_York,US,CATI,assumed,medium
-KMMU,MMU,Morristown Municipal Airport,40.7991,-74.4149,America/New_York,US,CATI,assumed,medium
-KMMV,MMV,McMinnville Municipal Airport,45.1944,-123.136,America/Los_Angeles,US,CATI,assumed,medium
-KMOB,MOB,Mobile Regional Airport,30.6912,-88.2428,America/Chicago,US,CATI,assumed,medium
-KMOD,MOD,Modesto City Co-Harry Sham Field,37.6258,-120.954,America/Los_Angeles,US,CATI,assumed,medium
-KMOT,MOT,Minot International Airport,48.258,-101.2791,America/Chicago,US,CATI,assumed,medium
-KMPV,MPV,Edward F Knapp State Airport,44.2035,-72.5623,America/New_York,US,CATI,assumed,medium
-KMQY,MQY,Smyrna Airport,36.009,-86.5201,America/Chicago,US,CATI,assumed,medium
-KMRB,MRB,Eastern WV Regional Airport/Shepherd Field,39.4019,-77.9846,America/New_York,US,CATI,assumed,medium
-KMRY,MRY,Monterey Regional Airport,36.5868,-121.8442,America/Los_Angeles,US,CATI,assumed,medium
-KMSL,MSL,Northwest Alabama Regional Airport,34.7451,-87.613,America/Chicago,US,CATI,assumed,medium
+KMMT,MMT,Mc Entire Joint National Guard Base,33.9208,-80.8013,America/New_York,US,CATI,faa-nasr,medium
+KMMU,MMU,Morristown Municipal Airport,40.7991,-74.4149,America/New_York,US,CATI,faa-nasr,medium
+KMMV,MMV,McMinnville Municipal Airport,45.1944,-123.136,America/Los_Angeles,US,CATI,faa-nasr,medium
+KMOB,MOB,Mobile Regional Airport,30.6912,-88.2428,America/Chicago,US,CATI,faa-nasr,medium
+KMOD,MOD,Modesto City Co-Harry Sham Field,37.6258,-120.954,America/Los_Angeles,US,CATI,faa-nasr,medium
+KMOT,MOT,Minot International Airport,48.258,-101.2791,America/Chicago,US,CATI,faa-nasr,medium
+KMPV,MPV,Edward F Knapp State Airport,44.2035,-72.5623,America/New_York,US,CATI,faa-nasr,medium
+KMQY,MQY,Smyrna Airport,36.009,-86.5201,America/Chicago,US,CATI,faa-nasr,medium
+KMRB,MRB,Eastern WV Regional Airport/Shepherd Field,39.4019,-77.9846,America/New_York,US,CATI,faa-nasr,medium
+KMRY,MRY,Monterey Regional Airport,36.5868,-121.8442,America/Los_Angeles,US,CATI,faa-nasr,medium
+KMSL,MSL,Northwest Alabama Regional Airport,34.7451,-87.613,America/Chicago,US,CATI,faa-nasr,medium
 KMSN,MSN,Dane County Regional Truax Field,43.1399,-89.3375,America/Chicago,US,CATIII,faa-nasr,medium
-KMSO,MSO,Missoula Montana Airport,46.9158,-114.0911,America/Denver,US,CATI,assumed,medium
-KMSS,MSS,Massena International Airport Richards Field,44.9362,-74.8443,America/New_York,US,CATI,assumed,medium
-KMTC,MTC,Selfridge Air National Guard Base Airport,42.6135,-82.8369,America/Detroit,US,CATI,assumed,medium
+KMSO,MSO,Missoula Montana Airport,46.9158,-114.0911,America/Denver,US,CATI,faa-nasr,medium
+KMSS,MSS,Massena International Airport Richards Field,44.9362,-74.8443,America/New_York,US,CATI,faa-nasr,medium
+KMTC,MTC,Selfridge Air National Guard Base Airport,42.6135,-82.8369,America/Detroit,US,CATI,faa-nasr,medium
 KMTH,MTH,Florida Keys Marathon International Airport,24.726,-81.0514,America/New_York,US,CATI,assumed,medium
-KMTJ,MTJ,Montrose Regional Airport,38.5098,-107.894,America/Denver,US,CATI,assumed,medium
-KMTN,MTN,Martin State Airport,39.3257,-76.4138,America/New_York,US,CATI,assumed,medium
-KMUI,MUI,Muir Army Air Field (Fort Indiantown Gap) Airport,40.4352,-76.5687,America/New_York,US,CATI,assumed,medium
-KMUO,MUO,Mountain Home Air Force Base,43.0436,-115.872,America/Boise,US,CATI,assumed,medium
-KMWA,MWA,Veterans Airport of Southern Illinois,37.7512,-89.0166,America/Chicago,US,CATI,assumed,medium
-KMWH,MWH,Grant County International Airport,47.2077,-119.32,America/Los_Angeles,US,CATI,assumed,medium
-KMWL,MWL,Mineral Wells Regional Airport,32.7816,-98.0602,America/Chicago,US,CATI,assumed,medium
-KMXF,MXF,Maxwell Air Force Base,32.3829,-86.3658,America/Chicago,US,CATI,assumed,medium
+KMTJ,MTJ,Montrose Regional Airport,38.5098,-107.894,America/Denver,US,CATI,faa-nasr,medium
+KMTN,MTN,Martin State Airport,39.3257,-76.4138,America/New_York,US,CATI,faa-nasr,medium
+KMUI,MUI,Muir Army Air Field (Fort Indiantown Gap) Airport,40.4352,-76.5687,America/New_York,US,CATI,faa-nasr,medium
+KMUO,MUO,Mountain Home Air Force Base,43.0436,-115.872,America/Boise,US,CATI,faa-nasr,medium
+KMWA,MWA,Veterans Airport of Southern Illinois,37.7512,-89.0166,America/Chicago,US,CATI,faa-nasr,medium
+KMWH,MWH,Grant County International Airport,47.2077,-119.32,America/Los_Angeles,US,CATI,faa-nasr,medium
+KMWL,MWL,Mineral Wells Regional Airport,32.7816,-98.0602,America/Chicago,US,CATI,faa-nasr,medium
+KMXF,MXF,Maxwell Air Force Base,32.3829,-86.3658,America/Chicago,US,CATI,faa-nasr,medium
 KMYL,MYL,McCall Municipal Airport,44.8888,-116.1011,America/Boise,US,CATI,assumed,medium
-KMYV,MYV,Yuba County Airport,39.0978,-121.57,America/Los_Angeles,US,CATI,assumed,medium
-KNBC,NBC,Beaufort MCAS - Merritt Field,32.4774,-80.7232,America/New_York,US,CATI,assumed,medium
-KNBG,NBG,New Orleans NAS JRB/Alvin Callender Field,29.8253,-90.035,America/Chicago,US,CATI,assumed,medium
-KNCA,NCA,MCAS New River / McCutcheon Field,34.7084,-77.4397,America/New_York,US,CATI,assumed,medium
-KNDZ,NDZ,Whiting Field Naval Air Station South Airport,30.7044,-87.023,America/Chicago,US,CATI,assumed,medium
+KMYV,MYV,Yuba County Airport,39.0978,-121.57,America/Los_Angeles,US,CATI,faa-nasr,medium
+KNBC,NBC,Beaufort MCAS - Merritt Field,32.4774,-80.7232,America/New_York,US,CATI,faa-nasr,medium
+KNBG,NBG,New Orleans NAS JRB/Alvin Callender Field,29.8253,-90.035,America/Chicago,US,CATI,faa-nasr,medium
+KNCA,NCA,MCAS New River / McCutcheon Field,34.7084,-77.4397,America/New_York,US,CATI,faa-nasr,medium
+KNDZ,NDZ,Whiting Field Naval Air Station South Airport,30.7044,-87.023,America/Chicago,US,CATI,faa-nasr,medium
 KNEL,NEL,Lakehurst Maxfield Field Airport,40.0333,-74.3533,America/New_York,US,CATI,assumed,medium
-KNEW,NEW,Lakefront Airport,30.0424,-90.0283,America/Chicago,US,CATI,assumed,medium
+KNEW,NEW,Lakefront Airport,30.0424,-90.0283,America/Chicago,US,CATI,faa-nasr,medium
 KNFG,NFG,Camp Pendleton MCAS (Munn Field) Airport,33.3013,-117.355,America/Los_Angeles,US,CATI,assumed,medium
 KNFL,NFL,Fallon Naval Air Station,39.4166,-118.701,America/Los_Angeles,US,CATI,assumed,medium
-KNFW,NFW,NAS Fort Worth JRB / Carswell Field,32.7692,-97.4415,America/Chicago,US,CATI,assumed,medium
-KNGP,NGP,Naval Air Station Corpus Christi Truax Field,27.6926,-97.2911,America/Chicago,US,CATI,assumed,medium
-KNGU,NGU,Norfolk Naval Station (Chambers Field),36.9376,-76.2893,America/New_York,US,CATI,assumed,medium
-KNHK,NHK,Patuxent River Naval Air Station (Trapnell Field),38.286,-76.4118,America/New_York,US,CATI,assumed,medium
+KNFW,NFW,NAS Fort Worth JRB / Carswell Field,32.7692,-97.4415,America/Chicago,US,CATI,faa-nasr,medium
+KNGP,NGP,Naval Air Station Corpus Christi Truax Field,27.6926,-97.2911,America/Chicago,US,CATI,faa-nasr,medium
+KNGU,NGU,Norfolk Naval Station (Chambers Field),36.9376,-76.2893,America/New_York,US,CATI,faa-nasr,medium
+KNHK,NHK,Patuxent River Naval Air Station (Trapnell Field),38.286,-76.4118,America/New_York,US,CATI,faa-nasr,medium
 KNID,NID,China Lake Naws (Armitage Field) Airport,35.6854,-117.692,America/Los_Angeles,US,CATI,assumed,medium
 KNIP,NIP,Jacksonville Naval Air Station (Towers Field),30.2358,-81.6806,America/New_York,US,CATI,assumed,medium
 KNJK,NJK,El Centro NAF Airport (Vraciu Field),32.8292,-115.672,America/Los_Angeles,US,CATI,assumed,medium
-KNKT,NKT,Cherry Point MCAS / Cunningham Field/,34.9009,-76.8807,America/New_York,US,CATI,assumed,medium
-KNKX,NKX,Miramar Marine Corps Air Station - Mitscher Field,32.8684,-117.143,America/Los_Angeles,US,CATI,assumed,medium
+KNKT,NKT,Cherry Point MCAS / Cunningham Field/,34.9009,-76.8807,America/New_York,US,CATI,faa-nasr,medium
+KNKX,NKX,Miramar Marine Corps Air Station - Mitscher Field,32.8684,-117.143,America/Los_Angeles,US,CATI,faa-nasr,medium
 KNLC,NLC,Lemoore Naval Air Station (Reeves Field) Airport,36.333,-119.952,America/Los_Angeles,US,CATI,assumed,medium
-KNMM,NMM,Naval Air Station Meridian / McCain Field,32.5531,-88.5541,America/Chicago,US,CATI,assumed,medium
-KNPA,NPA,Naval Air Station Pensacola Forrest Sherman Field,30.3527,-87.3186,America/Chicago,US,CATI,assumed,medium
-KNQA,NQA,Millington-Memphis Airport,35.3567,-89.8703,America/Chicago,US,CATI,assumed,medium
-KNQI,NQI,Kingsville Naval Air Station,27.5072,-97.8097,America/Chicago,US,CATI,assumed,medium
+KNMM,NMM,Naval Air Station Meridian / McCain Field,32.5531,-88.5541,America/Chicago,US,CATI,faa-nasr,medium
+KNPA,NPA,Naval Air Station Pensacola Forrest Sherman Field,30.3527,-87.3186,America/Chicago,US,CATI,faa-nasr,medium
+KNQA,NQA,Millington-Memphis Airport,35.3567,-89.8703,America/Chicago,US,CATI,faa-nasr,medium
+KNQI,NQI,Kingsville Naval Air Station,27.5072,-97.8097,America/Chicago,US,CATI,faa-nasr,medium
 KNQX,NQX,Naval Air Station Key West/Boca Chica Field,24.5758,-81.6889,America/New_York,US,CATI,assumed,medium
 KNRB,NRB,Naval Station Mayport / Admiral David L McDonald Field,30.3911,-81.4247,America/New_York,US,CATI,assumed,medium
-KNSE,NSE,Whiting Field Naval Air Station - North,30.7242,-87.0219,America/Chicago,US,CATI,assumed,medium
-KNTD,NTD,Point Mugu Naval Air Station (Naval Base Ventura Co),34.1203,-119.121,America/Los_Angeles,US,CATI,assumed,medium
+KNSE,NSE,Whiting Field Naval Air Station - North,30.7242,-87.0219,America/Chicago,US,CATI,faa-nasr,medium
+KNTD,NTD,Point Mugu Naval Air Station (Naval Base Ventura Co),34.1203,-119.121,America/Los_Angeles,US,CATI,faa-nasr,medium
 KNTU,NTU,Oceana Naval Air Station,36.8207,-76.0335,America/New_York,US,CATI,assumed,medium
-KNUQ,NUQ,Moffett Federal Airfield,37.4161,-122.049,America/Los_Angeles,US,CATI,assumed,medium
-KNUW,NUW,Whidbey Island Naval Air Station (Ault Field),48.3518,-122.656,America/Los_Angeles,US,CATI,assumed,medium
+KNUQ,NUQ,Moffett Federal Airfield,37.4161,-122.049,America/Los_Angeles,US,CATI,faa-nasr,medium
+KNUW,NUW,Whidbey Island Naval Air Station (Ault Field),48.3518,-122.656,America/Los_Angeles,US,CATI,faa-nasr,medium
 KNXP,NXP,Twentynine Palms Strategic Expeditionary Landing Field,34.2962,-116.162,America/Los_Angeles,US,CATI,assumed,medium
-KNYG,NYG,Quantico Marine Corps Airfield / Turner Field,38.5017,-77.3053,America/New_York,US,CATI,assumed,medium
-KNYL,NYL,Yuma International Airport / Marine Corps Air Station Yuma,32.6509,-114.6094,America/Phoenix,US,CATI,assumed,medium
+KNYG,NYG,Quantico Marine Corps Airfield / Turner Field,38.5017,-77.3053,America/New_York,US,CATI,faa-nasr,medium
+KNYL,NYL,Yuma International Airport / Marine Corps Air Station Yuma,32.6509,-114.6094,America/Phoenix,US,CATI,faa-nasr,medium
 KNZY,NZY,North Island Naval Air Station-Halsey Field,32.6992,-117.215,America/Los_Angeles,US,CATI,assumed,medium
-KOAJ,OAJ,Albert J Ellis Airport,34.8292,-77.6121,America/New_York,US,CATI,assumed,medium
-KOFF,OFF,Offutt Air Force Base,41.1193,-95.9085,America/Chicago,US,CATI,assumed,medium
-KOFK,OFK,Karl Stefan Memorial Airport,41.9855,-97.4351,America/Chicago,US,CATI,assumed,medium
+KOAJ,OAJ,Albert J Ellis Airport,34.8292,-77.6121,America/New_York,US,CATI,faa-nasr,medium
+KOFF,OFF,Offutt Air Force Base,41.1193,-95.9085,America/Chicago,US,CATI,faa-nasr,medium
+KOFK,OFK,Karl Stefan Memorial Airport,41.9855,-97.4351,America/Chicago,US,CATI,faa-nasr,medium
 KOGB,OGB,Orangeburg Municipal Airport,33.4568,-80.8595,America/New_York,US,CATI,assumed,medium
-KOGD,OGD,Ogden Hinckley Airport,41.1959,-112.012,America/Denver,US,CATI,assumed,medium
+KOGD,OGD,Ogden Hinckley Airport,41.1959,-112.012,America/Denver,US,CATI,faa-nasr,medium
 KOGS,OGS,Ogdensburg International Airport,44.6819,-75.4655,America/New_York,US,CATI,assumed,medium
 KOKB,OKB,Oceanside Municipal Airport,33.2179,-117.3517,America/Los_Angeles,US,CATI,assumed,medium
 KOLF,OLF,L M Clayton Airport,48.0945,-105.575,America/Denver,US,CATI,assumed,medium
-KOLM,OLM,Olympia Regional Airport,46.9694,-122.903,America/Los_Angeles,US,CATI,assumed,medium
+KOLM,OLM,Olympia Regional Airport,46.9694,-122.903,America/Los_Angeles,US,CATI,faa-nasr,medium
 KOLS,OLS,Nogales International Airport,31.4177,-110.848,America/Phoenix,US,CATI,assumed,medium
 KOLU,OLU,Columbus Municipal Airport,41.4481,-97.3402,America/Chicago,US,CATI,assumed,medium
 KONO,ONO,Ontario Municipal Airport,44.0198,-117.0133,America/Boise,US,CATI,assumed,medium
-KONP,ONP,Newport Municipal Airport,44.5804,-124.058,America/Los_Angeles,US,CATI,assumed,medium
-KOPF,OPF,Miami-Opa Locka Executive Airport,25.907,-80.2784,America/New_York,US,CATI,assumed,medium
-KOQU,OQU,Quonset State Airport,41.5971,-71.4121,America/New_York,US,CATI,assumed,medium
+KONP,ONP,Newport Municipal Airport,44.5804,-124.058,America/Los_Angeles,US,CATI,faa-nasr,medium
+KOPF,OPF,Miami-Opa Locka Executive Airport,25.907,-80.2784,America/New_York,US,CATI,faa-nasr,medium
+KOQU,OQU,Quonset State Airport,41.5971,-71.4121,America/New_York,US,CATI,faa-nasr,medium
 KORH,ORH,Worcester Regional Airport,42.2673,-71.8757,America/New_York,US,CATIII,faa-nasr,medium
-KORL,ORL,Orlando Executive Airport,28.5455,-81.3329,America/New_York,US,CATI,assumed,medium
+KORL,ORL,Orlando Executive Airport,28.5455,-81.3329,America/New_York,US,CATI,faa-nasr,medium
 KORS,ORS,Orcas Island Airport,48.7082,-122.91,America/Los_Angeles,US,CATI,assumed,medium
-KOSH,OSH,Wittman Regional Airport,43.9844,-88.557,America/Chicago,US,CATI,assumed,medium
-KOSU,OSU,The Ohio State University Airport - Don Scott Field,40.0798,-83.073,America/New_York,US,CATI,assumed,medium
-KOTH,OTH,Southwest Oregon Regional Airport,43.4171,-124.246,America/Los_Angeles,US,CATI,assumed,medium
-KOTM,OTM,Ottumwa Regional Airport,41.1064,-92.4498,America/Chicago,US,CATI,assumed,medium
-KOWB,OWB,Owensboro Daviess County Airport,37.7401,-87.1668,America/Chicago,US,CATI,assumed,medium
-KOWD,OWD,Norwood Memorial Airport,42.1905,-71.1729,America/New_York,US,CATI,assumed,medium
-KOXB,OXB,Ocean City Municipal Airport,38.3104,-75.124,America/New_York,US,CATI,assumed,medium
-KOXR,OXR,Oxnard Airport,34.2008,-119.207,America/Los_Angeles,US,CATI,assumed,medium
-KOZR,OZR,Cairns AAF (Fort Rucker) Air Field,31.2757,-85.7134,America/Chicago,US,CATI,assumed,medium
-KPAE,PAE,Seattle Paine Field International Airport,47.9063,-122.282,America/Los_Angeles,US,CATI,assumed,medium
-KPAH,PAH,Barkley Regional Airport,37.0608,-88.7738,America/Chicago,US,CATI,assumed,medium
-KPAM,PAM,Tyndall Air Force Base,30.0696,-85.5754,America/Chicago,US,CATI,assumed,medium
+KOSH,OSH,Wittman Regional Airport,43.9844,-88.557,America/Chicago,US,CATI,faa-nasr,medium
+KOSU,OSU,The Ohio State University Airport - Don Scott Field,40.0798,-83.073,America/New_York,US,CATI,faa-nasr,medium
+KOTH,OTH,Southwest Oregon Regional Airport,43.4171,-124.246,America/Los_Angeles,US,CATI,faa-nasr,medium
+KOTM,OTM,Ottumwa Regional Airport,41.1064,-92.4498,America/Chicago,US,CATI,faa-nasr,medium
+KOWB,OWB,Owensboro Daviess County Airport,37.7401,-87.1668,America/Chicago,US,CATI,faa-nasr,medium
+KOWD,OWD,Norwood Memorial Airport,42.1905,-71.1729,America/New_York,US,CATI,faa-nasr,medium
+KOXB,OXB,Ocean City Municipal Airport,38.3104,-75.124,America/New_York,US,CATI,faa-nasr,medium
+KOXR,OXR,Oxnard Airport,34.2008,-119.207,America/Los_Angeles,US,CATI,faa-nasr,medium
+KOZR,OZR,Cairns AAF (Fort Rucker) Air Field,31.2757,-85.7134,America/Chicago,US,CATI,faa-nasr,medium
+KPAE,PAE,Seattle Paine Field International Airport,47.9063,-122.282,America/Los_Angeles,US,CATI,faa-nasr,medium
+KPAH,PAH,Barkley Regional Airport,37.0608,-88.7738,America/Chicago,US,CATI,faa-nasr,medium
+KPAM,PAM,Tyndall Air Force Base,30.0696,-85.5754,America/Chicago,US,CATI,faa-nasr,medium
 KPAO,PAO,Palo Alto Airport,37.4611,-122.115,America/Los_Angeles,US,CATI,assumed,medium
-KPBF,PBF,Pine Bluff Regional Airport; Grider Field,34.1741,-91.9356,America/Chicago,US,CATI,assumed,medium
-KPBG,PBG,Plattsburgh International Airport,44.6509,-73.4681,America/New_York,US,CATI,assumed,medium
+KPBF,PBF,Pine Bluff Regional Airport; Grider Field,34.1741,-91.9356,America/Chicago,US,CATI,faa-nasr,medium
+KPBG,PBG,Plattsburgh International Airport,44.6509,-73.4681,America/New_York,US,CATI,faa-nasr,medium
 KPCW,PCW,Erie-Ottawa International Airport,41.5156,-82.8683,America/New_York,US,CATI,assumed,medium
-KPDK,PDK,DeKalb Peachtree Airport,33.8763,-84.3021,America/New_York,US,CATI,assumed,medium
-KPDT,PDT,Eastern Oregon Regional Airport at Pendleton,45.6951,-118.841,America/Los_Angeles,US,CATI,assumed,medium
+KPDK,PDK,DeKalb Peachtree Airport,33.8763,-84.3021,America/New_York,US,CATI,faa-nasr,medium
+KPDT,PDT,Eastern Oregon Regional Airport at Pendleton,45.6951,-118.841,America/Los_Angeles,US,CATI,faa-nasr,medium
 KPGA,PGA,Page Municipal Airport,36.9242,-111.4477,America/Phoenix,US,CATI,assumed,medium
-KPGD,PGD,Punta Gorda Airport,26.9202,-81.9905,America/New_York,US,CATI,assumed,medium
-KPGV,PGV,Pitt-Greenville Airport,35.6355,-77.3843,America/New_York,US,CATI,assumed,medium
-KPHF,PHF,Newport News Williamsburg International Airport,37.1319,-76.493,America/New_York,US,CATI,assumed,medium
-KPIA,PIA,General Wayne A. Downing Peoria International Airport,40.6638,-89.6926,America/Chicago,US,CATI,assumed,medium
-KPIB,PIB,Hattiesburg Laurel Regional Airport,31.4671,-89.3371,America/Chicago,US,CATI,assumed,medium
-KPIH,PIH,Pocatello Regional Airport,42.9098,-112.596,America/Boise,US,CATI,assumed,medium
-KPIR,PIR,Pierre Regional Airport,44.3827,-100.286,America/Chicago,US,CATI,assumed,medium
-KPKB,PKB,Mid Ohio Valley Regional Airport,39.3451,-81.4392,America/New_York,US,CATI,assumed,medium
-KPLN,PLN,Pellston Regional Airport of Emmet County Airport,45.5709,-84.7967,America/Detroit,US,CATI,assumed,medium
-KPMD,PMD,Palmdale Regional Airport / USAF Plant 42 Airport,34.6294,-118.085,America/Los_Angeles,US,CATI,assumed,medium
+KPGD,PGD,Punta Gorda Airport,26.9202,-81.9905,America/New_York,US,CATI,faa-nasr,medium
+KPGV,PGV,Pitt-Greenville Airport,35.6355,-77.3843,America/New_York,US,CATI,faa-nasr,medium
+KPHF,PHF,Newport News Williamsburg International Airport,37.1319,-76.493,America/New_York,US,CATI,faa-nasr,medium
+KPIA,PIA,General Wayne A. Downing Peoria International Airport,40.6638,-89.6926,America/Chicago,US,CATI,faa-nasr,medium
+KPIB,PIB,Hattiesburg Laurel Regional Airport,31.4671,-89.3371,America/Chicago,US,CATI,faa-nasr,medium
+KPIH,PIH,Pocatello Regional Airport,42.9098,-112.596,America/Boise,US,CATI,faa-nasr,medium
+KPIR,PIR,Pierre Regional Airport,44.3827,-100.286,America/Chicago,US,CATI,faa-nasr,medium
+KPKB,PKB,Mid Ohio Valley Regional Airport,39.3451,-81.4392,America/New_York,US,CATI,faa-nasr,medium
+KPLN,PLN,Pellston Regional Airport of Emmet County Airport,45.5709,-84.7967,America/Detroit,US,CATI,faa-nasr,medium
+KPMD,PMD,Palmdale Regional Airport / USAF Plant 42 Airport,34.6294,-118.085,America/Los_Angeles,US,CATI,faa-nasr,medium
 KPNA,PNA,Ralph Wenz Field,42.7955,-109.807,America/Denver,US,CATI,assumed,medium
-KPNC,PNC,Ponca City Regional Airport,36.732,-97.0998,America/Chicago,US,CATI,assumed,medium
-KPNE,PNE,Northeast Philadelphia Airport,40.0824,-75.0106,America/New_York,US,CATI,assumed,medium
-KPOB,POB,Pope Field,35.1709,-79.0145,America/New_York,US,CATI,assumed,medium
+KPNC,PNC,Ponca City Regional Airport,36.732,-97.0998,America/Chicago,US,CATI,faa-nasr,medium
+KPNE,PNE,Northeast Philadelphia Airport,40.0824,-75.0106,America/New_York,US,CATI,faa-nasr,medium
+KPOB,POB,Pope Field,35.1709,-79.0145,America/New_York,US,CATI,faa-nasr,medium
 KPOE,POE,Polk Army Air Field,31.0448,-93.1917,America/Chicago,US,CATI,assumed,medium
-KPOU,POU,Dutchess County Airport,41.6266,-73.8842,America/New_York,US,CATI,assumed,medium
-KPQI,PQI,Presque Isle International Airport,46.689,-68.0448,America/New_York,US,CATI,assumed,medium
+KPOU,POU,Dutchess County Airport,41.6266,-73.8842,America/New_York,US,CATI,faa-nasr,medium
+KPQI,PQI,Presque Isle International Airport,46.689,-68.0448,America/New_York,US,CATI,faa-nasr,medium
 KPRB,PRB,Paso Robles Municipal Airport,35.6729,-120.627,America/Los_Angeles,US,CATI,assumed,medium
-KPRC,PRC,Prescott Regional Airport - Ernest A. Love Field,34.6535,-112.4199,America/Phoenix,US,CATI,assumed,medium
+KPRC,PRC,Prescott Regional Airport - Ernest A. Love Field,34.6535,-112.4199,America/Phoenix,US,CATI,faa-nasr,medium
 KPRX,PRX,Cox Field,33.6366,-95.4508,America/Chicago,US,CATI,assumed,medium
-KPSC,PSC,Tri Cities Airport,46.2647,-119.119,America/Los_Angeles,US,CATI,assumed,medium
-KPSM,PSM,Portsmouth International Airport at Pease,43.0779,-70.8233,America/New_York,US,CATI,assumed,medium
-KPTK,PTK,Oakland County International Airport,42.6655,-83.4201,America/Detroit,US,CATI,assumed,medium
-KPUB,PUB,Pueblo Memorial Airport,38.2891,-104.497,America/Denver,US,CATI,assumed,medium
-KPUW,PUW,Pullman-Moscow Regional Airport,46.7416,-117.1116,America/Los_Angeles,US,CATI,assumed,medium
-KPVU,PVU,Provo Municipal Airport,40.2189,-111.7224,America/Denver,US,CATI,assumed,medium
-KPWK,PWK,Chicago Executive Airport,42.1142,-87.9015,America/Chicago,US,CATI,assumed,medium
-KPWT,PWT,Bremerton National Airport,47.4902,-122.765,America/Los_Angeles,US,CATI,assumed,medium
-KRAL,RAL,Riverside Municipal Airport,33.9519,-117.445,America/Los_Angeles,US,CATI,assumed,medium
-KRAP,RAP,Rapid City Regional Airport,44.0453,-103.057,America/Denver,US,CATI,assumed,medium
+KPSC,PSC,Tri Cities Airport,46.2647,-119.119,America/Los_Angeles,US,CATI,faa-nasr,medium
+KPSM,PSM,Portsmouth International Airport at Pease,43.0779,-70.8233,America/New_York,US,CATI,faa-nasr,medium
+KPTK,PTK,Oakland County International Airport,42.6655,-83.4201,America/Detroit,US,CATI,faa-nasr,medium
+KPUB,PUB,Pueblo Memorial Airport,38.2891,-104.497,America/Denver,US,CATI,faa-nasr,medium
+KPUW,PUW,Pullman-Moscow Regional Airport,46.7416,-117.1116,America/Los_Angeles,US,CATI,faa-nasr,medium
+KPVU,PVU,Provo Municipal Airport,40.2189,-111.7224,America/Denver,US,CATI,faa-nasr,medium
+KPWK,PWK,Chicago Executive Airport,42.1142,-87.9015,America/Chicago,US,CATI,faa-nasr,medium
+KPWT,PWT,Bremerton National Airport,47.4902,-122.765,America/Los_Angeles,US,CATI,faa-nasr,medium
+KRAL,RAL,Riverside Municipal Airport,33.9519,-117.445,America/Los_Angeles,US,CATI,faa-nasr,medium
+KRAP,RAP,Rapid City Regional Airport,44.0453,-103.057,America/Denver,US,CATI,faa-nasr,medium
 KRBL,RBL,Red Bluff Municipal Airport,40.1507,-122.252,America/Los_Angeles,US,CATI,assumed,medium
-KRCA,RCA,Ellsworth Air Force Base,44.145,-103.104,America/Denver,US,CATI,assumed,medium
-KRDD,RDD,Redding Municipal Airport,40.509,-122.293,America/Los_Angeles,US,CATI,assumed,medium
-KRDG,RDG,Reading Regional Airport (Carl A Spaatz Field),40.3785,-75.9652,America/New_York,US,CATI,assumed,medium
-KRDM,RDM,Roberts Field,44.2541,-121.15,America/Los_Angeles,US,CATI,assumed,medium
-KRDR,RDR,Grand Forks Air Force Base,47.9611,-97.4012,America/Chicago,US,CATI,assumed,medium
+KRCA,RCA,Ellsworth Air Force Base,44.145,-103.104,America/Denver,US,CATI,faa-nasr,medium
+KRDD,RDD,Redding Municipal Airport,40.509,-122.293,America/Los_Angeles,US,CATI,faa-nasr,medium
+KRDG,RDG,Reading Regional Airport (Carl A Spaatz Field),40.3785,-75.9652,America/New_York,US,CATI,faa-nasr,medium
+KRDM,RDM,Roberts Field,44.2541,-121.15,America/Los_Angeles,US,CATI,faa-nasr,medium
+KRDR,RDR,Grand Forks Air Force Base,47.9611,-97.4012,America/Chicago,US,CATI,faa-nasr,medium
 KRFD,RFD,Chicago Rockford International Airport,42.1954,-89.0972,America/Chicago,US,CATIII,faa-nasr,medium
 KRGA,RGA,Central Kentucky Regional Airport,37.6308,-84.3323,America/New_York,US,CATI,assumed,medium
-KRHI,RHI,Rhinelander Oneida County Airport,45.6312,-89.4675,America/Chicago,US,CATI,assumed,medium
+KRHI,RHI,Rhinelander Oneida County Airport,45.6312,-89.4675,America/Chicago,US,CATI,faa-nasr,medium
 KRHP,RHP,Western Carolina Regional Airport,35.1952,-83.863,America/New_York,US,CATI,assumed,medium
-KRIL,RIL,Garfield County Regional Airport,39.5263,-107.727,America/Denver,US,CATI,assumed,medium
-KRIV,RIV,March Air Reserve Base,33.8807,-117.259,America/Los_Angeles,US,CATI,assumed,medium
-KRIW,RIW,Central Wyoming Regional Airport,43.0642,-108.46,America/Denver,US,CATI,assumed,medium
-KRKD,RKD,Knox County Regional Airport,44.0601,-69.0992,America/New_York,US,CATI,assumed,medium
-KRKS,RKS,Southwest Wyoming Regional Airport,41.5942,-109.065,America/Denver,US,CATI,assumed,medium
-KRME,RME,Griffiss International Airport,43.2338,-75.407,America/New_York,US,CATI,assumed,medium
-KRMG,RMG,Richard B Russell Airport,34.3506,-85.158,America/New_York,US,CATI,assumed,medium
-KRND,RND,Randolph Air Force Base,29.5297,-98.2789,America/Chicago,US,CATI,assumed,medium
+KRIL,RIL,Garfield County Regional Airport,39.5263,-107.727,America/Denver,US,CATI,faa-nasr,medium
+KRIV,RIV,March Air Reserve Base,33.8807,-117.259,America/Los_Angeles,US,CATI,faa-nasr,medium
+KRIW,RIW,Central Wyoming Regional Airport,43.0642,-108.46,America/Denver,US,CATI,faa-nasr,medium
+KRKD,RKD,Knox County Regional Airport,44.0601,-69.0992,America/New_York,US,CATI,faa-nasr,medium
+KRKS,RKS,Southwest Wyoming Regional Airport,41.5942,-109.065,America/Denver,US,CATI,faa-nasr,medium
+KRME,RME,Griffiss International Airport,43.2338,-75.407,America/New_York,US,CATI,faa-nasr,medium
+KRMG,RMG,Richard B Russell Airport,34.3506,-85.158,America/New_York,US,CATI,faa-nasr,medium
+KRND,RND,Randolph Air Force Base,29.5297,-98.2789,America/Chicago,US,CATI,faa-nasr,medium
 KRNH,RNH,New Richmond Regional Airport,45.1483,-92.5381,America/Chicago,US,CATI,assumed,medium
-KROA,ROA,Roanoke–Blacksburg Regional Airport,37.3255,-79.9754,America/New_York,US,CATI,assumed,medium
-KROW,ROW,Roswell Air Center Airport,33.3016,-104.531,America/Denver,US,CATI,assumed,medium
+KROA,ROA,Roanoke–Blacksburg Regional Airport,37.3255,-79.9754,America/New_York,US,CATI,faa-nasr,medium
+KROW,ROW,Roswell Air Center Airport,33.3016,-104.531,America/Denver,US,CATI,faa-nasr,medium
 KRSL,RSL,Russell Municipal Airport,38.8721,-98.8118,America/Chicago,US,CATI,assumed,medium
 KRST,RST,Rochester International Airport,43.9083,-92.5,America/Chicago,US,CATII,faa-nasr,medium
-KRUT,RUT,Rutland - Southern Vermont Regional Airport,43.5294,-72.9496,America/New_York,US,CATI,assumed,medium
-KRVS,RVS,Tulsa Riverside Airport,36.0396,-95.9846,America/Chicago,US,CATI,assumed,medium
+KRUT,RUT,Rutland - Southern Vermont Regional Airport,43.5294,-72.9496,America/New_York,US,CATI,faa-nasr,medium
+KRVS,RVS,Tulsa Riverside Airport,36.0396,-95.9846,America/Chicago,US,CATI,faa-nasr,medium
 KRWF,RWF,Redwood Falls Municipal Airport,44.5472,-95.0823,America/Chicago,US,CATI,assumed,medium
-KRWI,RWI,Rocky Mount Wilson Regional Airport,35.8563,-77.8919,America/New_York,US,CATI,assumed,medium
+KRWI,RWI,Rocky Mount Wilson Regional Airport,35.8563,-77.8919,America/New_York,US,CATI,faa-nasr,medium
 KRWL,RWL,Rawlins Municipal Airport/Harvey Field,41.8056,-107.2,America/Denver,US,CATI,assumed,medium
-KRYY,RYY,Cobb County International Airport-McCollum Field,34.0132,-84.5972,America/New_York,US,CATI,assumed,medium
-KSAC,SAC,Sacramento Executive Airport,38.5125,-121.493,America/Los_Angeles,US,CATI,assumed,medium
-KSAF,SAF,Santa Fe Municipal Airport,35.6171,-106.089,America/Denver,US,CATI,assumed,medium
-KSAW,SAW,Marquette/Sawyer International Airport,46.3515,-87.3959,America/Detroit,US,CATI,assumed,medium
-KSBA,SBA,Santa Barbara Municipal Airport,34.4262,-119.84,America/Los_Angeles,US,CATI,assumed,medium
-KSBN,SBN,South Bend International Airport,41.7083,-86.3169,America/Indiana/Indianapolis,US,CATI,assumed,medium
-KSBP,SBP,San Luis County Regional Airport,35.2368,-120.642,America/Los_Angeles,US,CATI,assumed,medium
-KSBY,SBY,Salisbury Ocean City Wicomico Regional Airport,38.3405,-75.5103,America/New_York,US,CATI,assumed,medium
-KSCH,SCH,Schenectady County Airport,42.8525,-73.9289,America/New_York,US,CATI,assumed,medium
-KSCK,SCK,Stockton Metropolitan Airport,37.8933,-121.2381,America/Los_Angeles,US,CATI,assumed,medium
+KRYY,RYY,Cobb County International Airport-McCollum Field,34.0132,-84.5972,America/New_York,US,CATI,faa-nasr,medium
+KSAC,SAC,Sacramento Executive Airport,38.5125,-121.493,America/Los_Angeles,US,CATI,faa-nasr,medium
+KSAF,SAF,Santa Fe Municipal Airport,35.6171,-106.089,America/Denver,US,CATI,faa-nasr,medium
+KSAW,SAW,Marquette/Sawyer International Airport,46.3515,-87.3959,America/Detroit,US,CATI,faa-nasr,medium
+KSBA,SBA,Santa Barbara Municipal Airport,34.4262,-119.84,America/Los_Angeles,US,CATI,faa-nasr,medium
+KSBN,SBN,South Bend International Airport,41.7083,-86.3169,America/Indiana/Indianapolis,US,CATI,faa-nasr,medium
+KSBP,SBP,San Luis County Regional Airport,35.2368,-120.642,America/Los_Angeles,US,CATI,faa-nasr,medium
+KSBY,SBY,Salisbury Ocean City Wicomico Regional Airport,38.3405,-75.5103,America/New_York,US,CATI,faa-nasr,medium
+KSCH,SCH,Schenectady County Airport,42.8525,-73.9289,America/New_York,US,CATI,faa-nasr,medium
+KSCK,SCK,Stockton Metropolitan Airport,37.8933,-121.2381,America/Los_Angeles,US,CATI,faa-nasr,medium
 KSDM,SDM,Brown Field Municipal Airport,32.5726,-116.98,America/Los_Angeles,US,CATI,assumed,medium
 KSDY,SDY,Sidney - Richland Regional Airport,47.7051,-104.1944,America/Denver,US,CATI,assumed,medium
-KSFF,SFF,Felts Field,47.6829,-117.3219,America/Los_Angeles,US,CATI,assumed,medium
-KSGF,SGF,Springfield Branson National Airport,37.245,-93.3886,America/Chicago,US,CATI,assumed,medium
+KSFF,SFF,Felts Field,47.6829,-117.3219,America/Los_Angeles,US,CATI,faa-nasr,medium
+KSGF,SGF,Springfield Branson National Airport,37.245,-93.3886,America/Chicago,US,CATI,faa-nasr,medium
 KSGH,SGH,Springfield-Beckley Municipal Airport,39.8403,-83.8402,America/New_York,US,CATI,assumed,medium
-KSGJ,SGJ,Northeast Florida Regional Airport,29.9592,-81.3398,America/New_York,US,CATI,assumed,medium
-KSGR,SGR,Sugar Land Regional Airport,29.6223,-95.6565,America/Chicago,US,CATI,assumed,medium
-KSGU,SGU,St George Regional Airport,37.0364,-113.5103,America/Denver,US,CATI,assumed,medium
-KSHD,SHD,Shenandoah Valley Regional Airport,38.2638,-78.8964,America/New_York,US,CATI,assumed,medium
-KSHR,SHR,Sheridan County Airport,44.7692,-106.98,America/Denver,US,CATI,assumed,medium
+KSGJ,SGJ,Northeast Florida Regional Airport,29.9592,-81.3398,America/New_York,US,CATI,faa-nasr,medium
+KSGR,SGR,Sugar Land Regional Airport,29.6223,-95.6565,America/Chicago,US,CATI,faa-nasr,medium
+KSGU,SGU,St George Regional Airport,37.0364,-113.5103,America/Denver,US,CATI,faa-nasr,medium
+KSHD,SHD,Shenandoah Valley Regional Airport,38.2638,-78.8964,America/New_York,US,CATI,faa-nasr,medium
+KSHR,SHR,Sheridan County Airport,44.7692,-106.98,America/Denver,US,CATI,faa-nasr,medium
 KSHV,SHV,Shreveport Regional Airport,32.4466,-93.8256,America/Chicago,US,CATII,faa-nasr,medium
-KSJT,SJT,San Angelo Regional Mathis Field,31.3577,-100.496,America/Chicago,US,CATI,assumed,medium
+KSJT,SJT,San Angelo Regional Mathis Field,31.3577,-100.496,America/Chicago,US,CATI,faa-nasr,medium
 KSKA,SKA,Fairchild Air Force Base,47.6151,-117.656,America/Los_Angeles,US,CATII,faa-nasr,medium
-KSKF,SKF,Lackland Air Force Base,29.3842,-98.5811,America/Chicago,US,CATI,assumed,medium
+KSKF,SKF,Lackland Air Force Base,29.3842,-98.5811,America/Chicago,US,CATI,faa-nasr,medium
 KSKX,SKX,Taos Regional Airport,36.4525,-105.6775,America/Denver,US,CATI,assumed,medium
-KSLE,SLE,Salem-Willamette Valley Airport/McNary Field,44.9095,-123.003,America/Los_Angeles,US,CATI,assumed,medium
+KSLE,SLE,Salem-Willamette Valley Airport/McNary Field,44.9095,-123.003,America/Los_Angeles,US,CATI,faa-nasr,medium
 KSLI,SLI,Los Alamitos Army Air Field,33.7909,-118.0503,America/Los_Angeles,US,CATI,assumed,medium
-KSLK,SLK,Adirondack Regional Airport,44.3869,-74.2046,America/New_York,US,CATI,assumed,medium
-KSLN,SLN,Salina Municipal Airport,38.791,-97.6522,America/Chicago,US,CATI,assumed,medium
-KSME,SME,Lake Cumberland Regional Airport,37.0534,-84.6159,America/New_York,US,CATI,assumed,medium
+KSLK,SLK,Adirondack Regional Airport,44.3869,-74.2046,America/New_York,US,CATI,faa-nasr,medium
+KSLN,SLN,Salina Municipal Airport,38.791,-97.6522,America/Chicago,US,CATI,faa-nasr,medium
+KSME,SME,Lake Cumberland Regional Airport,37.0534,-84.6159,America/New_York,US,CATI,faa-nasr,medium
 KSMN,SMN,Lemhi County Airport,45.1222,-113.882,America/Boise,US,CATI,assumed,medium
 KSMO,SMO,Santa Monica Municipal Airport,34.0158,-118.451,America/Los_Angeles,US,CATI,assumed,medium
-KSMX,SMX,Santa Maria Public Airport Captain G Allan Hancock Field,34.8989,-120.457,America/Los_Angeles,US,CATI,assumed,medium
-KSNS,SNS,Salinas Municipal Airport,36.6628,-121.606,America/Los_Angeles,US,CATI,assumed,medium
+KSMX,SMX,Santa Maria Public Airport Captain G Allan Hancock Field,34.8989,-120.457,America/Los_Angeles,US,CATI,faa-nasr,medium
+KSNS,SNS,Salinas Municipal Airport,36.6628,-121.606,America/Los_Angeles,US,CATI,faa-nasr,medium
 KSNY,SNY,Sidney Municipal Airport Lloyd W Carr Field,41.1013,-102.985,America/Denver,US,CATI,assumed,medium
 KSOA,SOA,Sonora Municipal Airport,30.5857,-100.649,America/Chicago,US,CATI,assumed,medium
 KSOW,SOW,Show Low Regional Airport,34.2641,-110.0071,America/Phoenix,US,CATI,assumed,medium
-KSPI,SPI,Abraham Lincoln Capital Airport,39.8441,-89.6779,America/Chicago,US,CATI,assumed,medium
-KSPS,SPS,Wichita Falls Municipal Airport / Sheppard Air Force Base,33.9888,-98.4919,America/Chicago,US,CATI,assumed,medium
+KSPI,SPI,Abraham Lincoln Capital Airport,39.8441,-89.6779,America/Chicago,US,CATI,faa-nasr,medium
+KSPS,SPS,Wichita Falls Municipal Airport / Sheppard Air Force Base,33.9888,-98.4919,America/Chicago,US,CATI,faa-nasr,medium
 KSQL,SQL,San Carlos Airport,37.5131,-122.2508,America/Los_Angeles,US,CATI,assumed,medium
-KSRR,SRR,Sierra Blanca Regional Airport,33.4628,-105.535,America/Denver,US,CATI,assumed,medium
-KSSC,SSC,Shaw Air Force Base,33.9727,-80.4706,America/New_York,US,CATI,assumed,medium
+KSRR,SRR,Sierra Blanca Regional Airport,33.4628,-105.535,America/Denver,US,CATI,faa-nasr,medium
+KSSC,SSC,Shaw Air Force Base,33.9727,-80.4706,America/New_York,US,CATI,faa-nasr,medium
 KSSF,SSF,Stinson Municipal Airport,29.337,-98.4711,America/Chicago,US,CATI,assumed,medium
 KSSI,SSI,St Simons Island Airport,31.1518,-81.3913,America/New_York,US,CATI,assumed,medium
-KSTC,STC,Saint Cloud Regional Airport,45.5466,-94.0599,America/Chicago,US,CATI,assumed,medium
-KSTJ,STJ,Rosecrans Memorial Airport,39.7719,-94.9097,America/Chicago,US,CATI,assumed,medium
-KSTP,STP,Saint Paul Downtown Holman Field,44.9348,-93.06,America/Chicago,US,CATI,assumed,medium
-KSTS,STS,Charles M. Schulz Sonoma County Airport,38.509,-122.813,America/Los_Angeles,US,CATI,assumed,medium
+KSTC,STC,Saint Cloud Regional Airport,45.5466,-94.0599,America/Chicago,US,CATI,faa-nasr,medium
+KSTJ,STJ,Rosecrans Memorial Airport,39.7719,-94.9097,America/Chicago,US,CATI,faa-nasr,medium
+KSTP,STP,Saint Paul Downtown Holman Field,44.9348,-93.06,America/Chicago,US,CATI,faa-nasr,medium
+KSTS,STS,Charles M. Schulz Sonoma County Airport,38.509,-122.813,America/Los_Angeles,US,CATI,faa-nasr,medium
 KSUN,SUN,Friedman Memorial Airport,43.5044,-114.296,America/Boise,US,CATI,assumed,medium
-KSUS,SUS,Spirit of St Louis Airport,38.6621,-90.652,America/Chicago,US,CATI,assumed,medium
+KSUS,SUS,Spirit of St Louis Airport,38.6621,-90.652,America/Chicago,US,CATI,faa-nasr,medium
 KSUU,SUU,Travis Air Force Base,38.2627,-121.927,America/Los_Angeles,US,CATII,faa-nasr,medium
-KSUX,SUX,Sioux Gateway Airport / Brigadier General Bud Day Field,42.3976,-96.3822,America/Chicago,US,CATI,assumed,medium
-KSUZ,SUZ,Saline County Regional Airport,34.5906,-92.4794,America/Chicago,US,CATI,assumed,medium
-KSVC,SVC,Grant County Airport,32.6367,-108.1547,America/Denver,US,CATI,assumed,medium
-KSVN,SVN,Hunter Army Air Field,32.01,-81.1457,America/New_York,US,CATI,assumed,medium
+KSUX,SUX,Sioux Gateway Airport / Brigadier General Bud Day Field,42.3976,-96.3822,America/Chicago,US,CATI,faa-nasr,medium
+KSUZ,SUZ,Saline County Regional Airport,34.5906,-92.4794,America/Chicago,US,CATI,faa-nasr,medium
+KSVC,SVC,Grant County Airport,32.6367,-108.1547,America/Denver,US,CATI,faa-nasr,medium
+KSVN,SVN,Hunter Army Air Field,32.01,-81.1457,America/New_York,US,CATI,faa-nasr,medium
 KSVR,SVR,South Valley Regional Airport,40.6195,-111.993,America/Denver,US,CATI,assumed,medium
 KSWF,SWF,New York Stewart International Airport,41.5042,-74.1089,America/New_York,US,CATIII,faa-nasr,medium
-KSWO,SWO,Stillwater Regional Airport,36.1621,-97.0856,America/Chicago,US,CATI,assumed,medium
-KSZL,SZL,Whiteman Air Force Base,38.7303,-93.5479,America/Chicago,US,CATI,assumed,medium
-KTBN,TBN,Waynesville-St. Robert Regional Airport-Forney Field,37.7416,-92.1407,America/Chicago,US,CATI,assumed,medium
+KSWO,SWO,Stillwater Regional Airport,36.1621,-97.0856,America/Chicago,US,CATI,faa-nasr,medium
+KSZL,SZL,Whiteman Air Force Base,38.7303,-93.5479,America/Chicago,US,CATI,faa-nasr,medium
+KTBN,TBN,Waynesville-St. Robert Regional Airport-Forney Field,37.7416,-92.1407,America/Chicago,US,CATI,faa-nasr,medium
 KTCC,TCC,Tucumcari Municipal Airport,35.1828,-103.603,America/Denver,US,CATI,assumed,medium
-KTCL,TCL,Tuscaloosa National Airport,33.2206,-87.6114,America/Chicago,US,CATI,assumed,medium
+KTCL,TCL,Tuscaloosa National Airport,33.2206,-87.6114,America/Chicago,US,CATI,faa-nasr,medium
 KTCM,TCM,McChord Air Force Base,47.1377,-122.476,America/Los_Angeles,US,CATII,faa-nasr,medium
 KTCS,TCS,Truth or Consequences Municipal Airport,33.2369,-107.272,America/Denver,US,CATI,assumed,medium
-KTEB,TEB,Teterboro Airport,40.8501,-74.0608,America/New_York,US,CATI,curated,medium
-KTEX,TEX,Telluride Regional Airport,37.9538,-107.908,America/Denver,US,CATI,assumed,medium
-KTIK,TIK,Tinker Air Force Base,35.4147,-97.3866,America/Chicago,US,CATI,assumed,medium
-KTIW,TIW,Tacoma Narrows Airport,47.2674,-122.5773,America/Los_Angeles,US,CATI,assumed,medium
-KTIX,TIX,Space Coast Regional Airport,28.5148,-80.7992,America/New_York,US,CATI,assumed,medium
+KTEB,TEB,Teterboro Airport,40.8501,-74.0608,America/New_York,US,CATI,faa-nasr,medium
+KTEX,TEX,Telluride Regional Airport,37.9538,-107.908,America/Denver,US,CATI,faa-nasr,medium
+KTIK,TIK,Tinker Air Force Base,35.4147,-97.3866,America/Chicago,US,CATI,faa-nasr,medium
+KTIW,TIW,Tacoma Narrows Airport,47.2674,-122.5773,America/Los_Angeles,US,CATI,faa-nasr,medium
+KTIX,TIX,Space Coast Regional Airport,28.5148,-80.7992,America/New_York,US,CATI,faa-nasr,medium
 KTLH,TLH,Tallahassee International Airport,30.4012,-84.3543,America/New_York,US,CATII,faa-nasr,medium
-KTMB,TMB,Miami Executive Airport,25.6479,-80.4328,America/New_York,US,CATI,assumed,medium
-KTOI,TOI,Troy Municipal Airport at N Kenneth Campbell Field,31.8604,-86.0121,America/Chicago,US,CATI,assumed,medium
-KTOL,TOL,Eugene F. Kranz Toledo Express Airport,41.5868,-83.8078,America/New_York,US,CATI,assumed,medium
-KTOP,TOP,Philip Billard Municipal Airport,39.0699,-95.6226,America/Chicago,US,CATI,assumed,medium
+KTMB,TMB,Miami Executive Airport,25.6479,-80.4328,America/New_York,US,CATI,faa-nasr,medium
+KTOI,TOI,Troy Municipal Airport at N Kenneth Campbell Field,31.8604,-86.0121,America/Chicago,US,CATI,faa-nasr,medium
+KTOL,TOL,Eugene F. Kranz Toledo Express Airport,41.5868,-83.8078,America/New_York,US,CATI,faa-nasr,medium
+KTOP,TOP,Philip Billard Municipal Airport,39.0699,-95.6226,America/Chicago,US,CATI,faa-nasr,medium
 KTPH,TPH,Tonopah Airport,38.0602,-117.087,America/Los_Angeles,US,CATI,assumed,medium
-KTPL,TPL,Draughon Miller Central Texas Regional Airport,31.1525,-97.4078,America/Chicago,US,CATI,assumed,medium
+KTPL,TPL,Draughon Miller Central Texas Regional Airport,31.1525,-97.4078,America/Chicago,US,CATI,faa-nasr,medium
 KTRI,TRI,Tri-Cities Regional TN/VA Airport,36.4752,-82.4074,America/New_York,US,CATII,faa-nasr,medium
 KTRK,TRK,Truckee Tahoe Airport,39.3186,-120.1406,America/Los_Angeles,US,CATI,assumed,medium
 KTRM,TRM,Jacqueline Cochran Regional Airport,33.6267,-116.16,America/Los_Angeles,US,CATI,assumed,medium
 KTTD,TTD,Portland Troutdale Airport,45.5494,-122.401,America/Los_Angeles,US,CATI,assumed,medium
-KTTN,TTN,Trenton Mercer Airport,40.2767,-74.8135,America/New_York,US,CATI,assumed,medium
+KTTN,TTN,Trenton Mercer Airport,40.2767,-74.8135,America/New_York,US,CATI,faa-nasr,medium
 KTTS,TTS,Space Florida Launch and Landing Facility,28.615,-80.6945,America/New_York,US,CATI,assumed,medium
-KTUP,TUP,Tupelo Regional Airport,34.2681,-88.7699,America/Chicago,US,CATI,assumed,medium
-KTVC,TVC,Cherry Capital Airport,44.7414,-85.5822,America/Detroit,US,CATI,assumed,medium
-KTVF,TVF,Thief River Falls Regional Airport,48.0657,-96.185,America/Chicago,US,CATI,assumed,medium
-KTVL,TVL,Lake Tahoe Airport,38.8939,-119.995,America/Los_Angeles,US,CATI,assumed,medium
-KTWF,TWF,Joslin Field Magic Valley Regional Airport,42.4818,-114.488,America/Boise,US,CATI,assumed,medium
-KTXK,TXK,Texarkana Regional Airport (Webb Field),33.4537,-93.991,America/Chicago,US,CATI,assumed,medium
-KTYR,TYR,Tyler Pounds Regional Airport,32.3541,-95.4024,America/Chicago,US,CATI,assumed,medium
+KTUP,TUP,Tupelo Regional Airport,34.2681,-88.7699,America/Chicago,US,CATI,faa-nasr,medium
+KTVC,TVC,Cherry Capital Airport,44.7414,-85.5822,America/Detroit,US,CATI,faa-nasr,medium
+KTVF,TVF,Thief River Falls Regional Airport,48.0657,-96.185,America/Chicago,US,CATI,faa-nasr,medium
+KTVL,TVL,Lake Tahoe Airport,38.8939,-119.995,America/Los_Angeles,US,CATI,faa-nasr,medium
+KTWF,TWF,Joslin Field Magic Valley Regional Airport,42.4818,-114.488,America/Boise,US,CATI,faa-nasr,medium
+KTXK,TXK,Texarkana Regional Airport (Webb Field),33.4537,-93.991,America/Chicago,US,CATI,faa-nasr,medium
+KTYR,TYR,Tyler Pounds Regional Airport,32.3541,-95.4024,America/Chicago,US,CATI,faa-nasr,medium
 KUAO,UAO,Aurora State Airport,45.2471,-122.77,America/Los_Angeles,US,CATI,assumed,medium
-KUIN,UIN,Quincy Regional Airport Baldwin Field,39.9427,-91.1946,America/Chicago,US,CATI,assumed,medium
-KUKI,UKI,Ukiah Municipal Airport,39.126,-123.201,America/Los_Angeles,US,CATI,assumed,medium
-KUNV,UNV,State College Regional Airport,40.8494,-77.8485,America/New_York,US,CATI,assumed,medium
-KUOX,UOX,University Oxford Airport,34.3843,-89.5368,America/Chicago,US,CATI,assumed,medium
+KUIN,UIN,Quincy Regional Airport Baldwin Field,39.9427,-91.1946,America/Chicago,US,CATI,faa-nasr,medium
+KUKI,UKI,Ukiah Municipal Airport,39.126,-123.201,America/Los_Angeles,US,CATI,faa-nasr,medium
+KUNV,UNV,State College Regional Airport,40.8494,-77.8485,America/New_York,US,CATI,faa-nasr,medium
+KUOX,UOX,University Oxford Airport,34.3843,-89.5368,America/Chicago,US,CATI,faa-nasr,medium
 KUTS,UTS,Huntsville Regional Airport,30.7469,-95.5872,America/Chicago,US,CATI,assumed,medium
 KUUU,UUU,Newport State Airport,41.5322,-71.281,America/New_York,US,CATI,assumed,medium
-KVAD,VAD,Moody Air Force Base,30.9678,-83.193,America/New_York,US,CATI,assumed,medium
-KVBG,VBG,Vandenberg Space Force Base,34.7373,-120.584,America/Los_Angeles,US,CATI,assumed,medium
-KVCT,VCT,Victoria Regional Airport,28.8526,-96.9185,America/Chicago,US,CATI,assumed,medium
+KVAD,VAD,Moody Air Force Base,30.9678,-83.193,America/New_York,US,CATI,faa-nasr,medium
+KVBG,VBG,Vandenberg Space Force Base,34.7373,-120.584,America/Los_Angeles,US,CATI,faa-nasr,medium
+KVCT,VCT,Victoria Regional Airport,28.8526,-96.9185,America/Chicago,US,CATI,faa-nasr,medium
 KVEL,VEL,Vernal Regional Airport,40.4362,-109.5117,America/Denver,US,CATI,assumed,medium
-KVGT,VGT,North Las Vegas Airport,36.2091,-115.194,America/Los_Angeles,US,CATI,assumed,medium
-KVIS,VIS,Visalia Municipal Airport,36.3187,-119.393,America/Los_Angeles,US,CATI,assumed,medium
-KVLD,VLD,Valdosta Regional Airport,30.7825,-83.2767,America/New_York,US,CATI,assumed,medium
-KVNY,VNY,Van Nuys Airport,34.2098,-118.49,America/Los_Angeles,US,CATI,assumed,medium
-KVOK,VOK,Volk Field,43.939,-90.2534,America/Chicago,US,CATI,assumed,medium
-KVPS,VPS,Destin-Fort Walton Beach Airport,30.4813,-86.5158,America/Chicago,US,CATI,assumed,medium
-KVPZ,VPZ,Porter County Municipal Airport,41.454,-87.0071,America/Chicago,US,CATI,assumed,medium
-KVQQ,VQQ,Cecil Airport,30.2187,-81.8767,America/New_York,US,CATI,assumed,medium
+KVGT,VGT,North Las Vegas Airport,36.2091,-115.194,America/Los_Angeles,US,CATI,faa-nasr,medium
+KVIS,VIS,Visalia Municipal Airport,36.3187,-119.393,America/Los_Angeles,US,CATI,faa-nasr,medium
+KVLD,VLD,Valdosta Regional Airport,30.7825,-83.2767,America/New_York,US,CATI,faa-nasr,medium
+KVNY,VNY,Van Nuys Airport,34.2098,-118.49,America/Los_Angeles,US,CATI,faa-nasr,medium
+KVOK,VOK,Volk Field,43.939,-90.2534,America/Chicago,US,CATI,faa-nasr,medium
+KVPS,VPS,Destin-Fort Walton Beach Airport,30.4813,-86.5158,America/Chicago,US,CATI,faa-nasr,medium
+KVPZ,VPZ,Porter County Municipal Airport,41.454,-87.0071,America/Chicago,US,CATI,faa-nasr,medium
+KVQQ,VQQ,Cecil Airport,30.2187,-81.8767,America/New_York,US,CATI,faa-nasr,medium
 KVRB,VRB,Vero Beach Regional Airport,27.6556,-80.4179,America/New_York,US,CATI,assumed,medium
 KVTN,VTN,Miller Field,42.8562,-100.5492,America/Chicago,US,CATI,assumed,medium
 KWJF,WJF,General William J Fox Airfield,34.7411,-118.219,America/Los_Angeles,US,CATI,assumed,medium
 KWMC,WMC,Winnemucca Municipal Airport,40.8966,-117.806,America/Los_Angeles,US,CATI,assumed,medium
-KWRB,WRB,Robins Air Force Base,32.6401,-83.5919,America/New_York,US,CATI,assumed,medium
+KWRB,WRB,Robins Air Force Base,32.6401,-83.5919,America/New_York,US,CATI,faa-nasr,medium
 KWRI,WRI,Mc Guire Air Force Base,40.0156,-74.5917,America/New_York,US,CATII,faa-nasr,medium
 KWRL,WRL,Worland Municipal Airport,43.9657,-107.951,America/Denver,US,CATI,assumed,medium
 KWST,WST,Westerly State Airport,41.3496,-71.8034,America/New_York,US,CATI,assumed,medium
 KWWD,WWD,Cape May County Airport,39.0085,-74.9083,America/New_York,US,CATI,assumed,medium
 KWWR,WWR,West Woodward Airport,36.438,-99.5227,America/Chicago,US,CATI,assumed,medium
-KWYS,WYS,Yellowstone Airport,44.6884,-111.118,America/Denver,US,CATI,assumed,medium
+KWYS,WYS,Yellowstone Airport,44.6884,-111.118,America/Denver,US,CATI,faa-nasr,medium
 KXMR,XMR,Cape Canaveral SFS Skid Strip,28.4676,-80.5666,America/New_York,US,CATI,assumed,medium
-KXNA,XNA,Northwest Arkansas National Airport,36.2819,-94.3068,America/Chicago,US,CATI,assumed,medium
+KXNA,XNA,Northwest Arkansas National Airport,36.2819,-94.3068,America/Chicago,US,CATI,faa-nasr,medium
 KXTA,KXTA,Homey (Area 51) Airport,37.235,-115.811,America/Los_Angeles,US,CATI,assumed,medium
-KXWA,XWA,Williston Basin International Airport,48.2609,-103.7512,America/Chicago,US,CATI,assumed,medium
-KYIP,YIP,Willow Run Airport,42.2379,-83.5304,America/Detroit,US,CATI,assumed,medium
-KYKM,YKM,Yakima Air Terminal McAllister Field,46.5682,-120.544,America/Los_Angeles,US,CATI,assumed,medium
-KYKN,YKN,Chan Gurney Municipal Airport,42.9167,-97.3859,America/Chicago,US,CATI,assumed,medium
-KYNG,YNG,Youngstown Warren Regional Airport,41.2607,-80.6791,America/New_York,US,CATI,assumed,medium
-KZZV,ZZV,Zanesville Municipal Airport,39.9444,-81.8921,America/New_York,US,CATI,assumed,medium
+KXWA,XWA,Williston Basin International Airport,48.2609,-103.7512,America/Chicago,US,CATI,faa-nasr,medium
+KYIP,YIP,Willow Run Airport,42.2379,-83.5304,America/Detroit,US,CATI,faa-nasr,medium
+KYKM,YKM,Yakima Air Terminal McAllister Field,46.5682,-120.544,America/Los_Angeles,US,CATI,faa-nasr,medium
+KYKN,YKN,Chan Gurney Municipal Airport,42.9167,-97.3859,America/Chicago,US,CATI,faa-nasr,medium
+KYNG,YNG,Youngstown Warren Regional Airport,41.2607,-80.6791,America/New_York,US,CATI,faa-nasr,medium
+KZZV,ZZV,Zanesville Municipal Airport,39.9444,-81.8921,America/New_York,US,CATI,faa-nasr,medium
 PAAQ,PAQ,"Warren ""Bud"" Woods Palmer Municipal Airport",61.5949,-149.089,America/Anchorage,US,CATI,assumed,medium
 PABA,BTI,Barter Island Long Range Radar Station Airport,70.134,-143.582,America/Anchorage,US,CATI,assumed,medium
-PABE,BET,Bethel Airport,60.7798,-161.838,America/Anchorage,US,CATI,assumed,medium
-PABI,BIG,Allen Army Airfield,63.9945,-145.722,America/Anchorage,US,CATI,assumed,medium
-PABR,BRW,Wiley Post Will Rogers Memorial Airport,71.2854,-156.766,America/Anchorage,US,CATI,assumed,medium
+PABE,BET,Bethel Airport,60.7798,-161.838,America/Anchorage,US,CATI,faa-nasr,medium
+PABI,BIG,Allen Army Airfield,63.9945,-145.722,America/Anchorage,US,CATI,faa-nasr,medium
+PABR,BRW,Wiley Post Will Rogers Memorial Airport,71.2854,-156.766,America/Anchorage,US,CATI,faa-nasr,medium
 PABV,BCV,Birchwood Airport,61.4165,-149.507,America/Anchorage,US,CATI,assumed,medium
-PACD,CDB,Cold Bay Airport,55.2079,-162.725,America/Nome,US,CATI,assumed,medium
+PACD,CDB,Cold Bay Airport,55.2079,-162.725,America/Nome,US,CATI,faa-nasr,medium
 PACL,Z84,Clear Airport,64.2997,-149.1174,America/Anchorage,US,CATI,assumed,medium
-PACV,CDV,Merle K (Mudhole) Smith Airport,60.4918,-145.478,America/Anchorage,US,CATI,assumed,medium
+PACV,CDV,Merle K (Mudhole) Smith Airport,60.4918,-145.478,America/Anchorage,US,CATI,faa-nasr,medium
 PACZ,CZF,Cape Romanzof LRRS Airport,61.7803,-166.039,America/Nome,US,CATI,assumed,medium
 PADE,DEE,Deering Airport,66.0689,-162.7669,America/Nome,US,CATI,assumed,medium
-PADK,ADK,Adak Airport,51.8836,-176.6428,America/Adak,US,CATI,assumed,medium
-PADL,DLG,Dillingham Airport,59.0447,-158.505,America/Anchorage,US,CATI,assumed,medium
-PADQ,ADQ,Kodiak Airport,57.75,-152.494,America/Anchorage,US,CATI,assumed,medium
+PADK,ADK,Adak Airport,51.8836,-176.6428,America/Adak,US,CATI,faa-nasr,medium
+PADL,DLG,Dillingham Airport,59.0447,-158.505,America/Anchorage,US,CATI,faa-nasr,medium
+PADQ,ADQ,Kodiak Airport,57.75,-152.494,America/Anchorage,US,CATI,faa-nasr,medium
 PADU,DUT,Tom Madsen (Dutch Harbor) Airport,53.8988,-166.545,America/Nome,US,CATI,assumed,medium
-PAED,EDF,Elmendorf Air Force Base,61.2517,-149.8071,America/Anchorage,US,CATI,assumed,medium
+PAED,EDF,Elmendorf Air Force Base,61.2517,-149.8071,America/Anchorage,US,CATI,faa-nasr,medium
 PAEH,EHM,Cape Newenham LRRS Airport,58.6464,-162.063,America/Nome,US,CATI,assumed,medium
-PAEI,EIL,Eielson Air Force Base,64.6657,-147.102,America/Anchorage,US,CATI,assumed,medium
+PAEI,EIL,Eielson Air Force Base,64.6657,-147.102,America/Anchorage,US,CATI,faa-nasr,medium
 PAEM,ENM,Emmonak Airport,62.7861,-164.491,America/Nome,US,CATI,assumed,medium
-PAEN,ENA,Kenai Municipal Airport,60.5709,-151.2452,America/Anchorage,US,CATI,assumed,medium
+PAEN,ENA,Kenai Municipal Airport,60.5709,-151.2452,America/Anchorage,US,CATI,faa-nasr,medium
 PAFA,FAI,Fairbanks International Airport,64.8151,-147.856,America/Anchorage,US,CATIII,faa-nasr,medium
 PAFB,FBK,Ladd Army Airfield,64.8375,-147.614,America/Anchorage,US,CATI,assumed,medium
 PAFE,AFE,Kake Airport,56.9613,-133.9102,America/Sitka,US,CATI,assumed,medium
@@ -4836,47 +4836,47 @@ PAIK,IAN,Bob Baker Memorial Airport,66.9761,-160.439,America/Anchorage,US,CATI,a
 PAIL,ILI,Iliamna Airport,59.7544,-154.911,America/Anchorage,US,CATI,assumed,medium
 PAIM,UTO,Indian Mountain LRRS Airport,65.9928,-153.704,America/Anchorage,US,CATI,assumed,medium
 PAJN,JNU,Juneau International Airport,58.3549,-134.5744,America/Juneau,US,CATI,assumed,medium
-PAKN,AKN,King Salmon Airport,58.6778,-156.652,America/Anchorage,US,CATI,assumed,medium
+PAKN,AKN,King Salmon Airport,58.6778,-156.652,America/Anchorage,US,CATI,faa-nasr,medium
 PAKP,AKP,Anaktuvuk Pass Airport,68.1336,-151.743,America/Anchorage,US,CATI,assumed,medium
-PAKT,KTN,Ketchikan International Airport,55.3556,-131.714,America/Sitka,US,CATI,assumed,medium
+PAKT,KTN,Ketchikan International Airport,55.3556,-131.714,America/Sitka,US,CATI,faa-nasr,medium
 PAKW,AKW,Klawock Airport,55.5792,-133.076,America/Sitka,US,CATI,assumed,medium
 PALU,LUR,Cape Lisburne LRRS Airport,68.8751,-166.11,America/Nome,US,CATI,assumed,medium
-PAMC,MCG,McGrath Airport,62.9529,-155.606,America/Anchorage,US,CATI,assumed,medium
+PAMC,MCG,McGrath Airport,62.9529,-155.606,America/Anchorage,US,CATI,faa-nasr,medium
 PAMR,MRI,Merrill Field,61.2128,-149.844,America/Anchorage,US,CATI,assumed,medium
 PAMY,MYU,Mekoryuk Airport,60.3723,-166.2698,America/Nome,US,CATI,assumed,medium
-PANI,ANI,Aniak Airport,61.5816,-159.543,America/Anchorage,US,CATI,assumed,medium
+PANI,ANI,Aniak Airport,61.5816,-159.543,America/Anchorage,US,CATI,faa-nasr,medium
 PANN,ENN,Nenana Municipal Airport,64.5488,-149.0745,America/Anchorage,US,CATI,assumed,medium
 PANT,ANN,Annette Island Airport,55.0377,-131.5726,America/Metlakatla,US,CATI,assumed,medium
 PANV,ANV,Anvik Airport,62.6467,-160.191,America/Anchorage,US,CATI,assumed,medium
-PAOM,OME,Nome Airport,64.5122,-165.445,America/Nome,US,CATI,assumed,medium
+PAOM,OME,Nome Airport,64.5122,-165.445,America/Nome,US,CATI,faa-nasr,medium
 PAOR,ORT,Northway Airport,62.9613,-141.929,America/Anchorage,US,CATI,assumed,medium
-PAOT,OTZ,Ralph Wien Memorial Airport,66.8847,-162.599,America/Nome,US,CATI,assumed,medium
-PAPB,PBV,St George Airport,56.5773,-169.6638,America/Nome,US,CATI,assumed,medium
+PAOT,OTZ,Ralph Wien Memorial Airport,66.8847,-162.599,America/Nome,US,CATI,faa-nasr,medium
+PAPB,PBV,St George Airport,56.5773,-169.6638,America/Nome,US,CATI,faa-nasr,medium
 PAPC,KPC,Port Clarence Coast Guard Station,65.2537,-166.859,America/Nome,US,CATI,assumed,medium
-PAPG,PSG,Petersburg James A Johnson Airport,56.8017,-132.945,America/Sitka,US,CATI,assumed,medium
+PAPG,PSG,Petersburg James A Johnson Airport,56.8017,-132.945,America/Sitka,US,CATI,faa-nasr,medium
 PAPH,PTH,Port Heiden Airport,56.9579,-158.6302,America/Anchorage,US,CATI,assumed,medium
 PAPM,PTU,Platinum Airport,59.0177,-161.8279,America/Anchorage,US,CATI,assumed,medium
 PAQT,AQT,Nuiqsut Airport,70.21,-151.006,America/Anchorage,US,CATI,assumed,medium
 PARC,ARC,Arctic Village Airport,68.1147,-145.579,America/Anchorage,US,CATI,assumed,medium
 PARY,RBY,Ruby Airport,64.7272,-155.47,America/Anchorage,US,CATI,assumed,medium
 PASA,SVA,Savoonga Airport,63.6864,-170.493,America/Nome,US,CATI,assumed,medium
-PASC,SCC,Deadhorse Airport,70.1947,-148.465,America/Anchorage,US,CATI,assumed,medium
+PASC,SCC,Deadhorse Airport,70.1947,-148.465,America/Anchorage,US,CATI,faa-nasr,medium
 PASD,SDP,Sand Point Airport,55.3139,-160.5221,America/Anchorage,US,CATI,assumed,medium
-PASI,SIT,Sitka Rocky Gutierrez Airport,57.0471,-135.362,America/Sitka,US,CATI,assumed,medium
-PASN,SNP,St Paul Island Airport,57.1663,-170.2226,America/Nome,US,CATI,assumed,medium
+PASI,SIT,Sitka Rocky Gutierrez Airport,57.0471,-135.362,America/Sitka,US,CATI,faa-nasr,medium
+PASN,SNP,St Paul Island Airport,57.1663,-170.2226,America/Nome,US,CATI,faa-nasr,medium
 PASV,SVW,Sparrevohn LRRS Airport,61.0974,-155.574,America/Anchorage,US,CATI,assumed,medium
 PASX,SXQ,Soldotna Airport,60.4749,-151.0385,America/Anchorage,US,CATI,assumed,medium
-PASY,SYA,Eareckson Air Station,52.7123,174.114,America/Adak,US,CATI,assumed,medium
+PASY,SYA,Eareckson Air Station,52.7123,174.114,America/Adak,US,CATI,faa-nasr,medium
 PATK,TKA,Talkeetna Airport,62.3205,-150.094,America/Anchorage,US,CATI,assumed,medium
 PATL,TLJ,Tatalina LRRS Airport,62.8944,-155.977,America/Anchorage,US,CATI,assumed,medium
 PATQ,ATK,Atqasuk Edward Burnell Sr Memorial Airport,70.467,-157.436,America/Anchorage,US,CATI,assumed,medium
 PAUN,UNK,Unalakleet Airport,63.8884,-160.799,America/Anchorage,US,CATI,assumed,medium
-PAVD,VDZ,Valdez Pioneer Field,61.1327,-146.2466,America/Anchorage,US,CATI,assumed,medium
+PAVD,VDZ,Valdez Pioneer Field,61.1327,-146.2466,America/Anchorage,US,CATI,faa-nasr,medium
 PAWD,SWD,Seward Airport,60.1305,-149.4186,America/Anchorage,US,CATI,assumed,medium
 PAWG,WRG,Wrangell Airport,56.4843,-132.37,America/Sitka,US,CATI,assumed,medium
 PAWI,AWI,Wainwright Airport,70.638,-159.995,America/Anchorage,US,CATI,assumed,medium
 PAWS,IYS,Wasilla Airport,61.5717,-149.54,America/Anchorage,US,CATI,assumed,medium
-PAYA,YAK,Yakutat Airport,59.5087,-139.6604,America/Yakutat,US,CATI,assumed,medium
+PAYA,YAK,Yakutat Airport,59.5087,-139.6604,America/Yakutat,US,CATI,faa-nasr,medium
 PFYU,FYU,Fort Yukon Airport,66.5717,-145.25,America/Anchorage,US,CATI,assumed,medium
 PHBK,BKH,Barking Sands Airport,22.0228,-159.785,Pacific/Honolulu,US,CATI,assumed,medium
 PHHN,HNM,Hana Airport,20.7956,-156.014,Pacific/Honolulu,US,CATI,assumed,medium
@@ -4886,8 +4886,8 @@ PHJR,JRF,Kalaeloa Airport,21.3074,-158.07,Pacific/Honolulu,US,CATI,assumed,mediu
 PHMK,MKK,Molokai Airport,21.1529,-157.096,Pacific/Honolulu,US,CATI,assumed,medium
 PHMU,MUE,Waimea Kohala Airport,20.0013,-155.668,Pacific/Honolulu,US,CATI,assumed,medium
 PHNG,NGF,Kaneohe Bay MCAS (Marion E. Carl Field) Airport,21.4505,-157.768,Pacific/Honolulu,US,CATI,assumed,medium
-PHNY,LNY,Lanai Airport,20.7857,-156.9513,Pacific/Honolulu,US,CATI,assumed,medium
-PHTO,ITO,Hilo International Airport,19.7214,-155.0454,Pacific/Honolulu,US,CATI,assumed,medium
+PHNY,LNY,Lanai Airport,20.7857,-156.9513,Pacific/Honolulu,US,CATI,faa-nasr,medium
+PHTO,ITO,Hilo International Airport,19.7214,-155.0454,Pacific/Honolulu,US,CATI,faa-nasr,medium
 PPIZ,PIZ,Point Lay LRRS Airport,69.7329,-163.005,America/Nome,US,CATI,assumed,medium
 SUAA,SUAA,Ángel S. Adami International Airport,-34.7892,-56.2647,America/Montevideo,UY,CATI,assumed,medium
 SUDU,SUDU,Santa Bernardina International Airport,-33.3589,-56.4992,America/Montevideo,UY,CATI,assumed,medium

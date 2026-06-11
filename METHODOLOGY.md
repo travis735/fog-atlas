@@ -49,7 +49,7 @@ Flagged stations are excluded from the fog field and rankings, demoted on the ma
 
 ## CAT II/III capability
 
-- **US:** derived from the FAA NASR ILS database (`ILS_BASE.csv` CATEGORY field, best category per airport) — 97 airports with CAT II/III.
+- **US:** derived from the FAA NASR ILS database (`ILS_BASE.csv` CATEGORY field, best category per airport) — 97 airports with CAT II/III, 586 confirmed CAT I, and the remainder flagged "no ILS on record." At RNAV-only fields, real minima are typically *higher* than CAT I (LPV ~200–250 ft at best, LNAV/VNAV often 350–400+ ft), so the sub-CAT-I bands **understate** blocked hours there — and the EFVS case is correspondingly stronger. The map's "ILS only" toggle hides known no-ILS fields; international airports with unknown ILS status remain visible.
 - **International:** the FAA's published OpSpec C060 list of foreign facilities approved for CAT II/III operations — 158 airports. Everything else is **assumed CAT I** and labeled accordingly; the C060 list reflects FAA approval for US carriers, so a foreign airport with CAT II/III capability not used by US carriers may be missing.
 - The EFVS-value framing: at a CAT III airport, suitably equipped airlines already land in fog — EFVS value concentrates where low visibility is frequent *and* CAT II/III is absent.
 

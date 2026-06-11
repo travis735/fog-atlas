@@ -111,6 +111,10 @@ def main():
             "size": m.get("size", "large"),
             "coveragePct": round(cov, 1),
             "reliability": reliability,
+            # ILS presence: authoritative for the US (NASR) and the C060
+            # list; everything else is unknown, NOT no
+            "ils": ("yes" if m["cat_ils_confidence"] in ("faa-nasr", "faa-c060", "curated", "verify")
+                    else "no" if m["country"] == "US" else "unknown"),
             "efvsHoursPerYear": efvs_hpy,
             "belowHoursPerYear": below_hpy,
             "causes": causes,
