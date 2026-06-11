@@ -108,6 +108,17 @@ def main():
             month(timezone(t.tz, h.ts_utc::TIMESTAMPTZ)) AS mon,
             hour(timezone(t.tz, h.ts_utc::TIMESTAMPTZ)) AS hr,
             (h.vsby IS NOT NULL AND h.vsby <= 0.01) AS vzero,
+            -- fine visibility bins for minima-aware (per-airport floor) stats:
+            -- 0:<300m 1:300-350 2:350-450 3:450-800 4:800-1600 5:>=1600m
+            CASE
+                WHEN h.vsby IS NULL THEN NULL
+                WHEN h.vsby < 0.19 THEN 0
+                WHEN h.vsby < 0.22 THEN 1
+                WHEN h.vsby < 0.28 THEN 2
+                WHEN h.vsby < 0.50 THEN 3
+                WHEN h.vsby < 1.00 THEN 4
+                ELSE 5
+            END AS vbin,
             CASE
                 WHEN h.vsby IS NULL THEN 'missing'
                 WHEN h.vsby < {EFVS_FLOOR_SM} THEN 'below'

@@ -39,6 +39,44 @@ def main():
     with open(HERE / list_name) as f:
         meta = {a["icao"]: a for a in csv.DictReader(f)}
 
+    # minima-aware floors, segmented by OPERATOR EQUIPAGE: the achievable
+    # floor is whichever binds — flight deck or ground infrastructure.
+    # US: per-ops-level published minima from the FAA ILS Master; LPV from
+    # CIFP path points; international approximated from capability class.
+    us_levels = {}
+    fp = HERE / "data" / "us_ils_levels.csv"
+    if fp.exists():
+        with open(fp) as f:
+            for r in csv.DictReader(f):
+                us_levels[r["icao"]] = {k: float(r[k]) for k in
+                                        ("cat1_m", "sacat1_m", "cat2_m", "cat3_m") if r[k]}
+    lpv_set = set()
+    fp = HERE / "data" / "us_lpv.csv"
+    if fp.exists():
+        with open(fp) as f:
+            lpv_set = {r["icao"] for r in csv.DictReader(f)}
+
+    def floors_for(m):
+        """Achievable visibility floor (m) for CAT I / II / III-equipped ops."""
+        icao = m["icao"]
+        if icao in us_levels:
+            lv = us_levels[icao]
+            f1 = lv.get("cat1_m", 800.0)
+            f2 = min(f1, lv.get("cat2_m", f1))
+            f3 = min(f2, lv.get("cat3_m", f2))
+            return {"cat1": f1, "cat2": f2, "cat3": f3}
+        if m["country"] == "US":
+            f = 800.0 if icao in lpv_set else 1600.0
+            return {"cat1": f, "cat2": f, "cat3": f}
+        cls = m["cat_ils"]
+        if cls == "CATIII": return {"cat1": 800.0, "cat2": 350.0, "cat3": 175.0}
+        if cls == "CATII":  return {"cat1": 800.0, "cat2": 350.0, "cat3": 350.0}
+        if cls == "NONE":   return {"cat1": 1600.0, "cat2": 1600.0, "cat3": 1600.0}
+        return {"cat1": 800.0, "cat2": 800.0, "cat3": 800.0}
+
+    # vbin upper edges in meters (must match analyze_pilot.py's bins)
+    VBIN_UPPER = [306, 354, 450, 805, 1609]
+
     con = duckdb.connect()
     con.execute(f"CREATE VIEW c AS SELECT * FROM '{OUT}/classified.parquet'")
 
@@ -82,6 +120,27 @@ def main():
             FROM c WHERE icao = ? AND band IN ('efvs','below') GROUP BY cause
         """, [icao]).fetchall())
 
+        # minima-aware EFVS opportunity per equipage level: hours/yr below
+        # the ACHIEVABLE floor (deck x ground) yet within EFVS range
+        # (>=300m). Bins count only when fully below the floor
+        # (conservative); ceiling-only hours count where a ~200ft DH is the
+        # binding constraint (floor>=450m).
+        floors = floors_for(m)
+        vrow = con.execute("""
+            SELECT count(*) FILTER (vbin = 1), count(*) FILTER (vbin = 2),
+                   count(*) FILTER (vbin = 3), count(*) FILTER (vbin = 4),
+                   count(*) FILTER (cause = 'CEIL' AND band = 'efvs')
+            FROM c WHERE icao = ?
+        """, [icao]).fetchone()
+
+        def opp(floor_m):
+            h = sum(vrow[k - 1] for k in range(1, 5) if VBIN_UPPER[k] <= floor_m)
+            if floor_m >= 450:
+                h += vrow[4]
+            return round(8766.0 * h / valid_hours, 1) if valid_hours else 0.0
+
+        opp_by_equip = {k: opp(v) for k, v in floors.items()}
+
         grids = {}
         for bands, key in [(("efvs", "below"), "subcat1"), (("efvs",), "efvs"), (("below",), "below")]:
             rows = con.execute(f"""
@@ -117,6 +176,12 @@ def main():
             "ils": ("no" if m["cat_ils"] == "NONE"
                     else "yes" if m["cat_ils_confidence"] in ("faa-nasr", "faa-c060", "curated", "verify", "aip")
                     else "no" if m["country"] == "US" else "unknown"),
+            "lpv": ("yes" if icao in lpv_set else "no" if m["country"] == "US" else "unknown"),
+            "floors": {k: round(v) for k, v in floors.items()},
+            "efvsOppByEquip": opp_by_equip,
+            # back-compat / default audience: the CAT I-equipped operator
+            "floorM": round(floors["cat1"]),
+            "efvsOppHoursPerYear": opp_by_equip["cat1"],
             "efvsHoursPerYear": efvs_hpy,
             "belowHoursPerYear": below_hpy,
             "causes": causes,

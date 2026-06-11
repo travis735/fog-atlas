@@ -9,13 +9,21 @@ const MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","N
 interface Airport {
   icao: string; name: string; lat: number; lon: number; country: string; tz: string;
   catIls: string; catConfidence: string; size?: string; coveragePct?: number;
-  reliability?: string; ils?: string;
+  reliability?: string; ils?: string; lpv?: string; floorM?: number;
+  efvsOppHoursPerYear?: number;
+  floors?: { cat1: number; cat2: number; cat3: number };
+  efvsOppByEquip?: { cat1: number; cat2: number; cat3: number };
   efvsHoursPerYear: number; belowHoursPerYear: number;
   causes: Record<string, number>;
   grid: number[][]; // [month][hour] sub-CAT-I %
 }
 
-const state = { months: [0] as number[], hr: 6, playing: false, ilsOnly: false, airports: [] as Airport[] };
+const state = {
+  months: [0] as number[], hr: 6, playing: false,
+  ilsOnly: false, lpvOnly: false,
+  equip: "cat1" as "cat1" | "cat2" | "cat3",
+  airports: [] as Airport[],
+};
 
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
 const hrEl = $<HTMLInputElement>("#hr");
@@ -94,6 +102,7 @@ map.on("load", async () => {
         // frequencies are artifacts, not weather
         reliable: (a.reliability ?? "ok") === "ok" ? 1 : 0,
         ils: a.ils ?? "unknown",
+        lpv: a.lpv ?? "unknown",
         g: a.grid.flat(),
       },
     })),
@@ -216,18 +225,25 @@ const BASE_FILTERS: Record<string, any> = {
   glow3: ["==", ["get", "tier"], 2], core3: ["==", ["get", "tier"], 2], sheen3: ["==", ["get", "tier"], 2],
 };
 
-function applyIlsFilter() {
+function applyApproachFilters() {
   if (!map.getLayer("glow")) return;
-  const noIls: any = ["!=", ["get", "ils"], "no"];
+  const conds: any[] = [];
+  if (state.ilsOnly) conds.push(["!=", ["get", "ils"], "no"]);
+  if (state.lpvOnly) conds.push(["!=", ["get", "lpv"], "no"]);
   for (const [id, base] of Object.entries(BASE_FILTERS)) {
-    const f = state.ilsOnly ? (base ? ["all", base, noIls] : noIls) : base;
+    const all = [...(base ? [base] : []), ...conds];
+    const f = all.length === 0 ? null : all.length === 1 ? all[0] : ["all", ...all];
     map.setFilter(id, f as any);
   }
 }
 
 $<HTMLInputElement>("#ils-only").addEventListener("change", (e) => {
   state.ilsOnly = (e.target as HTMLInputElement).checked;
-  applyIlsFilter();
+  applyApproachFilters();
+});
+$<HTMLInputElement>("#lpv-only").addEventListener("change", (e) => {
+  state.lpvOnly = (e.target as HTMLInputElement).checked;
+  applyApproachFilters();
 });
 
 // ---------- search ----------
@@ -296,38 +312,56 @@ function openRankings() {
   history.replaceState(null, "", "#rankings");
   // a 6%-coverage or anomalous-reporting station can't support a frequency
   // claim — keep them out of the league table (still on the map and search)
+  const oppOf = (a: Airport) =>
+    a.efvsOppByEquip?.[state.equip] ?? a.efvsOppHoursPerYear ?? a.efvsHoursPerYear;
+  const floorOf = (a: Airport) => a.floors?.[state.equip] ?? a.floorM ?? 800;
   const rows = state.airports
     .filter((a) => (a.coveragePct ?? 100) >= 50 && (a.reliability ?? "ok") === "ok")
     .filter((a) => !state.ilsOnly || (a.ils ?? "unknown") !== "no")
+    .filter((a) => !state.lpvOnly || (a.lpv ?? "unknown") !== "no")
     .filter((a) => !rankCatIOnly || (a.catIls !== "CATIII" && a.catIls !== "CATII"))
-    .sort((a, b) => b.efvsHoursPerYear - a.efvsHoursPerYear)
+    .sort((a, b) => oppOf(b) - oppOf(a))
     .slice(0, 50);
   panelContent.innerHTML = `
     <h2>Where EFVS buys the most</h2>
-    <p class="sub">Top airports by EFVS-recoverable hours (300–800 m) per year · ${state.airports.length} airports analyzed so far</p>
+    <p class="sub">Hours below the floor YOUR equipage can achieve at each airport, within EFVS range · ${state.airports.length} airports analyzed</p>
+    <div class="rank-filter" style="gap:6px">
+      operator equipage:
+      ${(["cat1", "cat2", "cat3"] as const).map((e) => `
+        <button class="equip-chip${state.equip === e ? " on" : ""}" data-equip="${e}"
+          title="${{ cat1: "CAT I flight deck — typical Part 135/125/91: the EFVS retrofit audience",
+                     cat2: "CAT II-capable deck and authorization",
+                     cat3: "CAT III deck + training — typical Part 121 major" }[e]}">
+          ${{ cat1: "CAT I (135/125)", cat2: "CAT II", cat3: "CAT III (121)" }[e]}</button>`).join("")}
+    </div>
     <label class="rank-filter">
       <input id="rank-cat1" type="checkbox" ${rankCatIOnly ? "checked" : ""} />
       only airports without CAT II/III (no autoland fallback — the strongest EFVS case)
     </label>
     <table class="rank-table">
-      <thead><tr><th>#</th><th>airport</th><th class="num">EFVS h/yr</th><th class="num">&lt;300 m</th><th>ILS</th></tr></thead>
+      <thead><tr><th>#</th><th>airport</th><th class="num">opp h/yr</th><th class="num">floor</th><th>ILS</th></tr></thead>
       <tbody>
         ${rows.map((a, i) => `
           <tr data-icao="${a.icao}">
             <td class="num">${i + 1}</td>
             <td><b>${a.icao}</b> ${a.name.length > 26 ? a.name.slice(0, 25) + "…" : a.name} <em style="color:var(--ink-dim)">${a.country}</em></td>
-            <td class="num efvs">${Math.round(a.efvsHoursPerYear)}</td>
-            <td class="num">${Math.round(a.belowHoursPerYear)}</td>
+            <td class="num efvs">${Math.round(oppOf(a))}</td>
+            <td class="num">${floorOf(a)}m</td>
             <td>${a.catIls === "NONE" ? "—" : a.catIls === "CATIII" || a.catIls === "CATII" ? a.catIls.replace("CAT", "") : "I"}</td>
           </tr>`).join("")}
       </tbody>
     </table>
-    <p class="note">Ranked by hours below CAT I minima but within the EFVS-usable band. Airports still downloading are missing from this list until the next data pass.</p>
+    <p class="note">Opportunity = hours below the airport's own published minima (US: FAA ILS Master / CIFP LPV; intl: capability class) yet within EFVS range (≥300 m). Counting is conservative — partial visibility bins below the floor are excluded.</p>
   `;
   panelContent.querySelector("#rank-cat1")!.addEventListener("change", (e) => {
     rankCatIOnly = (e.target as HTMLInputElement).checked;
     openRankings();
   });
+  panelContent.querySelectorAll(".equip-chip").forEach((b) =>
+    b.addEventListener("click", () => {
+      state.equip = (b as HTMLElement).dataset.equip as typeof state.equip;
+      openRankings();
+    }));
   panelContent.querySelectorAll("tr[data-icao]").forEach((tr) =>
     tr.addEventListener("click", () => {
       const icao = (tr as HTMLElement).dataset.icao!;
@@ -510,10 +544,16 @@ async function openAirport(icao: string) {
     <div class="warn-banner">${a.reliability === "low-coverage"
       ? `⚠ Archive coverage is only ${a.coveragePct}% — too thin to support frequency claims. Numbers below are shown for completeness, not for decisions.`
       : `⚠ Reporting anomaly detected: this station's low-visibility observations are dominated by literal-zero values with no diurnal structure — the signature of an encoding artifact, not weather. Treat all frequencies here as unreliable.`}</div>` : ""}
-    <div class="stats">
-      <div class="stat efvs"><div class="v">${Math.round(a.efvsHoursPerYear)}</div><div class="k">EFVS-recoverable hrs / yr (300–800 m)</div></div>
-      <div class="stat"><div class="v">${Math.round(a.belowHoursPerYear)}</div><div class="k">below 300 m hrs / yr</div></div>
-      <div class="stat"><div class="v">${detail.coveragePct}%</div><div class="k">archive coverage</div></div>
+    <div class="stats" title="EFVS opportunity = hours/yr below the floor an operator can ACHIEVE here (flight deck × ground infrastructure binds), yet within EFVS range (≥300 m). US floors from FAA ILS Master published minima + CIFP LPV; international approximated from capability class.">
+      <div class="stat efvs">
+        <div class="v">${Math.round(a.efvsOppByEquip?.cat1 ?? a.efvsHoursPerYear)}</div>
+        <div class="k">EFVS hrs / yr · CAT I deck (Part 135/125 — the EFVS buyer) · floor ${a.floors?.cat1 ?? 800} m</div></div>
+      <div class="stat">
+        <div class="v">${Math.round(a.efvsOppByEquip?.cat2 ?? 0)}</div>
+        <div class="k">CAT II deck · floor ${a.floors?.cat2 ?? "—"} m</div></div>
+      <div class="stat">
+        <div class="v">${Math.round(a.efvsOppByEquip?.cat3 ?? 0)}</div>
+        <div class="k">CAT III deck (typical 121) · floor ${a.floors?.cat3 ?? "—"} m</div></div>
     </div>
     <div id="live"></div>
     <h3 id="heatmap-title">When it closes — % of hours below CAT I, by month × local hour</h3>
@@ -522,7 +562,7 @@ async function openAirport(icao: string) {
     <div id="persist"></div>
     <h3>Cause of low visibility</h3>
     <div id="causes"></div>
-    <p class="note">Sub-CAT-I = prevailing visibility below ~800 m or ceiling below 200 ft. Visibility is a climatological proxy for RVR — read as relative risk, not operating minima. Hours are local (${a.tz}). 2016–2025 routine METARs. <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">Full methodology</a>.</p>
+    <p class="note">Sub-CAT-I = prevailing visibility below ~800 m or ceiling below 200 ft. Visibility is a climatological proxy for RVR — read as relative risk, not operating minima. Hours are local (${a.tz}). 2016–2025 routine METARs, archive coverage ${detail.coveragePct}%. <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">Full methodology</a>.</p>
   `;
 
   const cells: { hr: number; mon: string; pct: number }[] = [];

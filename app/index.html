@@ -21,7 +21,10 @@
       </div>
       <button id="rankings-btn">rankings</button>
       <label id="ils-toggle" title="Hide airports with no ILS on record (US, per FAA NASR — RNAV-only fields have higher minima than CAT I). International airports with unknown ILS status stay visible.">
-        <input id="ils-only" type="checkbox" /> ILS only
+        <input id="ils-only" type="checkbox" /> ILS
+      </label>
+      <label id="lpv-toggle" title="Hide airports without an LPV approach (US, per FAA CIFP SBAS path points). Non-US airports have unknown LPV status (EGNOS not yet ingested) and stay visible.">
+        <input id="lpv-only" type="checkbox" /> LPV
       </label>
     </div>
 

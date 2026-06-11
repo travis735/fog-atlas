@@ -38,6 +38,23 @@ Present-weather codes, first match in priority order: `FG` (incl. FZFG) → `SN`
 
 The app's cause chart folds `BR` (mist) into the fog family: by definition `BR` is reported when visibility is ≥ 800 m, so a `BR` code attached to a sub-CAT-I observation is fog that the observer/algorithm coded conservatively. The pipeline output keeps the raw distinction.
 
+## Minima-aware EFVS opportunity, segmented by operator equipage
+
+"EFVS-recoverable" against a global CAT I threshold is optimistic for some operators and pessimistic for others, because the floor an operator can actually achieve is whichever binds: **flight deck or ground infrastructure**. A CAT III-equipped Part 121 crew at a CAT III hub already lands at RVR 600; a CAT I-equipped Part 135/125 operator is held to CAT I minima even at that same hub — which is precisely the population EFVS retrofits serve. The **EFVS opportunity** metric is therefore computed per equipage profile:
+
+| Equipage | Achievable floor at an airport | Typical operator |
+|---|---|---|
+| CAT I deck | the airport's best **CAT I** minima | Part 135 / 125 / 91 — the EFVS retrofit audience (default view) |
+| CAT II deck | best CAT II minima where ground-equipped, else CAT I | |
+| CAT III deck | best CAT III minima where ground-equipped, else above | Part 121 majors |
+
+Opportunity = hours/yr below the achievable floor yet within EFVS range (≥ 300 m / ~RVR 1000).
+
+- **US floors:** per-runway published minima from the FAA ILS Master report (CAT I visibility, SA CAT I / CAT II / SA CAT II / CAT III RVR; lowest across runways) — e.g. SFO: CAT I floor RVR 1800, CAT III floor RVR 600. LPV from FAA CIFP SBAS path points; no-ILS fields get 800 m with LPV, 1600 m without (LNAV-class).
+- **International:** approximated from capability class — CAT III ~175 m, CAT II ~350 m, CAT I 800 m, no-ILS 1600 m. EGNOS LPV not yet ingested.
+
+Counting is conservative: visibility bins count only when entirely below the floor; ceiling-limited hours count only where a ~200 ft DH binds (floor ≥ 450 m). Rankings rank by the selected equipage profile.
+
 ## Reporting reliability
 
 "% of hours" assumes observations sample hours impartially. Two failure modes are detected per station and flagged:
