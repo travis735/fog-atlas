@@ -35,9 +35,10 @@ body.panel-open #topbar-row { right: min(440px, 100vw); }
 }
 #brand p { font-size: 11px; letter-spacing: 0.08em; color: var(--ink-dim); margin-top: 4px; }
 
+#topleft { display: flex; flex-direction: column; gap: 10px; }
+#brandrow { display: flex; gap: 12px; align-items: center; }
 #topbar {
   display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-  margin: 0 auto;
 }
 #search { position: relative; z-index: 30; }
 #search-input {
@@ -103,10 +104,12 @@ body.panel-open #topbar-row { right: min(440px, 100vw); }
 .equip-chip.on { background: #1d3a52; border-color: var(--accent); color: var(--accent-hot); }
 
 #legend {
-  flex: none; margin-left: auto; pointer-events: none !important; padding-top: 4px;
+  position: absolute; right: 14px; bottom: 34px; z-index: 5;
+  pointer-events: none !important;
   font-size: 10.5px; color: var(--ink-dim); letter-spacing: 0.04em; text-align: right;
   max-width: 300px;
 }
+body.panel-open #legend { right: min(454px, calc(100vw + 14px)); }
 .legend-row { display: flex; align-items: center; gap: 7px; justify-content: flex-end; margin-top: 4px; }
 .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .dot.annual { border: 1px solid var(--ink-dim); }

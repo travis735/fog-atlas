@@ -10,16 +10,19 @@
     <div id="map"></div>
 
     <div id="topbar-row">
+    <div id="topleft">
+    <div id="brandrow">
     <header id="brand">
       <h1>FOG ATLAS</h1>
       <p>where the sky closes &middot; 2016&ndash;2025 METAR climatology</p>
     </header>
-
-    <div id="topbar">
       <div id="search">
         <input id="search-input" type="text" placeholder="search airport — ICAO, name, country" autocomplete="off" spellcheck="false" />
         <div id="search-results" hidden></div>
       </div>
+    </div>
+
+    <div id="topbar">
       <button id="rankings-btn">rankings</button>
       <label id="ils-toggle" title="Hide airports with no ILS on record (US, per FAA NASR — RNAV-only fields have higher minima than CAT I). International airports with unknown ILS status stay visible.">
         <input id="ils-only" type="checkbox" /> ILS
@@ -32,12 +35,14 @@
       </label>
       <span id="now-chip" hidden></span>
     </div>
+    </div><!-- /topleft -->
+
+    </div><!-- /topbar-row -->
 
     <div id="legend">
       <div class="legend-row"><span class="dot glow"></span> fog field — % of hours below CAT I at scrubbed month &amp; local hour</div>
       <div class="legend-row"><span class="dot annual"></span> faint points — analyzed airports · zoom in for per-airport dots</div>
     </div>
-    </div><!-- /topbar-row -->
 
     <footer id="scrub">
       <button id="play" aria-label="play">&#9654;</button>
