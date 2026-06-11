@@ -8,7 +8,8 @@ export default defineConfig({
         target: "https://aviationweather.gov",
         changeOrigin: true,
         rewrite: (path) =>
-          path.replace(/^\/api\/metar/, "/api/data/metar") + "&format=json",
+          path.replace(/^\/api\/metar/, "/api/data/metar") + "&format=json" +
+          (path.includes("hours=") ? "" : "&hours=3"),
       },
     },
   },

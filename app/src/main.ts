@@ -484,6 +484,7 @@ $("#close").addEventListener("click", () => {
 });
 
 let persistenceTable: Record<string, any> | null | undefined;
+let nowcastModel: any | null | undefined;
 
 const SEASONS = ["DJF", "DJF", "MAM", "MAM", "MAM", "JJA", "JJA", "JJA", "SON", "SON", "SON", "DJF"];
 const TODS = ["night", "morning", "afternoon", "evening"];
@@ -630,16 +631,24 @@ async function openAirport(icao: string) {
       <p class="note" style="margin-top:6px">Fewer than 25 sub-CAT-I events in ten years — not enough to support persistence statistics.</p>`;
   }
 
-  // ---- phase 2: live current conditions via same-origin AWC proxy ----
-  fetch(`/api/metar?ids=${icao}`).then((r) => r.json()).then((arr) => {
+  // ---- phase 2+3: live conditions + model nowcast via AWC proxy ----
+  if (nowcastModel === undefined) {
+    nowcastModel = null;
+    try { nowcastModel = await (await fetch("/data/model_y2.json")).json(); } catch {}
+  }
+  fetch(`/api/metar?ids=${icao}&hours=3`).then((r) => r.json()).then((arr) => {
     const ob = arr?.[0];
     if (!ob || !panelContent.querySelector("#live")) return;
-    const visRaw = ob.visib;
-    const vis = typeof visRaw === "string" ? (visRaw.includes("+") ? 99 : parseFloat(visRaw)) : visRaw;
-    const ceils = (ob.clouds ?? [])
-      .filter((c: any) => ["BKN", "OVC", "VV"].includes(c.cover) && c.base != null)
-      .map((c: any) => c.base);
-    const ceil = ceils.length ? Math.min(...ceils) : null;
+    const parseVis = (v: any) => v == null ? null
+      : typeof v === "string" ? (v.includes("+") ? 10 : parseFloat(v)) : v;
+    const ceilOf = (o: any) => {
+      const cs = (o.clouds ?? [])
+        .filter((c: any) => ["BKN", "OVC", "VV"].includes(c.cover) && c.base != null)
+        .map((c: any) => c.base);
+      return cs.length ? Math.min(...cs) : null;
+    };
+    const vis = parseVis(ob.visib);
+    const ceil = ceilOf(ob);
     const sub = (vis != null && vis < 0.5) || (ceil != null && ceil < 200);
     const below = vis != null && vis < 0.19;
     const when = (ob.rawOb?.match(/\d{6}Z/) ?? [""])[0];
@@ -654,8 +663,49 @@ async function openAirport(icao: string) {
       const c = per.buckets?.[key]?.curve ?? per.curve;
       lift = ` Historically, ${Math.round((1 - c[1]) * 100)}% of events here are over within 2 h (median ${per.medianH} h).`;
     }
+
+    // model nowcast: P(sub-CAT-I in 2h) from the benchmarked logistic model
+    let nowcast = "";
+    if (nowcastModel && vis != null) {
+      const prev = arr.find((o: any) =>
+        ob.obsTime - o.obsTime > 2400 && ob.obsTime - o.obsTime < 5400);
+      const pvis = prev ? parseVis(prev.visib) : null;
+      const psub = prev
+        ? ((pvis != null && pvis < 0.5) || ((ceilOf(prev) ?? 25000) < 200)) : null;
+      const local = new Intl.DateTimeFormat("en-US",
+        { timeZone: a.tz, hour: "numeric", month: "numeric", hour12: false })
+        .formatToParts(new Date());
+      const mon = +local.find((p) => p.type === "month")!.value;
+      const hr = +local.find((p) => p.type === "hour")!.value % 24;
+      const climP = Math.min(Math.max((a.grid[mon - 1]?.[hr] ?? 0) / 100, 1e-4), 1 - 1e-4);
+      const tempF = ob.temp != null ? ob.temp * 1.8 + 32 : 59;
+      const dewpF = ob.dewp != null ? ob.dewp * 1.8 + 32 : tempF - 10;
+      const ceilFt = ceil ?? 25000;
+      const f: Record<string, number> = {
+        vsby_c: Math.min(Math.max(vis, 0), 10),
+        log_vis: Math.log1p(Math.min(Math.max(vis, 0), 10)),
+        ceil_c: Math.min(ceilFt, 25000) / 1000,
+        low_ceil: ceilFt < 1000 ? 1 : 0,
+        spread: Math.min(Math.max(tempF - dewpF, -5), 40),
+        tmpf_c: Math.min(Math.max(tempF, -40), 120),
+        sknt_c: Math.min(Math.max(ob.wspd ?? 5, 0), 50),
+        vis_trend_c: pvis != null ? Math.min(Math.max(vis - pvis, -10), 10) : 0,
+        sub_now: sub ? 1 : 0,
+        sub_prev_f: psub == null ? (sub ? 1 : 0) : psub ? 1 : 0,
+        mon_sin: Math.sin(2 * Math.PI * mon / 12),
+        mon_cos: Math.cos(2 * Math.PI * mon / 12),
+        hr_sin: Math.sin(2 * Math.PI * hr / 24),
+        hr_cos: Math.cos(2 * Math.PI * hr / 24),
+        clim_logit: Math.log(climP / (1 - climP)),
+      };
+      let z = nowcastModel.intercept;
+      for (const [k, c] of Object.entries(nowcastModel.coef)) z += (c as number) * (f[k] ?? 0);
+      const p = 1 / (1 + Math.exp(-z));
+      nowcast = ` <span class="nowcast" title="Logistic nowcast trained on 2016–2023, validated on 2024–25 (Brier 39% better than climatology, AUC 0.95). Experimental — not for operational use.">Model: P(below CAT I within 2 h) ≈ <b>${p < 0.01 ? "<1" : Math.round(p * 100)}%</b></span>`;
+    }
+
     panelContent.querySelector("#live")!.innerHTML = `
-      <div class="live-line">RIGHT NOW · ${when} — ${visRaw ?? "?"} SM${ceil != null ? `, ceiling ${ceil} ft` : ", no ceiling"} · ${verdict}.${lift}</div>`;
+      <div class="live-line">RIGHT NOW · ${when} — ${ob.visib ?? "?"} SM${ceil != null ? `, ceiling ${ceil} ft` : ", no ceiling"} · ${verdict}.${lift}${nowcast}</div>`;
   }).catch(() => {});
 
   $("#causes").innerHTML = causes.map(([k, v]) => `

@@ -150,6 +150,9 @@ input[type="range"] { width: 232px; accent-color: var(--accent); }
 .badge.cat1 { border-color: #7a5a2e; color: #e8b96a; }
 .badge.conf { color: var(--ink-dim); }
 
+.nowcast { display: block; margin-top: 5px; color: var(--ink-dim); }
+.nowcast b { color: var(--accent); }
+
 .live-line {
   margin: 14px 0 4px; padding: 9px 13px; border-radius: 8px;
   border: 1px solid var(--hairline); background: #10161d99;

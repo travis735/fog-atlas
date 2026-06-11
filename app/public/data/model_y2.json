@@ -1,0 +1,37 @@
+{
+ "intercept": -0.56423,
+ "coef": {
+  "vsby_c": -0.08013,
+  "log_vis": -1.28666,
+  "ceil_c": 0.09577,
+  "low_ceil": 1.42513,
+  "spread": -0.09289,
+  "tmpf_c": -0.01159,
+  "sknt_c": -0.06392,
+  "vis_trend_c": -0.01556,
+  "sub_now": 0.93009,
+  "sub_prev_f": 0.56115,
+  "mon_sin": -0.12005,
+  "mon_cos": -0.15247,
+  "hr_sin": -0.25814,
+  "hr_cos": 0.69673,
+  "clim_logit": 0.23528
+ },
+ "features": [
+  "vsby_c",
+  "log_vis",
+  "ceil_c",
+  "low_ceil",
+  "spread",
+  "tmpf_c",
+  "sknt_c",
+  "vis_trend_c",
+  "sub_now",
+  "sub_prev_f",
+  "mon_sin",
+  "mon_cos",
+  "hr_sin",
+  "hr_cos",
+  "clim_logit"
+ ]
+}

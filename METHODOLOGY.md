@@ -32,6 +32,19 @@ Known approximations:
 
 An *event* is a maximal run of consecutive hourly observations below CAT I (a missing hour breaks the run, so durations are conservative). Per airport we report event-duration quartiles and the survival curve P(still below CAT I k hours after onset), overall and conditioned on season × time-of-day of onset where ≥ 20 events support the cell; airports with < 25 events in ten years get no persistence claims. The live "right now" line classifies the latest METAR (via NOAA AWC) with the same band rules; when an airport is currently below CAT I, the quoted lift odds use the matching season/time-of-day survival curve. Caveat: survival is measured from event *onset* — a continuing event that began hours ago has different remaining-duration odds than a fresh one, and a single METAR can't tell us the elapsed time.
 
+## Nowcast model (phase 3)
+
+A logistic model predicts P(sub-CAT-I at t+2h) from the current METAR (visibility, ceiling, temp-dewpoint spread, wind, visibility trend, prior-hour state, diurnal/seasonal harmonics) **plus the airport's climatological rate as an input feature** — so the model directly competes with its own baseline. Trained on 2016–2023, evaluated on 14.2M unsampled 2024–2025 hours (strict temporal split):
+
+| +2h model | Brier ↓ | AUC ↑ |
+|---|---|---|
+| Climatology (month×hour rate) | .0265 | .793 |
+| Persistence | .0186 | .870 |
+| **Logistic (shipped)** | **.0160** | **.953** |
+| Gradient boosting (ceiling check) | .0146 | .970 |
+
+The logistic model cuts Brier 39% vs climatology and 14% vs persistence; gradient boosting adds another ~9% but doesn't ship (the browser runs the 15-coefficient logistic in one line). The live "Model:" line in each deep-dive is this model scored client-side against the latest METARs. It is experimental and **not for operational use** — it knows nothing about synoptic weather, fronts, or forecasts; it is a statistical nowcast from station observations alone.
+
 ## Cause attribution
 
 Present-weather codes, first match in priority order: `FG` (incl. FZFG) → `SN` → `HZ`/`FU` → `BR` → other/none. An observation with multiple phenomena is attributed to the highest-priority one.
