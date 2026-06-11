@@ -404,6 +404,7 @@ let rankCatIOnly = true;
 
 function openRankings() {
   history.replaceState(null, "", "#rankings");
+  setSelected(null);
   // a 6%-coverage or anomalous-reporting station can't support a frequency
   // claim — keep them out of the league table (still on the map and search)
   const oppOf = (a: Airport) =>
@@ -473,6 +474,7 @@ $("#methodology").addEventListener("click", (e) => { e.preventDefault(); openMet
 // ---------- methodology ----------
 function openMethodology() {
   history.replaceState(null, "", "#methodology");
+  setSelected(null);
   panelContent.innerHTML = `
     <h2>Methodology</h2>
     <p class="sub">what this map can and cannot tell you</p>
@@ -577,11 +579,43 @@ $("#play").addEventListener("click", () => {
 $("#close").addEventListener("click", () => {
   panel.hidden = true;
   document.body.classList.remove("panel-open");
+  setSelected(null);
   history.replaceState(null, "", location.pathname);
 });
 
 let persistenceTable: Record<string, any> | null | undefined;
 let nowcastModel: any | null | undefined;
+
+// red selection marker on the airport whose deep-dive is open
+function setSelected(a: Airport | null) {
+  if (!map.getSource("selsrc")) {
+    if (!a) return;
+    map.addSource("selsrc", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    map.addLayer({
+      id: "sel-ring", type: "circle", source: "selsrc",
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 9, 9, 15],
+        "circle-color": "rgba(0,0,0,0)",
+        "circle-stroke-width": 1.6,
+        "circle-stroke-color": "#ff5a4d",
+        "circle-stroke-opacity": 0.9,
+      },
+    });
+    map.addLayer({
+      id: "sel-dot", type: "circle", source: "selsrc",
+      paint: {
+        "circle-radius": 3.5,
+        "circle-color": "#ff5a4d",
+        "circle-stroke-width": 1.2,
+        "circle-stroke-color": "#ffffff",
+      },
+    });
+  }
+  (map.getSource("selsrc") as any).setData({
+    type: "FeatureCollection",
+    features: a ? [{ type: "Feature", geometry: { type: "Point", coordinates: [a.lon, a.lat] }, properties: {} }] : [],
+  });
+}
 
 const SEASONS = ["DJF", "DJF", "MAM", "MAM", "MAM", "JJA", "JJA", "JJA", "SON", "SON", "SON", "DJF"];
 const TODS = ["night", "morning", "afternoon", "evening"];
@@ -595,6 +629,7 @@ async function openAirport(icao: string) {
   }
   const detail = await (await fetch(`/data/detail/${icao}.json`)).json();
   history.replaceState(null, "", `#${icao}`);
+  setSelected(a);
 
   const cat3 = a.catIls === "CATIII" || a.catIls === "CATII";
   const noIls = a.catIls === "NONE";
