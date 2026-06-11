@@ -43,8 +43,8 @@ Flagged stations are excluded from the fog field and rankings, demoted on the ma
 
 ## CAT II/III capability
 
-- **US:** derived from FAA CIFP approach data (machine-readable, authoritative).
-- **International:** hand-curated from AIPs and industry references for ~150–200 airports; everything else is **assumed CAT I** and labeled accordingly. Confidence level is shown per airport.
+- **US:** derived from the FAA NASR ILS database (`ILS_BASE.csv` CATEGORY field, best category per airport) — 97 airports with CAT II/III.
+- **International:** the FAA's published OpSpec C060 list of foreign facilities approved for CAT II/III operations — 158 airports. Everything else is **assumed CAT I** and labeled accordingly; the C060 list reflects FAA approval for US carriers, so a foreign airport with CAT II/III capability not used by US carriers may be missing.
 - The EFVS-value framing: at a CAT III airport, suitably equipped airlines already land in fog — EFVS value concentrates where low visibility is frequent *and* CAT II/III is absent.
 
 ## Cancellation validation (US only, phase 1.5)

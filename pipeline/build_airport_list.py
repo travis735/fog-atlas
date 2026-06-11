@@ -30,6 +30,12 @@ def main():
     with open(HERE / "airports_pilot.csv") as f:
         for row in csv.DictReader(f):
             curated[row["icao"]] = (row["cat_ils"], row["cat_ils_confidence"])
+    # authoritative FAA sources override the hand-curated pilot rows:
+    # cat_curated.csv = foreign OpSpec C060 list + US NASR ILS categories
+    if (HERE / "cat_curated.csv").exists():
+        with open(HERE / "cat_curated.csv") as f:
+            for row in csv.DictReader(f):
+                curated[row["icao"]] = (row["cat_ils"], row["cat_ils_confidence"])
 
     rows = []
     with open(HERE / "data" / "ourairports.csv") as f:

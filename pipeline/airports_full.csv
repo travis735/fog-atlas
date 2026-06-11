@@ -1,9 +1,9 @@
 icao,iem_id,name,lat,lon,tz,country,cat_ils,cat_ils_confidence,size
-OMAA,OMAA,Zayed International Airport,24.441,54.6492,Asia/Dubai,AE,CATI,assumed,large
+OMAA,OMAA,Zayed International Airport,24.441,54.6492,Asia/Dubai,AE,CATIII,faa-c060,large
 OMAD,OMAD,Al Bateen Executive Airport,24.4271,54.4599,Asia/Dubai,AE,CATI,assumed,large
 OMAL,OMAL,Al Ain International Airport,24.2617,55.6092,Asia/Dubai,AE,CATI,assumed,large
-OMDB,OMDB,Dubai International Airport,25.2498,55.371,Asia/Dubai,AE,CATI,assumed,large
-OMDW,OMDW,Al Maktoum International Airport,24.8962,55.1624,Asia/Dubai,AE,CATI,assumed,large
+OMDB,OMDB,Dubai International Airport,25.2498,55.371,Asia/Dubai,AE,CATIII,faa-c060,large
+OMDW,OMDW,Al Maktoum International Airport,24.8962,55.1624,Asia/Dubai,AE,CATIII,faa-c060,large
 OMFJ,OMFJ,Fujairah International Airport,25.1084,56.3281,Asia/Dubai,AE,CATI,assumed,large
 OMRK,OMRK,Ras Al Khaimah International Airport,25.6135,55.9388,Asia/Dubai,AE,CATI,assumed,large
 OMSJ,OMSJ,Sharjah International Airport,25.3286,55.5172,Asia/Dubai,AE,CATI,assumed,large
@@ -20,7 +20,7 @@ FNLU,FNLU,Quatro de Fevereiro International Airport,-8.8584,13.2312,Africa/Luand
 SAAR,SAAR,Rosario Islas Malvinas International Airport,-32.9036,-60.785,America/Argentina/Cordoba,AR,CATI,assumed,large
 SABE,SABE,Aeroparque Jorge Newbery,-34.5594,-58.4155,America/Argentina/Buenos_Aires,AR,CATI,assumed,large
 SACO,SACO,Ingeniero Aeronáutico Ambrosio L.V. Taravella International Airport,-31.3123,-64.2083,America/Argentina/Cordoba,AR,CATI,assumed,large
-SAEZ,SAEZ,Ezeiza International Airport - Ministro Pistarini,-34.8222,-58.5358,America/Argentina/Buenos_Aires,AR,CATI,assumed,large
+SAEZ,SAEZ,Ezeiza International Airport - Ministro Pistarini,-34.8222,-58.5358,America/Argentina/Buenos_Aires,AR,CATIII,faa-c060,large
 SAME,SAME,Governor Francisco Gabrielli International Airport,-32.8317,-68.7929,America/Argentina/Mendoza,AR,CATI,assumed,large
 SANT,SANT,Teniente Benjamín Matienzo International Airport,-26.8374,-65.1042,America/Argentina/Tucuman,AR,CATI,assumed,large
 SARE,SARE,Resistencia International Airport,-27.4499,-59.0561,America/Argentina/Cordoba,AR,CATI,assumed,large
@@ -32,12 +32,12 @@ SAWG,SAWG,Piloto Civil Norberto Fernández International Airport,-51.6088,-69.30
 SAZN,SAZN,Presidente Perón International Airport,-38.949,-68.1557,America/Argentina/Salta,AR,CATI,assumed,large
 SAZS,SAZS,Teniente Luis Candelaria International Airport,-41.1512,-71.1575,America/Argentina/Salta,AR,CATI,assumed,large
 NSTU,PPG,Pago Pago International Airport,-14.331,-170.71,Pacific/Pago_Pago,AS,CATI,assumed,large
-LOWG,LOWG,Graz Airport,46.9911,15.4396,Europe/Vienna,AT,CATI,assumed,large
+LOWG,LOWG,Graz Airport,46.9911,15.4396,Europe/Vienna,AT,CATIII,faa-c060,large
 LOWI,LOWI,Innsbruck Airport,47.2602,11.344,Europe/Vienna,AT,CATI,assumed,large
 LOWK,LOWK,Klagenfurt Airport,46.6425,14.3377,Europe/Vienna,AT,CATI,assumed,large
 LOWL,LOWL,Linz-Hörsching Airport,48.2354,14.1881,Europe/Vienna,AT,CATI,assumed,large
 LOWS,LOWS,Salzburg Airport,47.7933,13.0043,Europe/Vienna,AT,CATI,assumed,large
-LOWW,LOWW,Vienna International Airport,48.1103,16.5697,Europe/Vienna,AT,CATI,assumed,large
+LOWW,LOWW,Vienna International Airport,48.1103,16.5697,Europe/Vienna,AT,CATIII,faa-c060,large
 YBBN,YBBN,Brisbane International Airport,-27.3842,153.117,Australia/Brisbane,AU,CATI,assumed,large
 YBCG,YBCG,Gold Coast Airport,-28.166,153.5066,Australia/Sydney,AU,CATI,assumed,large
 YBCS,YBCS,Cairns International Airport,-16.8789,145.7495,Australia/Brisbane,AU,CATI,assumed,large
@@ -46,16 +46,16 @@ YBSU,YBSU,Sunshine Coast Airport,-26.5933,153.0832,Australia/Brisbane,AU,CATI,as
 YBWW,YBWW,Toowoomba Wellcamp Airport,-27.5583,151.7933,Australia/Brisbane,AU,CATI,assumed,large
 YMAV,YMAV,Melbourne Avalon International Airport,-38.0403,144.4672,Australia/Melbourne,AU,CATI,assumed,large
 YMHB,YMHB,Hobart International Airport,-42.837,147.513,Australia/Hobart,AU,CATI,assumed,large
-YMML,YMML,Melbourne Airport,-37.6707,144.8379,Australia/Melbourne,AU,CATIII,curated,large
+YMML,YMML,Melbourne Airport,-37.6707,144.8379,Australia/Melbourne,AU,CATIII,faa-c060,large
 YPAD,YPAD,Adelaide International Airport,-34.9475,138.5334,Australia/Adelaide,AU,CATI,assumed,large
 YPDN,YPDN,Darwin International Airport / RAAF Darwin,-12.415,130.8818,Australia/Darwin,AU,CATI,assumed,large
 YPPD,YPPD,Port Hedland International Airport,-20.3828,118.6298,Australia/Perth,AU,CATI,assumed,large
 YPPH,YPPH,Perth International Airport,-31.9403,115.967,Australia/Perth,AU,CATI,assumed,large
-YSSY,YSSY,Sydney Kingsford Smith International Airport,-33.9461,151.177,Australia/Sydney,AU,CATI,assumed,large
+YSSY,YSSY,Sydney Kingsford Smith International Airport,-33.9461,151.177,Australia/Sydney,AU,CATII,faa-c060,large
 YSWS,YSWS,[Duplicate] Western Sydney International Airport,-33.8881,150.7147,Australia/Sydney,AU,CATI,assumed,large
 YWLM,YWLM,Newcastle Airport,-32.7961,151.835,Australia/Sydney,AU,CATI,assumed,large
 TNCA,TNCA,Queen Beatrix International Airport,12.5011,-70.0143,America/Aruba,AW,CATI,assumed,large
-UBBB,UBBB,Heydar Aliyev International Airport,40.4728,50.0509,Asia/Baku,AZ,CATI,assumed,large
+UBBB,UBBB,Heydar Aliyev International Airport,40.4728,50.0509,Asia/Baku,AZ,CATIII,faa-c060,large
 UBBG,UBBG,Ganja International Airport,40.7387,46.3204,Asia/Baku,AZ,CATI,assumed,large
 UBBN,UBBN,Nakhchivan International Airport,39.1888,45.4584,Asia/Baku,AZ,CATI,assumed,large
 LQBK,LQBK,Banja Luka International Airport,44.9414,17.2975,Europe/Sarajevo,BA,CATI,assumed,large
@@ -66,14 +66,14 @@ TBPB,TBPB,Grantley Adams International Airport,13.0747,-59.491,America/Barbados,
 VGEG,VGEG,Shah Amanat International Airport,22.2496,91.8133,Asia/Dhaka,BD,CATI,assumed,large
 VGHS,VGHS,Hazrat Shahjalal International Airport,23.8433,90.3978,Asia/Dhaka,BD,CATI,assumed,large
 VGSY,VGSY,Osmany International Airport,24.964,91.8647,Asia/Dhaka,BD,CATI,assumed,large
-EBBR,EBBR,Brussels Airport,50.9014,4.4844,Europe/Brussels,BE,CATI,assumed,large
+EBBR,EBBR,Brussels Airport,50.9014,4.4844,Europe/Brussels,BE,CATIII,faa-c060,large
 EBCI,EBCI,Brussels South Charleroi Airport,50.462,4.4596,Europe/Brussels,BE,CATI,assumed,large
 EBOS,EBOS,Ostend-Bruges International Airport,51.1998,2.8747,Europe/Brussels,BE,CATI,assumed,large
 DFFD,DFFD,Ouagadougou Thomas Sankara International Airport,12.3532,-1.5124,Africa/Ouagadougou,BF,CATI,assumed,large
 DFOO,DFOO,Bobo Dioulasso Airport,11.1601,-4.331,Africa/Ouagadougou,BF,CATI,assumed,large
 LBBG,LBBG,Burgas Airport,42.5699,27.5152,Europe/Sofia,BG,CATI,assumed,large
 LBPD,LBPD,Plovdiv International Airport,42.0678,24.8508,Europe/Sofia,BG,CATI,assumed,large
-LBSF,LBSF,Sofia Airport,42.6964,23.4177,Europe/Sofia,BG,CATI,assumed,large
+LBSF,LBSF,Sofia Airport,42.6964,23.4177,Europe/Sofia,BG,CATIII,faa-c060,large
 LBWN,LBWN,Varna Airport,43.2321,27.8251,Europe/Sofia,BG,CATI,assumed,large
 OBBI,OBBI,Bahrain International Airport,26.2673,50.6376,Asia/Bahrain,BH,CATI,assumed,large
 HBBA,HBBA,Bujumbura Melchior Ndadaye International Airport,-3.324,29.3185,Africa/Bujumbura,BI,CATI,assumed,large
@@ -91,15 +91,15 @@ SBBE,SBBE,Val de Cans/Júlio Cezar Ribeiro International Airport,-1.3793,-48.476
 SBBR,SBBR,Presidente Juscelino Kubitschek International Airport,-15.8692,-47.9208,America/Sao_Paulo,BR,CATI,assumed,large
 SBBV,SBBV,Atlas Brasil Cantanhede International Airport,2.8462,-60.6906,America/Boa_Vista,BR,CATI,assumed,large
 SBCF,SBCF,Tancredo Neves International Airport,-19.6357,-43.9669,America/Sao_Paulo,BR,CATI,assumed,large
-SBCT,SBCT,Curitiba-Afonso Pena International Airport,-25.5285,-49.1758,America/Sao_Paulo,BR,CATI,assumed,large
+SBCT,SBCT,Curitiba-Afonso Pena International Airport,-25.5285,-49.1758,America/Sao_Paulo,BR,CATII,faa-c060,large
 SBCY,SBCY,Várzea Grande–Marechal Rondon International Airport,-15.6529,-56.1167,America/Cuiaba,BR,CATI,assumed,large
 SBEG,SBEG,Eduardo Gomes International Airport,-3.0386,-60.0497,America/Manaus,BR,CATI,assumed,large
 SBFI,SBFI,Cataratas International Airport,-25.5942,-54.4894,America/Sao_Paulo,BR,CATI,assumed,large
 SBFL,SBFL,Hercílio Luz International Airport,-27.6703,-48.5525,America/Sao_Paulo,BR,CATI,assumed,large
 SBFZ,SBFZ,Pinto Martins International Airport,-3.7758,-38.5322,America/Fortaleza,BR,CATI,assumed,large
-SBGL,SBGL,Rio Galeão – Tom Jobim International Airport,-22.81,-43.2506,America/Sao_Paulo,BR,CATI,assumed,large
+SBGL,SBGL,Rio Galeão – Tom Jobim International Airport,-22.81,-43.2506,America/Sao_Paulo,BR,CATII,faa-c060,large
 SBGO,SBGO,Santa Genoveva International Airport,-16.632,-49.2207,America/Sao_Paulo,BR,CATI,assumed,large
-SBGR,SBGR,São Paulo/Guarulhos–Governor André Franco Montoro International Airport,-23.4313,-46.47,America/Sao_Paulo,BR,CATII,unknown,large
+SBGR,SBGR,São Paulo/Guarulhos–Governor André Franco Montoro International Airport,-23.4313,-46.47,America/Sao_Paulo,BR,CATIII,faa-c060,large
 SBJP,SBJP,Presidente Castro Pinto International Airport,-7.1487,-34.9506,America/Fortaleza,BR,CATI,assumed,large
 SBKP,SBKP,Viracopos International Airport,-23.0074,-47.1345,America/Sao_Paulo,BR,CATI,assumed,large
 SBMO,SBMO,Zumbi dos Palmares International Airport,-9.5126,-35.7918,America/Maceio,BR,CATI,assumed,large
@@ -127,18 +127,18 @@ UMBB,UMBB,Brest International Airport,52.1081,23.8968,Europe/Minsk,BY,CATI,assum
 UMMS,UMMS,Minsk National Airport,53.8881,28.04,Europe/Minsk,BY,CATI,assumed,large
 MZBZ,MZBZ,Philip S. W. Goldson International Airport,17.54,-88.3036,America/Belize,BZ,CATI,assumed,large
 CYEG,CYEG,Edmonton International Airport,53.3097,-113.58,America/Edmonton,CA,CATI,assumed,large
-CYHZ,CYHZ,Halifax / Stanfield International Airport,44.8808,-63.5086,America/Halifax,CA,CATI,assumed,large
+CYHZ,CYHZ,Halifax / Stanfield International Airport,44.8808,-63.5086,America/Halifax,CA,CATII,faa-c060,large
 CYLW,CYLW,Kelowna International Airport,49.9561,-119.378,America/Vancouver,CA,CATI,assumed,large
 CYOW,CYOW,Ottawa Macdonald-Cartier International Airport,45.3225,-75.6692,America/Toronto,CA,CATI,assumed,large
 CYQB,CYQB,Quebec Jean Lesage International Airport,46.7911,-71.3933,America/Toronto,CA,CATI,assumed,large
-CYUL,CYUL,Montreal / Pierre Elliott Trudeau International Airport,45.4678,-73.7423,America/Toronto,CA,CATI,assumed,large
-CYVR,CYVR,Vancouver International Airport,49.1939,-123.184,America/Vancouver,CA,CATI,assumed,large
-CYWG,CYWG,Winnipeg / James Armstrong Richardson International Airport,49.91,-97.2399,America/Winnipeg,CA,CATI,assumed,large
+CYUL,CYUL,Montreal / Pierre Elliott Trudeau International Airport,45.4678,-73.7423,America/Toronto,CA,CATII,faa-c060,large
+CYVR,CYVR,Vancouver International Airport,49.1939,-123.184,America/Vancouver,CA,CATIII,faa-c060,large
+CYWG,CYWG,Winnipeg / James Armstrong Richardson International Airport,49.91,-97.2399,America/Winnipeg,CA,CATII,faa-c060,large
 CYXE,CYXE,Saskatoon John G. Diefenbaker International Airport,52.1707,-106.7008,America/Regina,CA,CATI,assumed,large
-CYYC,CYYC,Calgary International Airport,51.1188,-114.0099,America/Edmonton,CA,CATI,assumed,large
+CYYC,CYYC,Calgary International Airport,51.1188,-114.0099,America/Edmonton,CA,CATIII,faa-c060,large
 CYYJ,CYYJ,Victoria International Airport,48.6472,-123.4278,America/Vancouver,CA,CATI,assumed,large
-CYYT,CYYT,St. John's International Airport,47.6186,-52.7519,America/St_Johns,CA,CATI,assumed,large
-CYYZ,CYYZ,Toronto Pearson International Airport,43.6759,-79.6294,America/Toronto,CA,CATI,assumed,large
+CYYT,CYYT,St. John's International Airport,47.6186,-52.7519,America/St_Johns,CA,CATIII,faa-c060,large
+CYYZ,CYYZ,Toronto Pearson International Airport,43.6759,-79.6294,America/Toronto,CA,CATIII,faa-c060,large
 YPCC,YPCC,Cocos (Keeling) Islands Airport,-12.1922,96.8341,Indian/Cocos,CC,CATI,assumed,large
 FZAA,FZAA,Ndjili International Airport,-4.3857,15.4446,Africa/Kinshasa,CD,CATI,assumed,large
 FZIC,FZIC,Bangoka International Airport,0.4816,25.338,Africa/Lubumbashi,CD,CATI,assumed,large
@@ -147,14 +147,14 @@ FZQA,FZQA,Lubumbashi International Airport,-11.5915,27.5308,Africa/Lubumbashi,CD
 FEFF,FEFF,Bangui M'Poko International Airport,4.3985,18.5188,Africa/Bangui,CF,CATI,assumed,large
 FCBB,FCBB,Maya-Maya International Airport,-4.2517,15.253,Africa/Brazzaville,CG,CATI,assumed,large
 FCPP,FCPP,Antonio Agostinho-Neto International Airport,-4.816,11.8866,Africa/Brazzaville,CG,CATI,assumed,large
-LSGG,LSGG,Geneva International Airport,46.2381,6.109,Europe/Zurich,CH,CATI,assumed,large
-LSZH,LSZH,Zürich Airport,47.4581,8.5481,Europe/Zurich,CH,CATIII,curated,large
+LSGG,LSGG,Geneva International Airport,46.2381,6.109,Europe/Zurich,CH,CATIII,faa-c060,large
+LSZH,LSZH,Zürich Airport,47.4581,8.5481,Europe/Zurich,CH,CATIII,faa-c060,large
 DIAP,DIAP,Félix-Houphouët-Boigny International Airport,5.2614,-3.9263,Africa/Abidjan,CI,CATI,assumed,large
 DIYO,DIYO,Yamoussoukro International Airport,6.9032,-5.3656,Africa/Abidjan,CI,CATI,assumed,large
 NCRG,NCRG,Rarotonga International Airport,-21.2027,-159.806,Pacific/Rarotonga,CK,CATI,assumed,large
 SCCI,SCCI,President Carlos Ibáñez International Airport,-53.0026,-70.8546,America/Punta_Arenas,CL,CATI,assumed,large
 SCDA,SCDA,Diego Aracena International Airport,-20.5363,-70.1814,America/Santiago,CL,CATI,assumed,large
-SCEL,SCEL,Comodoro Arturo Merino Benítez International Airport,-33.393,-70.7858,America/Santiago,CL,CATI,assumed,large
+SCEL,SCEL,Comodoro Arturo Merino Benítez International Airport,-33.393,-70.7858,America/Santiago,CL,CATIII,faa-c060,large
 SCFA,SCFA,Andrés Sabella Gálvez International Airport,-23.4453,-70.4452,America/Santiago,CL,CATI,assumed,large
 SCIE,SCIE,Carriel Sur International Airport,-36.7724,-73.0628,America/Santiago,CL,CATI,assumed,large
 SCIP,SCIP,Mataveri International Airport,-27.1654,-109.421,Pacific/Easter,CL,CATI,assumed,large
@@ -163,7 +163,7 @@ SCTE,SCTE,El Tepual International Airport,-41.4431,-73.0941,America/Santiago,CL,
 FKKD,FKKD,Douala International Airport,4.0061,9.7195,Africa/Douala,CM,CATI,assumed,large
 FKKR,FKKR,Garoua International Airport,9.3348,13.3721,Africa/Douala,CM,CATI,assumed,large
 FKYS,FKYS,Yaoundé Nsimalen International Airport,3.7226,11.5533,Africa/Douala,CM,CATI,assumed,large
-ZBAA,ZBAA,Beijing Capital International Airport,40.0773,116.5967,Asia/Shanghai,CN,CATII,unknown,large
+ZBAA,ZBAA,Beijing Capital International Airport,40.0773,116.5967,Asia/Shanghai,CN,CATIII,faa-c060,large
 ZBAD,ZBAD,Beijing Daxing International Airport,39.5013,116.414,Asia/Shanghai,CN,CATI,assumed,large
 ZBDS,ZBDS,Ordos Ejin Horo International Airport,39.4935,109.8599,Asia/Shanghai,CN,CATI,assumed,large
 ZBDT,ZBDT,Datong Yungang International Airport,40.0614,113.4805,Asia/Shanghai,CN,CATI,assumed,large
@@ -183,7 +183,7 @@ ZGOW,ZGOW,Jieyang Chaoshan International Airport,23.552,116.5033,Asia/Shanghai,C
 ZGSD,ZGSD,Zhuhai Jinwan Airport,22.0064,113.376,Asia/Shanghai,CN,CATI,assumed,large
 ZGSZ,ZGSZ,Shenzhen Bao'an International Airport,22.6395,113.8033,Asia/Shanghai,CN,CATI,assumed,large
 ZGZJ,ZGZJ,Zhanjiang Wuchuan International Airport,21.4817,110.5903,Asia/Shanghai,CN,CATI,assumed,large
-ZHCC,ZHCC,Zhengzhou Xinzheng International Airport,34.5265,113.8492,Asia/Shanghai,CN,CATI,assumed,large
+ZHCC,ZHCC,Zhengzhou Xinzheng International Airport,34.5265,113.8492,Asia/Shanghai,CN,CATII,faa-c060,large
 ZHEC,ZHEC,Ezhou Huahu International Airport,30.3412,115.0393,Asia/Shanghai,CN,CATI,assumed,large
 ZHHH,ZHHH,Wuhan Tianhe International Airport,30.7748,114.2137,Asia/Shanghai,CN,CATI,assumed,large
 ZHLY,ZHLY,Luoyang Beijiao Airport,34.7411,112.388,Asia/Shanghai,CN,CATI,assumed,large
@@ -194,21 +194,21 @@ ZLIC,ZLIC,Yinchuan Hedong International Airport,38.3228,106.3932,Asia/Shanghai,C
 ZLJQ,ZLJQ,Jiayuguan International Airport,39.8591,98.3393,Asia/Shanghai,CN,CATI,assumed,large
 ZLLL,ZLLL,Lanzhou Zhongchuan International Airport,36.5152,103.62,Asia/Shanghai,CN,CATI,assumed,large
 ZLXN,ZLXN,Xining Caojiabao International Airport,36.5277,102.0402,Asia/Shanghai,CN,CATI,assumed,large
-ZLXY,ZLXY,Xi'an Xianyang International Airport,34.4422,108.7624,Asia/Shanghai,CN,CATI,assumed,large
+ZLXY,ZLXY,Xi'an Xianyang International Airport,34.4422,108.7624,Asia/Shanghai,CN,CATII,faa-c060,large
 ZPJH,ZPJH,Xishuangbanna Gasa International Airport,21.9746,100.7622,Asia/Shanghai,CN,CATI,assumed,large
 ZPLJ,ZPLJ,Lijiang Sanyi International Airport,26.6775,100.2449,Asia/Shanghai,CN,CATI,assumed,large
 ZPPP,ZPPP,Kunming Changshui International Airport,25.1103,102.9367,Asia/Shanghai,CN,CATI,assumed,large
 ZSAM,ZSAM,Xiamen Gaoqi International Airport,24.5439,118.1275,Asia/Shanghai,CN,CATI,assumed,large
 ZSCN,ZSCN,Nanchang Changbei International Airport,28.8648,115.9027,Asia/Shanghai,CN,CATI,assumed,large
 ZSFZ,ZSFZ,Fuzhou Changle International Airport,25.9293,119.6725,Asia/Shanghai,CN,CATI,assumed,large
-ZSHC,ZSHC,Hangzhou Xiaoshan International Airport,30.2361,120.4289,Asia/Shanghai,CN,CATI,assumed,large
+ZSHC,ZSHC,Hangzhou Xiaoshan International Airport,30.2361,120.4289,Asia/Shanghai,CN,CATII,faa-c060,large
 ZSJN,ZSJN,Jinan Yaoqiang International Airport,36.8572,117.216,Asia/Shanghai,CN,CATI,assumed,large
 ZSLG,ZSLG,Lianyungang Huaguoshan International Airport,34.4141,119.179,Asia/Shanghai,CN,CATI,assumed,large
 ZSNB,ZSNB,Ningbo Lishe International Airport,29.8267,121.462,Asia/Shanghai,CN,CATI,assumed,large
-ZSNJ,ZSNJ,Nanjing Lukou International Airport,31.735,118.8659,Asia/Shanghai,CN,CATI,assumed,large
+ZSNJ,ZSNJ,Nanjing Lukou International Airport,31.735,118.8659,Asia/Shanghai,CN,CATII,faa-c060,large
 ZSOF,ZSOF,Hefei Xinqiao International Airport,31.9878,116.9769,Asia/Shanghai,CN,CATI,assumed,large
-ZSPD,ZSPD,Shanghai Pudong International Airport,31.1434,121.805,Asia/Shanghai,CN,CATII,unknown,large
-ZSQD,ZSQD,Qingdao Jiaodong International Airport,36.362,120.0882,Asia/Shanghai,CN,CATI,assumed,large
+ZSPD,ZSPD,Shanghai Pudong International Airport,31.1434,121.805,Asia/Shanghai,CN,CATIII,faa-c060,large
+ZSQD,ZSQD,Qingdao Jiaodong International Airport,36.362,120.0882,Asia/Shanghai,CN,CATII,faa-c060,large
 ZSQZ,ZSQZ,Quanzhou Jinjiang International Airport,24.7959,118.5886,Asia/Shanghai,CN,CATI,assumed,large
 ZSSH,ZSSH,Huai'an Lianshui Airport,33.7927,119.1267,Asia/Shanghai,CN,CATI,assumed,large
 ZSSS,ZSSS,Shanghai Hongqiao International Airport,31.1981,121.3343,Asia/Shanghai,CN,CATI,assumed,large
@@ -224,15 +224,15 @@ ZUGY,ZUGY,Guiyang Longdongbao International Airport,26.5418,106.804,Asia/Shangha
 ZULS,ZULS,Lhasa Gonggar International Airport,29.298,90.912,Asia/Shanghai,CN,CATI,assumed,large
 ZURK,ZURK,Xigaze Peace Airport / Shigatse Air Base,29.3509,89.2992,Asia/Shanghai,CN,CATI,assumed,large
 ZUTF,ZUTF,Chengdu Tianfu International Airport,30.3125,104.4413,Asia/Shanghai,CN,CATI,assumed,large
-ZUUU,ZUUU,Chengdu Shuangliu International Airport,30.5583,103.946,Asia/Shanghai,CN,CATI,assumed,large
+ZUUU,ZUUU,Chengdu Shuangliu International Airport,30.5583,103.946,Asia/Shanghai,CN,CATII,faa-c060,large
 ZWSH,ZWSH,Kashgar Laining International Airport,39.5423,76.0202,Asia/Urumqi,CN,CATI,assumed,large
-ZWWW,ZWWW,Ürümqi Tianshan International Airport,43.9136,87.4794,Asia/Urumqi,CN,CATI,assumed,large
+ZWWW,ZWWW,Ürümqi Tianshan International Airport,43.9136,87.4794,Asia/Urumqi,CN,CATIII,faa-c060,large
 ZYCC,ZYCC,Changchun Longjia International Airport,43.9962,125.685,Asia/Shanghai,CN,CATI,assumed,large
 ZYHB,ZYHB,Harbin Taiping International Airport,45.6234,126.25,Asia/Shanghai,CN,CATI,assumed,large
 ZYQQ,ZYQQ,Qiqihar Sanjiazi Airport,47.23,123.9142,Asia/Shanghai,CN,CATI,assumed,large
 ZYTL,ZYTL,Dalian Zhoushuizi International Airport,38.9657,121.5385,Asia/Shanghai,CN,CATI,assumed,large
 ZYTX,ZYTX,Shenyang Taoxian International Airport,41.6398,123.4837,Asia/Shanghai,CN,CATI,assumed,large
-SKBO,SKBO,El Dorado International Airport,4.7016,-74.1469,America/Bogota,CO,CATI,assumed,large
+SKBO,SKBO,El Dorado International Airport,4.7016,-74.1469,America/Bogota,CO,CATIII,faa-c060,large
 SKBQ,SKBQ,Ernesto Cortissoz International Airport,10.8896,-74.7808,America/Bogota,CO,CATI,assumed,large
 SKCG,SKCG,Rafael Nuñez International Airport,10.4424,-75.513,America/Bogota,CO,CATI,assumed,large
 SKCL,SKCL,Alfonso Bonilla Aragon International Airport,3.5427,-76.3819,America/Bogota,CO,CATI,assumed,large
@@ -258,22 +258,22 @@ LKCS,LKCS,České Budějovice South Bohemian Airport,48.9482,14.4283,Europe/Prag
 LKKV,LKKV,Karlovy Vary Airport,50.203,12.915,Europe/Prague,CZ,CATI,assumed,large
 LKMT,LKMT,Leoš Janáček Airport Ostrava,49.6963,18.1111,Europe/Prague,CZ,CATI,assumed,large
 LKPD,LKPD,Pardubice Airport,50.015,15.7398,Europe/Prague,CZ,CATI,assumed,large
-LKPR,LKPR,Václav Havel Airport Prague,50.1009,14.2599,Europe/Prague,CZ,CATI,assumed,large
-EDDB,EDDB,Berlin Brandenburg Airport,52.3617,13.5023,Europe/Berlin,DE,CATI,assumed,large
-EDDC,EDDC,Dresden Airport,51.1341,13.7678,Europe/Berlin,DE,CATI,assumed,large
+LKPR,LKPR,Václav Havel Airport Prague,50.1009,14.2599,Europe/Prague,CZ,CATIII,faa-c060,large
+EDDB,EDDB,Berlin Brandenburg Airport,52.3617,13.5023,Europe/Berlin,DE,CATIII,faa-c060,large
+EDDC,EDDC,Dresden Airport,51.1341,13.7678,Europe/Berlin,DE,CATIII,faa-c060,large
 EDDE,EDDE,Erfurt-Weimar Airport,50.9783,10.9607,Europe/Berlin,DE,CATI,assumed,large
-EDDF,EDDF,Frankfurt Main Airport,50.0267,8.5584,Europe/Berlin,DE,CATI,assumed,large
+EDDF,EDDF,Frankfurt Main Airport,50.0267,8.5584,Europe/Berlin,DE,CATIII,faa-c060,large
 EDDG,EDDG,Münster Osnabrück Airport,52.1338,7.6885,Europe/Berlin,DE,CATI,assumed,large
-EDDH,EDDH,Hamburg Helmut Schmidt Airport,53.6304,9.9882,Europe/Berlin,DE,CATI,assumed,large
-EDDK,EDDK,Cologne Bonn Airport,50.8659,7.1427,Europe/Berlin,DE,CATI,assumed,large
-EDDL,EDDL,Düsseldorf Airport,51.2895,6.7668,Europe/Berlin,DE,CATI,assumed,large
-EDDM,EDDM,Munich Airport,48.3538,11.7861,Europe/Berlin,DE,CATIII,curated,large
-EDDN,EDDN,Nuremberg Airport,49.4987,11.0781,Europe/Berlin,DE,CATI,assumed,large
-EDDP,EDDP,Leipzig/Halle Airport,51.4207,12.2327,Europe/Berlin,DE,CATI,assumed,large
-EDDS,EDDS,Stuttgart Airport,48.6899,9.222,Europe/Berlin,DE,CATI,assumed,large
-EDDV,EDDV,Hannover Airport,52.4611,9.6851,Europe/Berlin,DE,CATI,assumed,large
+EDDH,EDDH,Hamburg Helmut Schmidt Airport,53.6304,9.9882,Europe/Berlin,DE,CATIII,faa-c060,large
+EDDK,EDDK,Cologne Bonn Airport,50.8659,7.1427,Europe/Berlin,DE,CATIII,faa-c060,large
+EDDL,EDDL,Düsseldorf Airport,51.2895,6.7668,Europe/Berlin,DE,CATIII,faa-c060,large
+EDDM,EDDM,Munich Airport,48.3538,11.7861,Europe/Berlin,DE,CATIII,faa-c060,large
+EDDN,EDDN,Nuremberg Airport,49.4987,11.0781,Europe/Berlin,DE,CATIII,faa-c060,large
+EDDP,EDDP,Leipzig/Halle Airport,51.4207,12.2327,Europe/Berlin,DE,CATIII,faa-c060,large
+EDDS,EDDS,Stuttgart Airport,48.6899,9.222,Europe/Berlin,DE,CATIII,faa-c060,large
+EDDV,EDDV,Hannover Airport,52.4611,9.6851,Europe/Berlin,DE,CATIII,faa-c060,large
 EDDW,EDDW,Bremen Airport,53.0468,8.7893,Europe/Berlin,DE,CATI,assumed,large
-EDFH,EDFH,Frankfurt-Hahn Airport,49.9464,7.2617,Europe/Berlin,DE,CATI,assumed,large
+EDFH,EDFH,Frankfurt-Hahn Airport,49.9464,7.2617,Europe/Berlin,DE,CATIII,faa-c060,large
 EDJA,EDJA,Memmingen Allgau Airport,47.9881,10.2382,Europe/Berlin,DE,CATI,assumed,large
 EDLP,EDLP,Paderborn Lippstadt Airport,51.6125,8.6175,Europe/Berlin,DE,CATI,assumed,large
 EDLV,EDLV,Weeze (Niederrhein) Airport,51.6014,6.1412,Europe/Berlin,DE,CATI,assumed,large
@@ -282,9 +282,9 @@ EDNY,EDNY,Bodensee Airport Friedrichshafen,47.6713,9.5115,Europe/Berlin,DE,CATI,
 EDSB,EDSB,Karlsruhe Baden-Baden Airport,48.7794,8.0805,Europe/Berlin,DE,CATI,assumed,large
 EDVK,EDVK,Kassel Airport,51.4184,9.3916,Europe/Berlin,DE,CATI,assumed,large
 HDAM,HDAM,Djibouti-Ambouli Airport,11.5473,43.1595,Africa/Djibouti,DJ,CATI,assumed,large
-EKAH,EKAH,Aarhus Airport,56.3033,10.6183,Europe/Copenhagen,DK,CATI,assumed,large
-EKBI,EKBI,Billund Airport,55.7403,9.157,Europe/Copenhagen,DK,CATI,assumed,large
-EKCH,EKCH,Copenhagen Kastrup Airport,55.6179,12.656,Europe/Copenhagen,DK,CATI,assumed,large
+EKAH,EKAH,Aarhus Airport,56.3033,10.6183,Europe/Copenhagen,DK,CATII,faa-c060,large
+EKBI,EKBI,Billund Airport,55.7403,9.157,Europe/Copenhagen,DK,CATIII,faa-c060,large
+EKCH,EKCH,Copenhagen Kastrup Airport,55.6179,12.656,Europe/Copenhagen,DK,CATIII,faa-c060,large
 EKOD,EKOD,Odense Hans Christian Andersen Airport,55.4753,10.3272,Europe/Copenhagen,DK,CATI,assumed,large
 EKYT,EKYT,Aalborg Airport,57.0948,9.8499,Europe/Copenhagen,DK,CATI,assumed,large
 MDLR,MDLR,Casa De Campo International Airport,18.4522,-68.9111,America/Santo_Domingo,DO,CATI,assumed,large
@@ -304,7 +304,7 @@ DAON,DAON,Zenata – Messali El Hadj Airport,35.0127,-1.4571,Africa/Algiers,DZ,C
 DAOO,DAOO,Oran Es-Sénia (Ahmed Ben Bella) International Airport,35.6206,-0.6225,Africa/Algiers,DZ,CATI,assumed,large
 DAUB,DAUB,Biskra - Mohamed Khider Airport,34.7932,5.7389,Africa/Algiers,DZ,CATI,assumed,large
 SEGU,SEGU,José Joaquín de Olmedo International Airport,-2.1574,-79.8836,America/Guayaquil,EC,CATI,assumed,large
-SEQM,SEQM,Mariscal Sucre International Airport,-0.1254,-78.3543,America/Guayaquil,EC,CATI,assumed,large
+SEQM,SEQM,Mariscal Sucre International Airport,-0.1254,-78.3543,America/Guayaquil,EC,CATII,faa-c060,large
 SESA,SESA,General Ulpiano Paez International Airport,-2.2101,-80.9851,America/Guayaquil,EC,CATI,assumed,large
 SETN,SETN,Carlos Concha Torres International Airport,0.9785,-79.6266,America/Guayaquil,EC,CATI,assumed,large
 EETN,EETN,Lennart Meri Tallinn Airport,59.4132,24.8326,Europe/Tallinn,EE,CATI,assumed,large
@@ -313,7 +313,7 @@ HEAR,HEAR,El Arish International Airport,31.0553,33.828,Africa/Cairo,EG,CATI,ass
 HEAT,HEAT,Asyut International Airport,27.046,31.0128,Africa/Cairo,EG,CATI,assumed,large
 HEAX,HEAX,Alexandria International Airport,30.9325,29.6964,Africa/Cairo,EG,CATI,assumed,large
 HEBR,HEBR,Berenice International Airport / Banas Cape Air Base,23.9804,35.4603,Africa/Cairo,EG,CATI,assumed,large
-HECA,HECA,Cairo International Airport,30.1115,31.3967,Africa/Cairo,EG,CATI,assumed,large
+HECA,HECA,Cairo International Airport,30.1115,31.3967,Africa/Cairo,EG,CATII,faa-c060,large
 HEGN,HEGN,Hurghada International Airport,27.1768,33.7967,Africa/Cairo,EG,CATI,assumed,large
 HELX,HELX,Luxor International Airport,25.671,32.7064,Africa/Cairo,EG,CATI,assumed,large
 HEMA,HEMA,Marsa Alam International Airport,25.5555,34.5924,Africa/Cairo,EG,CATI,assumed,large
@@ -333,24 +333,24 @@ GCXO,GCXO,Tenerife Norte-Ciudad de La Laguna Airport,28.4828,-16.3417,Atlantic/C
 LEAL,LEAL,Alicante-Elche Miguel Hernández Airport,38.2822,-0.5582,Europe/Madrid,ES,CATI,assumed,large
 LEAS,LEAS,Asturias Airport,43.5636,-6.0346,Europe/Madrid,ES,CATI,assumed,large
 LEBB,LEBB,Bilbao Airport,43.3011,-2.9106,Europe/Madrid,ES,CATI,assumed,large
-LEBL,LEBL,Josep Tarradellas Barcelona-El Prat Airport,41.2971,2.0785,Europe/Madrid,ES,CATI,assumed,large
+LEBL,LEBL,Josep Tarradellas Barcelona-El Prat Airport,41.2971,2.0785,Europe/Madrid,ES,CATIII,faa-c060,large
 LEGE,LEGE,Girona-Costa Brava Airport,41.9046,2.7618,Europe/Madrid,ES,CATI,assumed,large
 LEIB,LEIB,Ibiza Airport,38.8729,1.3731,Europe/Madrid,ES,CATI,assumed,large
-LEMD,LEMD,Adolfo Suárez Madrid–Barajas Airport,40.4934,-3.5722,Europe/Madrid,ES,CATI,assumed,large
+LEMD,LEMD,Adolfo Suárez Madrid–Barajas Airport,40.4934,-3.5722,Europe/Madrid,ES,CATIII,faa-c060,large
 LEMG,LEMG,Málaga-Costa del Sol Airport,36.6749,-4.4991,Europe/Madrid,ES,CATI,assumed,large
 LEMH,LEMH,Menorca Airport,39.8626,4.2187,Europe/Madrid,ES,CATI,assumed,large
 LEMI,LEMI,Region of Murcia International Airport,37.8029,-1.1249,Europe/Madrid,ES,CATI,assumed,large
-LEPA,LEPA,Palma de Mallorca Airport,39.5517,2.7388,Europe/Madrid,ES,CATI,assumed,large
+LEPA,LEPA,Palma de Mallorca Airport,39.5517,2.7388,Europe/Madrid,ES,CATIII,faa-c060,large
 LERS,LERS,Reus Airport,41.1475,1.1684,Europe/Madrid,ES,CATI,assumed,large
 LEST,LEST,Santiago-Rosalía de Castro Airport,42.8963,-8.4151,Europe/Madrid,ES,CATI,assumed,large
 LEVC,LEVC,Valencia Airport,39.4892,-0.481,Europe/Madrid,ES,CATI,assumed,large
-LEZG,LEZG,Zaragoza Airport,41.6662,-1.0415,Europe/Madrid,ES,CATI,assumed,large
+LEZG,LEZG,Zaragoza Airport,41.6662,-1.0415,Europe/Madrid,ES,CATIII,faa-c060,large
 LEZL,LEZL,Seville Airport,37.418,-5.8931,Europe/Madrid,ES,CATI,assumed,large
 HAAB,HAAB,Addis Ababa Bole International Airport,8.9779,38.7993,Africa/Addis_Ababa,ET,CATI,assumed,large
 HADR,HADR,Aba Tenna Dejazmach Yilma International Airport,9.6235,41.855,Africa/Addis_Ababa,ET,CATI,assumed,large
 HAJJ,HAJJ,Gerad Wilwal International Airport,9.3319,42.9118,Africa/Addis_Ababa,ET,CATI,assumed,large
 HALA,HALA,Hawassa International Airport,7.1006,38.3965,Africa/Addis_Ababa,ET,CATI,assumed,large
-EFHK,EFHK,Helsinki Vantaa Airport,60.3184,24.9633,Europe/Helsinki,FI,CATI,assumed,large
+EFHK,EFHK,Helsinki Vantaa Airport,60.3184,24.9633,Europe/Helsinki,FI,CATIII,faa-c060,large
 EFIV,EFIV,Ivalo Airport,68.6073,27.4053,Europe/Helsinki,FI,CATI,assumed,large
 EFKT,EFKT,Kittilä International Airport,67.701,24.8468,Europe/Helsinki,FI,CATI,assumed,large
 EFKU,EFKU,Kuopio Airport,63.0071,27.7978,Europe/Helsinki,FI,CATI,assumed,large
@@ -368,43 +368,43 @@ PTKK,PTKK,Chuuk International Airport,7.4619,151.843,Pacific/Chuuk,FM,CATI,assum
 PTSA,PTSA,Kosrae International Airport,5.357,162.958,Pacific/Kosrae,FM,CATI,assumed,large
 PTYA,PTYA,Yap International Airport,9.4989,138.083,Pacific/Chuuk,FM,CATI,assumed,large
 EKVG,EKVG,Vágar Airport,62.0633,-7.2758,Atlantic/Faroe,FO,CATI,assumed,large
-LFBD,LFBD,Bordeaux–Mérignac Airport,44.8287,-0.7154,Europe/Paris,FR,CATI,assumed,large
-LFBO,LFBO,Toulouse-Blagnac Airport,43.6291,1.3638,Europe/Paris,FR,CATI,assumed,large
+LFBD,LFBD,Bordeaux–Mérignac Airport,44.8287,-0.7154,Europe/Paris,FR,CATIII,faa-c060,large
+LFBO,LFBO,Toulouse-Blagnac Airport,43.6291,1.3638,Europe/Paris,FR,CATIII,faa-c060,large
 LFKB,LFKB,Bastia-Poretta International airport,42.5527,9.4837,Europe/Paris,FR,CATI,assumed,large
 LFKF,LFKF,Figari Sud-Corse Airport,41.5018,9.0971,Europe/Paris,FR,CATI,assumed,large
 LFLC,LFLC,Clermont-Ferrand Auvergne airport,45.7867,3.1692,Europe/Paris,FR,CATI,assumed,large
-LFLL,LFLL,Lyon Saint-Exupéry Airport,45.726,5.0901,Europe/Paris,FR,CATI,assumed,large
+LFLL,LFLL,Lyon Saint-Exupéry Airport,45.726,5.0901,Europe/Paris,FR,CATIII,faa-c060,large
 LFML,LFML,Marseille Provence Airport,43.4381,5.2125,Europe/Paris,FR,CATI,assumed,large
 LFMN,LFMN,Nice-Côte d'Azur Airport,43.6584,7.2159,Europe/Paris,FR,CATI,assumed,large
 LFMT,LFMT,Montpellier-Méditerranée Airport,43.5762,3.963,Europe/Paris,FR,CATI,assumed,large
 LFOB,LFOB,Beauvais-Tillé airport,49.4544,2.1128,Europe/Paris,FR,CATI,assumed,large
 LFPB,LFPB,Paris-Le Bourget International Airport,48.9623,2.4365,Europe/Paris,FR,CATI,assumed,large
-LFPG,LFPG,Charles de Gaulle International Airport,49.009,2.5541,Europe/Paris,FR,CATIII,curated,large
-LFPO,LFPO,Paris-Orly Airport,48.7295,2.359,Europe/Paris,FR,CATI,assumed,large
-LFQQ,LFQQ,Lille Airport,50.5666,3.1024,Europe/Paris,FR,CATI,assumed,large
-LFRB,LFRB,Brest Bretagne airport,48.4479,-4.4185,Europe/Paris,FR,CATI,assumed,large
-LFSB,LFSB,EuroAirport Basel–Mulhouse–Freiburg,47.6007,7.5211,Europe/Paris,FR,CATI,assumed,large
+LFPG,LFPG,Charles de Gaulle International Airport,49.009,2.5541,Europe/Paris,FR,CATIII,faa-c060,large
+LFPO,LFPO,Paris-Orly Airport,48.7295,2.359,Europe/Paris,FR,CATIII,faa-c060,large
+LFQQ,LFQQ,Lille Airport,50.5666,3.1024,Europe/Paris,FR,CATII,faa-c060,large
+LFRB,LFRB,Brest Bretagne airport,48.4479,-4.4185,Europe/Paris,FR,CATII,faa-c060,large
+LFSB,LFSB,EuroAirport Basel–Mulhouse–Freiburg,47.6007,7.5211,Europe/Paris,FR,CATIII,faa-c060,large
 LFST,LFST,Strasbourg Airport,48.5383,7.6282,Europe/Paris,FR,CATI,assumed,large
 FOOG,FOOG,Port Gentil International Airport,-0.7117,8.7544,Africa/Libreville,GA,CATI,assumed,large
 FOOL,FOOL,Libreville Leon M'ba International Airport,0.459,9.4121,Africa/Libreville,GA,CATI,assumed,large
 FOON,FOON,M'Vengue El Hadj Omar Bongo Ondimba International Airport,-1.6562,13.438,Africa/Libreville,GA,CATI,assumed,large
-EGAA,EGAA,Belfast International Airport,54.6575,-6.2158,Europe/London,GB,CATI,assumed,large
-EGBB,EGBB,Birmingham Airport,52.4539,-1.748,Europe/London,GB,CATI,assumed,large
-EGCC,EGCC,Manchester Airport,53.3494,-2.2795,Europe/London,GB,CATI,assumed,large
+EGAA,EGAA,Belfast International Airport,54.6575,-6.2158,Europe/London,GB,CATIII,faa-c060,large
+EGBB,EGBB,Birmingham Airport,52.4539,-1.748,Europe/London,GB,CATIII,faa-c060,large
+EGCC,EGCC,Manchester Airport,53.3494,-2.2795,Europe/London,GB,CATIII,faa-c060,large
 EGFF,EGFF,Cardiff International Airport,51.3967,-3.3433,Europe/London,GB,CATI,assumed,large
-EGGD,EGGD,Bristol Airport,51.3823,-2.7165,Europe/London,GB,CATI,assumed,large
+EGGD,EGGD,Bristol Airport,51.3823,-2.7165,Europe/London,GB,CATIII,faa-c060,large
 EGGP,EGGP,Liverpool John Lennon Airport,53.3349,-2.8496,Europe/London,GB,CATI,assumed,large
-EGGW,EGGW,London Luton Airport,51.8747,-0.3683,Europe/London,GB,CATI,assumed,large
-EGKK,EGKK,London Gatwick Airport,51.1487,-0.1857,Europe/London,GB,CATI,assumed,large
-EGLL,EGLL,London Heathrow Airport,51.4707,-0.4599,Europe/London,GB,CATIII,curated,large
+EGGW,EGGW,London Luton Airport,51.8747,-0.3683,Europe/London,GB,CATIII,faa-c060,large
+EGKK,EGKK,London Gatwick Airport,51.1487,-0.1857,Europe/London,GB,CATIII,faa-c060,large
+EGLL,EGLL,London Heathrow Airport,51.4707,-0.4599,Europe/London,GB,CATIII,faa-c060,large
 EGNM,EGNM,Leeds Bradford Airport,53.8659,-1.6606,Europe/London,GB,CATI,assumed,large
-EGNT,EGNT,Newcastle International Airport,55.038,-1.6896,Europe/London,GB,CATI,assumed,large
-EGNX,EGNX,East Midlands Airport,52.8311,-1.3281,Europe/London,GB,CATI,assumed,large
+EGNT,EGNT,Newcastle International Airport,55.038,-1.6896,Europe/London,GB,CATII,faa-c060,large
+EGNX,EGNX,East Midlands Airport,52.8311,-1.3281,Europe/London,GB,CATIII,faa-c060,large
 EGPD,EGPD,Aberdeen International Airport,57.2019,-2.1978,Europe/London,GB,CATI,assumed,large
-EGPF,EGPF,Glasgow Airport,55.8719,-4.4331,Europe/London,GB,CATI,assumed,large
-EGPH,EGPH,Edinburgh Airport,55.9501,-3.3723,Europe/London,GB,CATI,assumed,large
+EGPF,EGPF,Glasgow Airport,55.8719,-4.4331,Europe/London,GB,CATIII,faa-c060,large
+EGPH,EGPH,Edinburgh Airport,55.9501,-3.3723,Europe/London,GB,CATIII,faa-c060,large
 EGPK,EGPK,Glasgow Prestwick Airport,55.5015,-4.5772,Europe/London,GB,CATI,assumed,large
-EGSS,EGSS,London Stansted Airport,51.885,0.235,Europe/London,GB,CATI,assumed,large
+EGSS,EGSS,London Stansted Airport,51.885,0.235,Europe/London,GB,CATIII,faa-c060,large
 TGPY,TGPY,Maurice Bishop International Airport,12.004,-61.7853,America/Grenada,GD,CATI,assumed,large
 UGKO,UGKO,David the Builder Kutaisi International Airport,42.1774,42.4854,Asia/Tbilisi,GE,CATI,assumed,large
 UGSB,UGSB,Alexander Kartveli Batumi International Airport,41.6094,41.6003,Asia/Tbilisi,GE,CATI,assumed,large
@@ -421,7 +421,7 @@ TFFR,TFFR,Maryse Condé International Airport,16.2654,-61.5328,America/Guadeloup
 FGBT,FGBT,Bata International Airport,1.9055,9.8057,Africa/Malabo,GQ,CATI,assumed,large
 FGCO,FGCO,Corisco International Airport,0.9109,9.3303,Africa/Malabo,GQ,CATI,assumed,large
 FGSL,FGSL,Malabo International Airport,3.7553,8.7087,Africa/Malabo,GQ,CATI,assumed,large
-LGAV,LGAV,Athens Eleftherios Venizelos International Airport,37.9364,23.9445,Europe/Athens,GR,CATI,assumed,large
+LGAV,LGAV,Athens Eleftherios Venizelos International Airport,37.9364,23.9445,Europe/Athens,GR,CATII,faa-c060,large
 LGIR,LGIR,Heraklion International Nikos Kazantzakis Airport,35.3397,25.1803,Europe/Athens,GR,CATI,assumed,large
 LGKO,LGKO,"Kos International Airport ""Ippokratis""",36.7945,27.0911,Europe/Athens,GR,CATI,assumed,large
 LGKR,LGKR,Corfu Ioannis Kapodistrias International Airport,39.6014,19.9122,Europe/Athens,GR,CATI,assumed,large
@@ -429,12 +429,12 @@ LGKV,LGKV,Kavala Alexander the Great International Airport,40.9133,24.6192,Europ
 LGRP,LGRP,"Rhodes International Airport ""Diagoras""",36.4054,28.0862,Europe/Athens,GR,CATI,assumed,large
 LGSA,LGSA,Chania International Airport,35.5312,24.1507,Europe/Athens,GR,CATI,assumed,large
 LGSR,LGSR,Santorini International Airport,36.4,25.4786,Europe/Athens,GR,CATI,assumed,large
-LGTS,LGTS,Thessaloniki Macedonia International Airport,40.5193,22.97,Europe/Athens,GR,CATI,assumed,large
+LGTS,LGTS,Thessaloniki Macedonia International Airport,40.5193,22.97,Europe/Athens,GR,CATII,faa-c060,large
 MGGT,MGGT,La Aurora International Airport,14.5829,-90.5275,America/Guatemala,GT,CATI,assumed,large
 PGUM,GUM,Antonio B. Won Pat International Airport,13.485,144.7973,Pacific/Guam,GU,CATI,assumed,large
 GGOV,GGOV,Osvaldo Vieira International Airport,11.8943,-15.6536,Africa/Bissau,GW,CATI,assumed,large
 SYCJ,SYCJ,Cheddi Jagan International Airport,6.4985,-58.2541,America/Guyana,GY,CATI,assumed,large
-VHHH,VHHH,Hong Kong International Airport,22.3118,113.9149,Asia/Hong_Kong,HK,CATI,assumed,large
+VHHH,VHHH,Hong Kong International Airport,22.3118,113.9149,Asia/Hong_Kong,HK,CATIII,faa-c060,large
 MHLM,MHLM,Ramón Villeda Morales International Airport,15.4526,-87.9236,America/Tegucigalpa,HN,CATI,assumed,large
 MHPR,MHPR,Palmerola International Airport,14.3824,-87.6212,America/Tegucigalpa,HN,CATI,assumed,large
 MHRO,MHRO,Juan Manuel Gálvez International Airport,16.3168,-86.523,America/Tegucigalpa,HN,CATI,assumed,large
@@ -446,7 +446,7 @@ LDZA,LDZA,Zagreb Franjo Tuđman International Airport,45.7429,16.0688,Europe/Zag
 LDZD,LDZD,Zadar Airport,44.097,15.3536,Europe/Zagreb,HR,CATI,assumed,large
 MTCH,MTCH,Cap Haitien International Airport,19.7255,-72.2007,America/Port-au-Prince,HT,CATI,assumed,large
 MTPP,MTPP,Toussaint Louverture International Airport,18.58,-72.2926,America/Port-au-Prince,HT,CATI,assumed,large
-LHBP,LHBP,Budapest Liszt Ferenc International Airport,47.4302,19.2624,Europe/Budapest,HU,CATI,assumed,large
+LHBP,LHBP,Budapest Liszt Ferenc International Airport,47.4302,19.2624,Europe/Budapest,HU,CATIII,faa-c060,large
 LHDC,LHDC,Debrecen International Airport,47.4895,21.6163,Europe/Budapest,HU,CATI,assumed,large
 LHPP,LHPP,Pécs-Pogány International Airport,45.9889,18.242,Europe/Budapest,HU,CATI,assumed,large
 WAAA,WAAA,Sultan Hasanuddin International Airport,-5.0755,119.5537,Asia/Makassar,ID,CATI,assumed,large
@@ -468,10 +468,10 @@ WIII,WIII,Soekarno-Hatta International Airport,-6.1256,106.656,Asia/Jakarta,ID,C
 WIMM,WIMM,Kualanamu International Airport,3.6378,98.8706,Asia/Jakarta,ID,CATI,assumed,large
 WIOO,WIOO,Supadio International Airport,-0.1523,109.4045,Asia/Pontianak,ID,CATI,assumed,large
 WITT,WITT,Sultan Iskandar Muda International Airport,5.5251,95.42,Asia/Jakarta,ID,CATI,assumed,large
-EICK,EICK,Cork International Airport,51.8413,-8.4911,Europe/Dublin,IE,CATI,assumed,large
-EIDW,EIDW,Dublin Airport,53.4287,-6.2621,Europe/Dublin,IE,CATI,assumed,large
+EICK,EICK,Cork International Airport,51.8413,-8.4911,Europe/Dublin,IE,CATII,faa-c060,large
+EIDW,EIDW,Dublin Airport,53.4287,-6.2621,Europe/Dublin,IE,CATIII,faa-c060,large
 EIKN,EIKN,Ireland West Airport Knock,53.9104,-8.817,Europe/Dublin,IE,CATI,assumed,large
-EINN,EINN,Shannon Airport,52.702,-8.9248,Europe/Dublin,IE,CATI,assumed,large
+EINN,EINN,Shannon Airport,52.702,-8.9248,Europe/Dublin,IE,CATII,faa-c060,large
 LLBG,LLBG,Ben Gurion International Airport,32.0114,34.8867,Asia/Jerusalem,IL,CATI,assumed,large
 LLER,LLER,Ramon International Airport,29.727,35.0141,Asia/Jerusalem,IL,CATI,assumed,large
 EGNS,EGNS,Isle of Man Airport,54.0831,-4.6239,Europe/Isle_of_Man,IM,CATI,assumed,large
@@ -493,16 +493,16 @@ VEBS,VEBS,Biju Patnaik International Airport,20.251,85.8147,Asia/Kolkata,IN,CATI
 VECC,VECC,Netaji Subhash Chandra Bose International Airport,22.654,88.4476,Asia/Kolkata,IN,CATI,assumed,large
 VEGT,VEGT,Lokpriya Gopinath Bordoloi International Airport,26.1067,91.5852,Asia/Kolkata,IN,CATI,assumed,large
 VEIM,VEIM,Bir Tikendrajit International Airport,24.76,93.8967,Asia/Kolkata,IN,CATI,assumed,large
-VIAR,VIAR,Sri Guru Ram Das Ji International Airport,31.7096,74.7973,Asia/Kolkata,IN,CATI,assumed,large
+VIAR,VIAR,Sri Guru Ram Das Ji International Airport,31.7096,74.7973,Asia/Kolkata,IN,CATIII,faa-c060,large
 VICG,VICG,Shaheed Bhagat Singh International Airport,30.6735,76.7885,Asia/Kolkata,IN,CATI,assumed,large
-VIDP,VIDP,Indira Gandhi International Airport,28.5556,77.0952,Asia/Kolkata,IN,CATIII,curated,large
+VIDP,VIDP,Indira Gandhi International Airport,28.5556,77.0952,Asia/Kolkata,IN,CATIII,faa-c060,large
 VIHR,VIHR,Maharaja Agrasen International Airport,29.1861,75.7414,Asia/Kolkata,IN,CATI,assumed,large
 VIHX,VIHX,Halwara International Airport,30.7485,75.6298,Asia/Kolkata,IN,CATI,assumed,large
-VIJP,VIJP,Jaipur International Airport,26.8242,75.8122,Asia/Kolkata,IN,CATI,assumed,large
-VILK,VILK,Chaudhary Charan Singh International Airport,26.7606,80.8893,Asia/Kolkata,IN,CATI,assumed,large
+VIJP,VIJP,Jaipur International Airport,26.8242,75.8122,Asia/Kolkata,IN,CATIII,faa-c060,large
+VILK,VILK,Chaudhary Charan Singh International Airport,26.7606,80.8893,Asia/Kolkata,IN,CATII,faa-c060,large
 VIND,VIND,Noida International Airport,28.1799,77.6118,Asia/Kolkata,IN,CATI,assumed,large
 VISR,VISR,Sheikh ul Alam International Airport,33.9871,74.7742,Asia/Kolkata,IN,CATI,assumed,large
-VOBL,VOBL,Kempegowda International Airport Bengaluru,13.1979,77.7063,Asia/Kolkata,IN,CATI,assumed,large
+VOBL,VOBL,Kempegowda International Airport Bengaluru,13.1979,77.7063,Asia/Kolkata,IN,CATIII,faa-c060,large
 VOBZ,VOBZ,Vijayawada International Airport,16.53,80.8049,Asia/Kolkata,IN,CATI,assumed,large
 VOCB,VOCB,Coimbatore International Airport,11.03,77.0434,Asia/Kolkata,IN,CATI,assumed,large
 VOCI,VOCI,Cochin International Airport,10.151,76.4008,Asia/Kolkata,IN,CATI,assumed,large
@@ -540,7 +540,7 @@ OISS,OISS,Shiraz Shahid Dastghaib International Airport,29.5392,52.5898,Asia/Teh
 OITT,OITT,Tabriz International Airport,38.1339,46.235,Asia/Tehran,IR,CATI,assumed,large
 OIZH,OIZH,Zahedan International Airport,29.4757,60.9062,Asia/Tehran,IR,CATI,assumed,large
 BIAR,BIAR,Akureyri International Airport,65.6566,-18.072,Atlantic/Reykjavik,IS,CATI,assumed,large
-BIKF,BIKF,Keflavik International Airport,63.985,-22.6056,Atlantic/Reykjavik,IS,CATI,assumed,large
+BIKF,BIKF,Keflavik International Airport,63.985,-22.6056,Atlantic/Reykjavik,IS,CATII,faa-c060,large
 LIBD,LIBD,Bari Karol Wojtyła International Airport,41.1389,16.7606,Europe/Rome,IT,CATI,assumed,large
 LIBP,LIBP,Abruzzo Airport,42.4311,14.183,Europe/Rome,IT,CATI,assumed,large
 LIBR,LIBR,Brindisi Airport,40.6576,17.947,Europe/Rome,IT,CATI,assumed,large
@@ -549,19 +549,19 @@ LICC,LICC,Catania-Fontanarossa Airport,37.4668,15.0664,Europe/Rome,IT,CATI,assum
 LICJ,LICJ,Falcone–Borsellino Airport,38.176,13.091,Europe/Rome,IT,CATI,assumed,large
 LIEE,LIEE,Cagliari Elmas Airport,39.2515,9.0543,Europe/Rome,IT,CATI,assumed,large
 LIEO,LIEO,Olbia Costa Smeralda Airport,40.899,9.5185,Europe/Rome,IT,CATI,assumed,large
-LIMC,LIMC,Milan Malpensa International Airport,45.6306,8.7281,Europe/Rome,IT,CATIII,curated,large
-LIME,LIME,Il Caravaggio International Airport,45.6694,9.7089,Europe/Rome,IT,CATI,assumed,large
-LIMF,LIMF,Turin Airport,45.2008,7.6496,Europe/Rome,IT,CATI,assumed,large
+LIMC,LIMC,Milan Malpensa International Airport,45.6306,8.7281,Europe/Rome,IT,CATIII,faa-c060,large
+LIME,LIME,Il Caravaggio International Airport,45.6694,9.7089,Europe/Rome,IT,CATIII,faa-c060,large
+LIMF,LIMF,Turin Airport,45.2008,7.6496,Europe/Rome,IT,CATIII,faa-c060,large
 LIMJ,LIMJ,Genoa Cristoforo Colombo Airport,44.412,8.8407,Europe/Rome,IT,CATI,assumed,large
-LIML,LIML,Milano Linate Airport,45.4451,9.2767,Europe/Rome,IT,CATI,assumed,large
-LIPE,LIPE,Bologna Guglielmo Marconi Airport,44.5354,11.2887,Europe/Rome,IT,CATI,assumed,large
+LIML,LIML,Milano Linate Airport,45.4451,9.2767,Europe/Rome,IT,CATIII,faa-c060,large
+LIPE,LIPE,Bologna Guglielmo Marconi Airport,44.5354,11.2887,Europe/Rome,IT,CATIII,faa-c060,large
 LIPH,LIPH,Treviso Airport,45.6484,12.1944,Europe/Rome,IT,CATI,assumed,large
 LIPQ,LIPQ,Trieste Airport,45.8279,13.4667,Europe/Rome,IT,CATI,assumed,large
 LIPR,LIPR,Federico Fellini International Airport,44.02,12.6122,Europe/Rome,IT,CATI,assumed,large
 LIPX,LIPX,Verona Villafranca Valerio Catullo Airport,45.395,10.8873,Europe/Rome,IT,CATI,assumed,large
-LIPZ,LIPZ,Venice Marco Polo Airport,45.5053,12.3519,Europe/Rome,IT,CATI,assumed,large
+LIPZ,LIPZ,Venice Marco Polo Airport,45.5053,12.3519,Europe/Rome,IT,CATIII,faa-c060,large
 LIRA,LIRA,Ciampino–G. B. Pastine International Airport,41.7988,12.5953,Europe/Rome,IT,CATI,assumed,large
-LIRF,LIRF,Rome–Fiumicino Leonardo da Vinci International Airport,41.8045,12.252,Europe/Rome,IT,CATI,assumed,large
+LIRF,LIRF,Rome–Fiumicino Leonardo da Vinci International Airport,41.8045,12.252,Europe/Rome,IT,CATIII,faa-c060,large
 LIRN,LIRN,Naples International Airport,40.886,14.2908,Europe/Rome,IT,CATI,assumed,large
 LIRP,LIRP,Pisa International Airport,43.6839,10.3927,Europe/Rome,IT,CATI,assumed,large
 LIRQ,LIRQ,Florence Airport; Peretola,43.8086,11.2028,Europe/Rome,IT,CATI,assumed,large
@@ -571,20 +571,20 @@ MKJS,MKJS,Sangster International Airport,18.5034,-77.9132,America/Jamaica,JM,CAT
 OJAI,OJAI,Queen Alia International Airport,31.7226,35.9932,Asia/Amman,JO,CATI,assumed,large
 OJAM,OJAM,Marka International (Amman Civil) Airport,31.9727,35.9916,Asia/Amman,JO,CATI,assumed,large
 OJAQ,OJAQ,King Hussein International Airport,29.6116,35.0181,Asia/Amman,JO,CATI,assumed,large
-RJAA,RJAA,Narita International Airport,35.7686,140.3887,Asia/Tokyo,JP,CATI,assumed,large
+RJAA,RJAA,Narita International Airport,35.7686,140.3887,Asia/Tokyo,JP,CATIII,faa-c060,large
 RJAH,RJAH,Ibaraki Airport,36.1815,140.4144,Asia/Tokyo,JP,CATI,assumed,large
-RJBB,RJBB,Kansai International Airport,34.4273,135.244,Asia/Tokyo,JP,CATI,assumed,large
+RJBB,RJBB,Kansai International Airport,34.4273,135.244,Asia/Tokyo,JP,CATII,faa-c060,large
 RJBE,RJBE,Kobe Airport,34.6328,135.224,Asia/Tokyo,JP,CATI,assumed,large
-RJCC,RJCC,New Chitose Airport,42.7748,141.6904,Asia/Tokyo,JP,CATI,assumed,large
+RJCC,RJCC,New Chitose Airport,42.7748,141.6904,Asia/Tokyo,JP,CATIII,faa-c060,large
 RJCH,RJCH,Hakodate Airport,41.77,140.822,Asia/Tokyo,JP,CATI,assumed,large
 RJFF,RJFF,Fukuoka Airport,33.5859,130.451,Asia/Tokyo,JP,CATI,assumed,large
 RJFK,RJFK,Kagoshima Airport,31.8034,130.719,Asia/Tokyo,JP,CATI,assumed,large
 RJFM,RJFM,Miyazaki Airport,31.8772,131.449,Asia/Tokyo,JP,CATI,assumed,large
 RJFR,RJFR,Kitakyushu Airport,33.8459,131.035,Asia/Tokyo,JP,CATI,assumed,large
 RJFS,RJFS,Kyushu Saga International Airport,33.1497,130.302,Asia/Tokyo,JP,CATI,assumed,large
-RJFT,RJFT,Kumamoto Airport,32.8373,130.855,Asia/Tokyo,JP,CATI,assumed,large
+RJFT,RJFT,Kumamoto Airport,32.8373,130.855,Asia/Tokyo,JP,CATIII,faa-c060,large
 RJFU,RJFU,Nagasaki Airport,32.9169,129.914,Asia/Tokyo,JP,CATI,assumed,large
-RJGG,RJGG,Chubu Centrair International Airport,34.8584,136.805,Asia/Tokyo,JP,CATI,assumed,large
+RJGG,RJGG,Chubu Centrair International Airport,34.8584,136.805,Asia/Tokyo,JP,CATIII,faa-c060,large
 RJNK,RJNK,Komatsu Airport / JASDF Komatsu Air Base,36.3934,136.4069,Asia/Tokyo,JP,CATI,assumed,large
 RJNS,RJNS,Mount Fuji Shizuoka Airport,34.795,138.191,Asia/Tokyo,JP,CATI,assumed,large
 RJOA,RJOA,Hiroshima Airport,34.4361,132.919,Asia/Tokyo,JP,CATI,assumed,large
@@ -597,7 +597,7 @@ RJOT,RJOT,Takamatsu Airport,34.215,134.0155,Asia/Tokyo,JP,CATI,assumed,large
 RJSA,RJSA,Aomori Airport,40.7338,140.6895,Asia/Tokyo,JP,CATI,assumed,large
 RJSN,RJSN,Niigata Airport,37.9542,139.1122,Asia/Tokyo,JP,CATI,assumed,large
 RJSS,RJSS,Sendai Airport,38.1397,140.917,Asia/Tokyo,JP,CATI,assumed,large
-RJTT,RJTT,Tokyo Haneda International Airport,35.5497,139.787,Asia/Tokyo,JP,CATI,assumed,large
+RJTT,RJTT,Tokyo Haneda International Airport,35.5497,139.787,Asia/Tokyo,JP,CATIII,faa-c060,large
 ROAH,ROAH,Naha International Airport,26.1924,127.6398,Asia/Tokyo,JP,CATI,assumed,large
 RODN,RODN,Kadena Air Base,26.3517,127.7694,Asia/Tokyo,JP,CATI,assumed,large
 HKEL,HKEL,Eldoret International Airport,0.4045,35.2389,Africa/Nairobi,KE,CATI,assumed,large
@@ -605,7 +605,7 @@ HKJK,HKJK,Jomo Kenyatta International Airport,-1.3189,36.9282,Africa/Nairobi,KE,
 HKKI,HKKI,Kisumu International Airport,-0.0861,34.7289,Africa/Nairobi,KE,CATI,assumed,large
 HKMO,HKMO,Moi International Airport,-4.0348,39.5942,Africa/Nairobi,KE,CATI,assumed,large
 UCFL,UCFL,Issyk-Kul International Airport,42.5856,76.7012,Asia/Bishkek,KG,CATI,assumed,large
-UCFM,UCFM,Manas International Airport,43.0613,74.4776,Asia/Bishkek,KG,CATI,assumed,large
+UCFM,UCFM,Manas International Airport,43.0613,74.4776,Asia/Bishkek,KG,CATII,faa-c060,large
 UCFO,UCFO,Osh International Airport,40.609,72.7933,Asia/Bishkek,KG,CATI,assumed,large
 VDDS,VDDS,Dara Sakor International Airport,10.9142,103.2267,Asia/Phnom_Penh,KH,CATI,assumed,large
 VDPP,VDPP,Phnom Penh International Airport,11.5472,104.8447,Asia/Phnom_Penh,KH,CATI,assumed,large
@@ -619,16 +619,16 @@ TKPK,TKPK,Robert L. Bradshaw International Airport,17.3108,-62.7191,America/St_K
 ZKPY,ZKPY,Pyongyang Sunan International Airport,39.2241,125.67,Asia/Pyongyang,KP,CATI,assumed,large
 RKJB,RKJB,Muan International Airport,34.9914,126.3828,Asia/Seoul,KR,CATI,assumed,large
 RKNY,RKNY,Yangyang International Airport,38.0605,128.6698,Asia/Seoul,KR,CATI,assumed,large
-RKPC,RKPC,Jeju International Airport,33.5121,126.4925,Asia/Seoul,KR,CATI,assumed,large
+RKPC,RKPC,Jeju International Airport,33.5121,126.4925,Asia/Seoul,KR,CATII,faa-c060,large
 RKPK,RKPK,Gimhae International Airport,35.1795,128.938,Asia/Seoul,KR,CATI,assumed,large
-RKSI,RKSI,Incheon International Airport,37.4691,126.451,Asia/Seoul,KR,CATI,assumed,large
-RKSS,RKSS,Gimpo International Airport,37.5583,126.791,Asia/Seoul,KR,CATI,assumed,large
+RKSI,RKSI,Incheon International Airport,37.4691,126.451,Asia/Seoul,KR,CATIII,faa-c060,large
+RKSS,RKSS,Gimpo International Airport,37.5583,126.791,Asia/Seoul,KR,CATIII,faa-c060,large
 RKTN,RKTN,Daegu International Airport,35.8944,128.657,Asia/Seoul,KR,CATI,assumed,large
 RKTU,RKTU,Cheongju International Airport/Cheongju Air Base (K-59/G-513),36.7156,127.5003,Asia/Seoul,KR,CATI,assumed,large
-OKKK,OKKK,Kuwait International Airport,29.2245,47.9698,Asia/Kuwait,KW,CATI,assumed,large
+OKKK,OKKK,Kuwait International Airport,29.2245,47.9698,Asia/Kuwait,KW,CATII,faa-c060,large
 MWCR,MWCR,Owen Roberts International Airport,19.2928,-81.3577,America/Cayman,KY,CATI,assumed,large
-UAAA,UAAA,Almaty International Airport,43.3543,77.0428,Asia/Almaty,KZ,CATI,assumed,large
-UACC,UACC,Nursultan Nazarbayev International Airport,51.027,71.4671,Asia/Almaty,KZ,CATI,assumed,large
+UAAA,UAAA,Almaty International Airport,43.3543,77.0428,Asia/Almaty,KZ,CATIII,faa-c060,large
+UACC,UACC,Nursultan Nazarbayev International Airport,51.027,71.4671,Asia/Almaty,KZ,CATIII,faa-c060,large
 UACK,UACK,Kokshetau International Airport,53.3291,69.5946,Asia/Almaty,KZ,CATI,assumed,large
 UACP,UACP,Petropavl International Airport,54.7756,69.1874,Asia/Almaty,KZ,CATI,assumed,large
 UADD,UADD,Taraz International Airport,42.8536,71.3036,Asia/Almaty,KZ,CATI,assumed,large
@@ -660,7 +660,7 @@ FXMM,FXMM,Moshoeshoe I International Airport,-29.4563,27.5545,Africa/Maseru,LS,C
 EYKA,EYKA,Kaunas International Airport,54.964,24.0858,Europe/Vilnius,LT,CATI,assumed,large
 EYPA,EYPA,Palanga International Airport,55.9732,21.0939,Europe/Vilnius,LT,CATI,assumed,large
 EYVI,EYVI,Vilnius International Airport,54.6341,25.2858,Europe/Vilnius,LT,CATI,assumed,large
-ELLX,ELLX,Luxembourg-Findel International Airport,49.6268,6.2121,Europe/Luxembourg,LU,CATI,assumed,large
+ELLX,ELLX,Luxembourg-Findel International Airport,49.6268,6.2121,Europe/Luxembourg,LU,CATIII,faa-c060,large
 EVLA,EVLA,Liepāja International Airport,56.5175,21.0969,Europe/Riga,LV,CATI,assumed,large
 EVRA,EVRA,Riga International Airport,56.9208,23.9707,Europe/Riga,LV,CATI,assumed,large
 HLGD,HLGD,Sirt International Airport / Ghardabiya Airbase,31.0586,16.5971,Africa/Tripoli,LY,CATI,assumed,large
@@ -695,7 +695,7 @@ VYNT,VYNT,Nay Pyi Taw International Airport,19.6235,96.201,Asia/Yangon,MM,CATI,a
 VYYY,VYYY,Yangon International Airport,16.9073,96.1332,Asia/Yangon,MM,CATI,assumed,large
 ZMCK,ZMCK,Ulaanbaatar Chinggis Khaan International Airport,47.6469,106.8198,Asia/Ulaanbaatar,MN,CATI,assumed,large
 ZMUB,ZMUB,Buyant-Ukhaa International Airport,47.8431,106.767,Asia/Ulaanbaatar,MN,CATI,assumed,large
-VMMC,VMMC,Macau International Airport,22.1496,113.592,Asia/Macau,MO,CATI,assumed,large
+VMMC,VMMC,Macau International Airport,22.1496,113.592,Asia/Macau,MO,CATII,faa-c060,large
 PGRO,GRO,Rota International Airport,14.1733,145.2411,Pacific/Saipan,MP,CATI,assumed,large
 TFFF,TFFF,Martinique Aimé Césaire International Airport,14.591,-61.0032,America/Martinique,MQ,CATI,assumed,large
 GQNO,GQNO,Nouakchott–Oumtounsy International Airport,18.31,-15.9697,Africa/Nouakchott,MR,CATI,assumed,large
@@ -733,7 +733,7 @@ MMSD,MMSD,Los Cabos International Airport,23.1519,-109.7207,America/Mazatlan,MX,
 MMSM,MMSM,Felipe Ángeles International Airport,19.7438,-99.0151,America/Mexico_City,MX,CATI,assumed,large
 MMTJ,MMTJ,General Abelardo L. Rodriguez International Airport,32.541,-116.97,America/Tijuana,MX,CATI,assumed,large
 MMTL,MMTL,Felipe Carrillo Puerto International Airport Tulum,20.1721,-87.6603,America/Cancun,MX,CATI,assumed,large
-MMTO,MMTO,Adolfo López Mateos International Airport,19.3369,-99.5658,America/Mexico_City,MX,CATI,assumed,large
+MMTO,MMTO,Adolfo López Mateos International Airport,19.3369,-99.5658,America/Mexico_City,MX,CATIII,faa-c060,large
 MMUN,MMUN,Cancún International Airport,21.0408,-86.8735,America/Cancun,MX,CATI,assumed,large
 MMVA,MMVA,Carlos Rovirosa Pérez International Airport,17.9943,-92.8182,America/Mexico_City,MX,CATI,assumed,large
 MMVR,MMVR,General Heriberto Jara International Airport,19.1396,-96.1886,America/Mexico_City,MX,CATI,assumed,large
@@ -767,7 +767,7 @@ DNMM,DNMM,Murtala Muhammed International Airport,6.5774,3.3212,Africa/Lagos,NG,C
 DNPO,DNPO,Port Harcourt International Airport,5.0155,6.9496,Africa/Lagos,NG,CATI,assumed,large
 DNSO,DNSO,Sadiq Abubakar III International Airport,12.9157,5.2075,Africa/Lagos,NG,CATI,assumed,large
 MNMG,MNMG,Augusto C. Sandino (Managua) International Airport,12.1415,-86.1682,America/Managua,NI,CATI,assumed,large
-EHAM,EHAM,Amsterdam Airport Schiphol,52.3086,4.7639,Europe/Amsterdam,NL,CATIII,curated,large
+EHAM,EHAM,Amsterdam Airport Schiphol,52.3086,4.7639,Europe/Amsterdam,NL,CATIII,faa-c060,large
 EHBK,EHBK,Maastricht Aachen Airport,50.9111,5.7694,Europe/Amsterdam,NL,CATI,assumed,large
 EHEH,EHEH,Eindhoven Airport,51.4501,5.3745,Europe/Amsterdam,NL,CATI,assumed,large
 EHGG,EHGG,Groningen Airport Eelde,53.1191,6.5777,Europe/Amsterdam,NL,CATI,assumed,large
@@ -777,7 +777,7 @@ ENBO,ENBO,Bodø Airport,67.2692,14.3653,Europe/Oslo,NO,CATI,assumed,large
 ENBR,ENBR,Bergen Airport; Flesland,60.2934,5.2181,Europe/Oslo,NO,CATI,assumed,large
 ENCN,ENCN,Kristiansand Airport,58.2042,8.0854,Europe/Oslo,NO,CATI,assumed,large
 ENEV,ENEV,Harstad/Narvik Airport,68.4913,16.6781,Europe/Oslo,NO,CATI,assumed,large
-ENGM,ENGM,Oslo-Gardermoen International Airport,60.1939,11.1004,Europe/Oslo,NO,CATI,assumed,large
+ENGM,ENGM,Oslo-Gardermoen International Airport,60.1939,11.1004,Europe/Oslo,NO,CATIII,faa-c060,large
 ENTC,ENTC,Tromsø Airport,69.6833,18.9189,Europe/Oslo,NO,CATI,assumed,large
 ENTO,ENTO,Sandefjord Airport; Torp,59.1867,10.2586,Europe/Oslo,NO,CATI,assumed,large
 ENVA,ENVA,Trondheim Airport; Værnes,63.4578,10.924,Europe/Oslo,NO,CATI,assumed,large
@@ -796,7 +796,7 @@ OOSH,OOSH,Suhar International Airport,24.386,56.6254,Asia/Muscat,OM,CATI,assumed
 MPTO,MPTO,Tocumen International Airport,9.0714,-79.3835,America/Panama,PA,CATI,assumed,large
 SPCL,SPCL,Cap FAP David Abenzur Rengifo International Airport,-8.3781,-74.5745,America/Lima,PE,CATI,assumed,large
 SPHI,SPHI,Capitán FAP José A. Quiñones González International Airport,-6.7892,-79.8283,America/Lima,PE,CATI,assumed,large
-SPJC,SPJC,Jorge Chávez International Airport,-12.0219,-77.1143,America/Lima,PE,CATI,unknown,large
+SPJC,SPJC,Jorge Chávez International Airport,-12.0219,-77.1143,America/Lima,PE,CATIII,faa-c060,large
 SPJL,SPJL,Inca Manco Capac International Airport,-15.4677,-70.1565,America/Lima,PE,CATI,assumed,large
 SPQT,SPQT,Coronel FAP Francisco Secada Vignetta International Airport,-3.7847,-73.3088,America/Lima,PE,CATI,assumed,large
 SPQU,SPQU,Rodríguez Ballón International Airport,-16.3408,-71.5695,America/Lima,PE,CATI,assumed,large
@@ -823,7 +823,7 @@ RPVM,RPVM,Mactan Cebu International Airport,10.3093,123.9797,Asia/Manila,PH,CATI
 RPVP,RPVP,Puerto Princesa International Airport / PAF Antonio Bautista Air Base,9.742,118.7591,Asia/Manila,PH,CATI,assumed,large
 OPFA,OPFA,Faisalabad International Airport,31.3649,72.9953,Asia/Karachi,PK,CATI,assumed,large
 OPGW,OPGW,New Gwadar International Airport,25.2967,62.4988,Asia/Karachi,PK,CATI,assumed,large
-OPIS,OPIS,Islamabad International Airport,33.549,72.8257,Asia/Karachi,PK,CATI,assumed,large
+OPIS,OPIS,Islamabad International Airport,33.549,72.8257,Asia/Karachi,PK,CATII,faa-c060,large
 OPKC,OPKC,Jinnah International Airport,24.9065,67.1608,Asia/Karachi,PK,CATI,assumed,large
 OPLA,OPLA,Allama Iqbal International Airport,31.5216,74.4036,Asia/Karachi,PK,CATI,assumed,large
 OPMT,OPMT,Multan International Airport,30.2032,71.4191,Asia/Karachi,PK,CATI,assumed,large
@@ -834,58 +834,58 @@ OPST,OPST,Sialkot International Airport,32.5359,74.3646,Asia/Karachi,PK,CATI,ass
 OPTU,OPTU,Turbat International Airport,25.9848,63.0289,Asia/Karachi,PK,CATI,assumed,large
 EPGD,EPGD,Gdańsk Lech Wałęsa Airport,54.3776,18.4662,Europe/Warsaw,PL,CATI,assumed,large
 EPKK,EPKK,Kraków John Paul II International Airport,50.0777,19.7848,Europe/Warsaw,PL,CATI,assumed,large
-EPKT,EPKT,Katowice Wojciech Korfanty International Airport,50.476,19.0807,Europe/Warsaw,PL,CATI,assumed,large
+EPKT,EPKT,Katowice Wojciech Korfanty International Airport,50.476,19.0807,Europe/Warsaw,PL,CATII,faa-c060,large
 EPLB,EPLB,Lublin Airport,51.2402,22.7135,Europe/Warsaw,PL,CATI,assumed,large
 EPLL,EPLL,Łódź Władysław Reymont Airport,51.7219,19.3981,Europe/Warsaw,PL,CATI,assumed,large
 EPMO,EPMO,Warsaw Modlin Airport,52.4511,20.6518,Europe/Warsaw,PL,CATI,assumed,large
-EPPO,EPPO,Poznań-Ławica Airport,52.4216,16.8234,Europe/Warsaw,PL,CATI,assumed,large
-EPRZ,EPRZ,Rzeszów-Jasionka Airport,50.1098,22.0242,Europe/Warsaw,PL,CATI,assumed,large
+EPPO,EPPO,Poznań-Ławica Airport,52.4216,16.8234,Europe/Warsaw,PL,CATII,faa-c060,large
+EPRZ,EPRZ,Rzeszów-Jasionka Airport,50.1098,22.0242,Europe/Warsaw,PL,CATII,faa-c060,large
 EPSC,EPSC,Solidarity Szczecin–Goleniów Airport,53.5847,14.9022,Europe/Warsaw,PL,CATI,assumed,large
-EPWA,EPWA,Warsaw Chopin Airport,52.1657,20.9671,Europe/Warsaw,PL,CATI,assumed,large
-EPWR,EPWR,Copernicus Wrocław Airport,51.1037,16.8821,Europe/Warsaw,PL,CATI,assumed,large
+EPWA,EPWA,Warsaw Chopin Airport,52.1657,20.9671,Europe/Warsaw,PL,CATIII,faa-c060,large
+EPWR,EPWR,Copernicus Wrocław Airport,51.1037,16.8821,Europe/Warsaw,PL,CATII,faa-c060,large
 TJSJ,SJU,Luis Munoz Marin International Airport,18.4394,-66.0018,America/Puerto_Rico,PR,CATI,assumed,large
 LPFR,LPFR,Faro - Gago Coutinho International Airport,37.0159,-7.9709,Europe/Lisbon,PT,CATI,assumed,large
 LPMA,LPMA,Cristiano Ronaldo International Airport,32.6978,-16.7746,Atlantic/Madeira,PT,CATI,assumed,large
 LPPD,LPPD,João Paulo II Airport,37.7412,-25.6979,Atlantic/Azores,PT,CATI,assumed,large
-LPPR,LPPR,Francisco de Sá Carneiro Airport,41.2481,-8.6814,Europe/Lisbon,PT,CATI,assumed,large
-LPPT,LPPT,Lisbon Humberto Delgado Airport,38.7813,-9.1359,Europe/Lisbon,PT,CATI,assumed,large
+LPPR,LPPR,Francisco de Sá Carneiro Airport,41.2481,-8.6814,Europe/Lisbon,PT,CATII,faa-c060,large
+LPPT,LPPT,Lisbon Humberto Delgado Airport,38.7813,-9.1359,Europe/Lisbon,PT,CATIII,faa-c060,large
 PTRO,PTRO,Roman Tmetuchl International Airport,7.367,134.5441,Pacific/Palau,PW,CATI,assumed,large
 SGAS,SGAS,Silvio Pettirossi International Airport,-25.2402,-57.5192,America/Asuncion,PY,CATI,assumed,large
 SGEN,SGEN,Teniente Ramon A. Ayub Gonzalez International Airport,-27.2275,-55.8376,America/Asuncion,PY,CATI,assumed,large
 SGES,SGES,Guaraní International Airport,-25.4572,-54.8395,America/Asuncion,PY,CATI,assumed,large
 OTBD,OTBD,Doha International Airport,25.2594,51.5655,Asia/Qatar,QA,CATI,assumed,large
-OTHH,OTHH,Hamad International Airport,25.2731,51.6081,Asia/Qatar,QA,CATI,assumed,large
+OTHH,OTHH,Hamad International Airport,25.2731,51.6081,Asia/Qatar,QA,CATIII,faa-c060,large
 FMEE,FMEE,Roland Garros Airport,-20.8901,55.5189,Indian/Reunion,RE,CATI,assumed,large
 FMEP,FMEP,Saint-Pierre Pierrefonds Airport,-21.3194,55.4225,Indian/Reunion,RE,CATI,assumed,large
 LRBC,LRBC,Bacău George Enescu International  Airport,46.5219,26.9103,Europe/Bucharest,RO,CATI,assumed,large
-LRBS,LRBS,Bucharest Băneasa Aurel Vlaicu International Airport,44.5031,26.1029,Europe/Bucharest,RO,CATI,assumed,large
+LRBS,LRBS,Bucharest Băneasa Aurel Vlaicu International Airport,44.5031,26.1029,Europe/Bucharest,RO,CATII,faa-c060,large
 LRBV,LRBV,Brașov-Ghimbav International Airport,45.7056,25.5229,Europe/Bucharest,RO,CATI,assumed,large
 LRCK,LRCK,Mihail Kogălniceanu International Airport,44.3622,28.4883,Europe/Bucharest,RO,CATI,assumed,large
 LRCL,LRCL,Avram Iancu Cluj International Airport,46.786,23.6857,Europe/Bucharest,RO,CATI,assumed,large
 LRCV,LRCV,Craiova International Airport,44.3181,23.8886,Europe/Bucharest,RO,CATI,assumed,large
 LRIA,LRIA,Iaşi International Airport,47.1796,27.6214,Europe/Bucharest,RO,CATI,assumed,large
 LROD,LROD,Oradea International Airport,47.0253,21.9025,Europe/Bucharest,RO,CATI,assumed,large
-LROP,LROP,Bucharest Henri Coandă International Airport,44.5718,26.1033,Europe/Bucharest,RO,CATI,assumed,large
+LROP,LROP,Bucharest Henri Coandă International Airport,44.5718,26.1033,Europe/Bucharest,RO,CATIII,faa-c060,large
 LRSB,LRSB,Sibiu International Airport,45.7858,24.0867,Europe/Bucharest,RO,CATI,assumed,large
 LRSV,LRSV,Suceava Ștefan cel Mare International Airport,47.6875,26.3541,Europe/Bucharest,RO,CATI,assumed,large
 LRTR,LRTR,Timișoara Traian Vuia International Airport,45.8099,21.3379,Europe/Bucharest,RO,CATI,assumed,large
 LYBE,LYBE,Belgrade Nikola Tesla Airport,44.8184,20.3091,Europe/Belgrade,RS,CATI,assumed,large
 LYNI,LYNI,Niš Constantine the Great Airport,43.3365,21.8562,Europe/Belgrade,RS,CATI,assumed,large
 UEEE,UEEE,Platon Oyunsky Yakutsk International Airport,62.0933,129.771,Asia/Yakutsk,RU,CATI,assumed,large
-UHPP,UHPP,Yelizovo Airport,53.1687,158.4511,Asia/Kamchatka,RU,CATI,assumed,large
+UHPP,UHPP,Yelizovo Airport,53.1687,158.4511,Asia/Kamchatka,RU,CATII,faa-c060,large
 UHSS,UHSS,Yuzhno-Sakhalinsk International Airport,46.8855,142.7175,Asia/Sakhalin,RU,CATI,assumed,large
 UHWW,UHWW,Vladivostok International Airport,43.3963,132.1482,Asia/Vladivostok,RU,CATI,assumed,large
 UIAA,UIAA,Chita-Kadala International Airport,52.0248,113.3058,Asia/Chita,RU,CATI,assumed,large
 UIII,UIII,Irkutsk International Airport,52.2667,104.3956,Asia/Irkutsk,RU,CATI,assumed,large
 UIUU,UIUU,Baikal International Airport,51.8086,107.4397,Asia/Irkutsk,RU,CATI,assumed,large
-ULLI,ULLI,Pulkovo Airport,59.8003,30.2625,Europe/Moscow,RU,CATI,assumed,large
+ULLI,ULLI,Pulkovo Airport,59.8003,30.2625,Europe/Moscow,RU,CATII,faa-c060,large
 ULMM,ULMM,Emperor Nicholas II Murmansk Airport,68.7817,32.7508,Europe/Moscow,RU,CATI,assumed,large
 UMKK,UMKK,Khrabrovo Airport,54.8916,20.5986,Europe/Kaliningrad,RU,CATI,assumed,large
 UNAA,UNAA,Abakan International Airport,53.74,91.385,Asia/Krasnoyarsk,RU,CATI,assumed,large
 UNBB,UNBB,Barnaul Gherman Titov International Airport,53.3613,83.5397,Asia/Barnaul,RU,CATI,assumed,large
 UNEE,UNEE,Alexei Leonov Kemerovo International Airport,55.2701,86.1072,Asia/Novokuznetsk,RU,CATI,assumed,large
 UNKL,UNKL,Krasnoyarsk International Airport,56.1757,92.4858,Asia/Krasnoyarsk,RU,CATI,assumed,large
-UNNT,UNNT,Novosibirsk Tolmachevo Airport,55.0198,82.6187,Asia/Novosibirsk,RU,CATI,assumed,large
+UNNT,UNNT,Novosibirsk Tolmachevo Airport,55.0198,82.6187,Asia/Novosibirsk,RU,CATII,faa-c060,large
 UNOO,UNOO,Omsk Central Airport,54.9631,73.3124,Asia/Omsk,RU,CATI,assumed,large
 UNTT,UNTT,Tomsk Kamov Airport,56.3803,85.2083,Asia/Tomsk,RU,CATI,assumed,large
 UOOO,UOOO,Alykel International Airport,69.308,87.3259,Asia/Krasnoyarsk,RU,CATI,assumed,large
@@ -905,9 +905,9 @@ USRR,USRR,Surgut International Airport,61.3405,73.4058,Asia/Yekaterinburg,RU,CAT
 USSS,USSS,Koltsovo Airport,56.7431,60.8027,Asia/Yekaterinburg,RU,CATI,assumed,large
 USTR,USTR,Roshchino International Airport,57.179,65.3277,Asia/Yekaterinburg,RU,CATI,assumed,large
 UUBW,UUBW,Zhukovsky International Airport,55.5533,38.15,Europe/Moscow,RU,CATI,assumed,large
-UUDD,UUDD,Domodedovo International Airport,55.4088,37.9063,Europe/Moscow,RU,CATI,assumed,large
+UUDD,UUDD,Domodedovo International Airport,55.4088,37.9063,Europe/Moscow,RU,CATIII,faa-c060,large
 UUDL,UUDL,Golden Ring Yaroslavl International Airport,57.5607,40.1574,Europe/Moscow,RU,CATI,assumed,large
-UUEE,UUEE,Sheremetyevo International Airport,55.9769,37.4112,Europe/Moscow,RU,CATIII,unknown,large
+UUEE,UUEE,Sheremetyevo International Airport,55.9769,37.4112,Europe/Moscow,RU,CATIII,faa-c060,large
 UUWW,UUWW,Vnukovo International Airport,55.5915,37.2615,Europe/Moscow,RU,CATI,assumed,large
 UWGG,UWGG,Nizhny Novgorod / Strigino International Airport,56.2274,43.7852,Europe/Moscow,RU,CATI,assumed,large
 UWKD,UWKD,Kazan International Airport,55.6062,49.2787,Europe/Moscow,RU,CATI,assumed,large
@@ -937,19 +937,19 @@ AGGH,AGGH,Honiara International Airport,-9.428,160.055,Pacific/Guadalcanal,SB,CA
 FSIA,FSIA,Seychelles International Airport,-4.6743,55.5218,Indian/Mahe,SC,CATI,assumed,large
 HSPN,HSPN,Port Sudan New International Airport,19.4346,37.2341,Africa/Khartoum,SD,CATI,assumed,large
 HSSK,HSSK,Khartoum International Airport,15.5895,32.5532,Africa/Khartoum,SD,CATI,assumed,large
-ESGG,ESGG,Göteborg Landvetter Airport,57.6628,12.2798,Europe/Stockholm,SE,CATI,assumed,large
+ESGG,ESGG,Göteborg Landvetter Airport,57.6628,12.2798,Europe/Stockholm,SE,CATIII,faa-c060,large
 ESKN,ESKN,Stockholm Skavsta Airport,58.7897,16.9115,Europe/Stockholm,SE,CATI,assumed,large
 ESKS,ESKS,Scandinavian Mountains Airport,61.1651,12.8335,Europe/Stockholm,SE,CATI,assumed,large
-ESMS,ESMS,Malmö Sturup Airport,55.5356,13.3763,Europe/Stockholm,SE,CATI,assumed,large
+ESMS,ESMS,Malmö Sturup Airport,55.5356,13.3763,Europe/Stockholm,SE,CATII,faa-c060,large
 ESNQ,ESNQ,Kiruna Airport,67.822,20.3368,Europe/Stockholm,SE,CATI,assumed,large
 ESNU,ESNU,Umeå Airport,63.7918,20.2828,Europe/Stockholm,SE,CATI,assumed,large
 ESOW,ESOW,Stockholm Västerås Airport,59.5894,16.6336,Europe/Stockholm,SE,CATI,assumed,large
 ESPA,ESPA,Luleå Airport,65.5438,22.122,Europe/Stockholm,SE,CATI,assumed,large
-ESSA,ESSA,Stockholm-Arlanda Airport,59.6485,17.9288,Europe/Stockholm,SE,CATI,assumed,large
+ESSA,ESSA,Stockholm-Arlanda Airport,59.6485,17.9288,Europe/Stockholm,SE,CATIII,faa-c060,large
 ESSL,ESSL,Linköping City Airport,58.4049,15.6845,Europe/Stockholm,SE,CATI,assumed,large
 ESSV,ESSV,Visby Airport,57.6628,18.3462,Europe/Stockholm,SE,CATI,assumed,large
-WSSS,WSSS,Singapore Changi Airport,1.3502,103.994,Asia/Singapore,SG,CATI,assumed,large
-LJLJ,LJLJ,Ljubljana Jože Pučnik Airport,46.2237,14.4576,Europe/Ljubljana,SI,CATI,assumed,large
+WSSS,WSSS,Singapore Changi Airport,1.3502,103.994,Asia/Singapore,SG,CATII,faa-c060,large
+LJLJ,LJLJ,Ljubljana Jože Pučnik Airport,46.2237,14.4576,Europe/Ljubljana,SI,CATIII,faa-c060,large
 LZIB,LZIB,M. R. Štefánik Airport,48.1702,17.2127,Europe/Bratislava,SK,CATI,assumed,large
 GFLL,GFLL,Lungi International Airport,8.6164,-13.1955,Africa/Freetown,SL,CATI,assumed,large
 GOBD,GOBD,Blaise Diagne International Airport,14.6709,-17.0728,Africa/Dakar,SN,CATI,assumed,large
@@ -969,8 +969,8 @@ MBPV,MBPV,Providenciales International Airport,21.7737,-72.2683,America/Grand_Tu
 FTTJ,FTTJ,N'Djamena International Airport,12.1337,15.034,Africa/Ndjamena,TD,CATI,assumed,large
 DXNG,DXNG,Niamtougou International Airport,9.7667,1.0909,Africa/Lome,TG,CATI,assumed,large
 DXXX,DXXX,Lomé–Tokoin International Airport,6.1656,1.2545,Africa/Lome,TG,CATI,assumed,large
-VTBD,VTBD,Don Mueang International Airport,13.9126,100.607,Asia/Bangkok,TH,CATI,assumed,large
-VTBS,VTBS,Suvarnabhumi Airport,13.6811,100.747,Asia/Bangkok,TH,CATI,assumed,large
+VTBD,VTBD,Don Mueang International Airport,13.9126,100.607,Asia/Bangkok,TH,CATII,faa-c060,large
+VTBS,VTBS,Suvarnabhumi Airport,13.6811,100.747,Asia/Bangkok,TH,CATII,faa-c060,large
 VTBU,VTBU,U-Tapao–Rayong–Pattaya International Airport,12.6799,101.005,Asia/Bangkok,TH,CATI,assumed,large
 VTCC,VTCC,Chiang Mai International Airport,18.7668,98.9626,Asia/Bangkok,TH,CATI,assumed,large
 VTCT,VTCT,Mae Fah Luang - Chiang Rai International Airport,19.9523,99.8829,Asia/Bangkok,TH,CATI,assumed,large
@@ -985,22 +985,22 @@ UTDL,UTDL,Khujand International Airport,40.2154,69.6947,Asia/Dushanbe,TJ,CATI,as
 UTDT,UTDT,Bokhtar International Airport,37.8663,68.8645,Asia/Dushanbe,TJ,CATI,assumed,large
 WPDL,WPDL,Presidente Nicolau Lobato International Airport,-8.5466,125.5245,Asia/Dili,TL,CATI,assumed,large
 WPOC,WPOC,Oecusse Route of the Sandalwood International Airport,-9.1984,124.3379,Asia/Dili,TL,CATI,assumed,large
-UTAA,UTAA,Ashgabat International Airport,37.9868,58.361,Asia/Ashgabat,TM,CATI,assumed,large
+UTAA,UTAA,Ashgabat International Airport,37.9868,58.361,Asia/Ashgabat,TM,CATII,faa-c060,large
 UTAT,UTAT,Dashoguz International Airport,41.7599,59.8361,Asia/Ashgabat,TM,CATI,assumed,large
 UTAV,UTAV,Türkmenabat International Airport,38.9307,63.564,Asia/Ashgabat,TM,CATI,assumed,large
 DTTA,DTTA,Tunis Carthage International Airport,36.851,10.2272,Africa/Tunis,TN,CATI,assumed,large
 DTTJ,DTTJ,Djerba Zarzis International Airport,33.8737,10.7773,Africa/Tunis,TN,CATI,assumed,large
 NFTF,NFTF,Fua'amotu International Airport,-21.2414,-175.1492,Pacific/Tongatapu,TO,CATI,assumed,large
 NFTV,NFTV,Vava'u International Airport,-18.5853,-173.962,Pacific/Tongatapu,TO,CATI,assumed,large
-LTAC,LTAC,Esenboğa International Airport,40.1281,32.9951,Europe/Istanbul,TR,CATI,assumed,large
+LTAC,LTAC,Esenboğa International Airport,40.1281,32.9951,Europe/Istanbul,TR,CATIII,faa-c060,large
 LTAF,LTAF,Adana Şakirpaşa Airport,36.9822,35.2804,Europe/Istanbul,TR,CATI,assumed,large
-LTAI,LTAI,Antalya International Airport,36.8987,30.8005,Europe/Istanbul,TR,CATI,assumed,large
+LTAI,LTAI,Antalya International Airport,36.8987,30.8005,Europe/Istanbul,TR,CATII,faa-c060,large
 LTAJ,LTAJ,Gaziantep Oğuzeli International Airport,36.9472,37.4787,Europe/Istanbul,TR,CATI,assumed,large
 LTAN,LTAN,Konya Airport,37.979,32.5619,Europe/Istanbul,TR,CATI,assumed,large
 LTAU,LTAU,Kayseri Erkilet International Airport,38.7704,35.4954,Europe/Istanbul,TR,CATI,assumed,large
 LTAZ,LTAZ,Nevşehir Kapadokya Airport,38.7719,34.5345,Europe/Istanbul,TR,CATI,assumed,large
 LTBA,LTBA,İstanbul Atatürk Airport,40.9719,28.8237,Europe/Istanbul,TR,CATI,assumed,large
-LTBJ,LTBJ,Adnan Menderes International Airport,38.2924,27.157,Europe/Istanbul,TR,CATI,assumed,large
+LTBJ,LTBJ,Adnan Menderes International Airport,38.2924,27.157,Europe/Istanbul,TR,CATII,faa-c060,large
 LTBS,LTBS,Dalaman International Airport,36.7131,28.7925,Europe/Istanbul,TR,CATI,assumed,large
 LTBY,LTBY,Hasan Polatkan Airport,39.8116,30.5193,Europe/Istanbul,TR,CATI,assumed,large
 LTCS,LTCS,Şanlıurfa GAP Airport,37.4457,38.8956,Europe/Istanbul,TR,CATI,assumed,large
@@ -1008,7 +1008,7 @@ LTDB,LTDB,Çukurova International Airport,36.8915,35.0712,Europe/Istanbul,TR,CAT
 LTFD,LTFD,Balıkesir Koca Seyit Airport,39.5525,27.0102,Europe/Istanbul,TR,CATI,assumed,large
 LTFE,LTFE,Milas Bodrum International Airport,37.2493,27.664,Europe/Istanbul,TR,CATI,assumed,large
 LTFJ,LTFJ,Istanbul Sabiha Gökçen International Airport,40.8986,29.3092,Europe/Istanbul,TR,CATI,assumed,large
-LTFM,LTFM,İstanbul Airport,41.2749,28.7321,Europe/Istanbul,TR,CATI,assumed,large
+LTFM,LTFM,İstanbul Airport,41.2749,28.7321,Europe/Istanbul,TR,CATIII,faa-c060,large
 LTFO,LTFO,Rize–Artvin Airport,41.1798,40.8488,Europe/Istanbul,TR,CATI,assumed,large
 TTCP,TTCP,A.N.R. Robinson International Airport,11.1496,-60.8313,America/Port_of_Spain,TT,CATI,assumed,large
 TTPP,TTPP,Piarco International Airport,10.5953,-61.3376,America/Port_of_Spain,TT,CATI,assumed,large
@@ -1017,7 +1017,7 @@ RCMQ,RCMQ,Taichung International Airport / Ching Chuang Kang Air Base,24.2647,12
 RCNN,RCNN,Tainan International Airport / Tainan Air Base,22.9504,120.206,Asia/Taipei,TW,CATI,assumed,large
 RCQC,RCQC,Penghu Magong Airport,23.5687,119.628,Asia/Taipei,TW,CATI,assumed,large
 RCSS,RCSS,Taipei Songshan International Airport,25.0672,121.5528,Asia/Taipei,TW,CATI,assumed,large
-RCTP,RCTP,Taiwan Taoyuan International Airport,25.0777,121.233,Asia/Taipei,TW,CATI,assumed,large
+RCTP,RCTP,Taiwan Taoyuan International Airport,25.0777,121.233,Asia/Taipei,TW,CATII,faa-c060,large
 RCYU,RCYU,Hualien Chiashan Airport,24.0232,121.618,Asia/Taipei,TW,CATI,assumed,large
 HTDA,HTDA,Julius Nyerere International Airport,-6.8735,39.2073,Africa/Dar_es_Salaam,TZ,CATI,assumed,large
 HTKJ,HTKJ,Kilimanjaro International Airport,-3.427,37.0735,Africa/Dar_es_Salaam,TZ,CATI,assumed,large
@@ -1031,95 +1031,95 @@ UKOO,UKOO,Odesa International Airport,46.4272,30.6726,Europe/Kyiv,UA,CATI,assume
 HUEN,HUEN,Entebbe International Airport,0.0424,32.4435,Africa/Kampala,UG,CATI,assumed,large
 KABQ,ABQ,Albuquerque International Sunport,35.04,-106.6089,America/Denver,US,CATI,assumed,large
 KALB,ALB,Albany International Airport,42.7483,-73.8017,America/New_York,US,CATI,assumed,large
-KATL,ATL,Hartsfield Jackson Atlanta International Airport,33.6367,-84.4281,America/New_York,US,CATI,assumed,large
-KAUS,AUS,Austin Bergstrom International Airport,30.1975,-97.662,America/Chicago,US,CATI,assumed,large
-KBDL,BDL,Bradley International Airport,41.9386,-72.688,America/New_York,US,CATI,assumed,large
-KBHM,BHM,Birmingham-Shuttlesworth International Airport,33.5629,-86.7507,America/Chicago,US,CATI,assumed,large
-KBNA,BNA,Nashville International Airport,36.1245,-86.6782,America/Chicago,US,CATI,assumed,large
-KBOI,BOI,Boise Air Terminal/Gowen Field,43.5644,-116.223,America/Boise,US,CATI,assumed,large
-KBOS,BOS,Boston Logan International Airport,42.362,-71.0079,America/New_York,US,CATIII,curated,large
+KATL,ATL,Hartsfield Jackson Atlanta International Airport,33.6367,-84.4281,America/New_York,US,CATIII,faa-nasr,large
+KAUS,AUS,Austin Bergstrom International Airport,30.1975,-97.662,America/Chicago,US,CATIII,faa-nasr,large
+KBDL,BDL,Bradley International Airport,41.9386,-72.688,America/New_York,US,CATIII,faa-nasr,large
+KBHM,BHM,Birmingham-Shuttlesworth International Airport,33.5629,-86.7507,America/Chicago,US,CATII,faa-nasr,large
+KBNA,BNA,Nashville International Airport,36.1245,-86.6782,America/Chicago,US,CATIII,faa-nasr,large
+KBOI,BOI,Boise Air Terminal/Gowen Field,43.5644,-116.223,America/Boise,US,CATIII,faa-nasr,large
+KBOS,BOS,Boston Logan International Airport,42.362,-71.0079,America/New_York,US,CATIII,faa-nasr,large
 KBUF,BUF,Buffalo Niagara International Airport,42.9405,-78.7322,America/New_York,US,CATI,assumed,large
 KBUR,BUR,Hollywood Burbank/Bob Hope Airport,34.2028,-118.3581,America/Los_Angeles,US,CATI,assumed,large
-KBWI,BWI,Baltimore/Washington International Thurgood Marshall Airport,39.1754,-76.6683,America/New_York,US,CATI,assumed,large
-KCHS,CHS,Charleston International Airport,32.8962,-80.0382,America/New_York,US,CATI,assumed,large
-KCLE,CLE,Cleveland Hopkins International Airport,41.4117,-81.8498,America/New_York,US,CATI,assumed,large
-KCLT,CLT,Charlotte Douglas International Airport,35.214,-80.9431,America/New_York,US,CATI,assumed,large
+KBWI,BWI,Baltimore/Washington International Thurgood Marshall Airport,39.1754,-76.6683,America/New_York,US,CATIII,faa-nasr,large
+KCHS,CHS,Charleston International Airport,32.8962,-80.0382,America/New_York,US,CATII,faa-nasr,large
+KCLE,CLE,Cleveland Hopkins International Airport,41.4117,-81.8498,America/New_York,US,CATIII,faa-nasr,large
+KCLT,CLT,Charlotte Douglas International Airport,35.214,-80.9431,America/New_York,US,CATIII,faa-nasr,large
 KCMH,CMH,John Glenn Columbus International Airport,39.998,-82.8919,America/New_York,US,CATI,assumed,large
 KCOS,COS,City of Colorado Springs Municipal Airport,38.8058,-104.701,America/Denver,US,CATI,assumed,large
-KCVG,CVG,Cincinnati Northern Kentucky International Airport,39.0488,-84.6678,America/New_York,US,CATI,assumed,large
-KDAL,DAL,Dallas Love Field,32.8448,-96.8477,America/Chicago,US,CATI,assumed,large
-KDCA,DCA,Ronald Reagan Washington National Airport,38.8521,-77.0377,America/New_York,US,CATI,assumed,large
-KDEN,DEN,Denver International Airport,39.86,-104.6738,America/Denver,US,CATI,assumed,large
-KDFW,DFW,Dallas Fort Worth International Airport,32.8968,-97.038,America/Chicago,US,CATI,assumed,large
-KDSM,DSM,Des Moines International Airport,41.534,-93.6567,America/Chicago,US,CATI,assumed,large
-KDTW,DTW,Detroit Metropolitan Wayne County Airport,42.2138,-83.3538,America/Detroit,US,CATI,assumed,large
+KCVG,CVG,Cincinnati Northern Kentucky International Airport,39.0488,-84.6678,America/New_York,US,CATIII,faa-nasr,large
+KDAL,DAL,Dallas Love Field,32.8448,-96.8477,America/Chicago,US,CATII,faa-nasr,large
+KDCA,DCA,Ronald Reagan Washington National Airport,38.8521,-77.0377,America/New_York,US,CATII,faa-nasr,large
+KDEN,DEN,Denver International Airport,39.86,-104.6738,America/Denver,US,CATIII,faa-nasr,large
+KDFW,DFW,Dallas Fort Worth International Airport,32.8968,-97.038,America/Chicago,US,CATIII,faa-nasr,large
+KDSM,DSM,Des Moines International Airport,41.534,-93.6567,America/Chicago,US,CATIII,faa-nasr,large
+KDTW,DTW,Detroit Metropolitan Wayne County Airport,42.2138,-83.3538,America/Detroit,US,CATIII,faa-nasr,large
 KELP,ELP,El Paso International Airport,31.8099,-106.3756,America/Denver,US,CATI,assumed,large
-KEWR,EWR,Newark Liberty International Airport,40.6894,-74.1705,America/New_York,US,CATI,assumed,large
-KFAT,FAT,Fresno Yosemite International Airport,36.7758,-119.718,America/Los_Angeles,US,CATI,curated,large
+KEWR,EWR,Newark Liberty International Airport,40.6894,-74.1705,America/New_York,US,CATIII,faa-nasr,large
+KFAT,FAT,Fresno Yosemite International Airport,36.7758,-119.718,America/Los_Angeles,US,CATIII,faa-nasr,large
 KFLL,FLL,Fort Lauderdale Hollywood International Airport,26.0726,-80.1527,America/New_York,US,CATI,assumed,large
-KGEG,GEG,Spokane International Airport,47.6199,-117.534,America/Los_Angeles,US,CATI,assumed,large
+KGEG,GEG,Spokane International Airport,47.6199,-117.534,America/Los_Angeles,US,CATIII,faa-nasr,large
 KGRR,GRR,Gerald R. Ford International Airport,42.8808,-85.5228,America/Detroit,US,CATI,assumed,large
-KGSO,GSO,Piedmont Triad International Airport,36.0994,-79.9373,America/New_York,US,CATI,assumed,large
-KHOU,HOU,William P. Hobby Airport,29.6453,-95.2768,America/Chicago,US,CATI,assumed,large
-KIAD,IAD,Washington Dulles International Airport,38.9445,-77.4558,America/New_York,US,CATI,assumed,large
-KIAH,IAH,George Bush Intercontinental Airport,29.9844,-95.3414,America/Chicago,US,CATI,assumed,large
-KIND,IND,Indianapolis International Airport,39.7173,-86.2944,America/Indiana/Indianapolis,US,CATI,assumed,large
-KJAX,JAX,Jacksonville International Airport,30.4925,-81.6878,America/New_York,US,CATI,assumed,large
-KJFK,JFK,John F. Kennedy International Airport,40.6394,-73.7793,America/New_York,US,CATI,assumed,large
+KGSO,GSO,Piedmont Triad International Airport,36.0994,-79.9373,America/New_York,US,CATIII,faa-nasr,large
+KHOU,HOU,William P. Hobby Airport,29.6453,-95.2768,America/Chicago,US,CATIII,faa-nasr,large
+KIAD,IAD,Washington Dulles International Airport,38.9445,-77.4558,America/New_York,US,CATIII,faa-nasr,large
+KIAH,IAH,George Bush Intercontinental Airport,29.9844,-95.3414,America/Chicago,US,CATIII,faa-nasr,large
+KIND,IND,Indianapolis International Airport,39.7173,-86.2944,America/Indiana/Indianapolis,US,CATIII,faa-nasr,large
+KJAX,JAX,Jacksonville International Airport,30.4925,-81.6878,America/New_York,US,CATIII,faa-nasr,large
+KJFK,JFK,John F. Kennedy International Airport,40.6394,-73.7793,America/New_York,US,CATIII,faa-nasr,large
 KLAS,LAS,Harry Reid International Airport,36.0834,-115.1518,America/Los_Angeles,US,CATI,assumed,large
-KLAX,LAX,Los Angeles International Airport,33.9425,-118.408,America/Los_Angeles,US,CATI,assumed,large
+KLAX,LAX,Los Angeles International Airport,33.9425,-118.408,America/Los_Angeles,US,CATIII,faa-nasr,large
 KLGA,LGA,LaGuardia Airport,40.7772,-73.8726,America/New_York,US,CATI,assumed,large
 KLGB,LGB,Long Beach International Airport,33.8165,-118.1499,America/Los_Angeles,US,CATI,assumed,large
-KMCI,MCI,Kansas City International Airport,39.3017,-94.7139,America/Chicago,US,CATI,assumed,large
-KMCO,MCO,Orlando International Airport,28.4294,-81.309,America/New_York,US,CATI,assumed,large
+KMCI,MCI,Kansas City International Airport,39.3017,-94.7139,America/Chicago,US,CATIII,faa-nasr,large
+KMCO,MCO,Orlando International Airport,28.4294,-81.309,America/New_York,US,CATIII,faa-nasr,large
 KMDW,MDW,Chicago Midway International Airport,41.786,-87.7524,America/Chicago,US,CATI,assumed,large
-KMEM,MEM,Memphis International Airport,35.0438,-89.9763,America/Chicago,US,CATIII,curated,large
+KMEM,MEM,Memphis International Airport,35.0438,-89.9763,America/Chicago,US,CATIII,faa-nasr,large
 KMIA,MIA,Miami International Airport,25.796,-80.2898,America/New_York,US,CATI,assumed,large
-KMKE,MKE,General Mitchell International Airport,42.9472,-87.8966,America/Chicago,US,CATI,assumed,large
-KMSP,MSP,Minneapolis–Saint Paul International Airport / Wold–Chamberlain Field,44.8801,-93.2217,America/Chicago,US,CATI,assumed,large
-KMSY,MSY,Louis Armstrong New Orleans International Airport,29.9934,-90.2647,America/Chicago,US,CATI,assumed,large
+KMKE,MKE,General Mitchell International Airport,42.9472,-87.8966,America/Chicago,US,CATIII,faa-nasr,large
+KMSP,MSP,Minneapolis–Saint Paul International Airport / Wold–Chamberlain Field,44.8801,-93.2217,America/Chicago,US,CATIII,faa-nasr,large
+KMSY,MSY,Louis Armstrong New Orleans International Airport,29.9934,-90.2647,America/Chicago,US,CATIII,faa-nasr,large
 KMYR,MYR,Myrtle Beach International Airport,33.6797,-78.9283,America/New_York,US,CATI,assumed,large
-KOAK,OAK,San Francisco Bay Oakland International Airport,37.7201,-122.2212,America/Los_Angeles,US,CATI,assumed,large
-KOKC,OKC,OKC Will Rogers World Airport,35.3934,-97.5982,America/Chicago,US,CATI,assumed,large
-KOMA,OMA,Eppley Airfield,41.3032,-95.8941,America/Chicago,US,CATI,assumed,large
-KONT,ONT,Ontario International Airport,34.056,-117.601,America/Los_Angeles,US,CATI,assumed,large
-KORD,ORD,Chicago O'Hare International Airport,41.9786,-87.9048,America/Chicago,US,CATIII,curated,large
+KOAK,OAK,San Francisco Bay Oakland International Airport,37.7201,-122.2212,America/Los_Angeles,US,CATIII,faa-nasr,large
+KOKC,OKC,OKC Will Rogers World Airport,35.3934,-97.5982,America/Chicago,US,CATII,faa-nasr,large
+KOMA,OMA,Eppley Airfield,41.3032,-95.8941,America/Chicago,US,CATIII,faa-nasr,large
+KONT,ONT,Ontario International Airport,34.056,-117.601,America/Los_Angeles,US,CATIII,faa-nasr,large
+KORD,ORD,Chicago O'Hare International Airport,41.9786,-87.9048,America/Chicago,US,CATIII,faa-nasr,large
 KORF,ORF,Norfolk International Airport,36.8953,-76.201,America/New_York,US,CATI,assumed,large
 KPBI,PBI,Palm Beach International Airport,26.6832,-80.0956,America/New_York,US,CATI,assumed,large
-KPDX,PDX,Portland International Airport,45.5887,-122.598,America/Los_Angeles,US,CATI,assumed,large
-KPHL,PHL,Philadelphia International Airport,39.8719,-75.2411,America/New_York,US,CATI,assumed,large
+KPDX,PDX,Portland International Airport,45.5887,-122.598,America/Los_Angeles,US,CATIII,faa-nasr,large
+KPHL,PHL,Philadelphia International Airport,39.8719,-75.2411,America/New_York,US,CATIII,faa-nasr,large
 KPHX,PHX,Phoenix Sky Harbor International Airport,33.4353,-112.0059,America/Phoenix,US,CATI,assumed,large
 KPIE,PIE,St. Petersburg Clearwater International Airport,27.9102,-82.6874,America/New_York,US,CATI,assumed,large
-KPIT,PIT,Pittsburgh International Airport,40.4915,-80.2329,America/New_York,US,CATI,assumed,large
+KPIT,PIT,Pittsburgh International Airport,40.4915,-80.2329,America/New_York,US,CATIII,faa-nasr,large
 KPNS,PNS,Pensacola International Airport,30.4727,-87.1866,America/Chicago,US,CATI,assumed,large
 KPSP,PSP,Palm Springs International Airport,33.8297,-116.507,America/Los_Angeles,US,CATI,assumed,large
-KPVD,PVD,Rhode Island T. F. Green International Airport,41.725,-71.4257,America/New_York,US,CATI,assumed,large
-KPWM,PWM,Portland International Jetport,43.6462,-70.3093,America/New_York,US,CATI,assumed,large
-KRDU,RDU,Raleigh-Durham International Airport,35.8787,-78.7873,America/New_York,US,CATI,assumed,large
-KRIC,RIC,Richmond International Airport,37.5052,-77.3197,America/New_York,US,CATI,assumed,large
+KPVD,PVD,Rhode Island T. F. Green International Airport,41.725,-71.4257,America/New_York,US,CATIII,faa-nasr,large
+KPWM,PWM,Portland International Jetport,43.6462,-70.3093,America/New_York,US,CATIII,faa-nasr,large
+KRDU,RDU,Raleigh-Durham International Airport,35.8787,-78.7873,America/New_York,US,CATIII,faa-nasr,large
+KRIC,RIC,Richmond International Airport,37.5052,-77.3197,America/New_York,US,CATIII,faa-nasr,large
 KRNO,RNO,Reno Tahoe International Airport,39.4991,-119.768,America/Los_Angeles,US,CATI,assumed,large
-KROC,ROC,Frederick Douglass Greater Rochester International Airport,43.1189,-77.6724,America/New_York,US,CATI,assumed,large
+KROC,ROC,Frederick Douglass Greater Rochester International Airport,43.1189,-77.6724,America/New_York,US,CATII,faa-nasr,large
 KRSW,RSW,Southwest Florida International Airport,26.5347,-81.7528,America/New_York,US,CATI,assumed,large
 KSAN,SAN,San Diego International Airport,32.7336,-117.19,America/Los_Angeles,US,CATI,assumed,large
-KSAT,SAT,San Antonio International Airport,29.5337,-98.4698,America/Chicago,US,CATI,assumed,large
+KSAT,SAT,San Antonio International Airport,29.5337,-98.4698,America/Chicago,US,CATII,faa-nasr,large
 KSAV,SAV,Savannah Hilton Head International Airport,32.1266,-81.2,America/New_York,US,CATI,assumed,large
 KSBD,SBD,San Bernardino International Airport,34.0967,-117.2366,America/Los_Angeles,US,CATI,assumed,large
-KSDF,SDF,Louisville Muhammad Ali International Airport,38.1706,-85.7351,America/Kentucky/Louisville,US,CATI,assumed,large
-KSEA,SEA,Seattle–Tacoma International Airport,47.4479,-122.3103,America/Los_Angeles,US,CATIII,curated,large
+KSDF,SDF,Louisville Muhammad Ali International Airport,38.1706,-85.7351,America/Kentucky/Louisville,US,CATIII,faa-nasr,large
+KSEA,SEA,Seattle–Tacoma International Airport,47.4479,-122.3103,America/Los_Angeles,US,CATIII,faa-nasr,large
 KSFB,SFB,Orlando Sanford International Airport,28.7743,-81.2346,America/New_York,US,CATI,assumed,large
-KSFO,SFO,San Francisco International Airport,37.6198,-122.3748,America/Los_Angeles,US,CATIII,curated,large
+KSFO,SFO,San Francisco International Airport,37.6198,-122.3748,America/Los_Angeles,US,CATIII,faa-nasr,large
 KSJC,SJC,Norman Y. Mineta San Jose International Airport,37.3625,-121.9292,America/Los_Angeles,US,CATI,assumed,large
-KSLC,SLC,Salt Lake City International Airport,40.7889,-111.9799,America/Denver,US,CATI,assumed,large
-KSMF,SMF,Sacramento International Airport,38.6954,-121.591,America/Los_Angeles,US,CATI,assumed,large
+KSLC,SLC,Salt Lake City International Airport,40.7889,-111.9799,America/Denver,US,CATIII,faa-nasr,large
+KSMF,SMF,Sacramento International Airport,38.6954,-121.591,America/Los_Angeles,US,CATIII,faa-nasr,large
 KSNA,SNA,John Wayne Orange County International Airport,33.6751,-117.8693,America/Los_Angeles,US,CATI,assumed,large
 KSRQ,SRQ,Sarasota Bradenton International Airport,27.3946,-82.5544,America/New_York,US,CATI,assumed,large
-KSTL,STL,St. Louis Lambert International Airport,38.7487,-90.37,America/Chicago,US,CATI,assumed,large
-KSYR,SYR,Syracuse Hancock International Airport,43.1112,-76.1063,America/New_York,US,CATI,assumed,large
-KTPA,TPA,Tampa International Airport,27.9755,-82.5332,America/New_York,US,CATI,assumed,large
-KTUL,TUL,Tulsa International Airport,36.1971,-95.8862,America/Chicago,US,CATI,assumed,large
+KSTL,STL,St. Louis Lambert International Airport,38.7487,-90.37,America/Chicago,US,CATIII,faa-nasr,large
+KSYR,SYR,Syracuse Hancock International Airport,43.1112,-76.1063,America/New_York,US,CATII,faa-nasr,large
+KTPA,TPA,Tampa International Airport,27.9755,-82.5332,America/New_York,US,CATIII,faa-nasr,large
+KTUL,TUL,Tulsa International Airport,36.1971,-95.8862,America/Chicago,US,CATII,faa-nasr,large
 KTUS,TUS,Tucson International Airport,32.115,-110.9381,America/Phoenix,US,CATI,assumed,large
-KTYS,TYS,McGhee Tyson Airport,35.811,-83.994,America/New_York,US,CATI,assumed,large
-PANC,ANC,Ted Stevens Anchorage International Airport,61.179,-149.9926,America/Anchorage,US,CATI,assumed,large
+KTYS,TYS,McGhee Tyson Airport,35.811,-83.994,America/New_York,US,CATII,faa-nasr,large
+PANC,ANC,Ted Stevens Anchorage International Airport,61.179,-149.9926,America/Anchorage,US,CATIII,faa-nasr,large
 PHKO,KOA,Ellison Onizuka Kona International Airport at Keāhole,19.7388,-156.0456,Pacific/Honolulu,US,CATI,assumed,large
 PHLI,LIH,Lihue Airport,21.9744,-159.3371,Pacific/Honolulu,US,CATI,assumed,large
 PHNL,HNL,Daniel K. Inouye International Airport,21.3184,-157.9257,Pacific/Honolulu,US,CATI,assumed,large
@@ -1146,7 +1146,7 @@ VVCR,VVCR,Cam Ranh International Airport / Cam Ranh Air Base,11.9982,109.219,Asi
 VVCT,VVCT,Can Tho International Airport,10.0834,105.7094,Asia/Ho_Chi_Minh,VN,CATI,assumed,large
 VVDN,VVDN,Da Nang International Airport,16.0439,108.199,Asia/Ho_Chi_Minh,VN,CATI,assumed,large
 VVLT,VVLT,Long Thanh International Airport (Under Construction),10.7728,107.0406,Asia/Ho_Chi_Minh,VN,CATI,assumed,large
-VVNB,VVNB,Noi Bai International Airport,21.2212,105.807,Asia/Bangkok,VN,CATI,assumed,large
+VVNB,VVNB,Noi Bai International Airport,21.2212,105.807,Asia/Bangkok,VN,CATII,faa-c060,large
 VVPQ,VVPQ,Phú Quốc International Airport,10.1698,103.9935,Asia/Ho_Chi_Minh,VN,CATI,assumed,large
 VVTS,VVTS,Tan Son Nhat International Airport,10.8188,106.652,Asia/Ho_Chi_Minh,VN,CATI,assumed,large
 NVVV,NVVV,Bauerfield International Airport,-17.6993,168.32,Pacific/Efate,VU,CATI,assumed,large
@@ -1160,14 +1160,14 @@ OYSN,OYSN,Sanaa International Airport,15.4763,44.2197,Asia/Aden,YE,CATI,assumed,
 OYSY,OYSY,Seiyun Hadhramaut International Airport,15.9659,48.7881,Asia/Aden,YE,CATI,assumed,large
 FMCZ,FMCZ,Dzaoudzi Pamandzi International Airport,-12.8093,45.2818,Indian/Mayotte,YT,CATI,assumed,large
 FABL,FABL,Bram Fischer International Airport,-29.0927,26.3024,Africa/Johannesburg,ZA,CATI,assumed,large
-FACT,FACT,Cape Town International Airport,-33.974,18.6043,Africa/Johannesburg,ZA,CATI,assumed,large
+FACT,FACT,Cape Town International Airport,-33.974,18.6043,Africa/Johannesburg,ZA,CATII,faa-c060,large
 FAEL,FAEL,King Phalo Airport,-33.0356,27.8259,Africa/Johannesburg,ZA,CATI,assumed,large
 FAGG,FAGG,George Airport,-34.0056,22.3789,Africa/Johannesburg,ZA,CATI,assumed,large
 FAKM,FAKM,Kimberley Airport,-28.8054,24.7649,Africa/Johannesburg,ZA,CATI,assumed,large
 FAKN,FAKN,Kruger Mpumalanga International Airport,-25.3833,31.1053,Africa/Johannesburg,ZA,CATI,assumed,large
 FALA,FALA,Lanseria International Airport,-25.939,27.9266,Africa/Johannesburg,ZA,CATI,assumed,large
-FALE,FALE,King Shaka International Airport,-29.6144,31.1197,Africa/Johannesburg,ZA,CATI,assumed,large
-FAOR,FAOR,O.R. Tambo International Airport,-26.1401,28.2468,Africa/Johannesburg,ZA,CATI,assumed,large
+FALE,FALE,King Shaka International Airport,-29.6144,31.1197,Africa/Johannesburg,ZA,CATII,faa-c060,large
+FAOR,FAOR,O.R. Tambo International Airport,-26.1401,28.2468,Africa/Johannesburg,ZA,CATII,faa-c060,large
 FAPE,FAPE,Chief Dawid Stuurman International Airport,-33.9897,25.6174,Africa/Johannesburg,ZA,CATI,assumed,large
 FAPP,FAPP,Polokwane International Airport,-23.8453,29.4586,Africa/Johannesburg,ZA,CATI,assumed,large
 FLHN,FLHN,Harry Mwanga Nkumbula International Airport,-17.8215,25.8196,Africa/Lusaka,ZM,CATI,assumed,large
@@ -1417,7 +1417,7 @@ YQLP,YQLP,Quilpie Airport,-26.6092,144.2537,Australia/Brisbane,AU,CATI,assumed,m
 YREN,YREN,Renmark Airport,-34.1964,140.674,Australia/Adelaide,AU,CATI,assumed,medium
 YROM,YROM,Roma Airport,-26.545,148.775,Australia/Brisbane,AU,CATI,assumed,medium
 YSBK,YSBK,Sydney Bankstown Airport,-33.9236,150.9908,Australia/Sydney,AU,CATI,assumed,medium
-YSCB,YSCB,Canberra Airport,-35.3069,149.195,Australia/Sydney,AU,CATI,assumed,medium
+YSCB,YSCB,Canberra Airport,-35.3069,149.195,Australia/Sydney,AU,CATII,faa-c060,medium
 YSCN,YSCN,Camden Airport,-34.0383,150.6864,Australia/Sydney,AU,CATI,assumed,medium
 YSDU,YSDU,Dubbo City Regional Airport,-32.2167,148.575,Australia/Sydney,AU,CATI,assumed,medium
 YSHK,YSHK,Shark Bay Airport,-25.8973,113.5758,Australia/Perth,AU,CATI,assumed,medium
@@ -1471,7 +1471,7 @@ EBCV,EBCV,Chièvres Air Base,50.5758,3.831,Europe/Brussels,BE,CATI,assumed,mediu
 EBFN,EBFN,Koksijde Air Base,51.0903,2.6528,Europe/Brussels,BE,CATI,assumed,medium
 EBFS,EBFS,Florennes Air Base,50.2433,4.6458,Europe/Brussels,BE,CATI,assumed,medium
 EBKT,EBKT,Kortrijk-Wevelgem International Airport,50.8189,3.2096,Europe/Brussels,BE,CATI,assumed,medium
-EBLG,EBLG,Liège Airport,50.6386,5.4439,Europe/Brussels,BE,CATI,assumed,medium
+EBLG,EBLG,Liège Airport,50.6386,5.4439,Europe/Brussels,BE,CATIII,faa-c060,medium
 LBGO,LBGO,Gorna Oryahovitsa Airport,43.1514,25.7129,Europe/Sofia,BG,CATI,assumed,medium
 LBIA,LBIA,Bezmer Air Base,42.4549,26.3522,Europe/Sofia,BG,CATI,assumed,medium
 LBPG,LBPG,Graf Ignatievo Air Base,42.2904,24.714,Europe/Sofia,BG,CATI,assumed,medium
@@ -1711,7 +1711,7 @@ CYGV,CYGV,Havre-Saint-Pierre Airport,50.2819,-63.6114,America/Toronto,CA,CATI,as
 CYGW,CYGW,Kuujjuarapik Airport,55.2819,-77.7653,America/Toronto,CA,CATI,assumed,medium
 CYHD,CYHD,Dryden Regional Airport,49.8317,-92.7442,America/Winnipeg,CA,CATI,assumed,medium
 CYHF,CYHF,Hearst René Fontaine Municipal Airport,49.7142,-83.6861,America/Toronto,CA,CATI,assumed,medium
-CYHM,CYHM,John C. Munro Hamilton International Airport,43.1735,-79.9312,America/Toronto,CA,CATI,assumed,medium
+CYHM,CYHM,John C. Munro Hamilton International Airport,43.1735,-79.9312,America/Toronto,CA,CATII,faa-c060,medium
 CYHN,CYHN,Hornepayne Municipal Airport,49.1931,-84.7589,America/Toronto,CA,CATI,assumed,medium
 CYHT,CYHT,Haines Junction Airport,60.7892,-137.546,America/Whitehorse,CA,CATI,assumed,medium
 CYHU,CYHU,Montréal / Saint-Hubert Metropolitan Airport,45.5175,-73.4169,America/Toronto,CA,CATI,assumed,medium
@@ -1744,7 +1744,7 @@ CYML,CYML,Charlevoix Airport,47.5975,-70.2239,America/Toronto,CA,CATI,assumed,me
 CYMM,CYMM,Fort McMurray International Airport,56.6533,-111.222,America/Edmonton,CA,CATI,assumed,medium
 CYMO,CYMO,Moosonee Airport,51.2911,-80.6078,America/Toronto,CA,CATI,assumed,medium
 CYMT,CYMT,Chapais Airport,49.7719,-74.5281,America/Toronto,CA,CATI,assumed,medium
-CYMX,CYMX,Montreal Mirabel International Airport,45.6795,-74.0387,America/Toronto,CA,CATI,assumed,medium
+CYMX,CYMX,Montreal Mirabel International Airport,45.6795,-74.0387,America/Toronto,CA,CATII,faa-c060,medium
 CYNA,CYNA,Natashquan Airport,50.1901,-61.789,America/Blanc-Sablon,CA,CATI,assumed,medium
 CYND,CYND,Ottawa / Gatineau Airport,45.5217,-75.5636,America/Toronto,CA,CATI,assumed,medium
 CYNJ,CYNJ,Langley Airport,49.1008,-122.631,America/Vancouver,CA,CATI,assumed,medium
@@ -2392,7 +2392,7 @@ LESU,LESU,Pirineus - la Seu d'Urgel Airport,42.3386,1.4092,Europe/Madrid,ES,CATI
 LETL,LETL,Teruel Airport,40.4103,-1.2174,Europe/Madrid,ES,CATI,assumed,medium
 LETO,LETO,Madrid–Torrejón Airport / Torrejón Air Base,40.4879,-3.4568,Europe/Madrid,ES,CATI,assumed,medium
 LEVD,LEVD,Valladolid Airport,41.7061,-4.8519,Europe/Madrid,ES,CATI,assumed,medium
-LEVT,LEVT,Vitoria Airport,42.8828,-2.7245,Europe/Madrid,ES,CATI,assumed,medium
+LEVT,LEVT,Vitoria Airport,42.8828,-2.7245,Europe/Madrid,ES,CATII,faa-c060,medium
 LEVX,LEVX,Vigo Airport,42.2318,-8.6268,Europe/Madrid,ES,CATI,assumed,medium
 LEXJ,LEXJ,Seve Ballesteros-Santander Airport,43.4271,-3.82,Europe/Madrid,ES,CATI,assumed,medium
 HAAM,HAAM,Arba Minch Airport,6.0394,37.5905,Africa/Addis_Ababa,ET,CATI,assumed,medium
@@ -3669,7 +3669,7 @@ UEST,UEST,Tiksi Airport,71.6977,128.903,Asia/Yakutsk,RU,CATI,assumed,medium
 UESU,UESU,Zyryanka Airport,65.7485,150.8889,Asia/Srednekolymsk,RU,CATI,assumed,medium
 UEVV,UEVV,Zhigansk Airport,66.7965,123.361,Asia/Yakutsk,RU,CATI,assumed,medium
 UHBB,UHBB,Ignatyevo Airport,50.4254,127.412,Asia/Yakutsk,RU,CATI,assumed,medium
-UHHH,UHHH,Khabarovsk Novy Airport,48.5283,135.1886,Asia/Vladivostok,RU,CATI,assumed,medium
+UHHH,UHHH,Khabarovsk Novy Airport,48.5283,135.1886,Asia/Vladivostok,RU,CATII,faa-c060,medium
 UHII,UHII,Chernigovka Air Base,44.3224,132.5453,Asia/Vladivostok,RU,CATI,assumed,medium
 UHKD,UHKD,Dzemgi Airport,50.6056,137.081,Asia/Vladivostok,RU,CATI,assumed,medium
 UHKG,UHKG,Kamenny Ruchey Naval Air Base,49.2357,140.1931,Asia/Vladivostok,RU,CATI,assumed,medium
@@ -3895,7 +3895,7 @@ FHSH,FHSH,Saint Helena International Airport,-15.9589,-5.6461,Atlantic/St_Helena
 LJCE,LJCE,Cerklje ob Krki Air Base,45.9,15.5302,Europe/Ljubljana,SI,CATI,assumed,medium
 LJMB,LJMB,Maribor Edvard Rusjan Airport,46.4799,15.6861,Europe/Ljubljana,SI,CATI,assumed,medium
 LJPZ,LJPZ,Portorož Airport,45.472,13.616,Europe/Ljubljana,SI,CATI,assumed,medium
-LZKZ,LZKZ,Košice International Airport,48.6631,21.2411,Europe/Bratislava,SK,CATI,assumed,medium
+LZKZ,LZKZ,Košice International Airport,48.6631,21.2411,Europe/Bratislava,SK,CATII,faa-c060,medium
 LZMC,LZMC,Malacky/Kuchyňa Air Base,48.402,17.1184,Europe/Bratislava,SK,CATI,assumed,medium
 LZPP,LZPP,Piešťany Airport,48.6252,17.8284,Europe/Bratislava,SK,CATI,assumed,medium
 LZSL,LZSL,Sliač Airport,48.6378,19.1341,Europe/Bratislava,SK,CATI,assumed,medium
@@ -4047,7 +4047,7 @@ HTLM,HTLM,Lake Manyara Airport,-3.3763,35.8183,Africa/Dar_es_Salaam,TZ,CATI,assu
 HTMT,HTMT,Mtwara Airport,-10.3362,40.182,Africa/Dar_es_Salaam,TZ,CATI,assumed,medium
 HTPE,HTPE,Pemba Airport,-5.2573,39.8114,Africa/Dar_es_Salaam,TZ,CATI,assumed,medium
 HTTG,HTTG,Tanga Airport,-5.0924,39.0712,Africa/Dar_es_Salaam,TZ,CATI,assumed,medium
-UKBB,UKBB,Boryspil International Airport,50.345,30.8947,Europe/Kyiv,UA,CATI,assumed,medium
+UKBB,UKBB,Boryspil International Airport,50.345,30.8947,Europe/Kyiv,UA,CATIII,faa-c060,medium
 UKBC,UKBC,Bila Tserkva Air Base,49.7952,30.0244,Europe/Kyiv,UA,CATI,assumed,medium
 UKCM,UKCM,Mariupol International Airport,47.0761,37.4496,Europe/Kyiv,UA,CATI,assumed,medium
 UKDB,UKDB,Berdyansk Airport,46.815,36.7581,Europe/Kyiv,UA,CATI,assumed,medium
@@ -4085,10 +4085,10 @@ KACT,ACT,Waco Regional Airport,31.6113,-97.2305,America/Chicago,US,CATI,assumed,
 KACV,ACV,California Redwood Coast-Humboldt County Airport,40.9781,-124.109,America/Los_Angeles,US,CATI,assumed,medium
 KACY,ACY,Atlantic City International Airport,39.4562,-74.5775,America/New_York,US,CATI,assumed,medium
 KADH,ADH,Ada Regional Airport,34.8052,-96.672,America/Chicago,US,CATI,assumed,medium
-KADW,ADW,Joint Base Andrews,38.8108,-76.867,America/New_York,US,CATI,assumed,medium
+KADW,ADW,Joint Base Andrews,38.8108,-76.867,America/New_York,US,CATIII,faa-nasr,medium
 KAEG,AEG,Double Eagle II Airport,35.1452,-106.795,America/Denver,US,CATI,assumed,medium
 KAEX,AEX,Alexandria International Airport,31.3258,-92.5467,America/Chicago,US,CATI,assumed,medium
-KAFW,AFW,Perot Field/Fort Worth Alliance Airport,32.9904,-97.3195,America/Chicago,US,CATI,assumed,medium
+KAFW,AFW,Perot Field/Fort Worth Alliance Airport,32.9904,-97.3195,America/Chicago,US,CATIII,faa-nasr,medium
 KAGC,AGC,Allegheny County Airport,40.3544,-79.9302,America/New_York,US,CATI,assumed,medium
 KAGS,AGS,Augusta Regional At Bush Field,33.3699,-81.9645,America/New_York,US,CATI,assumed,medium
 KAHN,AHN,Athens Ben Epps Airport,33.9488,-83.3256,America/New_York,US,CATI,assumed,medium
@@ -4139,7 +4139,7 @@ KBFI,BFI,King County International Airport - Boeing Field,47.527,-122.2999,Ameri
 KBFL,BFL,Meadows Field,35.4336,-119.057,America/Los_Angeles,US,CATI,assumed,medium
 KBFM,BFM,Mobile Downtown Airport,30.6268,-88.0681,America/Chicago,US,CATI,assumed,medium
 KBGM,BGM,Greater Binghamton/Edwin A Link field,42.2087,-75.9798,America/New_York,US,CATI,assumed,medium
-KBGR,BGR,Bangor International Airport,44.8064,-68.8267,America/New_York,US,CATI,assumed,medium
+KBGR,BGR,Bangor International Airport,44.8064,-68.8267,America/New_York,US,CATIII,faa-nasr,medium
 KBHB,BHB,Hancock County-Bar Harbor Airport,44.45,-68.3615,America/New_York,US,CATI,assumed,medium
 KBIF,BIF,Biggs Army Air Field (Fort Bliss),31.8495,-106.38,America/Denver,US,CATI,assumed,medium
 KBIH,BIH,Eastern Sierra Regional Airport,37.3731,-118.364,America/Los_Angeles,US,CATI,assumed,medium
@@ -4157,7 +4157,7 @@ KBLH,BLH,Blythe Airport,33.6192,-114.717,America/Los_Angeles,US,CATI,assumed,med
 KBLI,BLI,Bellingham International Airport,48.7928,-122.538,America/Los_Angeles,US,CATI,assumed,medium
 KBLV,BLV,Scott AFB/Midamerica Airport,38.5452,-89.8352,America/Chicago,US,CATI,assumed,medium
 KBMG,BMG,Monroe County Airport,39.146,-86.6167,America/Indiana/Indianapolis,US,CATI,assumed,medium
-KBMI,BMI,Central Illinois Regional Airport at Bloomington-Normal,40.4771,-88.9159,America/Chicago,US,CATI,assumed,medium
+KBMI,BMI,Central Illinois Regional Airport at Bloomington-Normal,40.4771,-88.9159,America/Chicago,US,CATII,faa-nasr,medium
 KBNO,BNO,Burns Municipal Airport,43.5905,-118.9552,America/Los_Angeles,US,CATI,assumed,medium
 KBPI,BPI,Miley Memorial Field,42.5851,-110.111,America/Denver,US,CATI,assumed,medium
 KBPK,BPK,Ozark Regional Airport,36.3689,-92.4705,America/Chicago,US,CATI,assumed,medium
@@ -4178,8 +4178,8 @@ KBXM,BXM,Brunswick Executive Airport,43.8922,-69.9386,America/New_York,US,CATI,a
 KBYH,BYH,Arkansas International Airport,35.9643,-89.944,America/Chicago,US,CATI,assumed,medium
 KBYI,BYI,Burley Municipal Airport,42.5426,-113.772,America/Boise,US,CATI,assumed,medium
 KBYS,BYS,Bicycle Lake Army Air Field,35.2805,-116.63,America/Los_Angeles,US,CATI,assumed,medium
-KBZN,BZN,Bozeman Yellowstone International Airport,45.7789,-111.1537,America/Denver,US,CATI,assumed,medium
-KCAE,CAE,Columbia Metropolitan Airport,33.9382,-81.123,America/New_York,US,CATI,assumed,medium
+KBZN,BZN,Bozeman Yellowstone International Airport,45.7789,-111.1537,America/Denver,US,CATII,faa-nasr,medium
+KCAE,CAE,Columbia Metropolitan Airport,33.9382,-81.123,America/New_York,US,CATIII,faa-nasr,medium
 KCAK,CAK,Akron Canton Regional Airport,40.9161,-81.4422,America/New_York,US,CATI,assumed,medium
 KCAR,CAR,Caribou Municipal Airport,46.8715,-68.0179,America/New_York,US,CATI,assumed,medium
 KCBM,CBM,Columbus Air Force Base,33.6438,-88.4438,America/Chicago,US,CATI,assumed,medium
@@ -4194,7 +4194,7 @@ KCEW,CEW,Bob Sikes Airport,30.7788,-86.5221,America/Chicago,US,CATI,assumed,medi
 KCEZ,CEZ,Cortez Municipal Airport,37.303,-108.628,America/Denver,US,CATI,assumed,medium
 KCGF,CGF,Cuyahoga County Airport,41.5651,-81.4864,America/New_York,US,CATI,assumed,medium
 KCGI,CGI,Cape Girardeau Regional Airport,37.2253,-89.5708,America/Chicago,US,CATI,assumed,medium
-KCHA,CHA,Chattanooga Metropolitan Airport (Lovell Field),35.0353,-85.2038,America/New_York,US,CATI,assumed,medium
+KCHA,CHA,Chattanooga Metropolitan Airport (Lovell Field),35.0353,-85.2038,America/New_York,US,CATII,faa-nasr,medium
 KCHO,CHO,Charlottesville Albemarle Airport,38.1386,-78.4529,America/New_York,US,CATI,assumed,medium
 KCID,CID,The Eastern Iowa Airport,41.8847,-91.7108,America/Chicago,US,CATI,assumed,medium
 KCIU,CIU,Chippewa County International Airport,46.242,-84.4621,America/Detroit,US,CATI,assumed,medium
@@ -4233,7 +4233,7 @@ KDAA,DAA,Davison Army Air Field,38.715,-77.181,America/New_York,US,CATI,assumed,
 KDAB,DAB,Daytona Beach International Airport,29.1825,-81.0595,America/New_York,US,CATI,assumed,medium
 KDAG,DAG,Barstow Daggett Airport,34.8537,-116.787,America/Los_Angeles,US,CATI,assumed,medium
 KDAN,DAN,Danville Regional Airport,36.5729,-79.3361,America/New_York,US,CATI,assumed,medium
-KDAY,DAY,James M. Cox Dayton International Airport,39.9024,-84.2194,America/New_York,US,CATI,assumed,medium
+KDAY,DAY,James M. Cox Dayton International Airport,39.9024,-84.2194,America/New_York,US,CATIII,faa-nasr,medium
 KDBQ,DBQ,Dubuque Regional Airport,42.402,-90.7095,America/Chicago,US,CATI,assumed,medium
 KDDC,DDC,Dodge City Regional Airport,37.7634,-99.9656,America/Chicago,US,CATI,assumed,medium
 KDEC,DEC,Decatur Airport,39.8346,-88.8657,America/Chicago,US,CATI,assumed,medium
@@ -4242,12 +4242,12 @@ KDHN,DHN,Dothan Regional Airport,31.3213,-85.4496,America/Chicago,US,CATI,assume
 KDHT,DHT,Dalhart Municipal Airport,36.0226,-102.547,America/Chicago,US,CATI,assumed,medium
 KDIK,DIK,Dickinson Theodore Roosevelt Regional Airport,46.7975,-102.8019,America/Denver,US,CATI,assumed,medium
 KDLF,DLF,Laughlin Air Force Base,29.3595,-100.778,America/Chicago,US,CATI,assumed,medium
-KDLH,DLH,Duluth International Airport,46.8419,-92.1987,America/Chicago,US,CATI,assumed,medium
+KDLH,DLH,Duluth International Airport,46.8419,-92.1987,America/Chicago,US,CATII,faa-nasr,medium
 KDLS,DLS,Columbia Gorge Regional Airport,45.621,-121.1708,America/Los_Angeles,US,CATI,assumed,medium
 KDMA,DMA,Davis Monthan Air Force Base,32.1665,-110.883,America/Phoenix,US,CATI,assumed,medium
 KDMN,DMN,Deming Municipal Airport,32.2623,-107.721,America/Denver,US,CATI,assumed,medium
 KDNL,DNL,Daniel Field,33.4665,-82.0394,America/New_York,US,CATI,assumed,medium
-KDOV,DOV,Dover Civil Air Terminal/Dover Air Force Base,39.1295,-75.466,America/New_York,US,CATI,assumed,medium
+KDOV,DOV,Dover Civil Air Terminal/Dover Air Force Base,39.1295,-75.466,America/New_York,US,CATII,faa-nasr,medium
 KDPA,DPA,Dupage Airport,41.9078,-88.2486,America/Chicago,US,CATI,assumed,medium
 KDRA,NV65,Desert Rock Airport,36.6194,-116.033,America/Los_Angeles,US,CATI,assumed,medium
 KDRI,DRI,Beauregard Regional Airport,30.8317,-93.3399,America/Chicago,US,CATI,assumed,medium
@@ -4286,7 +4286,7 @@ KENW,ENW,Kenosha Regional Airport,42.5957,-87.9278,America/Chicago,US,CATI,assum
 KERI,ERI,Erie International Tom Ridge Field,42.0831,-80.1739,America/New_York,US,CATI,assumed,medium
 KESC,ESC,Delta County Airport,45.7232,-87.0886,America/Detroit,US,CATI,assumed,medium
 KESF,ESF,Esler Army Airfield / Esler Regional Airport,31.3943,-92.2941,America/Chicago,US,CATI,assumed,medium
-KEUG,EUG,Eugene Airport,44.1246,-123.212,America/Los_Angeles,US,CATI,assumed,medium
+KEUG,EUG,Eugene Airport,44.1246,-123.212,America/Los_Angeles,US,CATIII,faa-nasr,medium
 KEVV,EVV,Evansville Regional Airport,38.037,-87.5324,America/Chicago,US,CATI,assumed,medium
 KEVW,EVW,Evanston-Uinta County Airport-Burns Field,41.2748,-111.035,America/Denver,US,CATI,assumed,medium
 KEWB,EWB,New Bedford Regional Airport,41.6761,-70.9569,America/New_York,US,CATI,assumed,medium
@@ -4321,7 +4321,7 @@ KFST,FST,Fort Stockton Pecos County Airport,30.9157,-102.916,America/Chicago,US,
 KFTK,FTK,Godman Army Air Field,37.9071,-85.9721,America/New_York,US,CATI,assumed,medium
 KFTW,FTW,Fort Worth Meacham International Airport,32.8199,-97.3608,America/Chicago,US,CATI,assumed,medium
 KFTY,FTY,Fulton County Airport Brown Field,33.7791,-84.5214,America/New_York,US,CATI,assumed,medium
-KFWA,FWA,Fort Wayne International Airport,40.9789,-85.1945,America/Indiana/Indianapolis,US,CATI,assumed,medium
+KFWA,FWA,Fort Wayne International Airport,40.9789,-85.1945,America/Indiana/Indianapolis,US,CATII,faa-nasr,medium
 KFXE,FXE,Fort Lauderdale Executive Airport,26.1973,-80.1707,America/New_York,US,CATI,assumed,medium
 KFYV,FYV,Drake Field,36.0051,-94.1701,America/Chicago,US,CATI,assumed,medium
 KGCC,GCC,Northeast Wyoming Regional Airport,44.3489,-105.539,America/Denver,US,CATI,assumed,medium
@@ -4346,9 +4346,9 @@ KGRF,GRF,Gray Army Air Field,47.0792,-122.581,America/Los_Angeles,US,CATI,assume
 KGRI,GRI,Central Nebraska Regional Airport,40.9675,-98.3096,America/Chicago,US,CATI,assumed,medium
 KGRK,GRK,Killeen Regional Airport / Robert Gray Army Airfield,31.0672,-97.8289,America/Chicago,US,CATI,assumed,medium
 KGSB,GSB,Seymour Johnson Air Force Base,35.3394,-77.9606,America/New_York,US,CATI,assumed,medium
-KGSP,GSP,Greenville-Spartanburg International Airport,34.8957,-82.2189,America/New_York,US,CATI,assumed,medium
+KGSP,GSP,Greenville-Spartanburg International Airport,34.8957,-82.2189,America/New_York,US,CATIII,faa-nasr,medium
 KGTB,GTB,Wheeler Sack Army Air Field,44.0556,-75.7195,America/New_York,US,CATI,assumed,medium
-KGTF,GTF,Great Falls International Airport,47.482,-111.371,America/Denver,US,CATI,assumed,medium
+KGTF,GTF,Great Falls International Airport,47.482,-111.371,America/Denver,US,CATIII,faa-nasr,medium
 KGTR,GTR,Golden Triangle Regional Airport,33.4503,-88.5914,America/Chicago,US,CATI,assumed,medium
 KGUC,GUC,Gunnison Crested Butte Regional Airport,38.5347,-106.9346,America/Denver,US,CATI,assumed,medium
 KGUP,GUP,Gallup Municipal Airport,35.5117,-108.7882,America/Denver,US,CATI,assumed,medium
@@ -4378,11 +4378,11 @@ KHOP,HOP,Campbell Army Airfield (Fort Campbell),36.6742,-87.4897,America/Chicago
 KHOT,HOT,Memorial Field Airport,34.4788,-93.0963,America/Chicago,US,CATI,assumed,medium
 KHPN,HPN,Westchester County Airport,41.067,-73.7076,America/New_York,US,CATI,assumed,medium
 KHQM,HQM,Bowerman Airport,46.9712,-123.937,America/Los_Angeles,US,CATI,assumed,medium
-KHRL,HRL,Valley International Airport,26.2285,-97.6544,America/Chicago,US,CATI,assumed,medium
+KHRL,HRL,Valley International Airport,26.2285,-97.6544,America/Chicago,US,CATII,faa-nasr,medium
 KHRO,HRO,Boone County Airport,36.2615,-93.1547,America/Chicago,US,CATI,assumed,medium
 KHRT,HRT,Hurlburt Field,30.4278,-86.6893,America/Chicago,US,CATI,assumed,medium
 KHST,HST,Homestead Air Reserve Base,25.4886,-80.3836,America/New_York,US,CATI,assumed,medium
-KHSV,HSV,Huntsville International Airport,34.6362,-86.7744,America/Chicago,US,CATI,assumed,medium
+KHSV,HSV,Huntsville International Airport,34.6362,-86.7744,America/Chicago,US,CATIII,faa-nasr,medium
 KHTS,HTS,Tri-State Airport / Milton J. Ferguson Field,38.3667,-82.558,America/New_York,US,CATI,assumed,medium
 KHUA,HUA,Redstone Army Air Field,34.6787,-86.6848,America/Chicago,US,CATI,assumed,medium
 KHUF,HUF,Terre Haute Regional Airport; Hulman Field,39.4515,-87.3076,America/Indiana/Indianapolis,US,CATI,assumed,medium
@@ -4399,14 +4399,14 @@ KHYS,HYS,Hays Regional Airport,38.8445,-99.2731,America/Chicago,US,CATI,assumed,
 KHZY,HZY,Northeast Ohio Regional Airport,41.778,-80.6955,America/New_York,US,CATI,assumed,medium
 KIAB,IAB,McConnell Air Force Base,37.6219,-97.2682,America/Chicago,US,CATI,assumed,medium
 KIAG,IAG,Niagara Falls International Airport,43.1073,-78.9462,America/New_York,US,CATI,assumed,medium
-KICT,ICT,Wichita Dwight D. Eisenhower National Airport,37.6503,-97.4286,America/Chicago,US,CATI,assumed,medium
+KICT,ICT,Wichita Dwight D. Eisenhower National Airport,37.6503,-97.4286,America/Chicago,US,CATII,faa-nasr,medium
 KIDA,IDA,Idaho Falls Regional Airport,43.5146,-112.071,America/Boise,US,CATI,assumed,medium
 KIFP,IFP,Laughlin Bullhead International Airport,35.1547,-114.5593,America/Phoenix,US,CATI,assumed,medium
 KIGM,IGM,Kingman Airport,35.2595,-113.938,America/Phoenix,US,CATI,assumed,medium
 KIKK,IKK,Greater Kankakee Airport,41.0714,-87.8463,America/Chicago,US,CATI,assumed,medium
 KILG,ILG,Wilmington Airport,39.6787,-75.6065,America/New_York,US,CATI,assumed,medium
 KILM,ILM,Wilmington International Airport,34.2723,-77.9051,America/New_York,US,CATI,assumed,medium
-KILN,ILN,Wilmington Airpark,39.4279,-83.7921,America/New_York,US,CATI,assumed,medium
+KILN,ILN,Wilmington Airpark,39.4279,-83.7921,America/New_York,US,CATIII,faa-nasr,medium
 KIMT,IMT,Ford Airport,45.8191,-88.1146,America/Menominee,US,CATI,assumed,medium
 KINK,INK,Winkler County Airport,31.7796,-103.201,America/Chicago,US,CATI,assumed,medium
 KINL,INL,Falls International Airport,48.5662,-93.4031,America/Chicago,US,CATI,assumed,medium
@@ -4421,7 +4421,7 @@ KISP,ISP,Long Island MacArthur Airport,40.7963,-73.1017,America/New_York,US,CATI
 KITH,ITH,Ithaca Tompkins Regional Airport,42.491,-76.4584,America/New_York,US,CATI,assumed,medium
 KIWA,IWA,Mesa Gateway Airport,33.3078,-111.655,America/Phoenix,US,CATI,assumed,medium
 KJAC,JAC,Jackson Hole Airport,43.6073,-110.738,America/Denver,US,CATI,assumed,medium
-KJAN,JAN,Jackson-Medgar Wiley Evers International Airport,32.3112,-90.0759,America/Chicago,US,CATI,assumed,medium
+KJAN,JAN,Jackson-Medgar Wiley Evers International Airport,32.3112,-90.0759,America/Chicago,US,CATIII,faa-nasr,medium
 KJBR,JBR,Jonesboro Municipal Airport,35.8317,-90.6464,America/Chicago,US,CATI,assumed,medium
 KJCT,JCT,Kimble County Airport,30.5113,-99.7635,America/Chicago,US,CATI,assumed,medium
 KJHW,JHW,Chautauqua County-Jamestown Airport,42.1542,-79.254,America/New_York,US,CATI,assumed,medium
@@ -4436,7 +4436,7 @@ KJXN,JXN,Jackson County Airport/Reynolds Field,42.2605,-84.463,America/Detroit,U
 KKLS,KLS,Southwest Washington Regional Airport,46.118,-122.898,America/Los_Angeles,US,CATI,assumed,medium
 KLAA,LAA,Southeast Colorado Regional Airport,38.0664,-102.6914,America/Denver,US,CATI,assumed,medium
 KLAF,LAF,Purdue University Airport,40.4129,-86.9394,America/Indiana/Indianapolis,US,CATI,assumed,medium
-KLAL,LAL,Lakeland Linder International Airport,27.9893,-82.0207,America/New_York,US,CATI,assumed,medium
+KLAL,LAL,Lakeland Linder International Airport,27.9893,-82.0207,America/New_York,US,CATIII,faa-nasr,medium
 KLAN,LAN,Capital Region International Airport,42.7776,-84.5857,America/Detroit,US,CATI,assumed,medium
 KLAR,LAR,Laramie Regional Airport,41.3121,-105.675,America/Denver,US,CATI,assumed,medium
 KLAW,LAW,Lawton Fort Sill Regional Airport,34.5677,-98.4166,America/Chicago,US,CATI,assumed,medium
@@ -4447,7 +4447,7 @@ KLBL,LBL,Liberal Mid-America Regional Airport,37.0442,-100.96,America/Chicago,US
 KLBT,LBT,Lumberton Regional Airport,34.6108,-79.0594,America/New_York,US,CATI,assumed,medium
 KLBX,LBX,Texas Gulf Coast Regional Airport,29.1086,-95.4621,America/Chicago,US,CATI,assumed,medium
 KLCH,LCH,Lake Charles Regional Airport,30.1261,-93.2233,America/Chicago,US,CATI,assumed,medium
-KLCK,LCK,Rickenbacker International Airport,39.8138,-82.9278,America/New_York,US,CATI,assumed,medium
+KLCK,LCK,Rickenbacker International Airport,39.8138,-82.9278,America/New_York,US,CATII,faa-nasr,medium
 KLEB,LEB,Lebanon Municipal Airport,43.6261,-72.3042,America/New_York,US,CATI,assumed,medium
 KLEE,LEE,Leesburg International Airport,28.8231,-81.8087,America/New_York,US,CATI,assumed,medium
 KLEX,LEX,Blue Grass Airport,38.0351,-84.6067,America/New_York,US,CATI,assumed,medium
@@ -4455,7 +4455,7 @@ KLFI,LFI,Langley Air Force Base,37.0829,-76.3605,America/New_York,US,CATI,assume
 KLFK,LFK,Angelina County Airport,31.234,-94.75,America/Chicago,US,CATI,assumed,medium
 KLFT,LFT,Lafayette Regional Airport,30.2053,-91.9876,America/Chicago,US,CATI,assumed,medium
 KLGU,LGU,Logan-Cache Airport,41.7912,-111.852,America/Denver,US,CATI,assumed,medium
-KLIT,LIT,Bill & Hillary Clinton National Airport/Adams Field,34.7292,-92.2236,America/Chicago,US,CATI,assumed,medium
+KLIT,LIT,Bill & Hillary Clinton National Airport/Adams Field,34.7292,-92.2236,America/Chicago,US,CATIII,faa-nasr,medium
 KLLQ,LLQ,Monticello Municipal Ellis Field,33.6386,-91.751,America/Chicago,US,CATI,assumed,medium
 KLMT,LMT,Crater Lake-Klamath Regional Airport,42.1561,-121.733,America/Los_Angeles,US,CATI,assumed,medium
 KLND,LND,Hunt Field,42.8152,-108.73,America/Denver,US,CATI,assumed,medium
@@ -4491,7 +4491,7 @@ KMCK,MCK,McCook Ben Nelson Regional Airport,40.2078,-100.5928,America/Chicago,US
 KMCN,MCN,Middle Georgia Regional Airport,32.6928,-83.6492,America/New_York,US,CATI,assumed,medium
 KMCW,MCW,Mason City Municipal Airport,43.1598,-93.3297,America/Chicago,US,CATI,assumed,medium
 KMDH,MDH,Southern Illinois Airport,37.7781,-89.252,America/Chicago,US,CATI,assumed,medium
-KMDT,MDT,Harrisburg International Airport,40.1928,-76.7623,America/New_York,US,CATI,assumed,medium
+KMDT,MDT,Harrisburg International Airport,40.1928,-76.7623,America/New_York,US,CATIII,faa-nasr,medium
 KMEI,MEI,Key Field / Meridian Regional Airport,32.3326,-88.7519,America/Chicago,US,CATI,assumed,medium
 KMER,MER,Castle Airport,37.3805,-120.568,America/Los_Angeles,US,CATI,assumed,medium
 KMFD,MFD,Mansfield Lahm Regional Airport,40.8214,-82.5166,America/New_York,US,CATI,assumed,medium
@@ -4503,7 +4503,7 @@ KMGM,MGM,Montgomery Regional (Dannelly Field) Airport,32.3006,-86.394,America/Ch
 KMGW,MGW,Morgantown Municipal Airport Walter L. (Bill) Hart Field,39.6433,-79.9176,America/New_York,US,CATI,assumed,medium
 KMHK,MHK,Manhattan Regional Airport,39.141,-96.6708,America/Chicago,US,CATI,assumed,medium
 KMHR,MHR,Sacramento Mather Airport,38.5547,-121.298,America/Los_Angeles,US,CATI,assumed,medium
-KMHT,MHT,Manchester-Boston Regional Airport,42.9326,-71.4357,America/New_York,US,CATI,assumed,medium
+KMHT,MHT,Manchester-Boston Regional Airport,42.9326,-71.4357,America/New_York,US,CATIII,faa-nasr,medium
 KMHV,MHV,Mojave Air &  Space Port,35.0564,-118.1453,America/Los_Angeles,US,CATI,assumed,medium
 KMIB,MIB,Minot Air Force Base,48.4156,-101.358,America/Chicago,US,CATI,assumed,medium
 KMIE,MIE,Delaware County Johnson Field,40.2423,-85.3959,America/Indiana/Indianapolis,US,CATI,assumed,medium
@@ -4528,7 +4528,7 @@ KMQY,MQY,Smyrna Airport,36.009,-86.5201,America/Chicago,US,CATI,assumed,medium
 KMRB,MRB,Eastern WV Regional Airport/Shepherd Field,39.4019,-77.9846,America/New_York,US,CATI,assumed,medium
 KMRY,MRY,Monterey Regional Airport,36.5868,-121.8442,America/Los_Angeles,US,CATI,assumed,medium
 KMSL,MSL,Northwest Alabama Regional Airport,34.7451,-87.613,America/Chicago,US,CATI,assumed,medium
-KMSN,MSN,Dane County Regional Truax Field,43.1399,-89.3375,America/Chicago,US,CATI,assumed,medium
+KMSN,MSN,Dane County Regional Truax Field,43.1399,-89.3375,America/Chicago,US,CATIII,faa-nasr,medium
 KMSO,MSO,Missoula Montana Airport,46.9158,-114.0911,America/Denver,US,CATI,assumed,medium
 KMSS,MSS,Massena International Airport Richards Field,44.9362,-74.8443,America/New_York,US,CATI,assumed,medium
 KMTC,MTC,Selfridge Air National Guard Base Airport,42.6135,-82.8369,America/Detroit,US,CATI,assumed,medium
@@ -4591,7 +4591,7 @@ KONO,ONO,Ontario Municipal Airport,44.0198,-117.0133,America/Boise,US,CATI,assum
 KONP,ONP,Newport Municipal Airport,44.5804,-124.058,America/Los_Angeles,US,CATI,assumed,medium
 KOPF,OPF,Miami-Opa Locka Executive Airport,25.907,-80.2784,America/New_York,US,CATI,assumed,medium
 KOQU,OQU,Quonset State Airport,41.5971,-71.4121,America/New_York,US,CATI,assumed,medium
-KORH,ORH,Worcester Regional Airport,42.2673,-71.8757,America/New_York,US,CATI,assumed,medium
+KORH,ORH,Worcester Regional Airport,42.2673,-71.8757,America/New_York,US,CATIII,faa-nasr,medium
 KORL,ORL,Orlando Executive Airport,28.5455,-81.3329,America/New_York,US,CATI,assumed,medium
 KORS,ORS,Orcas Island Airport,48.7082,-122.91,America/Los_Angeles,US,CATI,assumed,medium
 KOSH,OSH,Wittman Regional Airport,43.9844,-88.557,America/Chicago,US,CATI,assumed,medium
@@ -4649,7 +4649,7 @@ KRDD,RDD,Redding Municipal Airport,40.509,-122.293,America/Los_Angeles,US,CATI,a
 KRDG,RDG,Reading Regional Airport (Carl A Spaatz Field),40.3785,-75.9652,America/New_York,US,CATI,assumed,medium
 KRDM,RDM,Roberts Field,44.2541,-121.15,America/Los_Angeles,US,CATI,assumed,medium
 KRDR,RDR,Grand Forks Air Force Base,47.9611,-97.4012,America/Chicago,US,CATI,assumed,medium
-KRFD,RFD,Chicago Rockford International Airport,42.1954,-89.0972,America/Chicago,US,CATI,assumed,medium
+KRFD,RFD,Chicago Rockford International Airport,42.1954,-89.0972,America/Chicago,US,CATIII,faa-nasr,medium
 KRGA,RGA,Central Kentucky Regional Airport,37.6308,-84.3323,America/New_York,US,CATI,assumed,medium
 KRHI,RHI,Rhinelander Oneida County Airport,45.6312,-89.4675,America/Chicago,US,CATI,assumed,medium
 KRHP,RHP,Western Carolina Regional Airport,35.1952,-83.863,America/New_York,US,CATI,assumed,medium
@@ -4665,7 +4665,7 @@ KRNH,RNH,New Richmond Regional Airport,45.1483,-92.5381,America/Chicago,US,CATI,
 KROA,ROA,Roanoke–Blacksburg Regional Airport,37.3255,-79.9754,America/New_York,US,CATI,assumed,medium
 KROW,ROW,Roswell Air Center Airport,33.3016,-104.531,America/Denver,US,CATI,assumed,medium
 KRSL,RSL,Russell Municipal Airport,38.8721,-98.8118,America/Chicago,US,CATI,assumed,medium
-KRST,RST,Rochester International Airport,43.9083,-92.5,America/Chicago,US,CATI,assumed,medium
+KRST,RST,Rochester International Airport,43.9083,-92.5,America/Chicago,US,CATII,faa-nasr,medium
 KRUT,RUT,Rutland - Southern Vermont Regional Airport,43.5294,-72.9496,America/New_York,US,CATI,assumed,medium
 KRVS,RVS,Tulsa Riverside Airport,36.0396,-95.9846,America/Chicago,US,CATI,assumed,medium
 KRWF,RWF,Redwood Falls Municipal Airport,44.5472,-95.0823,America/Chicago,US,CATI,assumed,medium
@@ -4691,9 +4691,9 @@ KSGR,SGR,Sugar Land Regional Airport,29.6223,-95.6565,America/Chicago,US,CATI,as
 KSGU,SGU,St George Regional Airport,37.0364,-113.5103,America/Denver,US,CATI,assumed,medium
 KSHD,SHD,Shenandoah Valley Regional Airport,38.2638,-78.8964,America/New_York,US,CATI,assumed,medium
 KSHR,SHR,Sheridan County Airport,44.7692,-106.98,America/Denver,US,CATI,assumed,medium
-KSHV,SHV,Shreveport Regional Airport,32.4466,-93.8256,America/Chicago,US,CATI,assumed,medium
+KSHV,SHV,Shreveport Regional Airport,32.4466,-93.8256,America/Chicago,US,CATII,faa-nasr,medium
 KSJT,SJT,San Angelo Regional Mathis Field,31.3577,-100.496,America/Chicago,US,CATI,assumed,medium
-KSKA,SKA,Fairchild Air Force Base,47.6151,-117.656,America/Los_Angeles,US,CATI,assumed,medium
+KSKA,SKA,Fairchild Air Force Base,47.6151,-117.656,America/Los_Angeles,US,CATII,faa-nasr,medium
 KSKF,SKF,Lackland Air Force Base,29.3842,-98.5811,America/Chicago,US,CATI,assumed,medium
 KSKX,SKX,Taos Regional Airport,36.4525,-105.6775,America/Denver,US,CATI,assumed,medium
 KSLE,SLE,Salem-Willamette Valley Airport/McNary Field,44.9095,-123.003,America/Los_Angeles,US,CATI,assumed,medium
@@ -4721,33 +4721,33 @@ KSTP,STP,Saint Paul Downtown Holman Field,44.9348,-93.06,America/Chicago,US,CATI
 KSTS,STS,Charles M. Schulz Sonoma County Airport,38.509,-122.813,America/Los_Angeles,US,CATI,assumed,medium
 KSUN,SUN,Friedman Memorial Airport,43.5044,-114.296,America/Boise,US,CATI,assumed,medium
 KSUS,SUS,Spirit of St Louis Airport,38.6621,-90.652,America/Chicago,US,CATI,assumed,medium
-KSUU,SUU,Travis Air Force Base,38.2627,-121.927,America/Los_Angeles,US,CATI,assumed,medium
+KSUU,SUU,Travis Air Force Base,38.2627,-121.927,America/Los_Angeles,US,CATII,faa-nasr,medium
 KSUX,SUX,Sioux Gateway Airport / Brigadier General Bud Day Field,42.3976,-96.3822,America/Chicago,US,CATI,assumed,medium
 KSUZ,SUZ,Saline County Regional Airport,34.5906,-92.4794,America/Chicago,US,CATI,assumed,medium
 KSVC,SVC,Grant County Airport,32.6367,-108.1547,America/Denver,US,CATI,assumed,medium
 KSVN,SVN,Hunter Army Air Field,32.01,-81.1457,America/New_York,US,CATI,assumed,medium
 KSVR,SVR,South Valley Regional Airport,40.6195,-111.993,America/Denver,US,CATI,assumed,medium
-KSWF,SWF,New York Stewart International Airport,41.5042,-74.1089,America/New_York,US,CATI,assumed,medium
+KSWF,SWF,New York Stewart International Airport,41.5042,-74.1089,America/New_York,US,CATIII,faa-nasr,medium
 KSWO,SWO,Stillwater Regional Airport,36.1621,-97.0856,America/Chicago,US,CATI,assumed,medium
 KSZL,SZL,Whiteman Air Force Base,38.7303,-93.5479,America/Chicago,US,CATI,assumed,medium
 KTBN,TBN,Waynesville-St. Robert Regional Airport-Forney Field,37.7416,-92.1407,America/Chicago,US,CATI,assumed,medium
 KTCC,TCC,Tucumcari Municipal Airport,35.1828,-103.603,America/Denver,US,CATI,assumed,medium
 KTCL,TCL,Tuscaloosa National Airport,33.2206,-87.6114,America/Chicago,US,CATI,assumed,medium
-KTCM,TCM,McChord Air Force Base,47.1377,-122.476,America/Los_Angeles,US,CATI,assumed,medium
+KTCM,TCM,McChord Air Force Base,47.1377,-122.476,America/Los_Angeles,US,CATII,faa-nasr,medium
 KTCS,TCS,Truth or Consequences Municipal Airport,33.2369,-107.272,America/Denver,US,CATI,assumed,medium
 KTEB,TEB,Teterboro Airport,40.8501,-74.0608,America/New_York,US,CATI,curated,medium
 KTEX,TEX,Telluride Regional Airport,37.9538,-107.908,America/Denver,US,CATI,assumed,medium
 KTIK,TIK,Tinker Air Force Base,35.4147,-97.3866,America/Chicago,US,CATI,assumed,medium
 KTIW,TIW,Tacoma Narrows Airport,47.2674,-122.5773,America/Los_Angeles,US,CATI,assumed,medium
 KTIX,TIX,Space Coast Regional Airport,28.5148,-80.7992,America/New_York,US,CATI,assumed,medium
-KTLH,TLH,Tallahassee International Airport,30.4012,-84.3543,America/New_York,US,CATI,assumed,medium
+KTLH,TLH,Tallahassee International Airport,30.4012,-84.3543,America/New_York,US,CATII,faa-nasr,medium
 KTMB,TMB,Miami Executive Airport,25.6479,-80.4328,America/New_York,US,CATI,assumed,medium
 KTOI,TOI,Troy Municipal Airport at N Kenneth Campbell Field,31.8604,-86.0121,America/Chicago,US,CATI,assumed,medium
 KTOL,TOL,Eugene F. Kranz Toledo Express Airport,41.5868,-83.8078,America/New_York,US,CATI,assumed,medium
 KTOP,TOP,Philip Billard Municipal Airport,39.0699,-95.6226,America/Chicago,US,CATI,assumed,medium
 KTPH,TPH,Tonopah Airport,38.0602,-117.087,America/Los_Angeles,US,CATI,assumed,medium
 KTPL,TPL,Draughon Miller Central Texas Regional Airport,31.1525,-97.4078,America/Chicago,US,CATI,assumed,medium
-KTRI,TRI,Tri-Cities Regional TN/VA Airport,36.4752,-82.4074,America/New_York,US,CATI,assumed,medium
+KTRI,TRI,Tri-Cities Regional TN/VA Airport,36.4752,-82.4074,America/New_York,US,CATII,faa-nasr,medium
 KTRK,TRK,Truckee Tahoe Airport,39.3186,-120.1406,America/Los_Angeles,US,CATI,assumed,medium
 KTRM,TRM,Jacqueline Cochran Regional Airport,33.6267,-116.16,America/Los_Angeles,US,CATI,assumed,medium
 KTTD,TTD,Portland Troutdale Airport,45.5494,-122.401,America/Los_Angeles,US,CATI,assumed,medium
@@ -4784,7 +4784,7 @@ KVTN,VTN,Miller Field,42.8562,-100.5492,America/Chicago,US,CATI,assumed,medium
 KWJF,WJF,General William J Fox Airfield,34.7411,-118.219,America/Los_Angeles,US,CATI,assumed,medium
 KWMC,WMC,Winnemucca Municipal Airport,40.8966,-117.806,America/Los_Angeles,US,CATI,assumed,medium
 KWRB,WRB,Robins Air Force Base,32.6401,-83.5919,America/New_York,US,CATI,assumed,medium
-KWRI,WRI,Mc Guire Air Force Base,40.0156,-74.5917,America/New_York,US,CATI,assumed,medium
+KWRI,WRI,Mc Guire Air Force Base,40.0156,-74.5917,America/New_York,US,CATII,faa-nasr,medium
 KWRL,WRL,Worland Municipal Airport,43.9657,-107.951,America/Denver,US,CATI,assumed,medium
 KWST,WST,Westerly State Airport,41.3496,-71.8034,America/New_York,US,CATI,assumed,medium
 KWWD,WWD,Cape May County Airport,39.0085,-74.9083,America/New_York,US,CATI,assumed,medium
@@ -4819,7 +4819,7 @@ PAEH,EHM,Cape Newenham LRRS Airport,58.6464,-162.063,America/Nome,US,CATI,assume
 PAEI,EIL,Eielson Air Force Base,64.6657,-147.102,America/Anchorage,US,CATI,assumed,medium
 PAEM,ENM,Emmonak Airport,62.7861,-164.491,America/Nome,US,CATI,assumed,medium
 PAEN,ENA,Kenai Municipal Airport,60.5709,-151.2452,America/Anchorage,US,CATI,assumed,medium
-PAFA,FAI,Fairbanks International Airport,64.8151,-147.856,America/Anchorage,US,CATI,assumed,medium
+PAFA,FAI,Fairbanks International Airport,64.8151,-147.856,America/Anchorage,US,CATIII,faa-nasr,medium
 PAFB,FBK,Ladd Army Airfield,64.8375,-147.614,America/Anchorage,US,CATI,assumed,medium
 PAFE,AFE,Kake Airport,56.9613,-133.9102,America/Sitka,US,CATI,assumed,medium
 PAFM,AFM,Ambler Airport,67.1055,-157.8553,America/Anchorage,US,CATI,assumed,medium
