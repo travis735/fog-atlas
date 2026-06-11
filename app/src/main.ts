@@ -120,12 +120,14 @@ map.on("load", async () => {
     },
   });
 
-  const base: any = ["max", ["+", 3, ["*", 0.5, ["sqrt", ["get", "annual"]]]], 3.5];
-  // grow dots as the map zooms in, or they get lost at street level.
+  const base: any = ["max", ["min", ["+", 3, ["*", 0.5, ["sqrt", ["get", "annual"]]]], 12], 3.5];
+  // size encodes annual hours at low/mid zoom, then CONVERGES to a fixed
+  // marker size by z9 — at single-airport scale the size encoding carries
+  // no information and a growing balloon just obscures the location.
   // NB: maplibre only allows ["zoom"] in a TOP-LEVEL interpolate, so the
   // per-layer multiplier must live inside the stops, not wrap the result.
   const radius = (mult: number): any => ["interpolate", ["linear"], ["zoom"],
-    3, ["*", base, mult], 6, ["*", base, 1.8 * mult], 10, ["*", base, 3.2 * mult]];
+    3, ["*", base, mult], 6, ["*", base, 1.55 * mult], 9, 10 * mult, 14, 12 * mult];
 
   // every analyzed airport gets a faint pinprick at world zoom — honest
   // "we have data here" presence, visually distinct from fog luminance
