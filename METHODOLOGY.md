@@ -20,6 +20,8 @@ A CAT I approach needs both visibility above minima **and** ceiling at or above 
 
 Empirical note: ceiling-only hours (vis fine, ceiling < 200 ft) are rare everywhere — single digits to a few dozen hours per year even at stratus-prone airports — because in fog, visibility and ceiling collapse together and the visibility term already catches the hour. The famous counterexample cuts the other way: San Francisco's marine stratus sits at 500–1,500 ft, well above the decision height, so SFO shows almost no sub-CAT-I hours **even with ceilings included**. Its fog problem is arrival *capacity* (no paired visual approaches under the deck), not approach minima — a distinction this map now makes verifiably rather than by omission.
 
+**RVR cross-check (SFO).** Because the visibility-as-RVR-proxy question matters most at the famous airports, we verified it against runway-measured ground truth at KSFO: parsing RVR groups from ten years of raw routine METARs gives 8.9 hrs/yr below the 1,800 ft CAT I RVR minimum (10.8 below a conservative 2,400 ft), against 9.8 hrs/yr from our prevailing-visibility bands — agreement within ~1 hr/yr. SFO's CAT III infrastructure is justified by consequence (a fortress hub losing even one morning a year is expensive) and by history (coastal California fog has declined measurably since the system was installed), not by frequency.
+
 Known approximations:
 
 1. **Prevailing visibility ≠ RVR.** METAR visibility is a human/sensor prevailing value for the aerodrome; RVR is runway-specific and often better than prevailing visibility in fog (high-intensity lights). Our bands therefore *understate* what's flyable on a lit CAT I runway and the split should be read as a climatological index, not an ops decision.
