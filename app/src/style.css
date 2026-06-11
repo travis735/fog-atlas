@@ -58,14 +58,20 @@ html, body { height: 100%; background: var(--bg); color: var(--ink); overflow: h
   letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(12px);
 }
 #rankings-btn:hover { border-color: var(--accent); box-shadow: 0 0 12px #9fd8ff22; }
-#ils-toggle, #lpv-toggle {
+#now-chip {
+  padding: 9px 12px; background: var(--panel); border: 1px solid #7a5a2e;
+  border-radius: 9px; color: #ffb347; font-size: 11px; letter-spacing: 0.06em;
+  backdrop-filter: blur(12px); white-space: nowrap;
+}
+
+#ils-toggle, #lpv-toggle, #now-toggle {
   display: flex; align-items: center; gap: 6px; padding: 9px 12px;
   background: var(--panel); border: 1px solid var(--hairline); border-radius: 9px;
   color: var(--ink-dim); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
   cursor: pointer; backdrop-filter: blur(12px); user-select: none;
 }
-#ils-toggle:hover, #lpv-toggle:hover { color: var(--ink); }
-#ils-toggle input, #lpv-toggle input { accent-color: var(--accent); }
+#ils-toggle:hover, #lpv-toggle:hover, #now-toggle:hover { color: var(--ink); }
+#ils-toggle input, #lpv-toggle input, #now-toggle input { accent-color: #ffb347; }
 
 .rank-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 10px; }
 .rank-table th {

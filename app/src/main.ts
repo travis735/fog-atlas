@@ -246,6 +246,100 @@ $<HTMLInputElement>("#lpv-only").addEventListener("change", (e) => {
   applyApproachFilters();
 });
 
+// ---------- NOW mode: live below-minima layer (worldwide, one fetch) ----------
+let nowTimer: ReturnType<typeof setInterval> | undefined;
+
+function parseNowCsv(text: string) {
+  // first column (raw_text) is quoted and contains commas; strip it, then
+  // the rest splits cleanly. AWC cache column order is fixed.
+  const sub: { icao: string; sev: "amber" | "red" }[] = [];
+  let asOf = "";
+  for (const line of text.split("\n")) {
+    if (!line.startsWith('"')) continue;
+    const close = line.indexOf('",');
+    if (close < 0) continue;
+    const cols = line.slice(close + 2).split(",");
+    const icao = cols[0];
+    const visRaw = cols[9];
+    const vis = visRaw ? (visRaw.includes("+") ? 10 : parseFloat(visRaw)) : NaN;
+    let ceil = Infinity;
+    for (const k of [21, 23, 25, 27]) {
+      if (["BKN", "OVC", "OVX"].includes(cols[k])) {
+        const b = parseFloat(cols[k + 1]);
+        if (!Number.isNaN(b)) ceil = Math.min(ceil, b);
+      }
+    }
+    const below = !Number.isNaN(vis) && vis < 0.19;
+    const isSub = (!Number.isNaN(vis) && vis < 0.5) || ceil < 200;
+    if (isSub) sub.push({ icao, sev: below ? "red" : "amber" });
+    if (!asOf && cols[1]) asOf = cols[1];
+  }
+  return { sub, asOf };
+}
+
+async function refreshNow() {
+  try {
+    const text = await (await fetch("/api/now")).text();
+    const { sub } = parseNowCsv(text);
+    const byIcao = new Map(state.airports.map((a) => [a.icao, a]));
+    const feats = sub.flatMap(({ icao, sev }) => {
+      const a = byIcao.get(icao);
+      return a ? [{
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [a.lon, a.lat] },
+        properties: { icao, sev },
+      }] : [];
+    });
+    (map.getSource("nowsrc") as any)?.setData({ type: "FeatureCollection", features: feats });
+    const chip = $("#now-chip");
+    chip.hidden = false;
+    const reds = feats.filter((f) => f.properties.sev === "red").length;
+    chip.textContent = `${feats.length} below CAT I now${reds ? ` · ${reds} below 300 m` : ""}`;
+  } catch { /* keep previous state */ }
+}
+
+$<HTMLInputElement>("#now-mode").addEventListener("change", (e) => {
+  const on = (e.target as HTMLInputElement).checked;
+  if (on) {
+    if (!map.getSource("nowsrc")) {
+      map.addSource("nowsrc", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+      map.addLayer({
+        id: "now-glow", type: "circle", source: "nowsrc",
+        paint: {
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 9, 6, 16],
+          "circle-blur": 1.1,
+          "circle-color": ["match", ["get", "sev"], "red", "#ff5a4d", "#ffb347"],
+          "circle-opacity": 0.55,
+        },
+      });
+      map.addLayer({
+        id: "now-core", type: "circle", source: "nowsrc",
+        paint: {
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 3.2, 6, 5.5],
+          "circle-color": ["match", ["get", "sev"], "red", "#ff5a4d", "#ffb347"],
+          "circle-stroke-width": 1, "circle-stroke-color": "#fff8",
+        },
+      });
+      map.on("click", "now-core", (ev) => {
+        const icao = ev.features?.[0]?.properties.icao;
+        if (icao) openAirport(icao);
+      });
+      map.on("mousemove", "now-core", () => { map.getCanvas().style.cursor = "pointer"; });
+    }
+    map.setLayoutProperty("now-glow", "visibility", "visible");
+    map.setLayoutProperty("now-core", "visibility", "visible");
+    refreshNow();
+    nowTimer = setInterval(refreshNow, 180_000);
+  } else {
+    clearInterval(nowTimer);
+    if (map.getLayer("now-glow")) {
+      map.setLayoutProperty("now-glow", "visibility", "none");
+      map.setLayoutProperty("now-core", "visibility", "none");
+    }
+    $("#now-chip").hidden = true;
+  }
+});
+
 // ---------- search ----------
 const searchInput = $<HTMLInputElement>("#search-input");
 const searchResults = $("#search-results");

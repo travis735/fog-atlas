@@ -26,6 +26,10 @@
       <label id="lpv-toggle" title="Hide airports without an LPV approach (US, per FAA CIFP SBAS path points). Non-US airports have unknown LPV status (EGNOS not yet ingested) and stay visible.">
         <input id="lpv-only" type="checkbox" /> LPV
       </label>
+      <label id="now-toggle" title="Show airports below CAT I minima RIGHT NOW, worldwide — from NOAA's live METAR feed, refreshed every ~3 minutes. Amber = EFVS-recoverable, red = below 300 m.">
+        <input id="now-mode" type="checkbox" /> NOW
+      </label>
+      <span id="now-chip" hidden></span>
     </div>
 
     <div id="legend">
