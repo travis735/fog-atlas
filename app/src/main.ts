@@ -15,10 +15,9 @@ interface Airport {
   grid: number[][]; // [month][hour] sub-CAT-I %
 }
 
-const state = { mon: 0, hr: 6, playing: false, airports: [] as Airport[] };
+const state = { months: [0] as number[], hr: 6, playing: false, airports: [] as Airport[] };
 
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
-const monEl = $<HTMLInputElement>("#mon");
 const hrEl = $<HTMLInputElement>("#hr");
 const readout = $("#readout");
 const panel = $("#panel");
@@ -33,8 +32,30 @@ const map = new maplibregl.Map({
   attributionControl: { compact: true },
 });
 
-function scrubIdx() { return state.mon * 24 + state.hr; }
-function pctExpr(): any { return ["at", scrubIdx(), ["get", "g"]]; }
+// scrub value = mean over the selected month window at the scrubbed hour
+function pctExpr(): any {
+  const terms = state.months.map((m) => ["at", m * 24 + state.hr, ["get", "g"]]);
+  if (terms.length === 1) return terms[0];
+  return ["/", ["+", ...terms], terms.length];
+}
+function windowAvg(grid: number[]): number {
+  const s = state.months.reduce((acc, m) => acc + (grid[m * 24 + state.hr] ?? 0), 0);
+  return Math.round((s / state.months.length) * 10) / 10;
+}
+function windowLabel(): string {
+  const ms = state.months;
+  if (ms.length === 12) return "All year";
+  if (ms.length === 1) return MONTHS[ms[0]];
+  // detect a contiguous run, allowing wraparound (e.g. Nov-Feb)
+  const set = new Set(ms);
+  for (const start of ms) {
+    let len = 1;
+    while (len < ms.length && set.has((start + len) % 12)) len++;
+    if (len === ms.length && !set.has((start + 11) % 12))
+      return `${MONTHS_S[start]}–${MONTHS_S[(start + len - 1) % 12]}`;
+  }
+  return ms.map((m) => MONTHS_S[m]).join(", ");
+}
 
 const GLOW_COLOR: any = (e: any) => ["interpolate", ["linear"], e,
   0, "#5d7589", 2, "#5e93bb", 8, "#7fc0e8", 25, "#c4eaff", 55, "#ffffff"];
@@ -165,9 +186,9 @@ map.on("load", async () => {
       if (!f) return;
       const g = JSON.parse(JSON.stringify(f.properties.g));
       const arr = typeof g === "string" ? JSON.parse(g) : g;
-      const pct = arr[scrubIdx()];
+      const pct = windowAvg(arr);
       tip.setLngLat(e.lngLat)
-        .setHTML(`<b>${f.properties.icao}</b> ${f.properties.name}<br>${MONTHS_S[state.mon]} ${String(state.hr).padStart(2, "0")}:00 local — <b>${pct}%</b> sub-CAT-I`)
+        .setHTML(`<b>${f.properties.icao}</b> ${f.properties.name}<br>${windowLabel()} ${String(state.hr).padStart(2, "0")}:00 local — <b>${pct}%</b> sub-CAT-I`)
         .addTo(map);
     });
     map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; tip.remove(); });
@@ -316,7 +337,8 @@ function openMethodology() {
 }
 
 function applyScrub() {
-  readout.textContent = `${MONTHS[state.mon]} · ${String(state.hr).padStart(2, "0")}:00`;
+  readout.textContent = `${windowLabel()} · ${String(state.hr).padStart(2, "0")}:00`;
+  renderChips();
   if (!map.getLayer("glow")) return;
   map.setPaintProperty("fogheat", "heatmap-weight", heatWeight());
   for (const s of ["", "2", "3"]) {
@@ -326,7 +348,43 @@ function applyScrub() {
   }
 }
 
-monEl.addEventListener("input", () => { state.mon = +monEl.value; applyScrub(); });
+// month chips: click = single month, drag = contiguous range,
+// cmd/ctrl-click = toggle membership (covers wraparound windows like Nov-Jan)
+const monthsEl = $("#months");
+monthsEl.innerHTML = MONTHS_S.map((m, i) =>
+  `<button class="mchip" data-m="${i}" title="${MONTHS[i]}">${m[0]}</button>`).join("");
+const chips = [...monthsEl.querySelectorAll<HTMLElement>(".mchip")];
+
+function renderChips() {
+  chips.forEach((c, i) => c.classList.toggle("on", state.months.includes(i)));
+}
+
+let dragAnchor: number | null = null;
+function setMonths(ms: number[]) {
+  state.months = [...new Set(ms)].sort((a, b) => a - b);
+  if (!state.months.length) state.months = [0];
+  applyScrub();
+}
+monthsEl.addEventListener("pointerdown", (e) => {
+  const m = (e.target as HTMLElement).dataset?.m;
+  if (m === undefined) return;
+  const i = +m;
+  if (e.metaKey || e.ctrlKey) {
+    setMonths(state.months.includes(i)
+      ? state.months.filter((x) => x !== i) : [...state.months, i]);
+  } else {
+    dragAnchor = i;
+    setMonths([i]);
+  }
+});
+monthsEl.addEventListener("pointerover", (e) => {
+  const m = (e.target as HTMLElement).dataset?.m;
+  if (dragAnchor === null || m === undefined) return;
+  const [lo, hi] = [Math.min(dragAnchor, +m), Math.max(dragAnchor, +m)];
+  setMonths(Array.from({ length: hi - lo + 1 }, (_, k) => lo + k));
+});
+document.addEventListener("pointerup", () => { dragAnchor = null; });
+
 hrEl.addEventListener("input", () => { state.hr = +hrEl.value; applyScrub(); });
 
 let timer: ReturnType<typeof setInterval> | undefined;
@@ -336,9 +394,10 @@ $("#play").addEventListener("click", () => {
   if (state.playing) {
     timer = setInterval(() => {
       state.hr = (state.hr + 1) % 24;
-      if (state.hr === 0) state.mon = (state.mon + 1) % 12;
+      // single-month mode keeps the old tour-the-year feel; a window loops its hours
+      if (state.hr === 0 && state.months.length === 1)
+        state.months = [(state.months[0] + 1) % 12];
       hrEl.value = String(state.hr);
-      monEl.value = String(state.mon);
       applyScrub();
     }, 300);
   } else clearInterval(timer);
@@ -455,7 +514,8 @@ applyScrub();
 (window as any).__fogatlas = {
   state,
   map,
-  setScrub(mon: number, hr: number) { state.mon = mon; state.hr = hr; monEl.value = String(mon); hrEl.value = String(hr); applyScrub(); },
+  setScrub(mon: number, hr: number) { state.months = [mon]; state.hr = hr; hrEl.value = String(hr); applyScrub(); },
+  setMonths,
   openAirport,
   openRankings,
   openMethodology,

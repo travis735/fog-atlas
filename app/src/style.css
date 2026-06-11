@@ -95,7 +95,20 @@ html, body { height: 100%; background: var(--bg); color: var(--ink); overflow: h
   display: flex; align-items: center; gap: 10px;
   font-size: 10px; letter-spacing: 0.14em; color: var(--ink-dim); text-transform: uppercase;
 }
-input[type="range"] { width: 190px; accent-color: var(--accent); }
+input[type="range"] { width: 232px; accent-color: var(--accent); }
+
+#months { display: flex; gap: 3px; user-select: none; }
+.mchip {
+  width: 19px; height: 20px; border-radius: 4px; border: 1px solid var(--hairline);
+  background: transparent; color: var(--ink-dim); font-size: 8.5px;
+  letter-spacing: 0.02em; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; text-transform: uppercase;
+}
+.mchip:hover { border-color: #3a5670; color: var(--ink); }
+.mchip.on {
+  background: #1d3a52; border-color: var(--accent); color: var(--accent-hot);
+  box-shadow: 0 0 8px #9fd8ff22;
+}
 #readout { font-size: 13px; min-width: 130px; color: var(--accent-hot); letter-spacing: 0.06em; }
 
 #panel {
