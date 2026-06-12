@@ -58,7 +58,7 @@ The app's cause chart folds `BR` (mist) into the fog family: by definition `BR` 
 | Equipage | Achievable floor at an airport | Typical operator |
 |---|---|---|
 | CAT I deck | the airport's best **CAT I** minima | Part 135 / 125 / 91 — the EFVS retrofit audience (default view) |
-| HUD · SA CAT I | **SA CAT I** minima (DH 150 ft / RVR ~1400) where FAA-approved; abroad, the EASA "LTS CAT I" analog (~RVR 400 m) where an ILS is confirmed — an approximation, since LTS approval is per-state | HUD-equipped ops. Note: EFVS displays on a HUD, so the EFVS prospect typically already owns this tier — EFVS's honest marginal value is measured against it |
+| HUD · SA CAT I | **SA CAT I** minima (DH 150 ft / RVR ~1400) **only at runways where they are published** — US: the FAA ILS Master's per-runway SA CAT I / SA CAT II columns (89 airports); international: no credit applied yet, because EASA LTS CAT I likewise exists only where charted per runway (a future per-airport research pass) — so abroad this tier currently equals the CAT I floor | HUD-equipped ops. Note: EFVS displays on a HUD, so the EFVS prospect typically already owns this tier — EFVS's honest marginal value is measured against it |
 | CAT II deck | best CAT II / SA CAT II minima where ground-equipped, else the HUD tier | |
 | CAT III deck | best CAT III minima where ground-equipped, else above | Part 121 majors |
 

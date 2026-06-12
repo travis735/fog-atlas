@@ -95,7 +95,6 @@ def main():
             f = 800.0 if icao in lpv_set else 1600.0
             return {"cat1": f, "hud": f, "cat2": f, "cat3": f}
         cls = m["cat_ils"]
-        ils_confirmed = (m["cat_ils_confidence"] in AUTHORITATIVE and cls != "NONE")
         f1 = 1600.0 if cls == "NONE" else 800.0
         if cls == "NONE" and icao in egnos:
             # EGNOS LPV substitutes for the missing ILS
@@ -105,11 +104,12 @@ def main():
             f1 = ifl["cat1_m"]
         elif ifl and ifl.get("lpv") == "yes" and cls == "NONE":
             f1 = min(f1, 800.0)
-        # HUD tier abroad: EASA LTS CAT I (RVR 400m) analog — only where an
-        # ILS is confirmed AND the CAT I floor is equipment-driven (<=800m).
-        # Terrain-limited minima (e.g. Pasto RVR 2400) bind every deck:
-        # a HUD lowers decision height, not mountains.
-        fh = min(f1, 427.0) if (ils_confirmed and f1 <= 800.0) else f1
+        # HUD tier abroad: NO credit without evidence. SA CAT I / EASA LTS
+        # CAT I minima exist only where the state has CHARTED them for a
+        # specific runway (like the US, where we use the FAA ILS Master's
+        # per-runway SA columns). Until a per-airport research pass collects
+        # charted LTS CAT I minima, international HUD floor = CAT I floor.
+        fh = f1
         if cls == "CATIII": return {"cat1": f1, "hud": fh, "cat2": min(fh, 350.0), "cat3": min(fh, 175.0)}
         if cls == "CATII":  return {"cat1": f1, "hud": fh, "cat2": min(fh, 350.0), "cat3": min(fh, 350.0)}
         return {"cat1": f1, "hud": fh, "cat2": fh, "cat3": fh}

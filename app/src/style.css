@@ -187,6 +187,8 @@ input[type="range"] { width: 232px; accent-color: var(--accent); }
 
 .stats { display: flex; gap: 10px; margin: 18px 0; flex-wrap: wrap; }
 .stats .stat { flex: 1 1 44%; }
+.stat-na { opacity: 0.55; }
+.stat-na .v { color: var(--ink-dim); }
 .stat {
   flex: 1; border: 1px solid var(--hairline); border-radius: 10px; padding: 12px 14px;
 }

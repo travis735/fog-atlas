@@ -682,9 +682,13 @@ async function openAirport(icao: string) {
       <div class="stat efvs">
         <div class="v">${Math.round(a.efvsOppByEquip?.cat1 ?? a.efvsHoursPerYear)}</div>
         <div class="k">EFVS hrs / yr · CAT I deck (Part 135/125 — the EFVS buyer) · floor ${a.floors?.cat1 ?? 800} m</div></div>
+      ${(a.floors?.hud ?? 999999) < (a.floors?.cat1 ?? 0) ? `
       <div class="stat">
+        <div class="v">${Math.round(a.efvsOppByEquip?.hud ?? 0)}</div>
+        <div class="k">HUD · SA CAT I published here · floor ${a.floors?.hud} m</div></div>` : `
+      <div class="stat stat-na">
         <div class="v">${Math.round(a.efvsOppByEquip?.hud ?? a.efvsOppByEquip?.cat1 ?? 0)}</div>
-        <div class="k">HUD · SA CAT I · floor ${a.floors?.hud ?? a.floors?.cat1 ?? "—"} m</div></div>
+        <div class="k">HUD deck — no SA CAT I published at this airport (same floor as CAT I)</div></div>`}
       <div class="stat">
         <div class="v">${Math.round(a.efvsOppByEquip?.cat2 ?? 0)}</div>
         <div class="k">CAT II deck · floor ${a.floors?.cat2 ?? "—"} m</div></div>

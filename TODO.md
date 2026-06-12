@@ -27,6 +27,10 @@ Extend the climatology window in place.
 - Update the "data through <date>" stamp in the app shell
 
 ## Smaller candidates
+- International LTS CAT I research pass: which runways have CHARTED LTS CAT I
+  (EASA SA CAT I analog) minima — currently the HUD tier gets no credit abroad;
+  agents would read eAIP IAC charts for LTS CAT I minima boxes (start with the
+  top-40 already-researched airports)
 - Next ~100 international airports' per-runway CAT I floors (agent pass #2;
   Vágar + Nalchik retry with better sources — skipped at low confidence)
 - Custom domain → unlocks Bot Fight Mode / WAF + zone analytics
