@@ -27,7 +27,7 @@
       <label id="ils-toggle" title="Hide airports with no ILS on record (US, per FAA NASR — RNAV-only fields have higher minima than CAT I). International airports with unknown ILS status stay visible.">
         <input id="ils-only" type="checkbox" /> ILS
       </label>
-      <label id="lpv-toggle" title="Hide airports without an LPV approach (US, per FAA CIFP SBAS path points). Non-US airports have unknown LPV status (EGNOS not yet ingested) and stay visible.">
+      <label id="lpv-toggle" title="Hide airports without an LPV approach (US: FAA CIFP SBAS path points; Europe: ESSP EGNOS operational LPV procedures). Airports with unknown LPV status elsewhere stay visible.">
         <input id="lpv-only" type="checkbox" /> LPV
       </label>
       <label id="now-toggle" title="Show airports below CAT I minima RIGHT NOW, worldwide — from NOAA's live METAR feed, refreshed every ~3 minutes. Amber = EFVS-recoverable, red = below 300 m.">

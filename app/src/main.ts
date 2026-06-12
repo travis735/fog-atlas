@@ -11,8 +11,8 @@ interface Airport {
   catIls: string; catConfidence: string; size?: string; coveragePct?: number;
   reliability?: string; ils?: string; lpv?: string; floorM?: number;
   efvsOppHoursPerYear?: number;
-  floors?: { cat1: number; cat2: number; cat3: number };
-  efvsOppByEquip?: { cat1: number; cat2: number; cat3: number };
+  floors?: { cat1: number; hud?: number; cat2: number; cat3: number };
+  efvsOppByEquip?: { cat1: number; hud?: number; cat2: number; cat3: number };
   efvsHoursPerYear: number; belowHoursPerYear: number;
   causes: Record<string, number>;
   grid: number[][]; // [month][hour] sub-CAT-I %
@@ -21,7 +21,7 @@ interface Airport {
 const state = {
   months: [0] as number[], hr: 6, playing: false,
   ilsOnly: false, lpvOnly: false,
-  equip: "cat1" as "cat1" | "cat2" | "cat3",
+  equip: "cat1" as "cat1" | "hud" | "cat2" | "cat3",
   airports: [] as Airport[],
 };
 
@@ -422,12 +422,13 @@ function openRankings() {
     <p class="sub">Hours below the floor YOUR equipage can achieve at each airport, within EFVS range · ${state.airports.length} airports analyzed</p>
     <div class="rank-filter" style="gap:6px">
       operator equipage:
-      ${(["cat1", "cat2", "cat3"] as const).map((e) => `
+      ${(["cat1", "hud", "cat2", "cat3"] as const).map((e) => `
         <button class="equip-chip${state.equip === e ? " on" : ""}" data-equip="${e}"
           title="${{ cat1: "CAT I flight deck — typical Part 135/125/91: the EFVS retrofit audience",
+                     hud: "HUD-equipped, SA CAT I authorized (FAA) / LTS CAT I (EASA) — DH 150ft, RVR ~1400. The EFVS prospect usually already owns this HUD",
                      cat2: "CAT II-capable deck and authorization",
                      cat3: "CAT III deck + training — typical Part 121 major" }[e]}">
-          ${{ cat1: "CAT I (135/125)", cat2: "CAT II", cat3: "CAT III (121)" }[e]}</button>`).join("")}
+          ${{ cat1: "CAT I (135/125)", hud: "HUD · SA CAT I", cat2: "CAT II", cat3: "CAT III (121)" }[e]}</button>`).join("")}
     </div>
     <label class="rank-filter">
       <input id="rank-cat1" type="checkbox" ${rankCatIOnly ? "checked" : ""} />
@@ -681,6 +682,9 @@ async function openAirport(icao: string) {
       <div class="stat efvs">
         <div class="v">${Math.round(a.efvsOppByEquip?.cat1 ?? a.efvsHoursPerYear)}</div>
         <div class="k">EFVS hrs / yr · CAT I deck (Part 135/125 — the EFVS buyer) · floor ${a.floors?.cat1 ?? 800} m</div></div>
+      <div class="stat">
+        <div class="v">${Math.round(a.efvsOppByEquip?.hud ?? a.efvsOppByEquip?.cat1 ?? 0)}</div>
+        <div class="k">HUD · SA CAT I · floor ${a.floors?.hud ?? a.floors?.cat1 ?? "—"} m</div></div>
       <div class="stat">
         <div class="v">${Math.round(a.efvsOppByEquip?.cat2 ?? 0)}</div>
         <div class="k">CAT II deck · floor ${a.floors?.cat2 ?? "—"} m</div></div>

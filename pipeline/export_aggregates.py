@@ -56,23 +56,63 @@ def main():
         with open(fp) as f:
             lpv_set = {r["icao"] for r in csv.DictReader(f)}
 
+    # EGNOS LPV procedures (ESSP, operational only): LPV200 = DH 200ft
+    # (CAT I-class minima), plain LPV = DH >= 250ft
+    egnos = {}
+    fp = HERE / "data" / "egnos_lpv.csv"
+    if fp.exists():
+        with open(fp) as f:
+            egnos = {r["icao"]: r["lpv_class"] for r in csv.DictReader(f)}
+
+    # international per-runway CAT I floors + LPV, eAIP-researched (agents,
+    # audited); overrides the class approximation where present
+    intl_floors = {}
+    fp = HERE / "data" / "intl_floors.csv"
+    if fp.exists():
+        with open(fp) as f:
+            for r in csv.DictReader(f):
+                intl_floors[r["icao"]] = {
+                    "cat1_m": float(r["cat1_m"]) if r["cat1_m"] else None,
+                    "lpv": r["lpv"],
+                }
+
+    AUTHORITATIVE = ("faa-nasr", "faa-c060", "curated", "verify", "aip")
+
     def floors_for(m):
-        """Achievable visibility floor (m) for CAT I / II / III-equipped ops."""
+        """Achievable visibility floor (m) by equipage:
+        cat1 deck / HUD (SA CAT I, EASA LTS CAT I) / cat2 / cat3."""
         icao = m["icao"]
         if icao in us_levels:
             lv = us_levels[icao]
             f1 = lv.get("cat1_m", 800.0)
-            f2 = min(f1, lv.get("cat2_m", f1))
+            # SA CAT I: HUD to 150ft DH on a standard CAT I ILS — FAA
+            # publishes which runways; RVR 1400 (~427m) where approved
+            fh = min(f1, lv.get("sacat1_m", f1))
+            f2 = min(fh, lv.get("cat2_m", fh))
             f3 = min(f2, lv.get("cat3_m", f2))
-            return {"cat1": f1, "cat2": f2, "cat3": f3}
+            return {"cat1": f1, "hud": fh, "cat2": f2, "cat3": f3}
         if m["country"] == "US":
             f = 800.0 if icao in lpv_set else 1600.0
-            return {"cat1": f, "cat2": f, "cat3": f}
+            return {"cat1": f, "hud": f, "cat2": f, "cat3": f}
         cls = m["cat_ils"]
-        if cls == "CATIII": return {"cat1": 800.0, "cat2": 350.0, "cat3": 175.0}
-        if cls == "CATII":  return {"cat1": 800.0, "cat2": 350.0, "cat3": 350.0}
-        if cls == "NONE":   return {"cat1": 1600.0, "cat2": 1600.0, "cat3": 1600.0}
-        return {"cat1": 800.0, "cat2": 800.0, "cat3": 800.0}
+        ils_confirmed = (m["cat_ils_confidence"] in AUTHORITATIVE and cls != "NONE")
+        f1 = 1600.0 if cls == "NONE" else 800.0
+        if cls == "NONE" and icao in egnos:
+            # EGNOS LPV substitutes for the missing ILS
+            f1 = 800.0 if egnos[icao] == "LPV200" else 1100.0
+        ifl = intl_floors.get(icao)
+        if ifl and ifl["cat1_m"]:
+            f1 = ifl["cat1_m"]
+        elif ifl and ifl.get("lpv") == "yes" and cls == "NONE":
+            f1 = min(f1, 800.0)
+        # HUD tier abroad: EASA LTS CAT I (RVR 400m) analog — only where an
+        # ILS is confirmed AND the CAT I floor is equipment-driven (<=800m).
+        # Terrain-limited minima (e.g. Pasto RVR 2400) bind every deck:
+        # a HUD lowers decision height, not mountains.
+        fh = min(f1, 427.0) if (ils_confirmed and f1 <= 800.0) else f1
+        if cls == "CATIII": return {"cat1": f1, "hud": fh, "cat2": min(fh, 350.0), "cat3": min(fh, 175.0)}
+        if cls == "CATII":  return {"cat1": f1, "hud": fh, "cat2": min(fh, 350.0), "cat3": min(fh, 350.0)}
+        return {"cat1": f1, "hud": fh, "cat2": fh, "cat3": fh}
 
     # vbin upper edges in meters (must match analyze_pilot.py's bins)
     VBIN_UPPER = [306, 354, 450, 805, 1609]
@@ -176,7 +216,9 @@ def main():
             "ils": ("no" if m["cat_ils"] == "NONE"
                     else "yes" if m["cat_ils_confidence"] in ("faa-nasr", "faa-c060", "curated", "verify", "aip")
                     else "no" if m["country"] == "US" else "unknown"),
-            "lpv": ("yes" if icao in lpv_set else "no" if m["country"] == "US" else "unknown"),
+            "lpv": ("yes" if icao in lpv_set else "no" if m["country"] == "US"
+                    else "yes" if icao in egnos
+                    else intl_floors.get(icao, {}).get("lpv", "unknown") or "unknown"),
             "floors": {k: round(v) for k, v in floors.items()},
             "efvsOppByEquip": opp_by_equip,
             # back-compat / default audience: the CAT I-equipped operator

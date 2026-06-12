@@ -58,13 +58,16 @@ The app's cause chart folds `BR` (mist) into the fog family: by definition `BR` 
 | Equipage | Achievable floor at an airport | Typical operator |
 |---|---|---|
 | CAT I deck | the airport's best **CAT I** minima | Part 135 / 125 / 91 — the EFVS retrofit audience (default view) |
-| CAT II deck | best CAT II minima where ground-equipped, else CAT I | |
+| HUD · SA CAT I | **SA CAT I** minima (DH 150 ft / RVR ~1400) where FAA-approved; abroad, the EASA "LTS CAT I" analog (~RVR 400 m) where an ILS is confirmed — an approximation, since LTS approval is per-state | HUD-equipped ops. Note: EFVS displays on a HUD, so the EFVS prospect typically already owns this tier — EFVS's honest marginal value is measured against it |
+| CAT II deck | best CAT II / SA CAT II minima where ground-equipped, else the HUD tier | |
 | CAT III deck | best CAT III minima where ground-equipped, else above | Part 121 majors |
+
+International CAT I floors are eAIP-researched per runway for the top-ranked airports (agent-researched, spot-audited; `pipeline/data/intl_floors.csv`) and class-approximated (800 m) elsewhere.
 
 Opportunity = hours/yr below the achievable floor yet within EFVS range (≥ 300 m / ~RVR 1000).
 
 - **US floors:** per-runway published minima from the FAA ILS Master report (CAT I visibility, SA CAT I / CAT II / SA CAT II / CAT III RVR; lowest across runways) — e.g. SFO: CAT I floor RVR 1800, CAT III floor RVR 600. LPV from FAA CIFP SBAS path points; no-ILS fields get 800 m with LPV, 1600 m without (LNAV-class).
-- **International:** approximated from capability class — CAT III ~175 m, CAT II ~350 m, CAT I 800 m, no-ILS 1600 m. EGNOS LPV not yet ingested.
+- **International:** approximated from capability class — CAT III ~175 m, CAT II ~350 m, CAT I 800 m, no-ILS 1600 m — refined by (a) eAIP-researched per-runway CAT I minima for the top-ranked airports, and (b) **EGNOS LPV procedures** from ESSP's official per-runway dataset (485 airports with operational LPV; LPV200 → 800 m floor at no-ILS fields, plain LPV → ~1100 m).
 
 Counting is conservative: visibility bins count only when entirely below the floor; ceiling-limited hours count only where a ~200 ft DH binds (floor ≥ 450 m). Rankings rank by the selected equipage profile.
 
