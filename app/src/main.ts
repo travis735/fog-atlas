@@ -31,13 +31,58 @@ const readout = $("#readout");
 const panel = $("#panel");
 const panelContent = $("#panel-content");
 
+// ISO code → "Canada", not "· CA" (which reads as California next to a US map)
+const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+const countryCache = new Map<string, string>();
+function countryName(code: string): string {
+  let n = countryCache.get(code);
+  if (!n) {
+    try { n = regionNames.of(code) ?? code; } catch { n = code; }
+    countryCache.set(code, n);
+  }
+  return n;
+}
+
+// view stashed by the webglcontextlost reload path, so recovery lands on the same spot
+const savedView = ((): { lng: number; lat: number; zoom: number } | null => {
+  try {
+    const v = sessionStorage.getItem("fa-view");
+    if (!v) return null;
+    sessionStorage.removeItem("fa-view");
+    return JSON.parse(v);
+  } catch { return null; }
+})();
+
 const map = new maplibregl.Map({
   container: "map",
   style: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-  center: [15, 30],
-  zoom: 1.6,
+  center: savedView ? [savedView.lng, savedView.lat] : [15, 30],
+  zoom: savedView?.zoom ?? 1.6,
   minZoom: 1,
   attributionControl: { compact: true },
+});
+
+// macOS GPU sleep/switch/driver resets kill the WebGL context; MapLibre never
+// recovers on its own — the map stays black while the DOM chrome lives on.
+// Give the browser a moment to restore, then reload (once visible) into the
+// stashed view. Reloads are rate-limited in case the GPU is persistently gone.
+map.getCanvas().addEventListener("webglcontextlost", () => {
+  let restored = false;
+  map.getCanvas().addEventListener("webglcontextrestored", () => { restored = true; }, { once: true });
+  setTimeout(() => {
+    if (restored) return;
+    try {
+      const past = (JSON.parse(sessionStorage.getItem("fa-ctx-reloads") ?? "[]") as number[])
+        .filter((t) => Date.now() - t < 60_000);
+      if (past.length >= 2) return;
+      sessionStorage.setItem("fa-ctx-reloads", JSON.stringify([...past, Date.now()]));
+      const c = map.getCenter();
+      sessionStorage.setItem("fa-view", JSON.stringify({ lng: c.lng, lat: c.lat, zoom: map.getZoom() }));
+    } catch { /* sessionStorage unavailable — still reload */ }
+    const reload = () => setTimeout(() => location.reload(), 300);
+    if (document.visibilityState === "visible") reload();
+    else document.addEventListener("visibilitychange", reload, { once: true });
+  }, 1500);
 });
 
 // scrub value = mean over the selected month window at the scrubbed hour
@@ -352,7 +397,8 @@ function runSearch() {
     .filter((a) =>
       a.icao.toLowerCase().includes(q) ||
       a.name.toLowerCase().includes(q) ||
-      a.country.toLowerCase() === q)
+      a.country.toLowerCase() === q ||
+      countryName(a.country).toLowerCase().startsWith(q))
     .sort((a, b) => {
       const ax = a.icao.toLowerCase() === q ? 0 : 1;
       const bx = b.icao.toLowerCase() === q ? 0 : 1;
@@ -363,7 +409,7 @@ function runSearch() {
   searchResults.innerHTML = hits.map((a, i) => `
     <div class="search-row${i === 0 ? " active" : ""}" data-icao="${a.icao}">
       <b>${a.icao}</b><span>${a.name}</span>
-      <em>${a.country} · ${Math.round(a.efvsHoursPerYear + a.belowHoursPerYear)} h/yr</em>
+      <em>${countryName(a.country)} · ${Math.round(a.efvsHoursPerYear + a.belowHoursPerYear)} h/yr</em>
     </div>`).join("");
   searchResults.hidden = hits.length === 0;
 }
@@ -440,7 +486,7 @@ function openRankings() {
         ${rows.map((a, i) => `
           <tr data-icao="${a.icao}">
             <td class="num">${i + 1}</td>
-            <td><b>${a.icao}</b> ${a.name.length > 26 ? a.name.slice(0, 25) + "…" : a.name} <em style="color:var(--ink-dim)">${a.country}</em></td>
+            <td><b>${a.icao}</b> ${a.name.length > 26 ? a.name.slice(0, 25) + "…" : a.name} <em style="color:var(--ink-dim)" title="${countryName(a.country)}">${a.country}</em></td>
             <td class="num efvs">${Math.round(oppOf(a))}</td>
             <td class="num">${floorOf(a)}m</td>
             <td>${a.catIls === "NONE" ? "—" : a.catIls === "CATIII" || a.catIls === "CATII" ? a.catIls.replace("CAT", "") : "I"}</td>
@@ -646,7 +692,7 @@ async function openAirport(icao: string) {
 
   panelContent.innerHTML = `
     <h2>${a.icao}</h2>
-    <p class="sub">${a.name} · ${a.country}</p>
+    <p class="sub">${a.name} · ${countryName(a.country)}</p>
     <div>
       <span class="badge ${cat3 ? "cat3" : "cat1"}" title="${noIls
         ? "Verified: no ILS at this airport — RNAV/non-precision approaches only, so real minima sit ABOVE CAT I and these bands understate blocked hours"
