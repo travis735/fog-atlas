@@ -1,0 +1,362 @@
+[
+ {
+  "icao": "CYQI",
+  "name": "Yarmouth Airport",
+  "lat": 43.8269,
+  "lon": -66.0881,
+  "fogH": 555,
+  "catIls": "NONE",
+  "catConfidence": "aip"
+ },
+ {
+  "icao": "CYYT",
+  "name": "St. John's International Airport",
+  "lat": 47.6186,
+  "lon": -52.7519,
+  "fogH": 516,
+  "catIls": "CATIII",
+  "catConfidence": "faa-c060"
+ },
+ {
+  "icao": "CYBX",
+  "name": "Lourdes-de-Blanc-Sablon Airport",
+  "lat": 51.4436,
+  "lon": -57.1853,
+  "fogH": 406,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYHZ",
+  "name": "Halifax / Stanfield International Airport",
+  "lat": 44.8808,
+  "lon": -63.5086,
+  "fogH": 395,
+  "catIls": "CATII",
+  "catConfidence": "faa-c060"
+ },
+ {
+  "icao": "CYRT",
+  "name": "Rankin Inlet Airport",
+  "lat": 62.8114,
+  "lon": -92.1158,
+  "fogH": 325,
+  "catIls": "NONE",
+  "catConfidence": "aip"
+ },
+ {
+  "icao": "CYSJ",
+  "name": "Saint John Airport",
+  "lat": 45.3161,
+  "lon": -65.8903,
+  "fogH": 287,
+  "catIls": "CATI",
+  "catConfidence": "aip"
+ },
+ {
+  "icao": "CYRB",
+  "name": "Resolute Bay Airport",
+  "lat": 74.7169,
+  "lon": -94.9694,
+  "fogH": 276,
+  "catIls": "CATI",
+  "catConfidence": "aip"
+ },
+ {
+  "icao": "CYQX",
+  "name": "Gander International Airport",
+  "lat": 48.9363,
+  "lon": -54.5677,
+  "fogH": 270,
+  "catIls": "CATI",
+  "catConfidence": "aip"
+ },
+ {
+  "icao": "CYAZ",
+  "name": "Tofino / Long Beach Airport",
+  "lat": 49.0798,
+  "lon": -125.7756,
+  "fogH": 221,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYUX",
+  "name": "Hall Beach Airport",
+  "lat": 68.7761,
+  "lon": -81.2425,
+  "fogH": 220,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYPD",
+  "name": "Port Hawkesbury Airport",
+  "lat": 45.6567,
+  "lon": -61.3681,
+  "fogH": 220,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYRV",
+  "name": "Revelstoke Airport",
+  "lat": 50.9622,
+  "lon": -118.1843,
+  "fogH": 208,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYQZ",
+  "name": "Quesnel Airport",
+  "lat": 53.0261,
+  "lon": -122.51,
+  "fogH": 206,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYXS",
+  "name": "Prince George (International) Airport",
+  "lat": 53.8843,
+  "lon": -122.6666,
+  "fogH": 201,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYPX",
+  "name": "Puvirnituq Airport",
+  "lat": 60.0506,
+  "lon": -77.2869,
+  "fogH": 200,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CBBC",
+  "name": "Bella Bella (Campbell Island) Airport",
+  "lat": 52.185,
+  "lon": -128.157,
+  "fogH": 194,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYZS",
+  "name": "Coral Harbour Airport",
+  "lat": 64.1933,
+  "lon": -83.3594,
+  "fogH": 190,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYXZ",
+  "name": "Wawa Airport",
+  "lat": 47.9667,
+  "lon": -84.7867,
+  "fogH": 181,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYBK",
+  "name": "Baker Lake Airport",
+  "lat": 64.2989,
+  "lon": -96.0778,
+  "fogH": 166,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYQY",
+  "name": "Sydney / J.A. Douglas McCurdy Airport",
+  "lat": 46.1611,
+  "lon": -60.0498,
+  "fogH": 143,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYYB",
+  "name": "North Bay Jack Garland Airport",
+  "lat": 46.3636,
+  "lon": -79.4228,
+  "fogH": 141,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYGV",
+  "name": "Havre-Saint-Pierre Airport",
+  "lat": 50.2819,
+  "lon": -63.6114,
+  "fogH": 133,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYSB",
+  "name": "Sudbury Airport",
+  "lat": 46.625,
+  "lon": -80.7989,
+  "fogH": 133,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYNA",
+  "name": "Natashquan Airport",
+  "lat": 50.1901,
+  "lon": -61.789,
+  "fogH": 126,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYPQ",
+  "name": "Peterborough Regional Airport",
+  "lat": 44.2323,
+  "lon": -78.3621,
+  "fogH": 125,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYAY",
+  "name": "St. Anthony Airport",
+  "lat": 51.3919,
+  "lon": -56.0832,
+  "fogH": 125,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYKF",
+  "name": "Region of Waterloo International Airport",
+  "lat": 43.4608,
+  "lon": -80.3786,
+  "fogH": 125,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYHM",
+  "name": "John C. Munro Hamilton International Airport",
+  "lat": 43.1735,
+  "lon": -79.9312,
+  "fogH": 123,
+  "catIls": "CATII",
+  "catConfidence": "faa-c060"
+ },
+ {
+  "icao": "CYEN",
+  "name": "Estevan Airport",
+  "lat": 49.2103,
+  "lon": -102.966,
+  "fogH": 107,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYGQ",
+  "name": "Geraldton Greenstone Regional Airport",
+  "lat": 49.7783,
+  "lon": -86.9394,
+  "fogH": 93,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYJT",
+  "name": "Stephenville Dymond International Airport",
+  "lat": 48.5434,
+  "lon": -58.5529,
+  "fogH": 90,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYXR",
+  "name": "Earlton (Timiskaming Regional) Airport",
+  "lat": 47.6974,
+  "lon": -79.8473,
+  "fogH": 90,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYBC",
+  "name": "Baie-Comeau Airport",
+  "lat": 49.1325,
+  "lon": -68.2044,
+  "fogH": 90,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYAM",
+  "name": "Sault Ste Marie Airport",
+  "lat": 46.4832,
+  "lon": -84.5085,
+  "fogH": 88,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYXU",
+  "name": "London International Airport",
+  "lat": 43.0328,
+  "lon": -81.149,
+  "fogH": 88,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYZV",
+  "name": "Sept-\u00celes Airport",
+  "lat": 50.2233,
+  "lon": -66.2656,
+  "fogH": 88,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYQA",
+  "name": "Muskoka Airport",
+  "lat": 44.9754,
+  "lon": -79.3065,
+  "fogH": 87,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYQK",
+  "name": "Kenora Airport",
+  "lat": 49.7883,
+  "lon": -94.3631,
+  "fogH": 82,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CYYY",
+  "name": "Mont Joli Airport",
+  "lat": 48.6086,
+  "lon": -68.2081,
+  "fogH": 82,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ },
+ {
+  "icao": "CZBF",
+  "name": "Bathurst Airport",
+  "lat": 47.6297,
+  "lon": -65.7389,
+  "fogH": 80,
+  "catIls": "CATI",
+  "catConfidence": "assumed"
+ }
+]
