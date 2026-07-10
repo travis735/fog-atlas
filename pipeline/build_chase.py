@@ -145,10 +145,38 @@ def main() -> None:
         if out_ends:
             airports[icao] = out_ends
 
+    # Canadian curated tier (agent-researched AIP Canada/CFS; owner-audited).
+    # Only high/med confidence rows apply; low-confidence ends are omitted —
+    # better absent than confidently wrong on a chase board.
+    ca_csv = HERE / "data" / "ca_chase_curated.csv"
+    n_ca = 0
+    if ca_csv.exists():
+        import csv as _csv
+        ca_airports: dict[str, list] = {}
+        for r in _csv.DictReader(open(ca_csv)):
+            if r["conf"] not in ("high", "med"):
+                continue
+            cat = r["ils"] or None
+            has_lpv = r["lpv"] == "1"
+            ca_airports.setdefault(r["icao"], []).append({
+                "e": r["end"],
+                "len": int(r["len"]),
+                "als": r["als"] or None,
+                "rvr": "Y" if r["rvr"] == "1" else None,
+                "ils": cat,
+                "lpv": 1 if has_lpv else 0,
+                "tier": tier_for(cat, has_lpv),
+                "cur": 1,
+            })
+        airports.update(ca_airports)
+        n_ca = len(ca_airports)
+
     meta = {
-        "source": "FAA NASR + CIFP via APRA",
+        "source": "FAA NASR + CIFP via APRA; Canada curated from AIP Canada/CFS",
         "nasr_file": next((p.name for p in sorted(NASR.glob("*.zip")) if p.name != "cifp.zip"), "unknown"),
         "airports": len(airports),
+        "us": len(airports) - n_ca,
+        "ca": n_ca,
     }
     out = {"meta": meta, "airports": airports}
     OUT.mkdir(parents=True, exist_ok=True)

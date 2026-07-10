@@ -919,6 +919,7 @@ async function openAirport(icao: string) {
 interface ChaseEnd {
   e: string; len: number; als: string | null; rvr: string | null;
   ils: string | null; lpv: 0 | 1; tier: number;
+  cur?: 0 | 1; // 1 = curated (AIP Canada/CFS research), not FAA NASR
 }
 interface ChasePrefs {
   base: string | null; speed: number; maxEteH: number;
@@ -1320,7 +1321,8 @@ function chaseRowBadges(end: ChaseEnd): string {
     ALS_LABEL[end.als ?? ""] ?? end.als,
     end.ils ? `CAT ${end.ils}` : end.lpv ? "LPV" : null,
     `${end.len.toLocaleString()} ft`,
-    end.rvr ? `RVR ${end.rvr}` : null,
+    end.rvr ? (end.rvr === "Y" ? "RVR" : `RVR ${end.rvr}`) : null,
+    end.cur ? `<span title="infrastructure curated from AIP Canada / CFS sources — confidence-tagged, not authoritative FAA data">curated</span>` : null,
   ].filter(Boolean);
   return parts.join(" · ");
 }
@@ -1351,7 +1353,8 @@ function renderChase() {
   const base = state.airports.find((x) => x.icao === chasePrefs.base);
   const cands = chaseCandidates();
   const mon = new Date().getMonth();
-  const nUS = chaseData ? Object.keys(chaseData.airports).length : 0;
+  const nUS = chaseData?.meta?.us ?? (chaseData ? Object.keys(chaseData.airports).length : 0);
+  const nCA = chaseData?.meta?.ca ?? 0;
 
   const alsChips = CHASE_ALS_CHIPS.map((k) => `
     <button class="equip-chip${chasePrefs.als.includes(k) ? " on" : ""}" data-als="${k}"
@@ -1379,7 +1382,7 @@ function renderChase() {
 
   panelContent.innerHTML = `
     <h2>Fog chase</h2>
-    <p class="sub">launch board for EFVS testing — ${nUS} US airports with per-runway infrastructure (FAA NASR)${chaseData ? "" : " — <b style='color:#ff9a9a'>chase.json failed to load</b>"}</p>
+    <p class="sub">launch board for EFVS testing — ${nUS} US airports (FAA NASR)${nCA ? ` + ${nCA} Canadian curated` : ""}${chaseData ? "" : " — <b style='color:#ff9a9a'>chase.json failed to load</b>"}</p>
 
     <div class="chase-setup">
       ${base
@@ -1445,7 +1448,7 @@ function renderChase() {
           : `<p class="note">No airports pass the filters within range — widen the ALS set, lower the runway/go-around bars, or extend max ETE.</p>`}
       </details>`;
     })()}
-    <p class="note">ETE is great-circle still-air — no winds, no climb/descent. Infrastructure: FAA NASR ${chaseData?.meta?.nasr_file?.match(/\d{4}-\d{2}-\d{2}/)?.[0] ?? ""} + CIFP LPV; minima heights are tier proxies, not chart DAs. US airports only — curated Canadian fields arrive in a later build.</p>
+    <p class="note">ETE is great-circle still-air — no winds, no climb/descent. Infrastructure: FAA NASR ${chaseData?.meta?.nasr_file?.match(/\d{4}-\d{2}-\d{2}/)?.[0] ?? ""} + CIFP LPV; minima heights are tier proxies, not chart DAs. ${chaseData?.meta?.ca ? `Canadian fields are curated from AIP Canada/CFS research (confidence-tagged) — not authoritative FAA data.` : "US airports only — curated Canadian fields arrive in a later build."}</p>
   `;
 
   // wiring — settings changes rebaseline the alert set (no false "entered fog"
