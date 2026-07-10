@@ -975,6 +975,7 @@ interface LiveOb {
   obsMs: number; vis: number | null; ceil: number | null;
   rvr: string | null; rvrFt: number | null; wx: string | null;
   sub: boolean; below: boolean;
+  tempC: number | null; dewpC: number | null; wspd: number | null;
 }
 let chaseLive: Map<string, LiveOb> | null = null;
 let chaseTimer: ReturnType<typeof setInterval> | undefined;
@@ -1009,21 +1010,122 @@ function parseChaseLiveCsv(text: string): Map<string, LiveOb> {
     }
     const below = vis != null && vis < 0.19;
     const sub = (vis != null && vis < 0.5) || (ceil != null && ceil < 200);
+    const num = (s: string) => { const v = parseFloat(s); return Number.isNaN(v) ? null : v; };
     out.set(icao, {
       obsMs: Date.parse(cols[1]) || 0,
       vis: vis != null && !Number.isNaN(vis) ? vis : null,
       ceil, rvr, rvrFt, wx: cols[20] || null, sub, below,
+      tempC: num(cols[4]), dewpC: num(cols[5]), wspd: num(cols[7]),
     });
   }
   return out;
+}
+
+// ---- rolling per-station history: feeds the nowcast trend features ----
+// One /api/now snapshot every 3 min while the board is open; entries dedupe
+// on obs time, so we accumulate actual METARs, not fetch ticks. A single
+// bounded /api/metar batch warm-starts the 40-90 min lookback per session.
+interface HistOb { t: number; vis: number | null; ceil: number | null; sub: boolean }
+const chaseHist = new Map<string, HistOb[]>();
+let chaseWarmed = false;
+
+function pushHist(icao: string, ob: HistOb) {
+  const h = chaseHist.get(icao) ?? [];
+  if (!h.some((x) => Math.abs(x.t - ob.t) < 30_000)) {
+    h.push(ob);
+    h.sort((a, b) => a.t - b.t);
+    while (h.length && h[0].t < Date.now() - 2.5 * 3600_000) h.shift();
+    chaseHist.set(icao, h);
+  }
+}
+
+function updateChaseHist() {
+  if (!chaseLive || !chaseData) return;
+  for (const [icao, ob] of chaseLive) {
+    if (ob.obsMs && chaseData.airports[icao])
+      pushHist(icao, { t: ob.obsMs, vis: ob.vis, ceil: ob.ceil, sub: ob.sub });
+  }
+}
+
+async function warmChaseHist(cands: ChaseCand[]) {
+  const ids = cands.slice(0, 150).map((c) => c.a.icao);
+  if (!ids.length) return;
+  try {
+    const arr = await (await fetch(`/api/metar?ids=${ids.join(",")}&hours=3`)).json();
+    for (const o of Array.isArray(arr) ? arr : []) {
+      const icao = o.icaoId;
+      if (!icao || o.obsTime == null) continue;
+      const vis = o.visib == null ? null
+        : typeof o.visib === "string" ? (o.visib.includes("+") ? 10 : parseFloat(o.visib)) : o.visib;
+      const cs = (o.clouds ?? [])
+        .filter((c: any) => ["BKN", "OVC", "VV"].includes(c.cover) && c.base != null)
+        .map((c: any) => c.base);
+      const ceil = cs.length ? Math.min(...cs) : null;
+      pushHist(icao, {
+        t: o.obsTime * 1000, vis, ceil,
+        sub: (vis != null && vis < 0.5) || (ceil != null && ceil < 200),
+      });
+    }
+  } catch { /* trend features just start cold */ }
+}
+
+function maybeWarmChase() {
+  if (chaseWarmed || !chasePrefs.base || !chaseData) return;
+  chaseWarmed = true; // one bounded batch per session, never re-polled
+  warmChaseHist(chaseCandidates()).then(renderChase);
 }
 
 async function refreshChaseLive() {
   try {
     const text = await (await fetch("/api/now")).text();
     chaseLive = parseChaseLiveCsv(text);
+    updateChaseHist();
+    maybeWarmChase();
     renderChase();
   } catch { /* keep previous obs */ }
+}
+
+// port of the deep-dive nowcast feature builder, fed from the cache ob +
+// rolling history instead of a per-airport /api/metar call
+const tzFmtCache = new Map<string, Intl.DateTimeFormat>();
+function nowcastPFor(a: Airport, ob: LiveOb): number | null {
+  if (!nowcastModel || ob.vis == null) return null;
+  const prev = (chaseHist.get(a.icao) ?? [])
+    .filter((h) => { const dt = ob.obsMs - h.t; return dt > 2_400_000 && dt < 5_400_000; })
+    .at(-1);
+  let fmt = tzFmtCache.get(a.tz);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat("en-US", { timeZone: a.tz, hour: "numeric", month: "numeric", hour12: false });
+    tzFmtCache.set(a.tz, fmt);
+  }
+  const parts = fmt.formatToParts(new Date());
+  const mon = +(parts.find((p) => p.type === "month")?.value ?? 1);
+  const hr = +(parts.find((p) => p.type === "hour")?.value ?? 0) % 24;
+  const climP = Math.min(Math.max((a.grid[mon - 1]?.[hr] ?? 0) / 100, 1e-4), 1 - 1e-4);
+  const tempF = ob.tempC != null ? ob.tempC * 1.8 + 32 : 59;
+  const dewpF = ob.dewpC != null ? ob.dewpC * 1.8 + 32 : tempF - 10;
+  const ceilFt = ob.ceil ?? 25000;
+  const vis = ob.vis;
+  const f: Record<string, number> = {
+    vsby_c: Math.min(Math.max(vis, 0), 10),
+    log_vis: Math.log1p(Math.min(Math.max(vis, 0), 10)),
+    ceil_c: Math.min(ceilFt, 25000) / 1000,
+    low_ceil: ceilFt < 1000 ? 1 : 0,
+    spread: Math.min(Math.max(tempF - dewpF, -5), 40),
+    tmpf_c: Math.min(Math.max(tempF, -40), 120),
+    sknt_c: Math.min(Math.max(ob.wspd ?? 5, 0), 50),
+    vis_trend_c: prev?.vis != null ? Math.min(Math.max(vis - prev.vis, -10), 10) : 0,
+    sub_now: ob.sub ? 1 : 0,
+    sub_prev_f: prev == null ? (ob.sub ? 1 : 0) : prev.sub ? 1 : 0,
+    mon_sin: Math.sin((2 * Math.PI * mon) / 12),
+    mon_cos: Math.cos((2 * Math.PI * mon) / 12),
+    hr_sin: Math.sin((2 * Math.PI * hr) / 24),
+    hr_cos: Math.cos((2 * Math.PI * hr) / 24),
+    clim_logit: Math.log(climP / (1 - climP)),
+  };
+  let z = nowcastModel.intercept;
+  for (const [k, c] of Object.entries(nowcastModel.coef)) z += (c as number) * (f[k] ?? 0);
+  return 1 / (1 + Math.exp(-z));
 }
 
 const obAge = (ob: LiveOb) => Math.max(0, Math.round((Date.now() - ob.obsMs) / 60000));
@@ -1180,6 +1282,10 @@ async function openChase() {
     chaseData = null; // only try once
     try { chaseData = await (await fetch("/data/chase.json")).json(); } catch {}
   }
+  if (nowcastModel === undefined) {
+    nowcastModel = null;
+    try { nowcastModel = await (await fetch("/data/model_y2.json")).json(); } catch {}
+  }
   chaseOpen = true;
   renderChase();
   panel.hidden = false;
@@ -1255,12 +1361,32 @@ function renderChase() {
       const inFog = cands.filter((c) => chaseLive?.get(c.a.icao)?.sub)
         .sort((x, y) => +obStale(chaseLive!.get(x.a.icao)!) - +obStale(chaseLive!.get(y.a.icao)!) || x.ete - y.ete);
       const quiet = cands.filter((c) => !chaseLive?.get(c.a.icao)?.sub);
+      const soon = !chaseLive ? [] : cands
+        .flatMap((c) => {
+          const ob = chaseLive!.get(c.a.icao);
+          if (!ob || ob.sub || obStale(ob)) return [];
+          const p = nowcastPFor(c.a, ob);
+          return p == null ? [] : [{ c, p }];
+        })
+        .sort((x, y) => y.p - x.p)
+        .slice(0, 5);
+      const soonRows = soon.map(({ c, p }) => `
+        <tr data-icao="${c.a.icao}">
+          <td class="num" style="white-space:nowrap"><b>${eteStr(c.ete)}</b></td>
+          <td class="num">${Math.round(c.nm)}</td>
+          <td><b>${c.a.icao}</b> ${c.a.name.length > 20 ? c.a.name.slice(0, 19) + "…" : c.a.name}<br>
+            <span class="chase-badges">${chaseRowBadges(c.end)}</span><br>${liveLine(chaseLive?.get(c.a.icao))}
+            <span class="pill ${p >= 0.2 ? "amber" : "dim"}" title="logistic nowcast trained 2016–23, validated 2024–25 (Brier −39% vs climatology, AUC 0.95). Experimental — not for operational use.">2 h: ${p < 0.01 ? "<1" : Math.round(p * 100)}%</span></td>
+          <td class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${monthClimH(c.a, mon)}h</td>
+        </tr>`).join("");
       return `
       <div class="stratum-h"><b style="color:#ffb347">IN FOG NOW</b><span class="n">${chaseLive ? inFog.length : "…"}</span><span>below CAT I this instant · obs ≤3 min old feed</span></div>
       ${!chaseLive ? `<p class="note">fetching live observations…</p>`
         : inFog.length ? boardTable(boardRows(inFog, true), true)
         : `<p class="note">nothing below CAT I within range right now.</p>`}
-      <div class="stratum-h"><b style="color:var(--accent)">LIKELY SOON</b><span class="n">—</span><span>nowcast top-5 lands in the next build</span></div>
+      <div class="stratum-h"><b style="color:var(--accent)">LIKELY SOON</b><span class="n">${chaseLive ? soon.length : "…"}</span><span>highest P(below CAT I within 2 h) — model nowcast, top 5</span></div>
+      ${!chaseLive ? "" : soon.length ? boardTable(soonRows, true)
+        : `<p class="note">${nowcastModel ? "no scoreable candidates (missing or stale observations)." : "nowcast model unavailable."}</p>`}
       <details class="chase-quiet">
         <summary class="stratum-h" style="cursor:pointer"><b>QUIET</b><span class="n">${quiet.length}</span><span>passing filters within ${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt (${Math.round(chasePrefs.speed * chasePrefs.maxEteH)} nm still-air)</span></summary>
         ${quiet.length ? boardTable(boardRows(quiet, false), false)
@@ -1291,6 +1417,7 @@ function renderChase() {
       r.addEventListener("click", () => {
         chasePrefs.base = (r as HTMLElement).dataset.icao!;
         saveChasePrefs();
+        maybeWarmChase();
         renderChase();
         const b = state.airports.find((x) => x.icao === chasePrefs.base);
         if (b) chaseFitMap(b);
