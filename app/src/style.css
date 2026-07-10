@@ -103,10 +103,24 @@ body.panel-open #topbar-row { right: min(440px, 100vw); }
   display: flex; align-items: baseline; gap: 8px; margin: 20px 0 4px;
   font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim);
 }
-.stratum-h b { font-size: 12px; letter-spacing: 0.1em; }
+.stratum-h b { font-size: 12px; letter-spacing: 0.1em; white-space: nowrap; }
 .stratum-h .n { color: var(--accent-hot); }
 .chase-badges { color: var(--ink-dim); font-size: 10px; white-space: nowrap; }
 .chase-badges b { color: var(--ink); font-weight: 600; }
+.chase-live { font-size: 10.5px; color: var(--ink); }
+.chase-live.dim { color: var(--ink-dim); }
+.chase-live.stale { color: var(--ink-dim); text-decoration: line-through solid #55606b44; }
+.pill {
+  display: inline-block; padding: 1px 7px; border-radius: 8px; font-size: 9.5px;
+  letter-spacing: 0.08em; text-transform: uppercase; vertical-align: 1px;
+}
+.pill.amber { background: #3d2c12; color: #ffb347; border: 1px solid #7a5a2e; }
+.pill.red { background: #401a16; color: #ff8d84; border: 1px solid #7a352e; }
+.pill.dim { background: #161d25; color: var(--ink-dim); border: 1px solid var(--hairline); }
+.chase-quiet summary { list-style: none; }
+.chase-quiet summary::-webkit-details-marker { display: none; }
+.chase-quiet summary .n::after { content: " ▸"; color: var(--ink-dim); }
+.chase-quiet[open] summary .n::after { content: " ▾"; }
 #now-chip {
   padding: 9px 12px; background: var(--panel); border: 1px solid #7a5a2e;
   border-radius: 9px; color: #ffb347; font-size: 11px; letter-spacing: 0.06em;

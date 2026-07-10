@@ -970,6 +970,82 @@ const ALS_LABEL: Record<string, string> = {
 
 interface ChaseCand { a: Airport; end: ChaseEnd; nm: number; ete: number }
 
+// ---- live conditions: one AWC cache fetch feeds the whole board ----
+interface LiveOb {
+  obsMs: number; vis: number | null; ceil: number | null;
+  rvr: string | null; rvrFt: number | null; wx: string | null;
+  sub: boolean; below: boolean;
+}
+let chaseLive: Map<string, LiveOb> | null = null;
+let chaseTimer: ReturnType<typeof setInterval> | undefined;
+
+const RVR_RE = /\bR(\d{2}[LRC]?)\/([MP]?)(\d{4})(?:V[MP]?\d{4})?FT/g;
+
+// same CSV the NOW layer reads, but keep raw text (RVR lives there), obs
+// time, and weather string per station instead of just the sub/below verdict
+function parseChaseLiveCsv(text: string): Map<string, LiveOb> {
+  const out = new Map<string, LiveOb>();
+  for (const line of text.split("\n")) {
+    if (!line.startsWith('"')) continue;
+    const close = line.indexOf('",');
+    if (close < 0) continue;
+    const raw = line.slice(1, close);
+    const cols = line.slice(close + 2).split(",");
+    const icao = cols[0];
+    if (out.has(icao)) continue; // cache lists newest first per station
+    const visRaw = cols[9];
+    const vis = visRaw ? (visRaw.includes("+") ? 10 : parseFloat(visRaw)) : null;
+    let ceil: number | null = null;
+    for (const k of [21, 23, 25, 27]) {
+      if (["BKN", "OVC", "OVX"].includes(cols[k])) {
+        const b = parseFloat(cols[k + 1]);
+        if (!Number.isNaN(b)) ceil = Math.min(ceil ?? Infinity, b);
+      }
+    }
+    let rvr: string | null = null, rvrFt: number | null = null;
+    for (const m of raw.matchAll(RVR_RE)) {
+      const ft = m[2] === "P" ? 6001 : parseInt(m[3], 10);
+      if (rvrFt == null || ft < rvrFt) { rvrFt = ft; rvr = `${m[1]}/${m[2]}${m[3]}`; }
+    }
+    const below = vis != null && vis < 0.19;
+    const sub = (vis != null && vis < 0.5) || (ceil != null && ceil < 200);
+    out.set(icao, {
+      obsMs: Date.parse(cols[1]) || 0,
+      vis: vis != null && !Number.isNaN(vis) ? vis : null,
+      ceil, rvr, rvrFt, wx: cols[20] || null, sub, below,
+    });
+  }
+  return out;
+}
+
+async function refreshChaseLive() {
+  try {
+    const text = await (await fetch("/api/now")).text();
+    chaseLive = parseChaseLiveCsv(text);
+    renderChase();
+  } catch { /* keep previous obs */ }
+}
+
+const obAge = (ob: LiveOb) => Math.max(0, Math.round((Date.now() - ob.obsMs) / 60000));
+const obStale = (ob: LiveOb) => !ob.obsMs || obAge(ob) > 75;
+
+function liveLine(ob: LiveOb | undefined): string {
+  if (!ob) return `<span class="chase-live dim">no current report</span>`;
+  const bits = [
+    ob.vis != null ? `${ob.vis < 1 ? +ob.vis.toFixed(2) : Math.round(ob.vis)} SM` : "vis ?",
+    ob.rvr ? `R${ob.rvr} FT` : null,
+    ob.ceil != null ? `ceil ${ob.ceil} ft` : null,
+    ob.wx || null,
+    `${obAge(ob)}m`,
+  ].filter(Boolean).join(" · ");
+  const pill = ob.below
+    ? `<span class="pill red">below 300 m</span>`
+    : ob.sub
+    ? `<span class="pill amber">EFVS window</span>`
+    : "";
+  return `<span class="chase-live${obStale(ob) ? " stale" : ""}${ob.sub && !obStale(ob) ? "" : " dim"}">${bits}</span> ${obStale(ob) ? `<span class="pill dim">stale</span>` : pill}`;
+}
+
 function chaseCandidates(): ChaseCand[] {
   const base = state.airports.find((x) => x.icao === chasePrefs.base);
   if (!chaseData || !base) return [];
@@ -997,14 +1073,32 @@ function chaseCandidates(): ChaseCand[] {
 
 // dim the world to the chase set: dots filter to candidates+base, the fog
 // field recedes, and a still-air range ring circles the base
-function chaseApplyMap(cands: ChaseCand[], base: Airport | undefined) {
+function chaseApplyMap(cands: ChaseCand[], base: Airport | undefined, inFog: ChaseCand[] = []) {
   if (!map.getLayer("glow")) return;
   if (!map.getSource("chase-src")) {
     map.addSource("chase-src", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    map.addSource("chase-live-src", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
     map.addLayer({
       id: "chase-ring", type: "line", source: "chase-src",
       filter: ["==", ["geometry-type"], "LineString"],
       paint: { "line-color": "#9fd8ff", "line-opacity": 0.5, "line-width": 1.2, "line-dasharray": [2, 2.5] },
+    });
+    map.addLayer({
+      id: "chase-live-glow", type: "circle", source: "chase-live-src",
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 10, 6, 17],
+        "circle-blur": 1.1,
+        "circle-color": ["match", ["get", "sev"], "red", "#ff5a4d", "#ffb347"],
+        "circle-opacity": 0.55,
+      },
+    });
+    map.addLayer({
+      id: "chase-live-core", type: "circle", source: "chase-live-src",
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 3.4, 6, 5.5],
+        "circle-color": ["match", ["get", "sev"], "red", "#ff5a4d", "#ffb347"],
+        "circle-stroke-width": 1, "circle-stroke-color": "#fff8",
+      },
     });
     map.addLayer({
       id: "chase-base", type: "circle", source: "chase-src",
@@ -1014,7 +1108,19 @@ function chaseApplyMap(cands: ChaseCand[], base: Airport | undefined) {
         "circle-stroke-width": 1.4, "circle-stroke-color": "#fff8",
       },
     });
+    map.on("click", "chase-live-core", (ev) => {
+      const icao = ev.features?.[0]?.properties.icao;
+      if (icao) openAirport(icao);
+    });
   }
+  (map.getSource("chase-live-src") as any).setData({
+    type: "FeatureCollection",
+    features: inFog.map((c) => ({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [c.a.lon, c.a.lat] },
+      properties: { icao: c.a.icao, sev: chaseLive?.get(c.a.icao)?.below ? "red" : "amber" },
+    })),
+  });
   const feats: any[] = [];
   if (base) {
     const radiusNm = chasePrefs.speed * chasePrefs.maxEteH;
@@ -1046,11 +1152,14 @@ function chaseFitMap(base: Airport) {
 function closeChaseMap() {
   if (!chaseOpen) return;
   chaseOpen = false;
+  clearInterval(chaseTimer);
+  chaseTimer = undefined;
   if (map.getLayer("glow")) {
     applyApproachFilters();
     map.setPaintProperty("fogheat", "heatmap-opacity", FOGHEAT_OPACITY);
   }
   (map.getSource("chase-src") as any)?.setData({ type: "FeatureCollection", features: [] });
+  (map.getSource("chase-live-src") as any)?.setData({ type: "FeatureCollection", features: [] });
 }
 
 function chaseRowBadges(end: ChaseEnd): string {
@@ -1075,6 +1184,10 @@ async function openChase() {
   renderChase();
   panel.hidden = false;
   document.body.classList.add("panel-open");
+  if (!chaseTimer) {
+    refreshChaseLive();
+    chaseTimer = setInterval(refreshChaseLive, 180_000);
+  }
 }
 
 function renderChase() {
@@ -1094,14 +1207,19 @@ function renderChase() {
                  OTHER: "any other approach light system (MALS, SALS/SALSF, ODALS, RLLS…)" }[k]}"
     >${ALS_LABEL[k]}</button>`).join("");
 
-  const boardRows = (list: ChaseCand[]) => list.map((c) => `
+  const boardRows = (list: ChaseCand[], withLive: boolean) => list.map((c) => `
     <tr data-icao="${c.a.icao}">
       <td class="num" style="white-space:nowrap"><b>${eteStr(c.ete)}</b></td>
       <td class="num">${Math.round(c.nm)}</td>
       <td><b>${c.a.icao}</b> ${c.a.name.length > 20 ? c.a.name.slice(0, 19) + "…" : c.a.name}<br>
-        <span class="chase-badges">${chaseRowBadges(c.end)}</span></td>
+        <span class="chase-badges">${chaseRowBadges(c.end)}</span>${withLive ? `<br>${liveLine(chaseLive?.get(c.a.icao))}` : ""}</td>
       <td class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${monthClimH(c.a, mon)}h</td>
     </tr>`).join("");
+  const boardTable = (rows: string, live: boolean) => `
+    <table class="rank-table">
+      <thead><tr><th class="num">ETE</th><th class="num">nm</th><th>airport · qualifying runway${live ? " · conditions" : ""}</th><th class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${MONTHS_S[mon]} ø</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 
   panelContent.innerHTML = `
     <h2>Fog chase</h2>
@@ -1133,16 +1251,22 @@ function renderChase() {
         title="only runways with RVR sensors — documented ground truth for test cards">RVR equipped</button>
     </div>
 
-    ${!base ? `<p class="note" style="margin-top:18px">Set a base airport to build the chase board — candidates are ranked by still-air flight time at your cruise speed.</p>` : `
-      <div class="stratum-h"><b style="color:#ffb347">IN FOG NOW</b><span class="n">—</span><span>live layer lands in the next build</span></div>
-      <div class="stratum-h"><b style="color:var(--accent)">LIKELY SOON</b><span class="n">—</span><span>nowcast top-5, next build</span></div>
-      <div class="stratum-h"><b>CANDIDATES</b><span class="n">${cands.length}</span><span>within ${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt (${Math.round(chasePrefs.speed * chasePrefs.maxEteH)} nm still-air)</span></div>
-      ${cands.length ? `
-      <table class="rank-table">
-        <thead><tr><th class="num">ETE</th><th class="num">nm</th><th>airport · qualifying runway</th><th class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${MONTHS_S[mon]} ø</th></tr></thead>
-        <tbody>${boardRows(cands)}</tbody>
-      </table>` : `<p class="note">No airports pass the filters within range — widen the ALS set, lower the runway/go-around bars, or extend max ETE.</p>`}
-    `}
+    ${!base ? `<p class="note" style="margin-top:18px">Set a base airport to build the chase board — candidates are ranked by still-air flight time at your cruise speed.</p>` : (() => {
+      const inFog = cands.filter((c) => chaseLive?.get(c.a.icao)?.sub)
+        .sort((x, y) => +obStale(chaseLive!.get(x.a.icao)!) - +obStale(chaseLive!.get(y.a.icao)!) || x.ete - y.ete);
+      const quiet = cands.filter((c) => !chaseLive?.get(c.a.icao)?.sub);
+      return `
+      <div class="stratum-h"><b style="color:#ffb347">IN FOG NOW</b><span class="n">${chaseLive ? inFog.length : "…"}</span><span>below CAT I this instant · obs ≤3 min old feed</span></div>
+      ${!chaseLive ? `<p class="note">fetching live observations…</p>`
+        : inFog.length ? boardTable(boardRows(inFog, true), true)
+        : `<p class="note">nothing below CAT I within range right now.</p>`}
+      <div class="stratum-h"><b style="color:var(--accent)">LIKELY SOON</b><span class="n">—</span><span>nowcast top-5 lands in the next build</span></div>
+      <details class="chase-quiet">
+        <summary class="stratum-h" style="cursor:pointer"><b>QUIET</b><span class="n">${quiet.length}</span><span>passing filters within ${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt (${Math.round(chasePrefs.speed * chasePrefs.maxEteH)} nm still-air)</span></summary>
+        ${quiet.length ? boardTable(boardRows(quiet, false), false)
+          : `<p class="note">No airports pass the filters within range — widen the ALS set, lower the runway/go-around bars, or extend max ETE.</p>`}
+      </details>`;
+    })()}
     <p class="note">ETE is great-circle still-air — no winds, no climb/descent. Infrastructure: FAA NASR ${chaseData?.meta?.nasr_file?.match(/\d{4}-\d{2}-\d{2}/)?.[0] ?? ""} + CIFP LPV; minima heights are tier proxies, not chart DAs. US airports only — curated Canadian fields arrive in a later build.</p>
   `;
 
@@ -1203,7 +1327,10 @@ function renderChase() {
       openAirport(a.icao);
     }));
 
-  chaseApplyMap(cands, base);
+  chaseApplyMap(cands, base, cands.filter((c) => {
+    const ob = chaseLive?.get(c.a.icao);
+    return ob?.sub && !obStale(ob); // stale fog obs stay off the map glow
+  }));
 }
 
 $("#chase-btn").addEventListener("click", openChase);
