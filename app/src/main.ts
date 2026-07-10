@@ -110,6 +110,7 @@ function windowLabel(): string {
   return ms.map((m) => MONTHS_S[m]).join(", ");
 }
 
+const FOGHEAT_OPACITY: any = ["interpolate", ["linear"], ["zoom"], 5, 0.9, 6.2, 0];
 const GLOW_COLOR: any = (e: any) => ["interpolate", ["linear"], e,
   0, "#5d7589", 2, "#5e93bb", 8, "#7fc0e8", 25, "#c4eaff", 55, "#ffffff"];
 const GLOW_OPACITY: any = (e: any) => ["interpolate", ["linear"], e,
@@ -165,7 +166,7 @@ map.on("load", async () => {
       "heatmap-weight": heatWeight(),
       "heatmap-intensity": 0.7,
       "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1, 13, 3, 22, 6, 46],
-      "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.9, 6.2, 0],
+      "heatmap-opacity": FOGHEAT_OPACITY,
       "heatmap-color": ["interpolate", ["linear"], ["heatmap-density"],
         0, "rgba(20,40,60,0)",
         0.25, "rgba(38,78,110,0.55)",
@@ -258,6 +259,7 @@ map.on("load", async () => {
   const hash = location.hash.slice(1);
   if (hash === "rankings") openRankings();
   else if (hash === "methodology") openMethodology();
+  else if (hash === "chase") openChase();
   else if (hash.length > 1) openAirport(hash.toUpperCase());
 });
 
@@ -450,6 +452,7 @@ let rankCatIOnly = true;
 
 function openRankings() {
   history.replaceState(null, "", "#rankings");
+  closeChaseMap();
   setSelected(null);
   // a 6%-coverage or anomalous-reporting station can't support a frequency
   // claim — keep them out of the league table (still on the map and search)
@@ -521,6 +524,7 @@ $("#methodology").addEventListener("click", (e) => { e.preventDefault(); openMet
 // ---------- methodology ----------
 function openMethodology() {
   history.replaceState(null, "", "#methodology");
+  closeChaseMap();
   setSelected(null);
   panelContent.innerHTML = `
     <h2>Methodology</h2>
@@ -626,6 +630,7 @@ $("#play").addEventListener("click", () => {
 $("#close").addEventListener("click", () => {
   panel.hidden = true;
   document.body.classList.remove("panel-open");
+  closeChaseMap();
   setSelected(null);
   history.replaceState(null, "", location.pathname);
 });
@@ -670,6 +675,7 @@ const TODS = ["night", "morning", "afternoon", "evening"];
 async function openAirport(icao: string) {
   const a = state.airports.find((x) => x.icao === icao);
   if (!a) return;
+  closeChaseMap();
   if (persistenceTable === undefined) {
     persistenceTable = null; // only try once
     try { persistenceTable = await (await fetch("/data/persistence.json")).json(); } catch {}
@@ -907,6 +913,301 @@ async function openAirport(icao: string) {
   document.body.classList.add("panel-open");
 }
 
+// ---------- CHASE: fog-chasing launch board for EFVS testing ----------
+interface ChaseEnd {
+  e: string; len: number; als: string | null; rvr: string | null;
+  ils: string | null; lpv: 0 | 1; tier: number;
+}
+interface ChasePrefs {
+  base: string | null; speed: number; maxEteH: number;
+  als: string[]; minLen: number; rvrReq: boolean; maxTier: number;
+}
+
+const CHASE_DEFAULTS: ChasePrefs = {
+  base: null, speed: 250, maxEteH: 2,
+  als: ["ALSF2", "ALSF1", "MALSR"], minLen: 5000, rvrReq: false, maxTier: 250,
+};
+const CHASE_ALS_CHIPS = ["ALSF2", "ALSF1", "MALSR", "SSALR", "MALSF", "OTHER"] as const;
+const chasePrefs: ChasePrefs = (() => {
+  try { return { ...CHASE_DEFAULTS, ...JSON.parse(localStorage.getItem("fa-chase") ?? "{}") }; }
+  catch { return { ...CHASE_DEFAULTS }; }
+})();
+const saveChasePrefs = () => localStorage.setItem("fa-chase", JSON.stringify(chasePrefs));
+
+let chaseData: { meta: any; airports: Record<string, ChaseEnd[]> } | null | undefined;
+let chaseOpen = false;
+
+const NM_R = 3440.065;
+const rad = (d: number) => (d * Math.PI) / 180;
+function distNm(a: { lat: number; lon: number }, b: { lat: number; lon: number }): number {
+  const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * NM_R * Math.asin(Math.sqrt(h));
+}
+function destPoint(lat: number, lon: number, brgDeg: number, dNm: number): [number, number] {
+  const d = dNm / NM_R, th = rad(brgDeg), p1 = rad(lat), l1 = rad(lon);
+  const p2 = Math.asin(Math.sin(p1) * Math.cos(d) + Math.cos(p1) * Math.sin(d) * Math.cos(th));
+  const l2 = l1 + Math.atan2(Math.sin(th) * Math.sin(d) * Math.cos(p1),
+    Math.cos(d) - Math.sin(p1) * Math.sin(p2));
+  return [(((l2 * 180) / Math.PI + 540) % 360) - 180, (p2 * 180) / Math.PI];
+}
+const eteStr = (h: number) => {
+  const m = Math.round(h * 60);
+  return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, "0")}`;
+};
+// hours below CAT I in a given month, from the climatological month x hour grid
+function monthClimH(a: Airport, mon: number): number {
+  const days = [31, 28.2, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][mon];
+  const s = (a.grid[mon] ?? []).reduce((acc, p) => acc + (p ?? 0), 0) / 100;
+  return Math.round(s * days);
+}
+const ALS_LABEL: Record<string, string> = {
+  ALSF2: "ALSF-2", ALSF1: "ALSF-1", MALSR: "MALSR", SSALR: "SSALR",
+  MALSF: "MALSF", MALS: "MALS", SALS: "SALS", SALSF: "SALSF",
+  ODALS: "ODALS", RLLS: "RLLS", OTHER: "other",
+};
+
+interface ChaseCand { a: Airport; end: ChaseEnd; nm: number; ete: number }
+
+function chaseCandidates(): ChaseCand[] {
+  const base = state.airports.find((x) => x.icao === chasePrefs.base);
+  if (!chaseData || !base) return [];
+  const named: readonly string[] = CHASE_ALS_CHIPS.slice(0, -1);
+  const sel = new Set(chasePrefs.als);
+  const out: ChaseCand[] = [];
+  for (const a of state.airports) {
+    if (a.icao === base.icao) continue;
+    const ends = chaseData.airports[a.icao];
+    if (!ends) continue;
+    const passing = ends.filter((e) =>
+      e.als != null &&
+      (sel.has(e.als) || (sel.has("OTHER") && !named.includes(e.als))) &&
+      e.len >= chasePrefs.minLen &&
+      e.tier <= chasePrefs.maxTier &&
+      (!chasePrefs.rvrReq || e.rvr != null));
+    if (!passing.length) continue;
+    passing.sort((x, y) => x.tier - y.tier || y.len - x.len);
+    const nm = distNm(base, a);
+    const ete = nm / chasePrefs.speed;
+    if (ete <= chasePrefs.maxEteH) out.push({ a, end: passing[0], nm, ete });
+  }
+  return out.sort((x, y) => x.ete - y.ete);
+}
+
+// dim the world to the chase set: dots filter to candidates+base, the fog
+// field recedes, and a still-air range ring circles the base
+function chaseApplyMap(cands: ChaseCand[], base: Airport | undefined) {
+  if (!map.getLayer("glow")) return;
+  if (!map.getSource("chase-src")) {
+    map.addSource("chase-src", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    map.addLayer({
+      id: "chase-ring", type: "line", source: "chase-src",
+      filter: ["==", ["geometry-type"], "LineString"],
+      paint: { "line-color": "#9fd8ff", "line-opacity": 0.5, "line-width": 1.2, "line-dasharray": [2, 2.5] },
+    });
+    map.addLayer({
+      id: "chase-base", type: "circle", source: "chase-src",
+      filter: ["==", ["geometry-type"], "Point"],
+      paint: {
+        "circle-radius": 5, "circle-color": "#e8b96a",
+        "circle-stroke-width": 1.4, "circle-stroke-color": "#fff8",
+      },
+    });
+  }
+  const feats: any[] = [];
+  if (base) {
+    const radiusNm = chasePrefs.speed * chasePrefs.maxEteH;
+    const ring = Array.from({ length: 97 }, (_, i) => destPoint(base.lat, base.lon, i * 3.75, radiusNm));
+    feats.push(
+      { type: "Feature", geometry: { type: "LineString", coordinates: ring }, properties: {} },
+      { type: "Feature", geometry: { type: "Point", coordinates: [base.lon, base.lat] }, properties: {} },
+    );
+  }
+  (map.getSource("chase-src") as any).setData({ type: "FeatureCollection", features: feats });
+
+  const icaos = [...cands.map((c) => c.a.icao), ...(base ? [base.icao] : [])];
+  const inList: any = ["in", ["get", "icao"], ["literal", icaos]];
+  for (const [id, baseF] of Object.entries(BASE_FILTERS)) {
+    if (id === "fogheat" || id === "presence") continue;
+    map.setFilter(id, (baseF ? ["all", baseF, inList] : inList) as any);
+  }
+  map.setPaintProperty("fogheat", "heatmap-opacity",
+    ["interpolate", ["linear"], ["zoom"], 5, 0.35, 6.2, 0]);
+}
+
+function chaseFitMap(base: Airport) {
+  const radiusNm = chasePrefs.speed * chasePrefs.maxEteH;
+  const b = new maplibregl.LngLatBounds();
+  for (const brg of [0, 90, 180, 270]) b.extend(destPoint(base.lat, base.lon, brg, radiusNm));
+  map.fitBounds(b, { padding: { top: 90, bottom: 110, left: 60, right: 490 }, duration: 1400 });
+}
+
+function closeChaseMap() {
+  if (!chaseOpen) return;
+  chaseOpen = false;
+  if (map.getLayer("glow")) {
+    applyApproachFilters();
+    map.setPaintProperty("fogheat", "heatmap-opacity", FOGHEAT_OPACITY);
+  }
+  (map.getSource("chase-src") as any)?.setData({ type: "FeatureCollection", features: [] });
+}
+
+function chaseRowBadges(end: ChaseEnd): string {
+  const parts = [
+    `<b>${end.e}</b>`,
+    ALS_LABEL[end.als ?? ""] ?? end.als,
+    end.ils ? `CAT ${end.ils}` : end.lpv ? "LPV" : null,
+    `${end.len.toLocaleString()} ft`,
+    end.rvr ? `RVR ${end.rvr}` : null,
+  ].filter(Boolean);
+  return parts.join(" · ");
+}
+
+async function openChase() {
+  history.replaceState(null, "", "#chase");
+  setSelected(null);
+  if (chaseData === undefined) {
+    chaseData = null; // only try once
+    try { chaseData = await (await fetch("/data/chase.json")).json(); } catch {}
+  }
+  chaseOpen = true;
+  renderChase();
+  panel.hidden = false;
+  document.body.classList.add("panel-open");
+}
+
+function renderChase() {
+  if (!chaseOpen) return;
+  const base = state.airports.find((x) => x.icao === chasePrefs.base);
+  const cands = chaseCandidates();
+  const mon = new Date().getMonth();
+  const nUS = chaseData ? Object.keys(chaseData.airports).length : 0;
+
+  const alsChips = CHASE_ALS_CHIPS.map((k) => `
+    <button class="equip-chip${chasePrefs.als.includes(k) ? " on" : ""}" data-als="${k}"
+      title="${{ ALSF2: "2,400 ft high-intensity ALS with sequenced flashers — CAT II/III runways",
+                 ALSF1: "2,400 ft high-intensity ALS, category I configuration",
+                 MALSR: "1,400 ft medium-intensity ALS with runway alignment indicator lights — the standard CAT I system",
+                 SSALR: "simplified short ALS with RAIL — ALSF-length centerline",
+                 MALSF: "medium-intensity ALS with sequenced flashers",
+                 OTHER: "any other approach light system (MALS, SALS/SALSF, ODALS, RLLS…)" }[k]}"
+    >${ALS_LABEL[k]}</button>`).join("");
+
+  const boardRows = (list: ChaseCand[]) => list.map((c) => `
+    <tr data-icao="${c.a.icao}">
+      <td class="num" style="white-space:nowrap"><b>${eteStr(c.ete)}</b></td>
+      <td class="num">${Math.round(c.nm)}</td>
+      <td><b>${c.a.icao}</b> ${c.a.name.length > 20 ? c.a.name.slice(0, 19) + "…" : c.a.name}<br>
+        <span class="chase-badges">${chaseRowBadges(c.end)}</span></td>
+      <td class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${monthClimH(c.a, mon)}h</td>
+    </tr>`).join("");
+
+  panelContent.innerHTML = `
+    <h2>Fog chase</h2>
+    <p class="sub">launch board for EFVS testing — ${nUS} US airports with per-runway infrastructure (FAA NASR)${chaseData ? "" : " — <b style='color:#ff9a9a'>chase.json failed to load</b>"}</p>
+
+    <div class="chase-setup">
+      ${base
+        ? `<span class="base-chip" title="${base.name}">BASE ${base.icao}<button id="chase-base-clear" title="change base">×</button></span>`
+        : `<span class="chase-base"><input id="chase-base-input" type="text" placeholder="set base airport…" autocomplete="off" spellcheck="false"/><div id="chase-base-results" hidden></div></span>`}
+      <label>cruise <input id="chase-speed" type="number" min="60" max="600" step="10" value="${chasePrefs.speed}"/> kt</label>
+      <label>max ETE <select id="chase-ete">
+        ${[1, 1.5, 2, 2.5, 3, 4].map((h) => `<option value="${h}"${h === chasePrefs.maxEteH ? " selected" : ""}>${eteStr(h)}</option>`).join("")}
+      </select></label>
+    </div>
+
+    <div class="chase-setup" style="margin-top:10px">
+      ${alsChips}
+    </div>
+    <div class="chase-setup" style="margin-top:10px">
+      <label>runway ≥ <select id="chase-len">
+        ${[3000, 4000, 5000, 6000, 8000].map((l) => `<option value="${l}"${l === chasePrefs.minLen ? " selected" : ""}>${l.toLocaleString()} ft</option>`).join("")}
+      </select></label>
+      <label title="lowest published approach minima height on the runway end — a go-around above ~250 ft AGL can miss the lights entirely in real fog. Tier proxy: ILS CAT I/II/III → 200/100/50, LPV → 250, otherwise ≥350 (LNAV/circling).">go-around ≤ <select id="chase-tier">
+        <option value="200"${chasePrefs.maxTier === 200 ? " selected" : ""}>200 ft (ILS)</option>
+        <option value="250"${chasePrefs.maxTier === 250 ? " selected" : ""}>250 ft (ILS+LPV)</option>
+        <option value="400"${chasePrefs.maxTier === 400 ? " selected" : ""}>any</option>
+      </select></label>
+      <button class="equip-chip${chasePrefs.rvrReq ? " on" : ""}" id="chase-rvr"
+        title="only runways with RVR sensors — documented ground truth for test cards">RVR equipped</button>
+    </div>
+
+    ${!base ? `<p class="note" style="margin-top:18px">Set a base airport to build the chase board — candidates are ranked by still-air flight time at your cruise speed.</p>` : `
+      <div class="stratum-h"><b style="color:#ffb347">IN FOG NOW</b><span class="n">—</span><span>live layer lands in the next build</span></div>
+      <div class="stratum-h"><b style="color:var(--accent)">LIKELY SOON</b><span class="n">—</span><span>nowcast top-5, next build</span></div>
+      <div class="stratum-h"><b>CANDIDATES</b><span class="n">${cands.length}</span><span>within ${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt (${Math.round(chasePrefs.speed * chasePrefs.maxEteH)} nm still-air)</span></div>
+      ${cands.length ? `
+      <table class="rank-table">
+        <thead><tr><th class="num">ETE</th><th class="num">nm</th><th>airport · qualifying runway</th><th class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${MONTHS_S[mon]} ø</th></tr></thead>
+        <tbody>${boardRows(cands)}</tbody>
+      </table>` : `<p class="note">No airports pass the filters within range — widen the ALS set, lower the runway/go-around bars, or extend max ETE.</p>`}
+    `}
+    <p class="note">ETE is great-circle still-air — no winds, no climb/descent. Infrastructure: FAA NASR ${chaseData?.meta?.nasr_file?.match(/\d{4}-\d{2}-\d{2}/)?.[0] ?? ""} + CIFP LPV; minima heights are tier proxies, not chart DAs. US airports only — curated Canadian fields arrive in a later build.</p>
+  `;
+
+  // wiring
+  const rerender = () => { saveChasePrefs(); renderChase(); };
+  panelContent.querySelector("#chase-base-clear")?.addEventListener("click", () => {
+    chasePrefs.base = null; rerender();
+  });
+  const baseInput = panelContent.querySelector<HTMLInputElement>("#chase-base-input");
+  const baseResults = panelContent.querySelector<HTMLElement>("#chase-base-results");
+  baseInput?.addEventListener("input", () => {
+    const q = baseInput.value.trim().toLowerCase();
+    if (q.length < 2 || !baseResults) { if (baseResults) baseResults.hidden = true; return; }
+    const hits = state.airports
+      .filter((a) => a.icao.toLowerCase().includes(q) || a.name.toLowerCase().includes(q))
+      .sort((a, b) => (a.icao.toLowerCase() === q ? 0 : 1) - (b.icao.toLowerCase() === q ? 0 : 1))
+      .slice(0, 8);
+    baseResults.innerHTML = hits.map((a) => `
+      <div class="search-row" data-icao="${a.icao}"><b>${a.icao}</b><span>${a.name}</span></div>`).join("");
+    baseResults.hidden = hits.length === 0;
+    baseResults.querySelectorAll(".search-row").forEach((r) =>
+      r.addEventListener("click", () => {
+        chasePrefs.base = (r as HTMLElement).dataset.icao!;
+        saveChasePrefs();
+        renderChase();
+        const b = state.airports.find((x) => x.icao === chasePrefs.base);
+        if (b) chaseFitMap(b);
+      }));
+  });
+  baseInput?.focus();
+  panelContent.querySelector("#chase-speed")?.addEventListener("change", (e) => {
+    chasePrefs.speed = Math.max(60, Math.min(600, +(e.target as HTMLInputElement).value || 250));
+    rerender();
+  });
+  panelContent.querySelector("#chase-ete")?.addEventListener("change", (e) => {
+    chasePrefs.maxEteH = +(e.target as HTMLSelectElement).value; rerender();
+  });
+  panelContent.querySelector("#chase-len")?.addEventListener("change", (e) => {
+    chasePrefs.minLen = +(e.target as HTMLSelectElement).value; rerender();
+  });
+  panelContent.querySelector("#chase-tier")?.addEventListener("change", (e) => {
+    chasePrefs.maxTier = +(e.target as HTMLSelectElement).value; rerender();
+  });
+  panelContent.querySelector("#chase-rvr")?.addEventListener("click", () => {
+    chasePrefs.rvrReq = !chasePrefs.rvrReq; rerender();
+  });
+  panelContent.querySelectorAll(".equip-chip[data-als]").forEach((b) =>
+    b.addEventListener("click", () => {
+      const k = (b as HTMLElement).dataset.als!;
+      chasePrefs.als = chasePrefs.als.includes(k)
+        ? chasePrefs.als.filter((x) => x !== k) : [...chasePrefs.als, k];
+      rerender();
+    }));
+  panelContent.querySelectorAll("tr[data-icao]").forEach((tr) =>
+    tr.addEventListener("click", () => {
+      const a = state.airports.find((x) => x.icao === (tr as HTMLElement).dataset.icao)!;
+      map.flyTo({ center: [a.lon, a.lat], zoom: 7, duration: 1600 });
+      openAirport(a.icao);
+    }));
+
+  chaseApplyMap(cands, base);
+}
+
+$("#chase-btn").addEventListener("click", openChase);
+
 applyScrub();
 
 // debug API
@@ -918,4 +1219,6 @@ applyScrub();
   openAirport,
   openRankings,
   openMethodology,
+  openChase,
+  chasePrefs,
 };
