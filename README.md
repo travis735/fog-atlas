@@ -34,4 +34,4 @@ METAR prevailing visibility is a proxy for RVR, not a substitute. Band threshold
 
 ## Live
 
-**https://fog-atlas.pages.dev** — 3,394 airports × 10 years (2016–2025), visibility + ceiling bands, validated against documented climatology, runway-measured RVR (SFO cross-check), and 13.9M US flight records (flights scheduled during EFVS-recoverable hours were weather-cancelled at 5.2× baseline).
+**https://fog-atlas.pages.dev** — 3,394 airports × 10 years (2016–2025), visibility + ceiling bands, a live fog-chase board for EFVS testing (per-runway ALS/RVR/minima filters from FAA NASR, still-air ETE from a chosen base, 3-minute live strata + nowcast), validated against documented climatology, runway-measured RVR (SFO cross-check), and 13.9M US flight records (flights scheduled during EFVS-recoverable hours were weather-cancelled at 5.2× baseline).

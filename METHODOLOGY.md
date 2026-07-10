@@ -71,6 +71,17 @@ Opportunity = hours/yr below the achievable floor yet within EFVS range (≥ 300
 
 Counting is conservative: visibility bins count only when entirely below the floor; ceiling-limited hours count only where a ~200 ft DH binds (floor ≥ 450 m). Rankings rank by the selected equipage profile.
 
+## Fog chase board (CHASE)
+
+A launch-decision board for EFVS flight testing: which airports within still-air range of a base are below CAT I right now, which the nowcast expects to drop within two hours, and which merely qualify.
+
+- **Infrastructure filters** are per **runway end** from FAA NASR (approach light system, runway length, RVR sensor locations) joined with NASR ILS categories and CIFP LPV lines of minima. US airports only; a curated Canadian tier is planned.
+- **Go-around height** filters on the lowest published minima height of the runway end, as a tier proxy: ILS CAT I/II/III → 200/100/50 ft, LPV → ~250 ft, anything else ≥350 ft (LNAV/circling MDAs). These are **not chart DAs** — terrain-driven exceptions exist. The operational point: an approach whose minima sit at 400+ ft AGL goes missed before an EFVS sensor can acquire the lights in a real fog layer.
+- **Distance/ETE** are great-circle still-air at the user's cruise speed — no winds, no climb/descent allowance.
+- **IN FOG NOW** joins the same ~3-minute NOAA AWC cache as NOW mode, keeping raw METAR text: reported RVR groups (lowest across runways), ceiling, weather string, observation age. Observations older than 75 minutes grey out and never alert.
+- **LIKELY SOON** scores the phase-3 nowcast per candidate from the same cache observation, with trend features (previous-hour visibility / sub-CAT-I state) accumulated client-side from successive cache snapshots plus one bounded multi-station history fetch per session. Top five shown regardless of probability — an honest "<1%" beats a hidden list.
+- **Alerts** (notification + chime on entry into IN FOG NOW) work only while the tab is open. A static site cannot wake a phone; server-side push would be a different architecture, deliberately not built yet.
+
 ## Reporting reliability
 
 "% of hours" assumes observations sample hours impartially. Two failure modes are detected per station and flagged:

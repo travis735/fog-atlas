@@ -1,5 +1,16 @@
 # Roadmap / TODO
 
+## 0. CHASE Canada tier (design agreed, deferred to a fresh session)
+Curated Canadian airports for the fog-chase board — border belt + Maritimes +
+every high-fog Canadian field already in our rankings (CYQI 555 h/yr, CYYT 516,
+CYHZ 395, CYHM, CYXU, CYQG…). Nav Canada publishes no NASR equivalent, so a
+batched agent fleet (cheap model, AIP-curation recipe: per-claim sources,
+planted probes, owner audit) researches per-runway ALS type, RVR sensors, and
+ILS category from CAP charts / CFS. Output: `pipeline/data/ca_chase_curated.csv`
+→ merged into `chase.json` with `curated` confidence badges in the panel.
+Also fold NASR APT/CIFP re-download (`fetch_nasr.py`) into the monthly
+reference refresh below.
+
 ## 1. Monthly reference-data refresh (launchd, automatable now)
 Consolidate the FAA/ESSP reference parsing — currently session one-offs — into
 `pipeline/refresh_reference.py`, then schedule it monthly from the Mac via launchd

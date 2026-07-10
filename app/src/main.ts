@@ -538,6 +538,8 @@ function openMethodology() {
     <b style="color:var(--ink)">Below all</b> &lt; 300 m vis — CAT III autoland territory; ceiling-only events never land here.</p>
     <h3>Honest limitations</h3>
     <p class="note" style="margin-top:6px">METAR prevailing visibility is a proxy for RVR — RVR on a lit runway is often better, so the bands understate what's flyable; read them as a climatological index, not operating minima. Thresholds are global constants, not per-runway minima. CAT II/III flags are authoritative for the US (FAA CIFP), hand-curated internationally, and "assumed CAT I" elsewhere — confidence is shown per airport. The cause chart folds BR (mist) into fog: BR officially means vis ≥ 800 m, so BR on a sub-CAT-I observation is conservatively-coded fog.</p>
+    <h3>Fog chase (CHASE)</h3>
+    <p class="note" style="margin-top:6px">A launch board for EFVS flight testing: airports filtered by per-runway infrastructure — approach light system, runway length, RVR sensors, and a <b>go-around height</b> tier: the lowest published minima height on the runway (ILS CAT I/II/III → 200/100/50 ft, LPV → ~250 ft, otherwise ≥350 ft). Tiers are proxies from FAA NASR + CIFP, not chart DAs, and cover US airports only for now. Distance and ETE are great-circle <b>still-air</b> at your cruise speed — no winds, no climb/descent. IN FOG NOW reads the same ~3-minute NOAA cache as NOW mode; LIKELY SOON ranks the top five by the experimental nowcast above. Alerts fire only while the tab is open — a static site cannot wake your phone. A scouting tool, not an ops release.</p>
     <h3>Does it predict real cancellations?</h3>
     <p class="note" id="bts-note" style="margin-top:6px">Loading validation…</p>
     <h3>Why CAT II/III matters</h3>
@@ -921,11 +923,13 @@ interface ChaseEnd {
 interface ChasePrefs {
   base: string | null; speed: number; maxEteH: number;
   als: string[]; minLen: number; rvrReq: boolean; maxTier: number;
+  alerts: boolean;
 }
 
 const CHASE_DEFAULTS: ChasePrefs = {
   base: null, speed: 250, maxEteH: 2,
   als: ["ALSF2", "ALSF1", "MALSR"], minLen: 5000, rvrReq: false, maxTier: 250,
+  alerts: false,
 };
 const CHASE_ALS_CHIPS = ["ALSF2", "ALSF1", "MALSR", "SSALR", "MALSF", "OTHER"] as const;
 const chasePrefs: ChasePrefs = (() => {
@@ -1069,6 +1073,45 @@ async function warmChaseHist(cands: ChaseCand[]) {
   } catch { /* trend features just start cold */ }
 }
 
+// ---- tab-open alerts: notify + chime when an airport ENTERS stratum 1 ----
+// Baseline is the first refresh after open/base/filter changes (no blast on
+// open); only fresh-ob transitions alert. Static site: works while the tab
+// lives, no server push — that's a documented limitation, not a bug.
+let chaseFogPrev: Set<string> | null = null;
+let chimeCtx: AudioContext | null = null;
+
+function playChime() {
+  if (!chimeCtx) return;
+  const t0 = chimeCtx.currentTime;
+  for (const [freq, at, dur] of [[880, 0, 0.14], [659, 0.16, 0.22]] as const) {
+    const o = chimeCtx.createOscillator();
+    const g = chimeCtx.createGain();
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0, t0 + at);
+    g.gain.linearRampToValueAtTime(0.07, t0 + at + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + dur);
+    o.connect(g).connect(chimeCtx.destination);
+    o.start(t0 + at); o.stop(t0 + at + dur + 0.05);
+  }
+}
+
+function chaseAlertCheck(freshFog: ChaseCand[]) {
+  const current = new Set(freshFog.map((c) => c.a.icao));
+  const prev = chaseFogPrev;
+  chaseFogPrev = current;
+  if (!prev || !chasePrefs.alerts || !("Notification" in window) || Notification.permission !== "granted") return;
+  for (const c of freshFog) {
+    if (prev.has(c.a.icao)) continue;
+    const ob = chaseLive?.get(c.a.icao);
+    const n = new Notification(`${c.a.icao} below CAT I`, {
+      body: `${ob?.vis != null ? `${ob.vis < 1 ? +ob.vis.toFixed(2) : Math.round(ob.vis)} SM` : ""}${ob?.rvr ? ` · R${ob.rvr} FT` : ""}${ob?.wx ? ` · ${ob.wx}` : ""} — ${eteStr(c.ete)} from ${chasePrefs.base}`,
+      tag: `fa-chase-${c.a.icao}`,
+    });
+    n.onclick = () => { window.focus(); openAirport(c.a.icao); };
+    playChime();
+  }
+}
+
 function maybeWarmChase() {
   if (chaseWarmed || !chasePrefs.base || !chaseData) return;
   chaseWarmed = true; // one bounded batch per session, never re-polled
@@ -1081,6 +1124,12 @@ async function refreshChaseLive() {
     chaseLive = parseChaseLiveCsv(text);
     updateChaseHist();
     maybeWarmChase();
+    if (chasePrefs.base) {
+      chaseAlertCheck(chaseCandidates().filter((c) => {
+        const ob = chaseLive!.get(c.a.icao);
+        return ob?.sub && !obStale(ob);
+      }));
+    }
     renderChase();
   } catch { /* keep previous obs */ }
 }
@@ -1256,6 +1305,7 @@ function closeChaseMap() {
   chaseOpen = false;
   clearInterval(chaseTimer);
   chaseTimer = undefined;
+  chaseFogPrev = null;
   if (map.getLayer("glow")) {
     applyApproachFilters();
     map.setPaintProperty("fogheat", "heatmap-opacity", FOGHEAT_OPACITY);
@@ -1339,6 +1389,8 @@ function renderChase() {
       <label>max ETE <select id="chase-ete">
         ${[1, 1.5, 2, 2.5, 3, 4].map((h) => `<option value="${h}"${h === chasePrefs.maxEteH ? " selected" : ""}>${eteStr(h)}</option>`).join("")}
       </select></label>
+      <button class="equip-chip${chasePrefs.alerts ? " on" : ""}" id="chase-alerts"
+        title="While this tab is open: browser notification + chime when an airport on the board drops below CAT I. A static site can't wake your phone — leave the tab running.">♪ alerts</button>
     </div>
 
     <div class="chase-setup" style="margin-top:10px">
@@ -1396,8 +1448,24 @@ function renderChase() {
     <p class="note">ETE is great-circle still-air — no winds, no climb/descent. Infrastructure: FAA NASR ${chaseData?.meta?.nasr_file?.match(/\d{4}-\d{2}-\d{2}/)?.[0] ?? ""} + CIFP LPV; minima heights are tier proxies, not chart DAs. US airports only — curated Canadian fields arrive in a later build.</p>
   `;
 
-  // wiring
-  const rerender = () => { saveChasePrefs(); renderChase(); };
+  // wiring — settings changes rebaseline the alert set (no false "entered fog"
+  // pings when membership shifts because a filter moved)
+  const rerender = () => { saveChasePrefs(); chaseFogPrev = null; renderChase(); };
+  panelContent.querySelector("#chase-alerts")?.addEventListener("click", async () => {
+    if (!("Notification" in window)) return;
+    if (!chasePrefs.alerts) {
+      const perm = await Notification.requestPermission();
+      if (perm !== "granted") return;
+      chimeCtx ??= new AudioContext(); // user gesture — context stays usable later
+      chimeCtx.resume();
+      playChime();
+      chasePrefs.alerts = true;
+    } else {
+      chasePrefs.alerts = false;
+    }
+    saveChasePrefs();
+    renderChase();
+  });
   panelContent.querySelector("#chase-base-clear")?.addEventListener("click", () => {
     chasePrefs.base = null; rerender();
   });
@@ -1417,6 +1485,7 @@ function renderChase() {
       r.addEventListener("click", () => {
         chasePrefs.base = (r as HTMLElement).dataset.icao!;
         saveChasePrefs();
+        chaseFogPrev = null;
         maybeWarmChase();
         renderChase();
         const b = state.airports.find((x) => x.icao === chasePrefs.base);
@@ -1475,4 +1544,5 @@ applyScrub();
   openMethodology,
   openChase,
   chasePrefs,
+  refreshChaseLive,
 };
