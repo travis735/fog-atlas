@@ -7,3 +7,4 @@ dist/
 .DS_Store
 pipeline/data/nasr/
 pipeline/data/ourairports_runways.csv
+.env
