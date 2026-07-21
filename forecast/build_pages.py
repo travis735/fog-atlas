@@ -207,6 +207,20 @@ def main() -> None:
 <div class="note" style="line-height:2.2">{idx_rows}</div>
 </main></body></html>""")
 
+    sc = FOG / "scorecard"
+    sc.mkdir(exist_ok=True)
+    sc.joinpath("index.html").write_text(f"""<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forecast verification — Fog Atlas</title>
+<meta name="description" content="How the Fog Atlas fog forecasts are scored: every issued probability is logged and verified against what actually happened.">
+<link rel="canonical" href="{SITE}/fog/scorecard/"><style>{CSS}</style></head><body><main>
+<h1>Forecast verification</h1>
+<div class="sub">the receipt, not the promise</div>
+<div class="blk">Every forecast this site issues is <b>logged at issuance</b> and later scored against what the airport's weather station actually reported. No forecast probability appears publicly for an airport until its calibrated model <b>beats that airport's own 10-year climatology</b> on Brier score over live verification — a pre-registered bar, not a vibe.</div>
+<div class="blk"><b>Status: shadow mode</b> — the engine has been issuing and logging hourly forecasts since <b>2026-07-21</b>. Scores publish here, per airport, as verification accumulates (typically 3–4 weeks). Airports that never clear the bar simply never show percentages.</div>
+<p class="note">Method: guidance from the NOAA/NWS National Blend of Models, recalibrated per airport against ten years of METAR truth at four thresholds (vis &lt; 1 mi / ½ mi / ¼ mi, and below-CAT-I). Verification obs come from the same live feed the maps use. <a href="{SITE}/#methodology">Full methodology</a>.</p>
+</main></body></html>""")
+
     with open(APP_PUB / "sitemap.xml", "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         f.write(f"<url><loc>{SITE}/</loc></url>\n<url><loc>{SITE}/fog/</loc></url>\n")

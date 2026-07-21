@@ -640,6 +640,17 @@ $("#close").addEventListener("click", () => {
 let persistenceTable: Record<string, any> | null | undefined;
 let nowcastModel: any | null | undefined;
 
+// V3 forecast (shadow-aware): one /api/forecast fetch, cached 10 min
+let fcCache: { at: number; data: any } | null = null;
+async function getForecast(): Promise<any | null> {
+  if (fcCache && Date.now() - fcCache.at < 600_000) return fcCache.data;
+  try {
+    const data = await (await fetch("/api/forecast")).json();
+    fcCache = { at: Date.now(), data };
+    return data;
+  } catch { return null; }
+}
+
 // red selection marker on the airport whose deep-dive is open
 function setSelected(a: Airport | null) {
   if (!map.getSource("selsrc")) {
@@ -751,6 +762,7 @@ async function openAirport(icao: string) {
         <div class="k">CAT III deck (typical 121) · floor ${a.floors?.cat3 ?? "—"} m</div></div>
     </div>
     <div id="live"></div>
+    <div id="fcast"></div>
     <h3 id="heatmap-title">When it closes — % of hours below CAT I, by month × local hour</h3>
     <div id="heatmap"></div>
     <div id="heatmap-legend"></div>
@@ -901,6 +913,26 @@ async function openAirport(icao: string) {
     panelContent.querySelector("#live")!.innerHTML = `
       <div class="live-line">RIGHT NOW · ${when} — ${ob.visib ?? "?"} SM${ceil != null ? `, ceiling ${ceil} ft` : ", no ceiling"} · ${verdict}.${lift}${nowcast}</div>`;
   }).catch(() => {});
+
+  // V3 forecast strip: calibrated percentages ONLY once meta.public is true
+  // (the pre-registered bar); during shadow, show raw NBM LIFR-vis guidance,
+  // clearly labeled — public NWS data, not our unverified model
+  getForecast().then((fc) => {
+    const f = fc?.airports?.[icao];
+    const el = panelContent.querySelector("#fcast");
+    if (!f || !el) return;
+    const pub = fc.meta?.public === true;
+    const vals: number[] = pub ? f.p.map((r: number[]) => r[0]) : f.liv.map((v: number | null) => v ?? 0);
+    const peak = Math.max(...vals, 1);
+    const bars = vals.map((v, i) =>
+      `<div title="+${f.fhrs[i]} h — ${v}%" style="flex:1;align-self:flex-end;background:${pub ? "#9fd8ff" : "#3f76a3"};opacity:${v > 0 ? 0.9 : 0.22};height:${Math.max(2, Math.round((30 * v) / peak))}px"></div>`).join("");
+    el.innerHTML = `
+      <h3>Next 48 h — ${pub ? "P(vis &lt; 1 mi), calibrated" : "NBM guidance P(LIFR vis) · calibrated model in verification"}</h3>
+      <div style="display:flex;gap:1px;height:32px;margin:8px 0 2px">${bars}</div>
+      <div style="display:flex;justify-content:space-between;color:var(--ink-dim);font-size:9.5px">
+        <span>+${f.fhrs[0]} h</span><span>peak ${Math.max(...vals)}% · cycle ${fc.meta.cycle.slice(5, 13)}z</span><span>+${f.fhrs[f.fhrs.length - 1]} h</span></div>
+      <p class="note" style="margin-top:5px"><a href="/fog/${icao.toLowerCase()}/" target="_blank" rel="noopener">shareable forecast page</a> · <a href="/fog/scorecard/" target="_blank" rel="noopener">verification</a></p>`;
+  });
 
   $("#causes").innerHTML = causes.map(([k, v]) => `
     <div style="display:flex;align-items:center;gap:10px;margin:5px 0;font-size:11px">
