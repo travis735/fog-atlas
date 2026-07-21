@@ -16,8 +16,20 @@ BASE = "https://noaa-nbm-grib2-pds.s3.amazonaws.com"
 
 
 def main() -> None:
+    import argparse
+    from datetime import date, timedelta
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--start"); ap.add_argument("--end"); ap.add_argument("--step-days", type=int, default=7)
+    args = ap.parse_args()
     DEST.mkdir(parents=True, exist_ok=True)
-    dates = [f"{y}{m:02d}15" for y in (2023, 2024, 2025) for m in range(1, 13)]
+    if args.start and args.end:
+        d0, d1 = date.fromisoformat(args.start), date.fromisoformat(args.end)
+        dates = []
+        while d0 <= d1:
+            dates.append(d0.strftime("%Y%m%d"))
+            d0 += timedelta(days=args.step_days)
+    else:
+        dates = [f"{y}{m:02d}15" for y in (2023, 2024, 2025) for m in range(1, 13)]
     got = skip = miss = 0
     for d in dates:
         dest = DEST / f"nbs_{d}_12z.txt"
