@@ -45,5 +45,5 @@ jobs:
           npx --yes wrangler@4 kv key put current \
             --path forecast/out/current.json --namespace-id "$KV_NAMESPACE" --remote
           LOG=$(ls forecast/out/log/run_*.json.gz | tail -1)
-          npx --yes wrangler@4 kv key put "log:$(basename "$LOG" .json.gz)" \
-            --path "$LOG" --namespace-id "$KV_NAMESPACE" --remote
+          npx --yes wrangler@4 r2 object put \
+            "fogatlas-forecast/logs/$(basename "$LOG")" --file "$LOG" --remote
