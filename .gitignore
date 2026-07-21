@@ -10,3 +10,5 @@ pipeline/data/ourairports_runways.csv
 .env
 forecast/data/
 forecast/out/*.parquet
+forecast/out/current.json
+forecast/out/log/
