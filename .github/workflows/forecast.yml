@@ -1,0 +1,49 @@
+# V3 forecast engine — hourly shadow-mode issuance.
+#
+# INERT until two repository secrets exist (Settings -> Secrets -> Actions):
+#   CLOUDFLARE_API_TOKEN   account-scoped token: Workers KV Storage:Edit
+#                          (+ Pages:Edit, R2:Edit for later phases)
+# Account id is not a secret; it's public in wrangler.toml deploys.
+name: forecast
+on:
+  schedule:
+    - cron: "25 * * * *"   # hourly at :25 — NBM mirror lag margin
+  workflow_dispatch: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_ACCOUNT_ID: 5488aa3505290f21c3be9c32b2a5949c
+      KV_NAMESPACE: 72edf0ce3b1944bca59e4aa47cb67cc4
+    steps:
+      - name: gate on secret
+        id: gate
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "no CLOUDFLARE_API_TOKEN secret — engine idle (shadow mode not started via CI)"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.enabled == 'true'
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.enabled == 'true'
+        with: { python-version: "3.12" }
+      - name: engine
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          pip install --quiet duckdb
+          python forecast/engine.py
+      - name: upload to KV
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4 kv key put current \
+            --path forecast/out/current.json --namespace-id "$KV_NAMESPACE" --remote
+          LOG=$(ls forecast/out/log/run_*.json.gz | tail -1)
+          npx --yes wrangler@4 kv key put "log:$(basename "$LOG" .json.gz)" \
+            --path "$LOG" --namespace-id "$KV_NAMESPACE" --remote

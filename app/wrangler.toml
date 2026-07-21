@@ -1,0 +1,11 @@
+# Pages project config — bindings for Pages Functions (picked up by
+# `wrangler pages deploy` since Pages wrangler.toml support GA'd).
+name = "fog-atlas"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-01-01"
+
+# V3 forecast store: the engine (GitHub Action / local run) writes
+# `current` + `log:*` keys; /api/forecast serves `current` edge-cached.
+[[kv_namespaces]]
+binding = "FOGCAST"
+id = "72edf0ce3b1944bca59e4aa47cb67cc4"
