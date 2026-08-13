@@ -13,3 +13,5 @@ forecast/out/*.parquet
 forecast/out/current.json
 forecast/out/log/
 forecast/data/shadowlogs/
+forecast/out/deploy.json
+forecast/out/deploylog/

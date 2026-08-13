@@ -35,8 +35,17 @@ jobs:
       - name: engine
         if: steps.gate.outputs.enabled == 'true'
         run: |
-          pip install --quiet duckdb
+          pip install --quiet duckdb pyshp
           python forecast/engine.py
+      - name: deploy planner data (daily, on the 09z-cycle run)
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" = "10" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python forecast/build_deploy.py
+          else
+            echo "skipping deploy build (runs on the ~10z pass + manual dispatch)"
+          fi
       - name: upload to KV
         if: steps.gate.outputs.enabled == 'true'
         env:
@@ -51,3 +60,10 @@ jobs:
             "fogatlas-forecast/logs/$(basename "$LOG")" --file "$LOG" --remote \
           || npx --yes wrangler@4 kv key put "log:$(basename "$LOG" .json.gz)" \
             --path "$LOG" --namespace-id "$KV_NAMESPACE" --remote
+          if [ -f forecast/out/deploy.json ]; then
+            npx --yes wrangler@4 kv key put deploy \
+              --path forecast/out/deploy.json --namespace-id "$KV_NAMESPACE" --remote
+            DLOG=$(ls forecast/out/deploylog/deploy_*.json.gz | tail -1)
+            npx --yes wrangler@4 r2 object put \
+              "fogatlas-forecast/deploylogs/$(basename "$DLOG")" --file "$DLOG" --remote || true
+          fi

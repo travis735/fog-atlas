@@ -28,6 +28,8 @@ def parse_collective(path: Path, stations: set[str] | None = None):
             rows = {}; meta = None
             return
         icao, product, mo, dy, yr, hhmm = meta
+        # NBE separates days with '|' — blank them uniformly so column spans align
+        rows = {k: v[:4] + v[4:].replace("|", " ") for k, v in rows.items()}
         axis = rows.get("FHR") or rows["UTC"]
         spans = [(m.start(), m.end()) for m in re.finditer(r"\S+", axis[4:])]
         def vals(key):
