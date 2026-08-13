@@ -1705,6 +1705,9 @@ async function openDeploy() {
   history.replaceState(null, "", "#deploy");
   closeChaseMap();
   setSelected(null);
+  // the planner talks about the NEXT two weeks — scrub the underlying
+  // climatology field/dots to the current month, not the January default
+  setMonths([new Date().getMonth()]);
   if (chaseData === undefined) {
     chaseData = null;
     try { chaseData = await (await fetch("/data/chase.json")).json(); } catch {}
