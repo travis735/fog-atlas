@@ -174,9 +174,17 @@ def main() -> None:
                           "vis": [byf[f]["vis_sm"] for f in fhrs]}
 
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    # per-airport public flips: the committed record of deliberate bar-check
+    # decisions (forecast/bar_status.json). Absent file = full shadow.
+    try:
+        bar = json.load(open(HERE / "bar_status.json"))
+        public_airports = sorted(bar.get("public", []))
+    except FileNotFoundError:
+        public_airports = []
     current = {
         "meta": {"cycle": cycle_iso, "generated": generated,
-                 "public": False,  # shadow mode: pages must not show percentages
+                 "public": bool(public_airports),  # legacy master flag
+                 "publicAirports": public_airports,
                  "thresholds": THRESHOLDS, "n_airports": len(airports)},
         "airports": airports,
     }

@@ -65,6 +65,7 @@ def main() -> None:
     # join issued forecasts to later truth
     scored = defaultdict(lambda: {"n": 0, "bs_m": 0.0, "bs_c": 0.0})
     per_lead = defaultdict(lambda: defaultdict(lambda: {"n": 0, "bs_m": 0.0, "bs_c": 0.0}))
+    per_apt = defaultdict(lambda: defaultdict(lambda: {"n": 0, "bs_m": 0.0, "bs_c": 0.0, "events": 0}))
     seen = set()
     for lg in logs:
         cycle = datetime.fromisoformat(lg["cycle"].replace("Z", "+00:00"))
@@ -90,6 +91,8 @@ def main() -> None:
                     lb = "01-06" if fhr <= 6 else "07-12" if fhr <= 12 else "13-24" if fhr <= 24 else "25-48"
                     pl = per_lead[thr][lb]
                     pl["n"] += 1; pl["bs_m"] += (pm - y) ** 2; pl["bs_c"] += (pc - y) ** 2
+                    pa = per_apt[icao][thr]
+                    pa["n"] += 1; pa["bs_m"] += (pm - y) ** 2; pa["bs_c"] += (pc - y) ** 2; pa["events"] += y
 
     print(f"\n{'thr':5s} {'n':>9s} {'Brier_model':>11s} {'Brier_clim':>10s} {'skill%':>7s}")
     report = {"generated": datetime.now(timezone.utc).isoformat(), "runs": len(logs), "thresholds": {}}
@@ -107,6 +110,39 @@ def main() -> None:
                              "skill_pct": 100 * (1 - (v["bs_m"] / v["n"]) / (v["bs_c"] / v["n"])) if v["n"] and v["bs_c"] > 0 else None}
                         for lb, v in sorted(per_lead[thr].items())},
         }
+    # ---- per-airport bar check (pre-registered operationalization) ----
+    # An airport clears the bar when, over live verification:
+    #   evidence floor: >= 3000 verified pairs AND >= 10 observed v10 event-hours
+    #   skill: Brier_model < Brier_clim on BOTH v10 (public headline) and sub (pro)
+    bar = {"pass": [], "insufficient": [], "fail": []}
+    for icao, thrs in per_apt.items():
+        a10, asub = thrs.get("v10"), thrs.get("sub")
+        if not a10 or not asub:
+            continue
+        rec = {"icao": icao, "n": a10["n"], "events_v10": int(a10["events"])}
+        if a10["n"] > 0 and a10["bs_c"] > 0:
+            rec["skill_v10"] = round(100 * (1 - a10["bs_m"] / a10["bs_c"]), 1)
+        if asub["n"] > 0 and asub["bs_c"] > 0:
+            rec["skill_sub"] = round(100 * (1 - asub["bs_m"] / asub["bs_c"]), 1)
+        if a10["n"] < 3000 or a10["events"] < 10:
+            bar["insufficient"].append(rec)
+        elif rec.get("skill_v10", -1) > 0 and rec.get("skill_sub", -1) > 0:
+            bar["pass"].append(rec)
+        else:
+            bar["fail"].append(rec)
+    bar["pass"].sort(key=lambda r: -r["skill_v10"])
+    bar["fail"].sort(key=lambda r: r.get("skill_v10", 0))
+    report["bar"] = {
+        "rule": "n>=3000 pairs AND >=10 v10 event-hours; skill>0 on v10 AND sub",
+        "pass": bar["pass"], "fail": bar["fail"],
+        "insufficient_n": len(bar["insufficient"]),
+    }
+    print(f"\nBAR CHECK — pass: {len(bar['pass'])}  fail: {len(bar['fail'])}  insufficient evidence: {len(bar['insufficient'])}")
+    for r in bar["pass"][:15]:
+        print(f"  PASS {r['icao']}: v10 {r['skill_v10']:+.1f}% sub {r['skill_sub']:+.1f}%  (n={r['n']:,}, events={r['events_v10']})")
+    for r in bar["fail"][:8]:
+        print(f"  FAIL {r['icao']}: v10 {r.get('skill_v10')}% sub {r.get('skill_sub')}%  (n={r['n']:,}, events={r['events_v10']})")
+
     out = HERE / "out" / "shadow_report.json"
     out.write_text(json.dumps(report, indent=1))
     print(f"\nwrote {out}")

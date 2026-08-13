@@ -92,6 +92,7 @@ def page(a, ends, covered: bool, r10_by_mh) -> str:
 <title>{icao} — {name} fog forecast · tonight, tomorrow &amp; this week</title>
 <meta name="description" content="Will there be fog at {name} ({icao})? Hour-by-hour fog outlook, live conditions, and a 10-year fog climatology — {subH} low-visibility hours in a typical year, peaking in {pk_txt}.">
 <link rel="canonical" href="{SITE}/fog/{icao.lower()}/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta property="og:title" content="{icao} fog forecast — {name}">
 <meta property="og:description" content="Hour-by-hour fog outlook and 10-year climatology for {name}.">
 <style>{CSS}</style>
@@ -152,7 +153,8 @@ FOG_JS = r"""
     const fc = await (await fetch("/api/forecast")).json();
     const a = fc.airports && fc.airports[S.icao];
     if (!a) return;
-    if (fc.meta && fc.meta.public === true) {
+    const isPublic = Array.isArray(fc.meta && fc.meta.publicAirports) && fc.meta.publicAirports.includes(S.icao);
+    if (isPublic) {
       const peakP = Math.max(...a.p.map((r) => r[0]));
       const idx = a.p.findIndex((r) => r[0] === peakP);
       const at = new Date(new Date(fc.meta.cycle).getTime() + a.fhrs[idx] * 3600e3);
@@ -201,7 +203,7 @@ def main() -> None:
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Airport fog forecasts — Fog Atlas</title>
 <meta name="description" content="Hour-by-hour fog outlooks and 10-year fog climatology for {n} airports worldwide.">
-<link rel="canonical" href="{SITE}/fog/"><style>{CSS}</style></head><body><main>
+<link rel="canonical" href="{SITE}/fog/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><style>{CSS}</style></head><body><main>
 <h1>Airport fog forecasts</h1>
 <div class="sub">{n} airports · <a href="{SITE}/">the atlas →</a></div>
 <div class="note" style="line-height:2.2">{idx_rows}</div>
@@ -213,12 +215,37 @@ def main() -> None:
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Forecast verification — Fog Atlas</title>
 <meta name="description" content="How the Fog Atlas fog forecasts are scored: every issued probability is logged and verified against what actually happened.">
-<link rel="canonical" href="{SITE}/fog/scorecard/"><style>{CSS}</style></head><body><main>
+<link rel="canonical" href="{SITE}/fog/scorecard/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><style>{CSS}</style></head><body><main>
 <h1>Forecast verification</h1>
 <div class="sub">the receipt, not the promise</div>
 <div class="blk">Every forecast this site issues is <b>logged at issuance</b> and later scored against what the airport's weather station actually reported. No forecast probability appears publicly for an airport until its calibrated model <b>beats that airport's own 10-year climatology</b> on Brier score over live verification — a pre-registered bar, not a vibe.</div>
-<div class="blk"><b>Status: shadow mode</b> — the engine has been issuing and logging hourly forecasts since <b>2026-07-21</b>. Scores publish here, per airport, as verification accumulates (typically 3–4 weeks). Airports that never clear the bar simply never show percentages.</div>
-<p class="note">Method: guidance from the NOAA/NWS National Blend of Models, recalibrated per airport against ten years of METAR truth at four thresholds (vis &lt; 1 mi / ½ mi / ¼ mi, and below-CAT-I). Verification obs come from the same live feed the maps use. <a href="{SITE}/#methodology">Full methodology</a>.</p>
+<div class="blk" id="sc-status"><b>Status: shadow mode</b> — the engine has been issuing and logging hourly forecasts since <b>2026-07-21</b>. Scores publish here, per airport, as verification accumulates. Airports that never clear the bar simply never show percentages.</div>
+<div id="sc-detail"></div>
+<p class="note">Method: guidance from the NOAA/NWS National Blend of Models, recalibrated per airport against ten years of METAR truth at four thresholds (vis &lt; 1 mi / ½ mi / ¼ mi, and below-CAT-I). Verification obs come from the same live feed the maps use. Bar rule: at least 3,000 verified forecast/outcome pairs and 10 observed event-hours, then the calibrated model must beat that airport's own climatology on Brier score at both the public and the pro threshold. <a href="{SITE}/#methodology">Full methodology</a>.</p>
+<script>
+(async () => {{
+  try {{
+    const sc = await (await fetch("/api/scorecard")).json();
+    if (!sc.thresholds) return;
+    const bar = sc.bar || {{}};
+    const pass = bar.pass || [];
+    document.getElementById("sc-status").innerHTML =
+      `<b>Status: ${{pass.length ? pass.length + " airports live" : "shadow mode"}}</b> — ` +
+      `${{sc.runs}} hourly issuances scored through ${{(sc.generated || "").slice(0, 10)}}. ` +
+      `${{pass.length ? "Airports below cleared the pre-registered bar and now show calibrated percentages; all others remain shadow." : "No airport has cleared the bar yet."}}`;
+    const t = sc.thresholds.v10 || {{}};
+    let html = `<div class="blk">Pooled, all airports: ${{(t.n || 0).toLocaleString()}} verified pairs · ` +
+      `model Brier ${{(t.brier_model || 0).toFixed(5)}} vs climatology ${{(t.brier_clim || 0).toFixed(5)}} ` +
+      `(<b>${{(t.skill_pct || 0).toFixed(1)}}% better</b>) on the fog headline threshold.</div>`;
+    if (pass.length) {{
+      html += `<table><tr><th>airport</th><th>verified pairs</th><th>event hours</th><th>skill vs climatology</th></tr>` +
+        pass.map((r) => `<tr><td><a href="/fog/${{r.icao.toLowerCase()}}/">${{r.icao}}</a></td>` +
+          `<td>${{r.n.toLocaleString()}}</td><td>${{r.events_v10}}</td><td>+${{r.skill_v10}}%</td></tr>`).join("") + `</table>`;
+    }}
+    document.getElementById("sc-detail").innerHTML = html;
+  }} catch (e) {{ /* static copy stands */ }}
+}})();
+</script>
 </main></body></html>""")
 
     with open(APP_PUB / "sitemap.xml", "w") as f:

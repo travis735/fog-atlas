@@ -926,7 +926,7 @@ async function openAirport(icao: string) {
     const f = fc?.airports?.[icao];
     const el = panelContent.querySelector("#fcast");
     if (!f || !el) return;
-    const pub = fc.meta?.public === true;
+    const pub = Array.isArray(fc.meta?.publicAirports) && fc.meta.publicAirports.includes(icao);
     const vals: number[] = pub ? f.p.map((r: number[]) => r[0]) : f.liv.map((v: number | null) => v ?? 0);
     const peak = Math.max(...vals, 1);
     const bars = vals.map((v, i) =>

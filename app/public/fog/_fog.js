@@ -37,7 +37,8 @@
     const fc = await (await fetch("/api/forecast")).json();
     const a = fc.airports && fc.airports[S.icao];
     if (!a) return;
-    if (fc.meta && fc.meta.public === true) {
+    const isPublic = Array.isArray(fc.meta && fc.meta.publicAirports) && fc.meta.publicAirports.includes(S.icao);
+    if (isPublic) {
       const peakP = Math.max(...a.p.map((r) => r[0]));
       const idx = a.p.findIndex((r) => r[0] === peakP);
       const at = new Date(new Date(fc.meta.cycle).getTime() + a.fhrs[idx] * 3600e3);
