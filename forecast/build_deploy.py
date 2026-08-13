@@ -119,7 +119,8 @@ def spread_wind_factor(spread_f, wsp_kt):
 
 
 def main() -> None:
-    atlas = {a["icao"]: a for a in json.load(open(HERE.parent / "pipeline" / "out" / "app" / "airports.json"))["airports"]}
+    # committed copy (CI runners have no pipeline/out); identical content
+    atlas = {a["icao"]: a for a in json.load(open(HERE.parent / "app" / "public" / "data" / "airports.json"))["airports"]}
     chase = json.load(open(HERE.parent / "app" / "public" / "data" / "chase.json"))["airports"]
     coords = {i: (atlas[i]["lon"], atlas[i]["lat"]) for i in chase if i in atlas}
     stations = set(coords)
