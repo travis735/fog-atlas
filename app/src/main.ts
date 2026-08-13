@@ -260,6 +260,7 @@ map.on("load", async () => {
   if (hash === "rankings") openRankings();
   else if (hash === "methodology") openMethodology();
   else if (hash === "chase") openChase();
+  else if (hash === "deploy") openDeploy();
   else if (hash.length > 1) openAirport(hash.toUpperCase());
 });
 
@@ -453,6 +454,7 @@ let rankCatIOnly = true;
 function openRankings() {
   history.replaceState(null, "", "#rankings");
   closeChaseMap();
+  closeDeployMap();
   setSelected(null);
   // a 6%-coverage or anomalous-reporting station can't support a frequency
   // claim — keep them out of the league table (still on the map and search)
@@ -525,6 +527,7 @@ $("#methodology").addEventListener("click", (e) => { e.preventDefault(); openMet
 function openMethodology() {
   history.replaceState(null, "", "#methodology");
   closeChaseMap();
+  closeDeployMap();
   setSelected(null);
   panelContent.innerHTML = `
     <h2>Methodology</h2>
@@ -633,6 +636,7 @@ $("#close").addEventListener("click", () => {
   panel.hidden = true;
   document.body.classList.remove("panel-open");
   closeChaseMap();
+  closeDeployMap();
   setSelected(null);
   history.replaceState(null, "", location.pathname);
 });
@@ -689,6 +693,7 @@ async function openAirport(icao: string) {
   const a = state.airports.find((x) => x.icao === icao);
   if (!a) return;
   closeChaseMap();
+  closeDeployMap();
   if (persistenceTable === undefined) {
     persistenceTable = null; // only try once
     try { persistenceTable = await (await fetch("/data/persistence.json")).json(); } catch {}
@@ -1361,6 +1366,7 @@ function chaseRowBadges(end: ChaseEnd): string {
 
 async function openChase() {
   history.replaceState(null, "", "#chase");
+  closeDeployMap();
   setSelected(null);
   if (chaseData === undefined) {
     chaseData = null; // only try once
@@ -1565,6 +1571,205 @@ function renderChase() {
 }
 
 $("#chase-btn").addEventListener("click", openChase);
+
+// ---------- DEPLOY: where to base for the next two weeks ----------
+let deployData: any | null | undefined;
+let deployOpen = false;
+let deployWindow: 7 | 14 = 14;
+
+function winEH(icao: string): number {
+  const d = deployData?.airports?.[icao];
+  if (!d) return 0;
+  return d.eh.slice(0, deployWindow).reduce((x: number, y: number) => x + y, 0);
+}
+
+// same infrastructure filters the chase board saves — no base/distance term
+function deployQualifying(): Set<string> {
+  const out = new Set<string>();
+  if (!chaseData) return out;
+  const named: readonly string[] = CHASE_ALS_CHIPS.slice(0, -1);
+  const sel = new Set(chasePrefs.als);
+  for (const [icao, ends] of Object.entries(chaseData.airports)) {
+    if ((ends as ChaseEnd[]).some((e) =>
+      e.als != null &&
+      (sel.has(e.als) || (sel.has("OTHER") && !named.includes(e.als))) &&
+      e.len >= chasePrefs.minLen &&
+      e.tier <= chasePrefs.maxTier &&
+      (!chasePrefs.rvrReq || e.rvr != null))) out.add(icao);
+  }
+  return out;
+}
+
+interface DeployBase { b: Airport; s: number; contrib: { a: Airport; eh: number; nm: number }[] }
+
+function deployRank(): { targets: { a: Airport; eh: number }[]; top: DeployBase[] } {
+  const radius = chasePrefs.speed * chasePrefs.maxEteH;
+  const qual = deployQualifying();
+  const targets = state.airports
+    .filter((a) => qual.has(a.icao))
+    .map((a) => ({ a, eh: winEH(a.icao) }))
+    .filter((t) => t.eh > 0.05);
+  const scores: DeployBase[] = [];
+  for (const b of state.airports) {
+    let s = 0;
+    const contrib: DeployBase["contrib"] = [];
+    for (const t of targets) {
+      if (Math.abs(t.a.lat - b.lat) > radius / 60 + 0.2) continue;
+      const nm = distNm(b, t.a);
+      if (nm <= radius) { s += t.eh; contrib.push({ a: t.a, eh: t.eh, nm }); }
+    }
+    if (s > 0.5) scores.push({ b, s, contrib: contrib.sort((x, y) => y.eh - x.eh) });
+  }
+  scores.sort((x, y) => y.s - x.s);
+  const top: DeployBase[] = [];
+  for (const c of scores) {
+    if (top.some((t) => distNm(t.b, c.b) < 80)) continue;
+    top.push(c);
+    if (top.length >= 8) break;
+  }
+  return { targets, top };
+}
+
+function deployApplyMap(targets: { a: Airport; eh: number }[], top: DeployBase[], ringBase?: Airport) {
+  if (!map.getLayer("glow")) return;
+  if (!map.getSource("deploy-src")) {
+    map.addSource("deploy-src", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    map.addSource("deploy-ring-src", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    map.addLayer({
+      id: "deploy-eh", type: "circle", source: "deploy-src",
+      filter: ["==", ["get", "kind"], "t"],
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["get", "r"], 0, 2.5, 3, 8, 8, 16],
+        "circle-color": "#9fd8ff", "circle-opacity": 0.55,
+        "circle-stroke-width": 1, "circle-stroke-color": "#c4eaff88",
+      },
+    });
+    map.addLayer({
+      id: "deploy-base", type: "circle", source: "deploy-src",
+      filter: ["==", ["get", "kind"], "b"],
+      paint: {
+        "circle-radius": 6, "circle-color": "#e8b96a",
+        "circle-stroke-width": 1.6, "circle-stroke-color": "#fff9",
+      },
+    });
+    map.addLayer({
+      id: "deploy-ring", type: "line", source: "deploy-ring-src",
+      paint: { "line-color": "#e8b96a", "line-opacity": 0.6, "line-width": 1.2, "line-dasharray": [2, 2.5] },
+    });
+    map.on("click", "deploy-eh", (ev) => {
+      const icao = ev.features?.[0]?.properties.icao;
+      if (icao) openAirport(icao);
+    });
+  }
+  (map.getSource("deploy-src") as any).setData({
+    type: "FeatureCollection",
+    features: [
+      ...targets.map((t) => ({
+        type: "Feature", geometry: { type: "Point", coordinates: [t.a.lon, t.a.lat] },
+        properties: { kind: "t", icao: t.a.icao, r: Math.sqrt(t.eh) },
+      })),
+      ...top.map((c) => ({
+        type: "Feature", geometry: { type: "Point", coordinates: [c.b.lon, c.b.lat] },
+        properties: { kind: "b", icao: c.b.icao },
+      })),
+    ],
+  });
+  const ring = ringBase
+    ? [{ type: "Feature", geometry: { type: "LineString",
+        coordinates: Array.from({ length: 97 }, (_, i) => destPoint(ringBase.lat, ringBase.lon, i * 3.75, chasePrefs.speed * chasePrefs.maxEteH)) }, properties: {} }]
+    : [];
+  (map.getSource("deploy-ring-src") as any).setData({ type: "FeatureCollection", features: ring });
+
+  const icaos = [...targets.map((t) => t.a.icao), ...top.map((c) => c.b.icao)];
+  const inList: any = ["in", ["get", "icao"], ["literal", icaos]];
+  for (const [id, baseF] of Object.entries(BASE_FILTERS)) {
+    if (id === "fogheat" || id === "presence") continue;
+    map.setFilter(id, (baseF ? ["all", baseF, inList] : inList) as any);
+  }
+  map.setPaintProperty("fogheat", "heatmap-opacity",
+    ["interpolate", ["linear"], ["zoom"], 5, 0.35, 6.2, 0]);
+}
+
+function closeDeployMap() {
+  if (!deployOpen) return;
+  deployOpen = false;
+  if (map.getLayer("glow")) {
+    applyApproachFilters();
+    map.setPaintProperty("fogheat", "heatmap-opacity", FOGHEAT_OPACITY);
+  }
+  (map.getSource("deploy-src") as any)?.setData({ type: "FeatureCollection", features: [] });
+  (map.getSource("deploy-ring-src") as any)?.setData({ type: "FeatureCollection", features: [] });
+}
+
+async function openDeploy() {
+  history.replaceState(null, "", "#deploy");
+  closeChaseMap();
+  setSelected(null);
+  if (chaseData === undefined) {
+    chaseData = null;
+    try { chaseData = await (await fetch("/data/chase.json")).json(); } catch {}
+  }
+  if (deployData === undefined) {
+    deployData = null;
+    try { deployData = await (await fetch("/api/deploy")).json(); } catch {}
+  }
+  deployOpen = true;
+  renderDeploy();
+  panel.hidden = false;
+  document.body.classList.add("panel-open");
+}
+
+function renderDeploy(ringBase?: Airport) {
+  if (!deployOpen) return;
+  const radius = Math.round(chasePrefs.speed * chasePrefs.maxEteH);
+  const { targets, top } = deployData ? deployRank() : { targets: [], top: [] };
+  const gen = deployData?.meta?.generated?.slice(0, 10) ?? "—";
+  const rows = top.map((c, i) => `
+    <tr data-icao="${c.b.icao}">
+      <td class="num">${i + 1}</td>
+      <td><b>${c.b.icao}</b> ${c.b.name.length > 22 ? c.b.name.slice(0, 21) + "…" : c.b.name}<br>
+        <span class="chase-badges">${c.contrib.slice(0, 3).map((x) => `${x.a.icao} ${x.eh.toFixed(0)}h·${Math.round(x.nm)}nm`).join(" · ")}${c.contrib.length > 3 ? ` · +${c.contrib.length - 3} more` : ""}</span></td>
+      <td class="num" title="expected chaseable hours within ${radius} nm over ${deployWindow} days"><b>${c.s.toFixed(0)}h</b></td>
+    </tr>`).join("");
+
+  panelContent.innerHTML = `
+    <h2>Deploy planner</h2>
+    <p class="sub">where to base for the fog — expected chaseable hours, next ${deployWindow} days · data ${gen}${deployData ? "" : " — <b style='color:#ff9a9a'>deploy data unavailable</b>"}</p>
+    <div class="chase-setup">
+      ${([7, 14] as const).map((w) => `<button class="equip-chip${deployWindow === w ? " on" : ""}" data-win="${w}">next ${w} days</button>`).join("")}
+      <span style="color:var(--ink-dim)">reach: ${radius} nm (${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt · <a href="#chase" id="deploy-tochase">chase settings</a>)</span>
+    </div>
+    <p class="note" style="margin-top:8px">Airports must pass your saved CHASE filters. Chaseable = below CAT I. Tier honesty: days 1–2 <b>calibrated</b>; days 3–8 climatology × NBM-extended fog ingredients (<b>advisory, unfitted</b>); days 9–14 climatology × CPC moisture outlook (<b>advisory</b>, US only — Canadian airports stay pure climatology there).</p>
+    <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span></div>
+    ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num">exp. h</th></tr></thead><tbody>${rows}</tbody></table>`
+      : `<p class="note">No expected fog within range of any base under the current filters — widen the CHASE filters or the window.</p>`}
+    <p class="note">Click a base to ring its reach on the map; click a blue dot for that airport's deep-dive. Dot size = expected chaseable hours. The daily build logs every advisory prediction — the extended tiers earn verification the same way the 48 h model did.</p>`;
+
+  panelContent.querySelectorAll(".equip-chip[data-win]").forEach((b) =>
+    b.addEventListener("click", () => {
+      deployWindow = +(b as HTMLElement).dataset.win! as 7 | 14;
+      renderDeploy();
+    }));
+  panelContent.querySelector("#deploy-tochase")?.addEventListener("click", (e) => {
+    e.preventDefault(); openChase();
+  });
+  panelContent.querySelectorAll("tr[data-icao]").forEach((tr) =>
+    tr.addEventListener("click", () => {
+      const b = state.airports.find((x) => x.icao === (tr as HTMLElement).dataset.icao)!;
+      renderDeploy(b);
+      map.flyTo({ center: [b.lon, b.lat], zoom: 5.2, duration: 1400 });
+    }));
+
+  deployApplyMap(targets, top, ringBase);
+  if (!ringBase && top.length && !map.isMoving()) {
+    const b = new maplibregl.LngLatBounds();
+    top.forEach((c) => b.extend([c.b.lon, c.b.lat]));
+    targets.slice(0, 40).forEach((t) => b.extend([t.a.lon, t.a.lat]));
+    map.fitBounds(b, { padding: { top: 90, bottom: 110, left: 60, right: 490 }, duration: 1400, maxZoom: 6 });
+  }
+}
+
+$("#deploy-btn").addEventListener("click", openDeploy);
 
 applyScrub();
 

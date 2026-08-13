@@ -62,12 +62,12 @@ body.panel-open #topbar-row { right: min(440px, 100vw); }
 .search-row b { color: var(--accent-hot); min-width: 44px; }
 .search-row span { color: var(--ink); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .search-row em { color: var(--ink-dim); font-style: normal; font-size: 10.5px; }
-#rankings-btn, #chase-btn {
+#rankings-btn, #chase-btn, #deploy-btn {
   padding: 9px 16px; background: var(--panel); border: 1px solid var(--hairline);
   border-radius: 9px; color: var(--accent); font: inherit; font-size: 11px;
   letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(12px);
 }
-#rankings-btn:hover, #chase-btn:hover { border-color: var(--accent); box-shadow: 0 0 12px #9fd8ff22; }
+#rankings-btn:hover, #chase-btn:hover, #deploy-btn:hover { border-color: var(--accent); box-shadow: 0 0 12px #9fd8ff22; }
 
 /* ---------- chase board ---------- */
 .chase-setup {
