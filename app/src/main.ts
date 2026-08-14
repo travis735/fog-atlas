@@ -1787,15 +1787,21 @@ function renderDeploy(ringBase?: Airport) {
   const radius = Math.round(chasePrefs.speed * chasePrefs.maxEteH);
   const { targets, top } = deployData ? deployRank() : { targets: [], top: [] };
   const gen = deployData?.meta?.generated?.slice(0, 10) ?? "—";
+  const home = state.airports.find((x) => x.icao === chasePrefs.base);
   const rows = top.map((c, i) => {
     const fl = firstLikely(c);
+    const dep = home
+      ? (home.icao === c.b.icao
+        ? `<span class="chase-badges">you're here</span>`
+        : `<span class="chase-badges" title="one-time repositioning: still-air time from your CHASE base ${home.icao} at ${chasePrefs.speed} kt — shown for planning, not factored into the ranking">deploy in ${eteStr(distNm(home, c.b) / chasePrefs.speed)}</span>`)
+      : "";
     return `
     <tr data-icao="${c.b.icao}"${ringBase?.icao === c.b.icao ? ' style="background:#16202b"' : ""}>
       <td class="num">${i + 1}</td>
       <td><b>${c.b.icao}</b> ${c.b.name.length > 22 ? c.b.name.slice(0, 21) + "…" : c.b.name}<br>
         <span class="chase-badges" title="destination fields with flight time from ${c.b.icao} (still-air at ${chasePrefs.speed} kt)">go to: ${c.contrib.slice(0, 3).map((x) => `${x.a.icao} in ${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}</span><br>
         <span class="chase-badges" title="the first day in the window when a reachable field is at least 50% likely to go below CAT I">${fl ? `fog likely ${fl.label}` : "no strong fog day in window"}</span></td>
-      <td class="num" title="expected chaseable fog hours at fields within ${radius} nm over the next ${deployWindow} days, counting only hours reachable before the fog lifts"><b>${c.s.toFixed(0)}h</b></td>
+      <td class="num" title="expected chaseable fog hours at fields within ${radius} nm over the next ${deployWindow} days, counting only hours reachable before the fog lifts"><b>${c.s.toFixed(0)}h</b><br>${dep}</td>
     </tr>`;
   }).join("");
 
