@@ -1735,15 +1735,26 @@ async function openDeploy() {
   document.body.classList.add("panel-open");
 }
 
-// day-1/2 calibrated hours for a base's in-reach set (deploy.json tiers "cal")
-function calEH(c: DeployBase): number {
-  let s = 0;
-  for (const x of c.contrib) {
-    const d = deployData?.airports?.[x.a.icao];
-    if (!d) continue;
-    for (let i = 0; i < d.eh.length; i++) if (d.tiers[i] === "cal") s += d.eh[i];
+// first day in the window with a REACHABLE field >=50% likely chaseable —
+// the operator's "when could we actually go" number
+function firstLikely(c: DeployBase): { label: string; p: number; icao: string } | null {
+  if (!deployData) return null;
+  for (let d = 0; d < deployWindow; d++) {
+    let best = 0, bi = "";
+    for (const x of c.contrib) {
+      const da = deployData.airports[x.a.icao];
+      const p = da?.p?.[d];
+      const win = da?.win?.[d];
+      if (win != null && win > 0 && win <= x.nm / chasePrefs.speed + 0.75) continue;
+      if (p != null && p > best) { best = p; bi = x.a.icao; }
+    }
+    if (best >= 0.5) {
+      const label = d === 0 ? "tomorrow"
+        : new Date(Date.now() + (d + 1) * 864e5).toLocaleDateString("en-US", { weekday: "short" });
+      return { label, p: best, icao: bi };
+    }
   }
-  return s;
+  return null;
 }
 
 // next-48h fog character at one airport, in ITS local time, from the live
@@ -1776,13 +1787,17 @@ function renderDeploy(ringBase?: Airport) {
   const radius = Math.round(chasePrefs.speed * chasePrefs.maxEteH);
   const { targets, top } = deployData ? deployRank() : { targets: [], top: [] };
   const gen = deployData?.meta?.generated?.slice(0, 10) ?? "—";
-  const rows = top.map((c, i) => `
+  const rows = top.map((c, i) => {
+    const fl = firstLikely(c);
+    return `
     <tr data-icao="${c.b.icao}"${ringBase?.icao === c.b.icao ? ' style="background:#16202b"' : ""}>
       <td class="num">${i + 1}</td>
       <td><b>${c.b.icao}</b> ${c.b.name.length > 22 ? c.b.name.slice(0, 21) + "…" : c.b.name}<br>
-        <span class="chase-badges">${c.contrib.slice(0, 3).map((x) => `${x.a.icao} ${x.eh.toFixed(0)}h·${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}${c.contrib.length > 3 ? ` · +${c.contrib.length - 3} more` : ""}</span></td>
-      <td class="num" title="top: expected chaseable hours at fields within ${radius} nm, summed over the next ${deployWindow} days (reachability-discounted). bottom: the portion inside the next 48 h, from the calibrated live forecast."><b>${c.s.toFixed(0)}h</b><br><span class="chase-badges">next 48h: ${calEH(c).toFixed(0)}h</span></td>
-    </tr>`).join("");
+        <span class="chase-badges">go to: ${c.contrib.slice(0, 3).map((x) => `${x.a.icao} ${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}${c.contrib.length > 3 ? ` +${c.contrib.length - 3} more` : ""}</span></td>
+      <td class="num" title="expected chaseable fog hours at fields within ${radius} nm over the next ${deployWindow} days, counting only hours reachable before the fog lifts"><b>${c.s.toFixed(0)}h</b><br>
+        <span class="chase-badges">${fl ? `first likely: ${fl.label} (${Math.round(fl.p * 100)}%)` : `none ≥50% in window`}</span></td>
+    </tr>`;
+  }).join("");
 
   // GO / MARGINAL / SCRAP verdict for the selected (or top) base: per day,
   // the best in-reach field's P(chaseable); a day counts when that P >= 50%
