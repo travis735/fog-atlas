@@ -164,6 +164,12 @@ body.panel-open #topbar-row { right: min(440px, 100vw); }
   max-width: 300px;
 }
 body.panel-open #legend { right: min(454px, calc(100vw + 14px)); }
+/* center the scrubber on the MAP area (not the viewport) while a panel is
+   open, and drop the legend when the narrowed map can't fit both */
+body.panel-open #scrub { left: calc((100vw - min(440px, 100vw)) / 2); }
+@media (max-width: 1450px) {
+  body.panel-open #legend { display: none; }
+}
 .legend-row { display: flex; align-items: center; gap: 7px; justify-content: flex-end; margin-top: 4px; }
 .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .dot.annual { border: 1px solid var(--ink-dim); }

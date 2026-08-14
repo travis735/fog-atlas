@@ -1781,7 +1781,7 @@ function renderDeploy(ringBase?: Airport) {
       <td class="num">${i + 1}</td>
       <td><b>${c.b.icao}</b> ${c.b.name.length > 22 ? c.b.name.slice(0, 21) + "…" : c.b.name}<br>
         <span class="chase-badges">${c.contrib.slice(0, 3).map((x) => `${x.a.icao} ${x.eh.toFixed(0)}h·${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}${c.contrib.length > 3 ? ` · +${c.contrib.length - 3} more` : ""}</span></td>
-      <td class="num" title="expected chaseable hours within ${radius} nm over ${deployWindow} days; second line = the calibrated next-48h share"><b>${c.s.toFixed(0)}h</b><br><span class="chase-badges">${calEH(c).toFixed(0)}h·48h</span></td>
+      <td class="num" title="top: expected chaseable hours at fields within ${radius} nm, summed over the next ${deployWindow} days (reachability-discounted). bottom: the portion inside the next 48 h, from the calibrated live forecast."><b>${c.s.toFixed(0)}h</b><br><span class="chase-badges">next 48h: ${calEH(c).toFixed(0)}h</span></td>
     </tr>`).join("");
 
   // GO / MARGINAL / SCRAP verdict for the selected (or top) base: per day,
@@ -1831,7 +1831,7 @@ function renderDeploy(ringBase?: Airport) {
     </div>
     <p class="note" style="margin-top:8px">Airports must pass your saved CHASE filters. Chaseable = below CAT I. Tier honesty: days 1–2 <b>calibrated</b>; days 3–8 climatology × NBM-extended fog ingredients (<b>advisory, unfitted</b>); days 9–14 climatology × CPC moisture outlook (<b>advisory</b>, US only — Canadian airports stay pure climatology there).</p>
     <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span></div>
-    ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num">exp. h</th></tr></thead><tbody>${rows}</tbody></table>`
+    ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num" title="expected chaseable hours within reach over the window · bottom line: next-48h portion (calibrated)">chaseable hrs</th></tr></thead><tbody>${rows}</tbody></table>`
       : `<p class="note">No expected fog within range of any base under the current filters — widen the CHASE filters or the window.</p>`}
     <div id="deploy-48"></div>
     <p class="note">Fields credit only the fog-window hours remaining after still-air transit (launch-at-onset + 30 min margin) — a distant field whose fog lifts before arrival counts near zero. Contributor times are ETE from the base.</p>
