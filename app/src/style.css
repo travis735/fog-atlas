@@ -106,6 +106,8 @@ body.panel-open #topbar-row { right: min(440px, 100vw); }
 .stratum-h b { font-size: 12px; letter-spacing: 0.1em; white-space: nowrap; }
 .stratum-h .n { color: var(--accent-hot); }
 .chase-badges { color: var(--ink-dim); font-size: 10px; white-space: nowrap; }
+/* inside tables, long badge lines must wrap rather than overflow the panel */
+.rank-table .chase-badges { white-space: normal; }
 #panel-content a, #panel-content a:visited { color: var(--accent); }
 .chase-badges b { color: var(--ink); font-weight: 600; }
 .chase-live { font-size: 10.5px; color: var(--ink); }
