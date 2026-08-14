@@ -1894,12 +1894,45 @@ function renderDeploy(ringBase?: Airport) {
         const fc = await getForecast();
         const el = panelContent.querySelector("#deploy-48");
         if (!el || !fc) return;
+        // the night-before answer: pick tomorrow's best reachable window and
+        // back the wheels-up time off its opening minus the flight out
+        let launch = "";
+        {
+          const cyc = new Date(fc.meta.cycle).getTime();
+          let best: { p: number; icao: string; nm: number; ete: number; openMs: number; tz: string } | null = null;
+          for (const x of sel.contrib.slice(0, 12)) {
+            const f = fc.airports?.[x.a.icao];
+            if (!f) continue;
+            const p10: number[] = f.p.map((r: number[]) => r[0]);
+            const peak = Math.max(...p10);
+            if (peak < 40) continue;
+            const thr = Math.max(15, peak * 0.4);
+            const idx = f.fhrs.findIndex((fh: number, i: number) => p10[i] >= thr && fh <= 30);
+            if (idx < 0) continue;
+            const ete = x.nm / chasePrefs.speed;
+            const openMs = cyc + f.fhrs[idx] * 3600e3;
+            if (openMs - Date.now() < ete * 3600e3) continue; // window opens before we could get airborne
+            if (!best || peak > best.p) best = { p: peak, icao: x.a.icao, nm: x.nm, ete, openMs, tz: x.a.tz };
+          }
+          if (best) {
+            const wheels = new Date(best.openMs - (best.ete + 0.25) * 3600e3);
+            const fmt = (d: Date) => d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: best!.tz });
+            launch = `<div style="background:#111823;border:1px solid #7a5a2e;border-radius:10px;padding:12px 14px;margin:10px 0">
+              <b style="color:#e8b96a;letter-spacing:.05em">WHEELS UP ~${fmt(wheels)}</b>
+              <span style="color:var(--ink)"> → <b>${best.icao}</b> (${eteStr(best.ete)} out) · on station ${fmt(new Date(best.openMs))} local · fog ${best.p}%</span>
+              <div class="note" style="margin-top:4px">night-before plan: launch to arrive as the highest-probability reachable window opens (15 min buffer). Recheck the board before engine start — the forecast refreshes hourly.</div>
+            </div>`;
+          } else {
+            launch = `<p class="note">no launch recommended in the next ~30 h from ${sel.b.icao} — no reachable field clears 40%.</p>`;
+          }
+        }
         const lines = sel.contrib.slice(0, 5).map((x) => {
           const ch = fogCharacter(x.a, fc);
           return ch ? `<tr data-icao="${x.a.icao}"><td><b>${x.a.icao}</b> <span class="chase-badges">${Math.round(x.nm)} nm · ${eteStr(x.nm / chasePrefs.speed)}</span></td><td>${ch}</td></tr>` : "";
         }).filter(Boolean).join("");
         el.innerHTML = `
           <div class="stratum-h"><b style="color:#9fd8ff">NEXT 48 H FROM ${sel.b.icao}</b><span></span><span>calibrated live forecast at the top fields in reach</span></div>
+          ${launch}
           ${lines ? `<table class="rank-table"><tbody>${lines}</tbody></table>` : `<p class="note">no live forecast coverage at this base's top fields.</p>`}
           <p class="note">Window = hours with fog probability ≥40% of its peak; severity pills show the strongest threshold with ≥25% chance. Beyond 48 h the planner is climatology-guided until the fitted extended tier (V3.2) lands.</p>`;
         el.querySelectorAll("tr[data-icao]").forEach((tr) =>
