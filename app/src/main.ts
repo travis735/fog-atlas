@@ -1771,9 +1771,40 @@ function renderDeploy(ringBase?: Airport) {
       <td class="num" title="expected chaseable hours within ${radius} nm over ${deployWindow} days; second line = the calibrated next-48h share"><b>${c.s.toFixed(0)}h</b><br><span class="chase-badges">${calEH(c).toFixed(0)}h·48h</span></td>
     </tr>`).join("");
 
+  // GO / MARGINAL / SCRAP verdict for the selected (or top) base: per day,
+  // the best in-reach field's P(chaseable); a day counts when that P >= 50%
+  const vb = (ringBase && top.find((c) => c.b.icao === ringBase.icao)) || top[0];
+  let verdictHtml = "";
+  const hasP = !!vb && vb.contrib.some((x) => Array.isArray(deployData?.airports?.[x.a.icao]?.p));
+  if (vb && deployData && hasP) {
+    const cells: { best: number; bi: string; bt: string }[] = [];
+    let likely = 0;
+    for (let d = 0; d < deployWindow; d++) {
+      let best = 0, bi = "", bt = "";
+      for (const x of vb.contrib) {
+        const da = deployData.airports[x.a.icao];
+        const p = da?.p?.[d];
+        if (p != null && p > best) { best = p; bi = x.a.icao; bt = da.tiers[d]; }
+      }
+      if (best >= 0.5) likely++;
+      cells.push({ best, bi, bt });
+    }
+    const need = deployWindow >= 14 ? 3 : 2;
+    const [word, color] = likely >= need ? ["GO", "#7fd49a"] : likely >= 1 ? ["MARGINAL", "#ffb347"] : ["SCRAP", "#ff5a4d"];
+    const sk = deployData.meta?.dayscale_skill;
+    verdictHtml = `<div style="background:#111823;border:1px solid #233240;border-radius:10px;padding:12px 14px;margin:12px 0">
+      <b style="color:${color};font-size:1.05rem;letter-spacing:.04em">${word}</b>
+      <span style="color:var(--ink)"> — ${likely} of ${deployWindow} days have a field ≥50% likely chaseable from <b>${vb.b.icao}</b></span>
+      <div style="display:flex;gap:2px;margin-top:9px">${cells.map((c, i) =>
+        `<div title="day +${i + 1}: ${c.bi || "no field"} ${(100 * c.best).toFixed(0)}% (${c.bt || "—"})" style="flex:1;height:15px;border-radius:3px;background:${c.best >= 0.5 ? "#7fc0e8" : "#3f76a3"};opacity:${(0.18 + 0.82 * c.best).toFixed(2)}"></div>`).join("")}</div>
+      <div class="note" style="margin-top:6px">day cells = best in-reach field's P(chaseable) · ${sk != null ? `days 3–8 <b>fitted</b> (2025 holdout ${sk > 0 ? "+" : ""}${sk.toFixed(1)}% vs climatology)` : "days 3–8 advisory until the fitted tier ships"}</div>
+    </div>`;
+  }
+
   panelContent.innerHTML = `
     <h2>Deploy planner</h2>
     <p class="sub">where to base for the fog — expected chaseable hours, next ${deployWindow} days · data ${gen}${deployData ? "" : " — <b style='color:#ff9a9a'>deploy data unavailable</b>"}</p>
+    ${verdictHtml}
     <div class="chase-setup">
       ${([7, 14] as const).map((w) => `<button class="equip-chip${deployWindow === w ? " on" : ""}" data-win="${w}">next ${w} days</button>`).join("")}
       <span style="color:var(--ink-dim)">reach: ${radius} nm (${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt · <a href="#chase" id="deploy-tochase">chase settings</a>)</span>

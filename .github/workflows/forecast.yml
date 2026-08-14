@@ -35,7 +35,7 @@ jobs:
       - name: engine
         if: steps.gate.outputs.enabled == 'true'
         run: |
-          pip install --quiet duckdb pyshp
+          pip install --quiet duckdb pyshp eccodes
           python forecast/engine.py
       - name: deploy planner data (daily, on the 09z-cycle run)
         if: steps.gate.outputs.enabled == 'true'
