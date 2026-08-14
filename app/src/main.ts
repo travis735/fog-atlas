@@ -1957,7 +1957,7 @@ function renderDeploy(ringBase?: Airport) {
             const fmt = (d: Date) => d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: best!.tz });
             launch = `<div style="background:#111823;border:1px solid #7a5a2e;border-radius:10px;padding:12px 14px;margin:10px 0">
               <b style="color:#e8b96a;letter-spacing:.05em">WHEELS UP ~${fmt(wheels)}</b>
-              <span style="color:var(--ink)"> → <b>${best.icao}</b> (${eteStr(best.ete)} out) · on station ${fmt(new Date(best.openMs))} local · fog (&lt;1 mi) ${best.p}%</span>
+              <span style="color:var(--ink)"> → <b>${best.icao}</b> (${eteStr(best.ete)} out) · fog (&lt;1 mi) ${best.p}%</span>
               <div class="note" style="margin-top:4px">night-before plan: launch to arrive as the highest-probability reachable window opens (15 min buffer). Recheck the board before engine start — the forecast refreshes hourly.</div>
             </div>`;
           } else {
