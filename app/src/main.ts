@@ -1770,16 +1770,39 @@ function fogCharacter(a: Airport, fc: any): string | null {
   const peak = Math.max(...p10);
   if (peak < 15) return `<span class="chase-live dim">quiet next 48 h (peak ${peak}%)</span>`;
   const inWin = f.fhrs.map((_: number, i: number) => p10[i] >= Math.max(15, peak * 0.4));
-  const first = inWin.indexOf(true), last = inWin.lastIndexOf(true);
+  const first = inWin.indexOf(true);
+  // first CONTIGUOUS window only — spanning to the 48h-wide last foggy hour
+  // bridges the daytime gap and reads as a 30h fog event
+  let last = first;
+  while (last + 1 < f.fhrs.length && inWin[last + 1] && f.fhrs[last + 1] - f.fhrs[last] <= 3) last++;
+  const durH = Math.max(1, f.fhrs[last] - f.fhrs[first] + (f.fhrs[first] <= 25 ? 1 : 3));
+  const more = inWin.slice(last + 1).some(Boolean);
   const p05 = Math.max(...f.p.map((r: number[]) => r[1]));
   const p025 = Math.max(...f.p.map((r: number[]) => r[2]));
   const sev = p025 >= 25 ? `<span class="pill red">dense (¼ mi) ${p025}%</span>`
     : p05 >= 25 ? `<span class="pill amber">½ mi ${p05}%</span>`
     : `<span class="pill dim">marginal</span>`;
   const per = persistenceTable?.[a.icao];
-  const dur = per ? ` · typ. event ${per.medianH}h` : "";
-  return `<span class="chase-live">fog ${peak}% · window ~${String(hrOf(f.fhrs[first])).padStart(2, "0")}–${String(hrOf(f.fhrs[last])).padStart(2, "0")} local` +
-    `${last < f.fhrs.length - 1 ? `, clears by ~${String(hrOf(f.fhrs[Math.min(last + 1, f.fhrs.length - 1)])).padStart(2, "0")}` : ""}${dur}</span> ${sev}`;
+  const dur = per ? ` · usually lasts ~${per.medianH}h once in` : "";
+  return `<span class="chase-live">fog ${peak}% · ${String(hrOf(f.fhrs[first])).padStart(2, "0")}–${String(hrOf(f.fhrs[last])).padStart(2, "0")} local (≈${durH}h)` +
+    `${last < f.fhrs.length - 1 ? `, clears ~${String(hrOf(f.fhrs[Math.min(last + 1, f.fhrs.length - 1)])).padStart(2, "0")}` : ""}${more ? " · again next night" : ""}${dur}</span> ${sev}`;
+}
+
+// tiny inline 48h probability strip for a field — the "peek" that replaces
+// accidental navigation to the deep-dive
+function miniStrip(a: Airport, fc: any): string {
+  const f = fc?.airports?.[a.icao];
+  if (!f) return "";
+  const cyc = new Date(fc.meta.cycle);
+  const p10: number[] = f.p.map((r: number[]) => r[0]);
+  const peak = Math.max(...p10, 1);
+  const bars = f.fhrs.map((fh: number, i: number) => {
+    const t = new Date(cyc.getTime() + fh * 3600e3);
+    const lab = t.toLocaleTimeString("en-US", { hour: "numeric", hour12: false, timeZone: a.tz });
+    return `<div title="+${fh}h (${lab}:00 local) — ${p10[i]}% fog" style="flex:1;align-self:flex-end;background:#9fd8ff;opacity:${p10[i] > 0 ? 0.25 + 0.75 * p10[i] / peak : 0.12};height:${Math.max(2, Math.round(26 * p10[i] / peak))}px"></div>`;
+  }).join("");
+  return `<div style="display:flex;gap:1px;height:28px;margin:6px 0 2px">${bars}</div>
+    <div style="display:flex;justify-content:space-between;color:var(--ink-dim);font-size:9px"><span>now</span><span>hourly P(vis&lt;1mi), 48 h</span><span>+48h</span></div>`;
 }
 
 function renderDeploy(ringBase?: Airport) {
@@ -1928,15 +1951,26 @@ function renderDeploy(ringBase?: Airport) {
         }
         const lines = sel.contrib.slice(0, 5).map((x) => {
           const ch = fogCharacter(x.a, fc);
-          return ch ? `<tr data-icao="${x.a.icao}"><td><b>${x.a.icao}</b> <span class="chase-badges">${Math.round(x.nm)} nm · ${eteStr(x.nm / chasePrefs.speed)}</span></td><td>${ch}</td></tr>` : "";
+          return ch ? `<tr data-icao="${x.a.icao}" class="fpeek"><td><b>${x.a.icao}</b> <span class="chase-badges">${eteStr(x.nm / chasePrefs.speed)} out</span></td><td>${ch}</td></tr>
+            <tr class="fdetail" data-for="${x.a.icao}" hidden><td colspan="2">${miniStrip(x.a, fc)}
+              <p class="note" style="margin-top:4px"><a href="/fog/${x.a.icao.toLowerCase()}/" target="_blank" rel="noopener">forecast page ↗</a> · <a href="#" class="fdive" data-icao="${x.a.icao}">full 10-yr analysis</a></p></td></tr>` : "";
         }).filter(Boolean).join("");
         el.innerHTML = `
           <div class="stratum-h"><b style="color:#9fd8ff">NEXT 48 H FROM ${sel.b.icao}</b><span></span><span>calibrated live forecast at the top fields in reach</span></div>
           ${launch}
           ${lines ? `<table class="rank-table"><tbody>${lines}</tbody></table>` : `<p class="note">no live forecast coverage at this base's top fields.</p>`}
           <p class="note">Window = hours with fog probability ≥40% of its peak; severity pills show the strongest threshold with ≥25% chance. Beyond 48 h the planner is climatology-guided until the fitted extended tier (V3.2) lands.</p>`;
-        el.querySelectorAll("tr[data-icao]").forEach((tr) =>
-          tr.addEventListener("click", () => openAirport((tr as HTMLElement).dataset.icao!)));
+        // row click = expand the peek in place (no navigation, planner state kept)
+        el.querySelectorAll("tr.fpeek").forEach((tr) =>
+          tr.addEventListener("click", () => {
+            const det = el.querySelector(`tr.fdetail[data-for="${(tr as HTMLElement).dataset.icao}"]`) as HTMLElement | null;
+            if (det) det.hidden = !det.hidden;
+          }));
+        el.querySelectorAll("a.fdive").forEach((a2) =>
+          a2.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            openAirport((a2 as HTMLElement).dataset.icao!);
+          }));
       })();
     }
   }
