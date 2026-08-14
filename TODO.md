@@ -11,6 +11,12 @@ ILS category from CAP charts / CFS. Output: `pipeline/data/ca_chase_curated.csv`
 Also fold NASR APT/CIFP re-download (`fetch_nasr.py`) into the monthly
 reference refresh below.
 
+## 0.5 DEPLOY "tomorrow" window (Travis, 2026-08-14)
+Add a **tomorrow** option beside "next 7 days / next 14 days" in the deploy
+planner — a 1-day window that makes the panel a pure night-before board:
+verdict + WHEELS UP + per-field peeks for the next ~30 h only. Completes the
+funnel's full cycle (14d -> 7d -> tomorrow -> wheels-up).
+
 ## 1. Monthly reference-data refresh (launchd, automatable now)
 Consolidate the FAA/ESSP reference parsing — currently session one-offs — into
 `pipeline/refresh_reference.py`, then schedule it monthly from the Mac via launchd
