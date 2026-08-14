@@ -1577,10 +1577,20 @@ let deployData: any | null | undefined;
 let deployOpen = false;
 let deployWindow: 7 | 14 = 14;
 
-function winEH(icao: string): number {
+// expected chaseable hours over the window, discounted by reachability:
+// a field only credits the fraction of its fog window that remains after
+// the still-air transit (launch-at-onset model; +30 min margin)
+function usableFrac(win: number | undefined, eteH: number): number {
+  if (win == null || win <= 0) return 1; // no window info -> no discount
+  return Math.min(Math.max((win - eteH - 0.5) / win, 0), 1);
+}
+function winEH(icao: string, eteH = 0): number {
   const d = deployData?.airports?.[icao];
   if (!d) return 0;
-  return d.eh.slice(0, deployWindow).reduce((x: number, y: number) => x + y, 0);
+  let s = 0;
+  for (let i = 0; i < Math.min(deployWindow, d.eh.length); i++)
+    s += d.eh[i] * usableFrac(d.win?.[i], eteH);
+  return s;
 }
 
 // same infrastructure filters the chase board saves — no base/distance term
@@ -1616,7 +1626,10 @@ function deployRank(): { targets: { a: Airport; eh: number }[]; top: DeployBase[
     for (const t of targets) {
       if (Math.abs(t.a.lat - b.lat) > radius / 60 + 0.2) continue;
       const nm = distNm(b, t.a);
-      if (nm <= radius) { s += t.eh; contrib.push({ a: t.a, eh: t.eh, nm }); }
+      if (nm <= radius) {
+        const usable = winEH(t.a.icao, nm / chasePrefs.speed);
+        if (usable > 0.05) { s += usable; contrib.push({ a: t.a, eh: usable, nm }); }
+      }
     }
     if (s > 0.5) scores.push({ b, s, contrib: contrib.sort((x, y) => y.eh - x.eh) });
   }
@@ -1767,7 +1780,7 @@ function renderDeploy(ringBase?: Airport) {
     <tr data-icao="${c.b.icao}"${ringBase?.icao === c.b.icao ? ' style="background:#16202b"' : ""}>
       <td class="num">${i + 1}</td>
       <td><b>${c.b.icao}</b> ${c.b.name.length > 22 ? c.b.name.slice(0, 21) + "…" : c.b.name}<br>
-        <span class="chase-badges">${c.contrib.slice(0, 3).map((x) => `${x.a.icao} ${x.eh.toFixed(0)}h·${Math.round(x.nm)}nm`).join(" · ")}${c.contrib.length > 3 ? ` · +${c.contrib.length - 3} more` : ""}</span></td>
+        <span class="chase-badges">${c.contrib.slice(0, 3).map((x) => `${x.a.icao} ${x.eh.toFixed(0)}h·${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}${c.contrib.length > 3 ? ` · +${c.contrib.length - 3} more` : ""}</span></td>
       <td class="num" title="expected chaseable hours within ${radius} nm over ${deployWindow} days; second line = the calibrated next-48h share"><b>${c.s.toFixed(0)}h</b><br><span class="chase-badges">${calEH(c).toFixed(0)}h·48h</span></td>
     </tr>`).join("");
 
@@ -1784,6 +1797,9 @@ function renderDeploy(ringBase?: Airport) {
       for (const x of vb.contrib) {
         const da = deployData.airports[x.a.icao];
         const p = da?.p?.[d];
+        // reachability: the field's fog window must outlast transit + 45 min
+        const win = da?.win?.[d];
+        if (win != null && win > 0 && win <= x.nm / chasePrefs.speed + 0.75) continue;
         if (p != null && p > best) { best = p; bi = x.a.icao; bt = da.tiers[d]; }
       }
       if (best >= 0.5) likely++;
@@ -1814,6 +1830,7 @@ function renderDeploy(ringBase?: Airport) {
     ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num">exp. h</th></tr></thead><tbody>${rows}</tbody></table>`
       : `<p class="note">No expected fog within range of any base under the current filters — widen the CHASE filters or the window.</p>`}
     <div id="deploy-48"></div>
+    <p class="note">Fields credit only the fog-window hours remaining after still-air transit (launch-at-onset + 30 min margin) — a distant field whose fog lifts before arrival counts near zero. Contributor times are ETE from the base.</p>
     <p class="note">Click a base to ring its reach on the map; click a blue dot for that airport's deep-dive. Dot size = expected chaseable hours. The daily build logs every advisory prediction — the extended tiers earn verification the same way the 48 h model did.</p>`;
 
   panelContent.querySelectorAll(".equip-chip[data-win]").forEach((b) =>
@@ -1846,7 +1863,7 @@ function renderDeploy(ringBase?: Airport) {
         if (!el || !fc) return;
         const lines = sel.contrib.slice(0, 5).map((x) => {
           const ch = fogCharacter(x.a, fc);
-          return ch ? `<tr data-icao="${x.a.icao}"><td><b>${x.a.icao}</b> <span class="chase-badges">${Math.round(x.nm)} nm</span></td><td>${ch}</td></tr>` : "";
+          return ch ? `<tr data-icao="${x.a.icao}"><td><b>${x.a.icao}</b> <span class="chase-badges">${Math.round(x.nm)} nm · ${eteStr(x.nm / chasePrefs.speed)}</span></td><td>${ch}</td></tr>` : "";
         }).filter(Boolean).join("");
         el.innerHTML = `
           <div class="stratum-h"><b style="color:#9fd8ff">NEXT 48 H FROM ${sel.b.icao}</b><span></span><span>calibrated live forecast at the top fields in reach</span></div>

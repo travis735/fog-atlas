@@ -216,19 +216,31 @@ def main() -> None:
     stations = set(coords)
     print(f"{len(coords)} chase airports")
 
-    # climatological sub-CAT-I hours/day by month
-    climo_day = {}
-    for icao, mon, hrs in duckdb.connect().execute(
+    # climatological sub-CAT-I hours/day by month, and the diurnal WINDOW
+    # width (hours with rate >= half the peak hour) — how long fog typically
+    # lasts once it's in, which bounds whether a distant base can reach it
+    climo_day, climo_win = {}, {}
+    con = duckdb.connect()
+    for icao, mon, hrs in con.execute(
             f"SELECT icao, mon, sum(rsub) FROM '{OUT / 'climo.parquet'}' GROUP BY 1,2").fetchall():
-        climo_day[(icao, mon)] = float(hrs)  # sum over 24 hourly rates = hours/day
+        climo_day[(icao, mon)] = float(hrs)
+    hourly = con.execute(
+        f"SELECT icao, mon, hr, rsub FROM '{OUT / 'climo.parquet'}'").fetchall()
+    by_im: dict[tuple, list] = {}
+    for icao, mon, hr, r in hourly:
+        by_im.setdefault((icao, mon), []).append(float(r or 0))
+    for k, rates in by_im.items():
+        peak = max(rates)
+        climo_win[k] = sum(1 for r in rates if r >= peak * 0.5) if peak > 0.001 else 0
 
     # tier 1: calibrated 48 h from the engine's current.json (same CI run);
     # also derive P(any sub hour) per day from the hourly curve
     current = json.loads((OUT / "current.json").read_text())
     cyc = datetime.fromisoformat(current["meta"]["cycle"].replace("Z", "+00:00"))
     today = datetime.now(timezone.utc).date()
-    cal_day, cal_noev = {}, {}
+    cal_day, cal_noev, cal_win = {}, {}, {}
     for icao, f in current["airports"].items():
+        peak = max((r[3] for r in f["p"]), default=0)
         for fhr, p in zip(f["fhrs"], f["p"]):
             dt = cyc + timedelta(hours=fhr)
             dd = (dt.date() - today).days
@@ -236,6 +248,8 @@ def main() -> None:
                 step = 1 if fhr <= 25 else 3
                 cal_day[(icao, dd)] = cal_day.get((icao, dd), 0.0) + step * p[3] / 100.0
                 cal_noev[(icao, dd)] = cal_noev.get((icao, dd), 1.0) * (1.0 - p[3] / 100.0) ** step
+                if p[3] >= max(15, peak * 0.4):
+                    cal_win[(icao, dd)] = cal_win.get((icao, dd), 0) + step
 
     # NBE per-day raw ingredients (fitted tier) + legacy factors (fallback)
     nbe_t, nbe_rows = latest_nbe(stations)
@@ -260,12 +274,14 @@ def main() -> None:
 
     airports = {}
     for icao in coords:
-        eh, tiers, pdays = [], [], []
+        eh, tiers, pdays, wins = [], [], [], []
         for dd in range(1, 15):
             dte = today + timedelta(days=dd)
             base = climo_day.get((icao, dte.month), 0.0)
             clm = dayscale["climo_day"].get(icao, {}).get(str(dte.month)) if dayscale else None
             p_clim = clm[0] if clm else None
+            wins.append(cal_win.get((icao, dd), climo_win.get((icao, dte.month), 0)) if (icao, dd) in cal_day
+                        else climo_win.get((icao, dte.month), 0))
             if (icao, dd) in cal_day:
                 eh.append(round(cal_day[(icao, dd)], 2)); tiers.append("cal")
                 pdays.append(round(1.0 - cal_noev[(icao, dd)], 3))
@@ -298,7 +314,7 @@ def main() -> None:
             f = min(max(f, 0.3), 2.2)
             eh.append(round(base * f, 2)); tiers.append(tier)
             pdays.append(round(min(p_clim * f, 0.95), 3) if p_clim is not None else None)
-        airports[icao] = {"eh": eh, "tiers": tiers, "p": pdays}
+        airports[icao] = {"eh": eh, "tiers": tiers, "p": pdays, "win": wins}
 
     meta = {
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
