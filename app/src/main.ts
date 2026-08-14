@@ -959,13 +959,13 @@ interface ChaseEnd {
   cur?: 0 | 1; // 1 = curated (AIP Canada/CFS research), not FAA NASR
 }
 interface ChasePrefs {
-  base: string | null; speed: number; maxEteH: number;
+  base: string | null; baseSetAt: number | null; speed: number; maxEteH: number;
   als: string[]; minLen: number; rvrReq: boolean; maxTier: number;
   alerts: boolean;
 }
 
 const CHASE_DEFAULTS: ChasePrefs = {
-  base: null, speed: 250, maxEteH: 2,
+  base: null, baseSetAt: null, speed: 250, maxEteH: 2,
   als: ["ALSF2", "ALSF1", "MALSR"], minLen: 5000, rvrReq: false, maxTier: 250,
   alerts: false,
 };
@@ -975,6 +975,18 @@ const chasePrefs: ChasePrefs = (() => {
   catch { return { ...CHASE_DEFAULTS }; }
 })();
 const saveChasePrefs = () => localStorage.setItem("fa-chase", JSON.stringify(chasePrefs));
+
+// stale-base guard: a forgotten saved base silently skews both boards (every
+// ETE, deploy-by time, and ranking radius hangs off it) — surface its age and
+// nudge for re-confirmation when it's old or predates age tracking
+function baseAge(): { label: string; stale: boolean } | null {
+  if (!chasePrefs.base) return null;
+  const t = chasePrefs.baseSetAt;
+  if (t == null) return { label: "set a while ago", stale: true };
+  const d = Math.floor((Date.now() - t) / 86400e3);
+  const label = d < 1 ? "set today" : d < 14 ? `set ${d}d ago` : `set ${Math.round(d / 7)}w ago`;
+  return { label, stale: d > 21 };
+}
 
 let chaseData: { meta: any; airports: Record<string, ChaseEnd[]> } | null | undefined;
 let chaseOpen = false;
@@ -1424,7 +1436,13 @@ function renderChase() {
 
     <div class="chase-setup">
       ${base
-        ? `<span class="base-chip" title="${base.name}">BASE ${base.icao}<button id="chase-base-clear" title="change base">×</button></span>`
+        ? `<span class="base-chip" title="${base.name}">BASE ${base.icao}<button id="chase-base-clear" title="change base">×</button></span>${(() => {
+            const age = baseAge();
+            if (!age) return "";
+            return age.stale
+              ? `<span class="chase-badges" style="align-self:center;color:#ffb347" title="every ETE and deploy-by time on both boards is computed from this base">⚠ ${age.label} — still current?</span><button class="equip-chip" id="chase-base-ok" title="yes, ${base.icao} is still my base — reset the reminder">✓ still ${base.icao}</button>`
+              : `<span class="chase-badges" style="align-self:center" title="every ETE and deploy-by time on both boards is computed from this base">${age.label}</span>`;
+          })()}`
         : `<span class="chase-base"><input id="chase-base-input" type="text" placeholder="set base airport…" autocomplete="off" spellcheck="false"/><div id="chase-base-results" hidden></div></span>`}
       <label>cruise <input id="chase-speed" type="number" min="60" max="600" step="10" value="${chasePrefs.speed}"/> kt</label>
       <label>max ETE <select id="chase-ete">
@@ -1508,7 +1526,10 @@ function renderChase() {
     renderChase();
   });
   panelContent.querySelector("#chase-base-clear")?.addEventListener("click", () => {
-    chasePrefs.base = null; rerender();
+    chasePrefs.base = null; chasePrefs.baseSetAt = null; rerender();
+  });
+  panelContent.querySelector("#chase-base-ok")?.addEventListener("click", () => {
+    chasePrefs.baseSetAt = Date.now(); saveChasePrefs(); renderChase();
   });
   const baseInput = panelContent.querySelector<HTMLInputElement>("#chase-base-input");
   const baseResults = panelContent.querySelector<HTMLElement>("#chase-base-results");
@@ -1525,6 +1546,7 @@ function renderChase() {
     baseResults.querySelectorAll(".search-row").forEach((r) =>
       r.addEventListener("click", () => {
         chasePrefs.base = (r as HTMLElement).dataset.icao!;
+        chasePrefs.baseSetAt = Date.now();
         saveChasePrefs();
         chaseFogPrev = null;
         maybeWarmChase();
@@ -1908,6 +1930,11 @@ function renderDeploy(ringBase?: Airport) {
       </select></label>
       <span style="color:var(--ink-dim)">= ${radius} nm reach · shared with <a href="#chase" id="deploy-tochase">CHASE</a></span>
     </div>
+    ${(() => {
+      const age = baseAge();
+      if (!home) return `<p class="note" style="margin-top:6px;color:#ffb347">no CHASE base set — deploy-by departure times need one. <a href="#chase" id="deploy-basechange">set base</a></p>`;
+      return `<p class="note" style="margin-top:6px" title="every deploy-by time in the table is the latest departure from this base">deploy-by times from your base <b>${home.icao}</b> · <span${age?.stale ? ' style="color:#ffb347"' : ""}>${age?.label ?? ""}${age?.stale ? " — still current?" : ""}</span> <a href="#chase" id="deploy-basechange">change</a>${age?.stale ? ` · <a href="#" id="deploy-baseok">✓ still ${home.icao}</a>` : ""}</p>`;
+    })()}
     <p class="note" style="margin-top:8px">Airports must pass your saved CHASE filters. Chaseable = below CAT I. Tier honesty: days 1–2 <b>calibrated</b>; days 3–8 climatology × NBM-extended fog ingredients (<b>advisory, unfitted</b>); days 9–14 climatology × CPC moisture outlook (<b>advisory</b>, US only — Canadian airports stay pure climatology there).</p>
     <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span></div>
     ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num" title="expected chaseable fog hours summed across ALL reachable fields over the window — an inventory of opportunities, not one aircraft's itinerary. Each field counts only hours reachable before its fog lifts.">chaseable hrs</th></tr></thead><tbody>${rows}</tbody></table>`
@@ -1923,6 +1950,12 @@ function renderDeploy(ringBase?: Airport) {
     }));
   panelContent.querySelector("#deploy-tochase")?.addEventListener("click", (e) => {
     e.preventDefault(); openChase();
+  });
+  panelContent.querySelector("#deploy-basechange")?.addEventListener("click", (e) => {
+    e.preventDefault(); openChase();
+  });
+  panelContent.querySelector("#deploy-baseok")?.addEventListener("click", (e) => {
+    e.preventDefault(); chasePrefs.baseSetAt = Date.now(); saveChasePrefs(); renderDeploy(ringBase);
   });
   panelContent.querySelector("#deploy-speed")?.addEventListener("change", (e) => {
     chasePrefs.speed = Math.max(60, Math.min(600, +(e.target as HTMLInputElement).value || 250));
