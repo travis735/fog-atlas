@@ -1823,7 +1823,11 @@ function renderDeploy(ringBase?: Airport) {
     ${verdictHtml}
     <div class="chase-setup">
       ${([7, 14] as const).map((w) => `<button class="equip-chip${deployWindow === w ? " on" : ""}" data-win="${w}">next ${w} days</button>`).join("")}
-      <span style="color:var(--ink-dim)">reach: ${radius} nm (${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt · <a href="#chase" id="deploy-tochase">chase settings</a>)</span>
+      <label>cruise <input id="deploy-speed" type="number" min="60" max="600" step="10" value="${chasePrefs.speed}"/> kt</label>
+      <label>max ETE <select id="deploy-ete">
+        ${[1, 1.5, 2, 2.5, 3, 4].map((h) => `<option value="${h}"${h === chasePrefs.maxEteH ? " selected" : ""}>${eteStr(h)}</option>`).join("")}
+      </select></label>
+      <span style="color:var(--ink-dim)">= ${radius} nm reach · shared with <a href="#chase" id="deploy-tochase">CHASE</a></span>
     </div>
     <p class="note" style="margin-top:8px">Airports must pass your saved CHASE filters. Chaseable = below CAT I. Tier honesty: days 1–2 <b>calibrated</b>; days 3–8 climatology × NBM-extended fog ingredients (<b>advisory, unfitted</b>); days 9–14 climatology × CPC moisture outlook (<b>advisory</b>, US only — Canadian airports stay pure climatology there).</p>
     <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span></div>
@@ -1840,6 +1844,14 @@ function renderDeploy(ringBase?: Airport) {
     }));
   panelContent.querySelector("#deploy-tochase")?.addEventListener("click", (e) => {
     e.preventDefault(); openChase();
+  });
+  panelContent.querySelector("#deploy-speed")?.addEventListener("change", (e) => {
+    chasePrefs.speed = Math.max(60, Math.min(600, +(e.target as HTMLInputElement).value || 250));
+    saveChasePrefs(); renderDeploy(ringBase);
+  });
+  panelContent.querySelector("#deploy-ete")?.addEventListener("change", (e) => {
+    chasePrefs.maxEteH = +(e.target as HTMLSelectElement).value;
+    saveChasePrefs(); renderDeploy(ringBase);
   });
   panelContent.querySelectorAll("tr[data-icao]").forEach((tr) =>
     tr.addEventListener("click", () => {
