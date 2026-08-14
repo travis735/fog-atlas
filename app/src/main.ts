@@ -1722,17 +1722,53 @@ async function openDeploy() {
   document.body.classList.add("panel-open");
 }
 
+// day-1/2 calibrated hours for a base's in-reach set (deploy.json tiers "cal")
+function calEH(c: DeployBase): number {
+  let s = 0;
+  for (const x of c.contrib) {
+    const d = deployData?.airports?.[x.a.icao];
+    if (!d) continue;
+    for (let i = 0; i < d.eh.length; i++) if (d.tiers[i] === "cal") s += d.eh[i];
+  }
+  return s;
+}
+
+// next-48h fog character at one airport, in ITS local time, from the live
+// calibrated hourly curve: peak severity, the fog window, and burn-off
+function fogCharacter(a: Airport, fc: any): string | null {
+  const f = fc?.airports?.[a.icao];
+  if (!f) return null;
+  const cyc = new Date(fc.meta.cycle);
+  const hrOf = (fhr: number) => +new Intl.DateTimeFormat("en-US",
+    { timeZone: a.tz, hour: "numeric", hour12: false })
+    .format(new Date(cyc.getTime() + fhr * 3600e3)) % 24;
+  const p10 = f.p.map((r: number[]) => r[0]);
+  const peak = Math.max(...p10);
+  if (peak < 15) return `<span class="chase-live dim">quiet next 48 h (peak ${peak}%)</span>`;
+  const inWin = f.fhrs.map((_: number, i: number) => p10[i] >= Math.max(15, peak * 0.4));
+  const first = inWin.indexOf(true), last = inWin.lastIndexOf(true);
+  const p05 = Math.max(...f.p.map((r: number[]) => r[1]));
+  const p025 = Math.max(...f.p.map((r: number[]) => r[2]));
+  const sev = p025 >= 25 ? `<span class="pill red">dense (¼ mi) ${p025}%</span>`
+    : p05 >= 25 ? `<span class="pill amber">½ mi ${p05}%</span>`
+    : `<span class="pill dim">marginal</span>`;
+  const per = persistenceTable?.[a.icao];
+  const dur = per ? ` · typ. event ${per.medianH}h` : "";
+  return `<span class="chase-live">fog ${peak}% · window ~${String(hrOf(f.fhrs[first])).padStart(2, "0")}–${String(hrOf(f.fhrs[last])).padStart(2, "0")} local` +
+    `${last < f.fhrs.length - 1 ? `, clears by ~${String(hrOf(f.fhrs[Math.min(last + 1, f.fhrs.length - 1)])).padStart(2, "0")}` : ""}${dur}</span> ${sev}`;
+}
+
 function renderDeploy(ringBase?: Airport) {
   if (!deployOpen) return;
   const radius = Math.round(chasePrefs.speed * chasePrefs.maxEteH);
   const { targets, top } = deployData ? deployRank() : { targets: [], top: [] };
   const gen = deployData?.meta?.generated?.slice(0, 10) ?? "—";
   const rows = top.map((c, i) => `
-    <tr data-icao="${c.b.icao}">
+    <tr data-icao="${c.b.icao}"${ringBase?.icao === c.b.icao ? ' style="background:#16202b"' : ""}>
       <td class="num">${i + 1}</td>
       <td><b>${c.b.icao}</b> ${c.b.name.length > 22 ? c.b.name.slice(0, 21) + "…" : c.b.name}<br>
         <span class="chase-badges">${c.contrib.slice(0, 3).map((x) => `${x.a.icao} ${x.eh.toFixed(0)}h·${Math.round(x.nm)}nm`).join(" · ")}${c.contrib.length > 3 ? ` · +${c.contrib.length - 3} more` : ""}</span></td>
-      <td class="num" title="expected chaseable hours within ${radius} nm over ${deployWindow} days"><b>${c.s.toFixed(0)}h</b></td>
+      <td class="num" title="expected chaseable hours within ${radius} nm over ${deployWindow} days; second line = the calibrated next-48h share"><b>${c.s.toFixed(0)}h</b><br><span class="chase-badges">${calEH(c).toFixed(0)}h·48h</span></td>
     </tr>`).join("");
 
   panelContent.innerHTML = `
@@ -1746,6 +1782,7 @@ function renderDeploy(ringBase?: Airport) {
     <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span></div>
     ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num">exp. h</th></tr></thead><tbody>${rows}</tbody></table>`
       : `<p class="note">No expected fog within range of any base under the current filters — widen the CHASE filters or the window.</p>`}
+    <div id="deploy-48"></div>
     <p class="note">Click a base to ring its reach on the map; click a blue dot for that airport's deep-dive. Dot size = expected chaseable hours. The daily build logs every advisory prediction — the extended tiers earn verification the same way the 48 h model did.</p>`;
 
   panelContent.querySelectorAll(".equip-chip[data-win]").forEach((b) =>
@@ -1762,6 +1799,33 @@ function renderDeploy(ringBase?: Airport) {
       renderDeploy(b);
       map.flyTo({ center: [b.lon, b.lat], zoom: 5.2, duration: 1400 });
     }));
+
+  // selected base: expand its top fields into next-48h character lines
+  // (live calibrated curve -> severity, window, burn-off; persistence medians)
+  if (ringBase) {
+    const sel = top.find((c) => c.b.icao === ringBase.icao);
+    if (sel) {
+      (async () => {
+        if (persistenceTable === undefined) {
+          persistenceTable = null;
+          try { persistenceTable = await (await fetch("/data/persistence.json")).json(); } catch {}
+        }
+        const fc = await getForecast();
+        const el = panelContent.querySelector("#deploy-48");
+        if (!el || !fc) return;
+        const lines = sel.contrib.slice(0, 5).map((x) => {
+          const ch = fogCharacter(x.a, fc);
+          return ch ? `<tr data-icao="${x.a.icao}"><td><b>${x.a.icao}</b> <span class="chase-badges">${Math.round(x.nm)} nm</span></td><td>${ch}</td></tr>` : "";
+        }).filter(Boolean).join("");
+        el.innerHTML = `
+          <div class="stratum-h"><b style="color:#9fd8ff">NEXT 48 H FROM ${sel.b.icao}</b><span></span><span>calibrated live forecast at the top fields in reach</span></div>
+          ${lines ? `<table class="rank-table"><tbody>${lines}</tbody></table>` : `<p class="note">no live forecast coverage at this base's top fields.</p>`}
+          <p class="note">Window = hours with fog probability ≥40% of its peak; severity pills show the strongest threshold with ≥25% chance. Beyond 48 h the planner is climatology-guided until the fitted extended tier (V3.2) lands.</p>`;
+        el.querySelectorAll("tr[data-icao]").forEach((tr) =>
+          tr.addEventListener("click", () => openAirport((tr as HTMLElement).dataset.icao!)));
+      })();
+    }
+  }
 
   deployApplyMap(targets, top, ringBase);
   if (!ringBase && top.length && !map.isMoving()) {
