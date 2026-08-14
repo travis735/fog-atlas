@@ -122,7 +122,14 @@ def awc_truth(stations: set[str]) -> dict:
 
 def main() -> None:
     stations = set(json.load(open(HERE / "stations.json")))
-    calib = json.load(open(OUT / "calibration.json"))["thresholds"]
+    raw_calib = json.load(open(OUT / "calibration.json"))
+    if raw_calib.get("version") == 2:
+        products = raw_calib["products"]
+        offsets = raw_calib.get("offsets", {})
+    else:  # v1 fallback: one model for every product, no offsets
+        products = {"NBS": {"features": list(next(iter(raw_calib["thresholds"].values()))["coef"]),
+                            "thresholds": raw_calib["thresholds"]}}
+        offsets = {}
     climo, means = load_climo()
 
     cycle_iso, nbh, nbs = latest_cycle()
@@ -162,12 +169,22 @@ def main() -> None:
                 "spread": min(max((r["tmp"] - r["dpt"]) if r["tmp"] is not None and r["dpt"] is not None else 10, -5), 40),
                 "wsp": min(max(r["wsp"] if r["wsp"] is not None else 5, 0), 50),
                 "lead": f,
+                "liv": r.get("liv") if r.get("liv") is not None else 0.0,
+                "lic": r.get("lic") if r.get("lic") is not None else 0.0,
             }
+            prod = r["product"] if r["product"] in products else "NBS"
+            pcal = products[prod]["thresholds"]
+            poff = offsets.get(prod, {})
             row = []
             for thr in THRESHOLDS:
                 feats = dict(feats_base,
                              clim_logit=clim_logit(climo, means, icao, valid.month, valid.hour, thr))
-                row.append(round(100 * score(calib[thr], feats)))
+                z_extra = poff.get(thr, {}).get(icao, 0.0)
+                p = score(pcal[thr], feats) if thr in pcal else 0.0
+                if z_extra and 0.0 < p < 1.0:
+                    z = math.log(p / (1 - p)) + z_extra
+                    p = 1.0 / (1.0 + math.exp(-z))
+                row.append(round(100 * p))
             probs.append(row)
         airports[icao] = {"fhrs": fhrs, "p": probs,
                           "liv": [byf[f]["liv"] for f in fhrs],
@@ -185,6 +202,7 @@ def main() -> None:
         "meta": {"cycle": cycle_iso, "generated": generated,
                  "public": bool(public_airports),  # legacy master flag
                  "publicAirports": public_airports,
+                 "calib_version": raw_calib.get("version", 1),
                  "thresholds": THRESHOLDS, "n_airports": len(airports)},
         "airports": airports,
     }
@@ -197,7 +215,8 @@ def main() -> None:
     run_id = generated.replace(":", "").replace("-", "")[:13]
     # gzipped: hourly logs must fit KV's free tier until the R2 migration
     with gzip.open(logdir / f"run_{run_id}.json.gz", "wt") as f:
-        json.dump({"cycle": cycle_iso, "generated": generated, "obs": obs,
+        json.dump({"cycle": cycle_iso, "generated": generated,
+                   "calib": raw_calib.get("version", 1), "obs": obs,
                    "forecasts": {k: {"fhrs": v["fhrs"], "p": v["p"]} for k, v in airports.items()}},
                   f, separators=(",", ":"))
     size = (OUT / "current.json").stat().st_size

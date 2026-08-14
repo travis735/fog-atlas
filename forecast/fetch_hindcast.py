@@ -20,6 +20,7 @@ def main() -> None:
     from datetime import date, timedelta
     ap = argparse.ArgumentParser()
     ap.add_argument("--start"); ap.add_argument("--end"); ap.add_argument("--step-days", type=int, default=7)
+    ap.add_argument("--product", choices=["nbs", "nbh"], default="nbs")
     args = ap.parse_args()
     DEST.mkdir(parents=True, exist_ok=True)
     if args.start and args.end:
@@ -32,11 +33,11 @@ def main() -> None:
         dates = [f"{y}{m:02d}15" for y in (2023, 2024, 2025) for m in range(1, 13)]
     got = skip = miss = 0
     for d in dates:
-        dest = DEST / f"nbs_{d}_12z.txt"
+        dest = DEST / f"{args.product}_{d}_12z.txt"
         if dest.exists() and dest.stat().st_size > 1_000_000:
             skip += 1
             continue
-        url = f"{BASE}/blend.{d}/12/text/blend_nbstx.t12z"
+        url = f"{BASE}/blend.{d}/12/text/blend_{args.product}tx.t12z"
         try:
             with urllib.request.urlopen(url, timeout=180) as r:
                 dest.write_bytes(r.read())
