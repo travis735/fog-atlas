@@ -1793,7 +1793,7 @@ function renderDeploy(ringBase?: Airport) {
     <tr data-icao="${c.b.icao}"${ringBase?.icao === c.b.icao ? ' style="background:#16202b"' : ""}>
       <td class="num">${i + 1}</td>
       <td><b>${c.b.icao}</b> ${c.b.name.length > 22 ? c.b.name.slice(0, 21) + "…" : c.b.name}<br>
-        <span class="chase-badges">go to: ${c.contrib.slice(0, 3).map((x) => `${x.a.icao} ${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}</span><br>
+        <span class="chase-badges" title="destination fields with flight time from ${c.b.icao} (still-air at ${chasePrefs.speed} kt)">go to: ${c.contrib.slice(0, 3).map((x) => `${x.a.icao} in ${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}</span><br>
         <span class="chase-badges" title="the first day in the window when a reachable field is at least 50% likely to go below CAT I">${fl ? `fog likely ${fl.label}` : "no strong fog day in window"}</span></td>
       <td class="num" title="expected chaseable fog hours at fields within ${radius} nm over the next ${deployWindow} days, counting only hours reachable before the fog lifts"><b>${c.s.toFixed(0)}h</b></td>
     </tr>`;
