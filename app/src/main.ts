@@ -1779,12 +1779,15 @@ function fogCharacter(a: Airport, fc: any): string | null {
   const more = inWin.slice(last + 1).some(Boolean);
   const p05 = Math.max(...f.p.map((r: number[]) => r[1]));
   const p025 = Math.max(...f.p.map((r: number[]) => r[2]));
-  const sev = p025 >= 25 ? `<span class="pill red">dense (¼ mi) ${p025}%</span>`
-    : p05 >= 25 ? `<span class="pill amber">½ mi ${p05}%</span>`
-    : `<span class="pill dim">marginal</span>`;
+  // one severity ladder, each rung labeled by its depth — never two bare "fog %"
+  const sev = p025 >= 25
+    ? `<span class="pill red" title="chance the fog deepens below ¼ mile at its worst hour">deepens to &lt;¼ mi: ${p025}%</span>`
+    : p05 >= 25
+    ? `<span class="pill amber" title="chance the fog deepens below ½ mile at its worst hour">deepens to &lt;½ mi: ${p05}%</span>`
+    : `<span class="pill dim" title="unlikely to get below ½ mile">stays marginal</span>`;
   const per = persistenceTable?.[a.icao];
   const dur = per ? ` · usually lasts ~${per.medianH}h once in` : "";
-  return `<span class="chase-live">fog ${peak}% · ${String(hrOf(f.fhrs[first])).padStart(2, "0")}–${String(hrOf(f.fhrs[last])).padStart(2, "0")} local (≈${durH}h)` +
+  return `<span class="chase-live"><span title="chance of visibility under 1 mile — the headline fog event">fog (&lt;1 mi) ${peak}%</span> · ${String(hrOf(f.fhrs[first])).padStart(2, "0")}–${String(hrOf(f.fhrs[last])).padStart(2, "0")} local (≈${durH}h)` +
     `${last < f.fhrs.length - 1 ? `, clears ~${String(hrOf(f.fhrs[Math.min(last + 1, f.fhrs.length - 1)])).padStart(2, "0")}` : ""}${more ? " · again next night" : ""}${dur}</span> ${sev}`;
 }
 
@@ -1954,7 +1957,7 @@ function renderDeploy(ringBase?: Airport) {
             const fmt = (d: Date) => d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: best!.tz });
             launch = `<div style="background:#111823;border:1px solid #7a5a2e;border-radius:10px;padding:12px 14px;margin:10px 0">
               <b style="color:#e8b96a;letter-spacing:.05em">WHEELS UP ~${fmt(wheels)}</b>
-              <span style="color:var(--ink)"> → <b>${best.icao}</b> (${eteStr(best.ete)} out) · on station ${fmt(new Date(best.openMs))} local · fog ${best.p}%</span>
+              <span style="color:var(--ink)"> → <b>${best.icao}</b> (${eteStr(best.ete)} out) · on station ${fmt(new Date(best.openMs))} local · fog (&lt;1 mi) ${best.p}%</span>
               <div class="note" style="margin-top:4px">night-before plan: launch to arrive as the highest-probability reachable window opens (15 min buffer). Recheck the board before engine start — the forecast refreshes hourly.</div>
             </div>`;
           } else {
