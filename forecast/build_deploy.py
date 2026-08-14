@@ -238,7 +238,7 @@ def main() -> None:
     current = json.loads((OUT / "current.json").read_text())
     cyc = datetime.fromisoformat(current["meta"]["cycle"].replace("Z", "+00:00"))
     today = datetime.now(timezone.utc).date()
-    cal_day, cal_noev, cal_win = {}, {}, {}
+    cal_day, cal_noev, cal_win, cal_ws = {}, {}, {}, {}
     for icao, f in current["airports"].items():
         peak = max((r[3] for r in f["p"]), default=0)
         for fhr, p in zip(f["fhrs"], f["p"]):
@@ -250,6 +250,7 @@ def main() -> None:
                 cal_noev[(icao, dd)] = cal_noev.get((icao, dd), 1.0) * (1.0 - p[3] / 100.0) ** step
                 if p[3] >= max(15, peak * 0.4):
                     cal_win[(icao, dd)] = cal_win.get((icao, dd), 0) + step
+                    cal_ws.setdefault((icao, dd), fhr)  # first in-window forecast hour
 
     # NBE per-day raw ingredients (fitted tier) + legacy factors (fallback)
     nbe_t, nbe_rows = latest_nbe(stations)
@@ -274,7 +275,7 @@ def main() -> None:
 
     airports = {}
     for icao in coords:
-        eh, tiers, pdays, wins = [], [], [], []
+        eh, tiers, pdays, wins, wss = [], [], [], [], []
         for dd in range(1, 15):
             dte = today + timedelta(days=dd)
             base = climo_day.get((icao, dte.month), 0.0)
@@ -282,6 +283,7 @@ def main() -> None:
             p_clim = clm[0] if clm else None
             wins.append(cal_win.get((icao, dd), climo_win.get((icao, dte.month), 0)) if (icao, dd) in cal_day
                         else climo_win.get((icao, dte.month), 0))
+            wss.append(cal_ws.get((icao, dd)))
             if (icao, dd) in cal_day:
                 eh.append(round(cal_day[(icao, dd)], 2)); tiers.append("cal")
                 pdays.append(round(1.0 - cal_noev[(icao, dd)], 3))
@@ -314,10 +316,11 @@ def main() -> None:
             f = min(max(f, 0.3), 2.2)
             eh.append(round(base * f, 2)); tiers.append(tier)
             pdays.append(round(min(p_clim * f, 0.95), 3) if p_clim is not None else None)
-        airports[icao] = {"eh": eh, "tiers": tiers, "p": pdays, "win": wins}
+        airports[icao] = {"eh": eh, "tiers": tiers, "p": pdays, "win": wins, "ws": wss}
 
     meta = {
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "cycle": current["meta"]["cycle"],  # anchor for per-day ws forecast-hours
         "day1": (today + timedelta(days=1)).isoformat(),
         "nbe_cycle": nbe_t.strftime("%Y-%m-%dT%H:%MZ"),
         "tiers": {"cal": "calibrated model (verified tier)",

@@ -1737,7 +1737,7 @@ async function openDeploy() {
 
 // first day in the window with a REACHABLE field >=50% likely chaseable —
 // the operator's "when could we actually go" number
-function firstLikely(c: DeployBase): { label: string; p: number; icao: string } | null {
+function firstLikely(c: DeployBase): { label: string; p: number; icao: string; d: number } | null {
   if (!deployData) return null;
   for (let d = 0; d < deployWindow; d++) {
     let best = 0, bi = "";
@@ -1751,10 +1751,31 @@ function firstLikely(c: DeployBase): { label: string; p: number; icao: string } 
     if (best >= 0.5) {
       const label = d === 0 ? "tomorrow"
         : new Date(Date.now() + (d + 1) * 864e5).toLocaleDateString("en-US", { weekday: "short" });
-      return { label, p: best, icao: bi };
+      return { label, p: best, icao: bi, d };
     }
   }
   return null;
+}
+
+// "deploy by HH:MM": latest home-base departure that still makes the chain
+// home -> base (30 min turn) -> field, arriving as the field's first likely
+// window opens (15 min buffer). Falls back to plain repositioning time when
+// the window start isn't in the forecast range.
+function deployBy(home: Airport, c: DeployBase, fl: ReturnType<typeof firstLikely>): string {
+  const repoH = distNm(home, c.b) / chasePrefs.speed;
+  const fallback = `reposition ${eteStr(repoH)}`;
+  if (!fl || fl.d > 1 || !deployData?.meta?.cycle) return fallback;
+  const da = deployData.airports[fl.icao];
+  const ws = da?.ws?.[fl.d];
+  if (ws == null) return fallback;
+  const cycleMs = Date.parse(deployData.meta.cycle);
+  const x = c.contrib.find((k) => k.a.icao === fl.icao);
+  if (!x || Number.isNaN(cycleMs)) return fallback;
+  const openMs = cycleMs + ws * 3600e3;
+  const byMs = openMs - (x.nm / chasePrefs.speed + 0.25 + repoH + 0.5) * 3600e3;
+  if (byMs < Date.now()) return `deploy now (${fl.icao} opens soon)`;
+  const t = new Date(byMs).toLocaleString("en-US", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: home.tz });
+  return `deploy by ${t}`;
 }
 
 // next-48h fog character at one airport, in ITS local time, from the live
@@ -1819,7 +1840,7 @@ function renderDeploy(ringBase?: Airport) {
     const dep = home
       ? (home.icao === c.b.icao
         ? `<span class="chase-badges">you're here</span>`
-        : `<span class="chase-badges" title="one-time repositioning: still-air time from your CHASE base ${home.icao} at ${chasePrefs.speed} kt — shown for planning, not factored into the ranking">deploy in ${eteStr(distNm(home, c.b) / chasePrefs.speed)}</span>`)
+        : `<span class="chase-badges" title="latest departure from your CHASE base ${home.icao} (still-air, ${chasePrefs.speed} kt) to reach ${c.b.icao}, turn (30 min), and launch to the first likely field before its window opens (15 min buffer). Not factored into the ranking.">${deployBy(home, c, fl)}</span>`)
       : "";
     return `
     <tr data-icao="${c.b.icao}"${ringBase?.icao === c.b.icao ? ' style="background:#16202b"' : ""}>
@@ -1889,7 +1910,7 @@ function renderDeploy(ringBase?: Airport) {
     </div>
     <p class="note" style="margin-top:8px">Airports must pass your saved CHASE filters. Chaseable = below CAT I. Tier honesty: days 1–2 <b>calibrated</b>; days 3–8 climatology × NBM-extended fog ingredients (<b>advisory, unfitted</b>); days 9–14 climatology × CPC moisture outlook (<b>advisory</b>, US only — Canadian airports stay pure climatology there).</p>
     <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span></div>
-    ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num" title="expected chaseable hours within reach over the window · bottom line: next-48h portion (calibrated)">chaseable hrs</th></tr></thead><tbody>${rows}</tbody></table>`
+    ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num" title="expected chaseable fog hours summed across ALL reachable fields over the window — an inventory of opportunities, not one aircraft's itinerary. Each field counts only hours reachable before its fog lifts.">chaseable hrs</th></tr></thead><tbody>${rows}</tbody></table>`
       : `<p class="note">No expected fog within range of any base under the current filters — widen the CHASE filters or the window.</p>`}
     <div id="deploy-48"></div>
     <p class="note">Fields credit only the fog-window hours remaining after still-air transit (launch-at-onset + 30 min margin) — a distant field whose fog lifts before arrival counts near zero. Contributor times are ETE from the base.</p>
