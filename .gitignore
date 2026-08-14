@@ -15,3 +15,4 @@ forecast/out/log/
 forecast/data/shadowlogs/
 forecast/out/deploy.json
 forecast/out/deploylog/
+forecast/data/gefs/
