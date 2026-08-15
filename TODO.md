@@ -45,9 +45,11 @@ the tagline/notes to it. First refresh ran 2026-08-15: data through
   app/public/data → forecast: build_truth (stations.json + climo) →
   build_pages → vite build + pages deploy → commit → re-upload
   pipeline/out/classified.parquet to R2 reference/ (reference CI contract).
-Remaining: put it on a Jan/Apr/Jul/Oct cadence (scheduled-task ritual like the
-monthly bar check, or launchd). CI-ification would need the 24 GB raw archive
-synced to R2 — possible, not obviously worth it.
+SCHEDULED 2026-08-15: task `fogatlas-quarterly-metar-refresh` runs the recipe
+on the 15th of Feb/May/Aug/Nov at 9am (quarter-anchored to the 2026-08-15
+refresh; runs on next app launch if the Mac was closed), with plausibility
+gates that hold the deploy on anomalies. CI-ification would need the 24 GB
+raw archive synced to R2 — possible, not obviously worth it.
 
 ## Smaller candidates
 - International LTS CAT I research pass: which runways have CHARTED LTS CAT I
