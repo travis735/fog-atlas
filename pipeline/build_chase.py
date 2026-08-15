@@ -119,7 +119,10 @@ def norm_end(e: str) -> str:
 
 
 def main() -> None:
-    atlas = json.load(open(OUT / "airports.json"))["airports"]
+    src = OUT / "airports.json"
+    if not src.exists():  # CI runners have no pipeline/out — use the committed copy
+        src = APP_DATA / "airports.json"
+    atlas = json.load(open(src))["airports"]
     us_icaos = {a["icao"] for a in atlas if a["country"] == "US"}
 
     site_icao, rwys = parse_apt(NASR / "APT.txt")

@@ -22,8 +22,9 @@ APRA_NASR = "https://external-api.faa.gov/apra/nfdc/nasr/chart?edition=current"
 APRA_CIFP = "https://external-api.faa.gov/apra/cifp/chart?edition=current"
 
 
-def get(url: str) -> bytes:
-    req = urllib.request.Request(url, headers=UA)
+def get(url: str, accept: str | None = None) -> bytes:
+    headers = {**UA, **({"Accept": accept} if accept else {})}
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=600) as resp:
         return resp.read()
 
@@ -36,31 +37,37 @@ def download(url: str, dest: Path) -> None:
     dest.write_bytes(get(url))
 
 
+def extract(zpath: Path, members: tuple) -> None:
+    # re-extract when the zip is newer than the extract — a new cycle's zip
+    # (dated filename) must refresh the fixed-name members it contains
+    with zipfile.ZipFile(zpath) as z:
+        for name in members:
+            target = NASR_DIR / name
+            if target.exists() and target.stat().st_mtime >= zpath.stat().st_mtime:
+                continue
+            z.extract(name, NASR_DIR)
+            print(f"  extracted {name}")
+
+
 def main() -> None:
     NASR_DIR.mkdir(parents=True, exist_ok=True)
 
-    nasr_meta = json.loads(get(APRA_NASR))
+    # APRA serves XML unless JSON is requested explicitly (default changed 2026-08)
+    nasr_meta = json.loads(get(APRA_NASR, accept="application/json"))
     nasr_url = nasr_meta["edition"][0]["product"]["url"]
     edition = nasr_meta["edition"][0]["editionDate"]
     print(f"NASR edition {edition}")
     nasr_zip = NASR_DIR / Path(nasr_url).name
     download(nasr_url, nasr_zip)
-    with zipfile.ZipFile(nasr_zip) as z:
-        for name in ("APT.txt", "ILS.txt", "Layout_Data/apt_rf.txt", "Layout_Data/ils_rf.txt"):
-            if not (NASR_DIR / name).exists():
-                z.extract(name, NASR_DIR)
-                print(f"  extracted {name}")
+    extract(nasr_zip, ("APT.txt", "ILS.txt", "Layout_Data/apt_rf.txt", "Layout_Data/ils_rf.txt"))
 
     cifp_xml = get(APRA_CIFP).decode()
     m = re.search(r'url="([^"]+)"', cifp_xml)
     if not m:
         sys.exit("CIFP url not found in APRA response")
-    cifp_zip = NASR_DIR / "cifp.zip"
+    cifp_zip = NASR_DIR / Path(m.group(1)).name  # dated name — new cycle, new file
     download(m.group(1), cifp_zip)
-    with zipfile.ZipFile(cifp_zip) as z:
-        if not (NASR_DIR / "FAACIFP18").exists():
-            z.extract("FAACIFP18", NASR_DIR)
-            print("  extracted FAACIFP18")
+    extract(cifp_zip, ("FAACIFP18",))
 
     print("done")
 

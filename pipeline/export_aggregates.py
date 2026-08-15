@@ -158,7 +158,8 @@ def main():
         causes = dict(con.execute("""
             SELECT cause, round(100.0 * count(*) / sum(count(*)) OVER (), 1)
             FROM c WHERE icao = ? AND band IN ('efvs','below') GROUP BY cause
-        """, [icao]).fetchall())
+            ORDER BY cause
+        """, [icao]).fetchall())  # ordered: hash-agg order varies run to run
 
         # minima-aware EFVS opportunity per equipage level: hours/yr below
         # the ACHIEVABLE floor (deck x ground) yet within EFVS range

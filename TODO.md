@@ -8,8 +8,8 @@ batched agent fleet (cheap model, AIP-curation recipe: per-claim sources,
 planted probes, owner audit) researches per-runway ALS type, RVR sensors, and
 ILS category from CAP charts / CFS. Output: `pipeline/data/ca_chase_curated.csv`
 → merged into `chase.json` with `curated` confidence badges in the panel.
-Also fold NASR APT/CIFP re-download (`fetch_nasr.py`) into the monthly
-reference refresh below.
+NASR APT/CIFP re-download (`fetch_nasr.py`) now rides in the monthly
+reference refresh CI (item 1, done).
 
 ## 0.5 DEPLOY "tomorrow" window (Travis, 2026-08-14) — DONE 2026-08-14
 Add a **tomorrow** option beside "next 7 days / next 14 days" in the deploy
@@ -17,21 +17,19 @@ planner — a 1-day window that makes the panel a pure night-before board:
 verdict + WHEELS UP + per-field peeks for the next ~30 h only. Completes the
 funnel's full cycle (14d -> 7d -> tomorrow -> wheels-up).
 
-## 1. Monthly reference-data refresh (launchd, automatable now)
-Consolidate the FAA/ESSP reference parsing — currently session one-offs — into
-`pipeline/refresh_reference.py`, then schedule it monthly from the Mac via launchd
-(`StartCalendarInterval`; missed runs fire at next wake, surviving power cycles).
-
-- Re-download per AIRAC cycle: FAA ILS Master (per-runway minima; scrape current
-  link from aeronav procedures/reports page), NASR ILS_CSV (categories), CIFP
-  (LPV path points), ESSP EGNOS xlsx
-  (`egnos.gsc-europa.eu/sites/default/files/lpv_procedures_map/egnos_procedures-<AIRAC>.xlsx`;
-  current cycle readable from drupal-settings JSON on the map page)
-- Rebuild `us_ils_levels.csv`, `cat_curated.csv` (NASR portion), `us_lpv.csv`,
-  `egnos_lpv.csv` → rerun `build_airport_list.py` + `export_aggregates.py`
-  against the existing parquet (no METAR refetch) → `wrangler pages deploy` → git push
-- Deliverables: `pipeline/refresh_reference.py`, `scripts/com.fogatlas.reference.plist`,
-  one-line `launchctl bootstrap` install instructions
+## 1. Monthly reference-data refresh — DONE 2026-08-14 (GitHub Actions, no Mac)
+`.github/workflows/reference.yml` runs monthly (3rd, 07:40Z) + on dispatch:
+`fetch_nasr.py` (current-cycle NASR + CIFP; re-extracts when the zip is newer)
+→ `refresh_reference.py` (ILS Master scraped from the aeronav reports page,
+EGNOS xlsx scraped from the ESSP map page, CIFP LPV, NASR categories — rebuilds
+the four reference CSVs only on content change) → `build_chase.py` → when the
+minima/category CSVs changed, re-exports atlas aggregates against
+`fogatlas-forecast/reference/classified.parquet` in R2 (re-upload that object
+after any METAR refresh) → commits + `wrangler pages deploy`. Parsers were
+validated by regenerating the committed CSVs to within verified real-world
+cycle drift. Gotchas encoded in the scripts: COPTER ILS rows excluded from
+CAT I floors; cat_curated universe = airports_full.csv US rows (AK/HI carry
+NASR categories despite having no METAR archive); APRA needs Accept: json.
 
 ## 2. Quarterly METAR refresh (blocked on incremental fetcher)
 Extend the climatology window in place.
@@ -50,6 +48,10 @@ Extend the climatology window in place.
   top-40 already-researched airports)
 - Next ~100 international airports' per-runway CAT I floors (agent pass #2;
   Vágar + Nalchik retry with better sources — skipped at low confidence)
-- Custom domain → unlocks Bot Fight Mode / WAF + zone analytics
+- Alaska + Hawaii are absent from the METAR archive entirely (zero PA*/PH* in
+  airports.json — discovered 2026-08-14; the fetch never covered them). The
+  Aleutians (PACD Cold Bay, PADK Adak, PASN St Paul) are world-class fog with
+  ILS + NASR categories already curated. Fix rides on the fetch_iem
+  incremental work in item 2: fetch AK/HI ASOS networks, reanalyze, re-export.
 - Route/mission view (origin–destination fog risk) from the original design
 - Print-friendly briefing mode

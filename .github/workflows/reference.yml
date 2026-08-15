@@ -1,0 +1,77 @@
+# Monthly AIRAC reference refresh — the last data path that needed the Mac.
+#
+# Downloads the current-cycle FAA NASR subscriber file + CIFP + ILS Master
+# report and the ESSP EGNOS LPV dataset, rebuilds the derived reference CSVs
+# and chase.json; when the minima/category CSVs changed, re-exports the atlas
+# aggregates against the archived METAR classification (291 MB parquet hosted
+# in R2 at fogatlas-forecast/reference/classified.parquet — re-upload it after
+# any METAR refresh). Commits whatever changed and redeploys the site.
+#
+# Uses the same CLOUDFLARE_API_TOKEN secret as forecast.yml; the deploy step
+# additionally needs the token to carry Cloudflare Pages:Edit scope.
+name: reference
+on:
+  schedule:
+    - cron: "40 7 3 * *"   # monthly — edition=current picks up whatever AIRAC cycle is live
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CLOUDFLARE_ACCOUNT_ID: 5488aa3505290f21c3be9c32b2a5949c
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: refresh reference data
+        run: |
+          pip install --quiet xlrd openpyxl duckdb timezonefinder
+          python pipeline/fetch_nasr.py
+          python pipeline/refresh_reference.py
+          python pipeline/build_chase.py
+      - name: re-export atlas aggregates (only when minima/category inputs changed)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if git status --porcelain pipeline/data/us_ils_levels.csv pipeline/data/us_lpv.csv \
+               pipeline/data/egnos_lpv.csv pipeline/cat_curated.csv | grep -q .; then
+            npx --yes wrangler@4 r2 object get fogatlas-forecast/reference/classified.parquet \
+              --file pipeline/out/classified.parquet --remote
+            python pipeline/build_airport_list.py
+            python pipeline/export_aggregates.py --list airports_full.csv
+            cp pipeline/out/app/airports.json app/public/data/airports.json
+            cp pipeline/out/app/detail/*.json app/public/data/detail/
+          else
+            echo "reference CSVs unchanged — skipping aggregate re-export"
+          fi
+      - name: commit refreshed data
+        id: commit
+        run: |
+          git add pipeline/data/us_ils_levels.csv pipeline/data/us_lpv.csv \
+            pipeline/data/egnos_lpv.csv pipeline/cat_curated.csv pipeline/airports_full.csv \
+            app/public/data
+          if git diff --cached --quiet; then
+            echo "no changes this cycle"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "fogatlas-ci"
+            git config user.email "actions@users.noreply.github.com"
+            git commit -m "reference: AIRAC cycle refresh ($(date -u +%F))"
+            git pull --rebase origin main
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: build + deploy site
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          cd app
+          npm ci
+          npx vite build
+          npx --yes wrangler@4 pages deploy dist --project-name=fog-atlas

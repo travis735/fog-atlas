@@ -1085,7 +1085,7 @@ KOMA,OMA,Eppley Airfield,41.3032,-95.8941,America/Chicago,US,CATIII,faa-nasr,lar
 KONT,ONT,Ontario International Airport,34.056,-117.601,America/Los_Angeles,US,CATIII,faa-nasr,large
 KORD,ORD,Chicago O'Hare International Airport,41.9786,-87.9048,America/Chicago,US,CATIII,faa-nasr,large
 KORF,ORF,Norfolk International Airport,36.8953,-76.201,America/New_York,US,CATI,faa-nasr,large
-KPBI,PBI,Palm Beach International Airport,26.6832,-80.0956,America/New_York,US,CATI,faa-nasr,large
+KPBI,PBI,Palm Beach International Airport,26.6832,-80.0956,America/New_York,US,CATI,assumed,large
 KPDX,PDX,Portland International Airport,45.5887,-122.598,America/Los_Angeles,US,CATIII,faa-nasr,large
 KPHL,PHL,Philadelphia International Airport,39.8719,-75.2411,America/New_York,US,CATIII,faa-nasr,large
 KPHX,PHX,Phoenix Sky Harbor International Airport,33.4353,-112.0059,America/Phoenix,US,CATI,faa-nasr,large
@@ -4512,7 +4512,7 @@ KMKC,MKC,Charles B. Wheeler Downtown Airport,39.1232,-94.5928,America/Chicago,US
 KMKG,MKG,Muskegon County Airport,43.1695,-86.2382,America/Detroit,US,CATI,faa-nasr,medium
 KMKL,MKL,McKellar-Sipes Regional Airport,35.5999,-88.9156,America/Chicago,US,CATI,faa-nasr,medium
 KMLB,MLB,Melbourne Orlando International Airport,28.102,-80.6411,America/New_York,US,CATI,faa-nasr,medium
-KMLC,MLC,Mc Alester Regional Airport,34.8824,-95.7835,America/Chicago,US,CATI,assumed,medium
+KMLC,MLC,Mc Alester Regional Airport,34.8824,-95.7835,America/Chicago,US,CATI,faa-nasr,medium
 KMLI,MLI,Quad City International Airport,41.4485,-90.5075,America/Chicago,US,CATI,faa-nasr,medium
 KMLS,MLS,Miles City Airport - Frank Wiley Field,46.4273,-105.8854,America/Denver,US,CATI,assumed,medium
 KMLU,MLU,Monroe Regional Airport,32.5109,-92.0377,America/Chicago,US,CATI,faa-nasr,medium
@@ -4556,7 +4556,7 @@ KNGP,NGP,Naval Air Station Corpus Christi Truax Field,27.6926,-97.2911,America/C
 KNGU,NGU,Norfolk Naval Station (Chambers Field),36.9376,-76.2893,America/New_York,US,CATI,faa-nasr,medium
 KNHK,NHK,Patuxent River Naval Air Station (Trapnell Field),38.286,-76.4118,America/New_York,US,CATI,faa-nasr,medium
 KNID,NID,China Lake Naws (Armitage Field) Airport,35.6854,-117.692,America/Los_Angeles,US,CATI,assumed,medium
-KNIP,NIP,Jacksonville Naval Air Station (Towers Field),30.2358,-81.6806,America/New_York,US,CATI,assumed,medium
+KNIP,NIP,Jacksonville Naval Air Station (Towers Field),30.2358,-81.6806,America/New_York,US,CATI,faa-nasr,medium
 KNJK,NJK,El Centro NAF Airport (Vraciu Field),32.8292,-115.672,America/Los_Angeles,US,CATI,assumed,medium
 KNKT,NKT,Cherry Point MCAS / Cunningham Field/,34.9009,-76.8807,America/New_York,US,CATI,faa-nasr,medium
 KNKX,NKX,Miramar Marine Corps Air Station - Mitscher Field,32.8684,-117.143,America/Los_Angeles,US,CATI,faa-nasr,medium
@@ -4685,7 +4685,7 @@ KSDM,SDM,Brown Field Municipal Airport,32.5726,-116.98,America/Los_Angeles,US,CA
 KSDY,SDY,Sidney - Richland Regional Airport,47.7051,-104.1944,America/Denver,US,CATI,assumed,medium
 KSFF,SFF,Felts Field,47.6829,-117.3219,America/Los_Angeles,US,CATI,faa-nasr,medium
 KSGF,SGF,Springfield Branson National Airport,37.245,-93.3886,America/Chicago,US,CATI,faa-nasr,medium
-KSGH,SGH,Springfield-Beckley Municipal Airport,39.8403,-83.8402,America/New_York,US,CATI,assumed,medium
+KSGH,SGH,Springfield-Beckley Municipal Airport,39.8403,-83.8402,America/New_York,US,CATI,faa-nasr,medium
 KSGJ,SGJ,Northeast Florida Regional Airport,29.9592,-81.3398,America/New_York,US,CATI,faa-nasr,medium
 KSGR,SGR,Sugar Land Regional Airport,29.6223,-95.6565,America/Chicago,US,CATI,faa-nasr,medium
 KSGU,SGU,St George Regional Airport,37.0364,-113.5103,America/Denver,US,CATI,faa-nasr,medium
