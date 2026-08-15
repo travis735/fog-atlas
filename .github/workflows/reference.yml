@@ -34,9 +34,11 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            https://api.cloudflare.com/client/v4/user/tokens/verify \
-            | python3 -c "import json,sys; r=json.load(sys.stdin).get('result') or {}; print('token id:', r.get('id'), '| status:', r.get('status'))"
+          for kind in "user:user/tokens/verify" "account:accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/verify"; do
+            curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/${kind#*:}" \
+              | python3 -c "import json,sys; d=json.load(sys.stdin); r=d.get('result') or {}; print('${kind%%:*} token id:', r.get('id'), '| status:', r.get('status'), '| errors:', d.get('errors'))"
+          done
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
