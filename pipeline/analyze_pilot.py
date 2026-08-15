@@ -197,6 +197,26 @@ def main():
     con.execute(f"COPY classified TO '{OUT}/classified.parquet' (FORMAT PARQUET)")
     print(f"\nwrote {OUT}/classified.parquet")
 
+    # data-through watermark for the dynamic window (from raw file tails —
+    # the classified table intentionally carries no timestamps)
+    import json
+    from datetime import datetime
+    latest = ""
+    for p in files:
+        try:
+            with open(p, "rb") as f:
+                f.seek(max(f.seek(0, 2) - 4096, 0))
+                tail = [l for l in f.read().decode("utf-8", "replace").splitlines() if "," in l]
+            if tail and not tail[-1].startswith("station"):
+                latest = max(latest, tail[-1].split(",")[1])
+        except Exception:
+            pass
+    if latest:
+        hours = int((datetime.fromisoformat(latest) - datetime(2016, 1, 1)).total_seconds() // 3600) + 1
+        (OUT / "window.json").write_text(json.dumps(
+            {"start": "2016-01-01", "through": latest[:10], "hours": hours}))
+        print(f"window: 2016-01-01 -> {latest[:10]} ({hours} possible hours)")
+
 
 if __name__ == "__main__":
     main()

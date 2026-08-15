@@ -31,7 +31,7 @@ SAWC,SAWC,El Calafate - Commander Armando Tola International Airport,-50.282,-72
 SAWG,SAWG,Piloto Civil Norberto Fernández International Airport,-51.6088,-69.3089,America/Argentina/Rio_Gallegos,AR,CATI,assumed,large
 SAZN,SAZN,Presidente Perón International Airport,-38.949,-68.1557,America/Argentina/Salta,AR,CATI,assumed,large
 SAZS,SAZS,Teniente Luis Candelaria International Airport,-41.1512,-71.1575,America/Argentina/Salta,AR,CATI,assumed,large
-NSTU,PPG,Pago Pago International Airport,-14.331,-170.71,Pacific/Pago_Pago,AS,CATI,assumed,large
+NSTU,NSTU,Pago Pago International Airport,-14.331,-170.71,Pacific/Pago_Pago,AS,CATI,assumed,large
 LOWG,LOWG,Graz Airport,46.9911,15.4396,Europe/Vienna,AT,CATIII,faa-c060,large
 LOWI,LOWI,Innsbruck Airport,47.2602,11.344,Europe/Vienna,AT,CATI,assumed,large
 LOWK,LOWK,Klagenfurt Airport,46.6425,14.3377,Europe/Vienna,AT,CATI,assumed,large
@@ -431,7 +431,7 @@ LGSA,LGSA,Chania International Airport,35.5312,24.1507,Europe/Athens,GR,CATI,ass
 LGSR,LGSR,Santorini International Airport,36.4,25.4786,Europe/Athens,GR,CATI,assumed,large
 LGTS,LGTS,Thessaloniki Macedonia International Airport,40.5193,22.97,Europe/Athens,GR,CATII,faa-c060,large
 MGGT,MGGT,La Aurora International Airport,14.5829,-90.5275,America/Guatemala,GT,CATI,assumed,large
-PGUM,GUM,Antonio B. Won Pat International Airport,13.485,144.7973,Pacific/Guam,GU,CATI,assumed,large
+PGUM,PGUM,Antonio B. Won Pat International Airport,13.485,144.7973,Pacific/Guam,GU,CATI,assumed,large
 GGOV,GGOV,Osvaldo Vieira International Airport,11.8943,-15.6536,Africa/Bissau,GW,CATI,assumed,large
 SYCJ,SYCJ,Cheddi Jagan International Airport,6.4985,-58.2541,America/Guyana,GY,CATI,assumed,large
 VHHH,VHHH,Hong Kong International Airport,22.3118,113.9149,Asia/Hong_Kong,HK,CATIII,faa-c060,large
@@ -696,7 +696,7 @@ VYYY,VYYY,Yangon International Airport,16.9073,96.1332,Asia/Yangon,MM,CATI,assum
 ZMCK,ZMCK,Ulaanbaatar Chinggis Khaan International Airport,47.6469,106.8198,Asia/Ulaanbaatar,MN,CATI,assumed,large
 ZMUB,ZMUB,Buyant-Ukhaa International Airport,47.8431,106.767,Asia/Ulaanbaatar,MN,CATI,assumed,large
 VMMC,VMMC,Macau International Airport,22.1496,113.592,Asia/Macau,MO,CATII,faa-c060,large
-PGRO,GRO,Rota International Airport,14.1733,145.2411,Pacific/Saipan,MP,CATI,assumed,large
+PGRO,PGRO,Rota International Airport,14.1733,145.2411,Pacific/Saipan,MP,CATI,assumed,large
 TFFF,TFFF,Martinique Aimé Césaire International Airport,14.591,-61.0032,America/Martinique,MQ,CATI,assumed,large
 GQNO,GQNO,Nouakchott–Oumtounsy International Airport,18.31,-15.9697,Africa/Nouakchott,MR,CATI,assumed,large
 GQPP,GQPP,Nouadhibou International Airport,20.9324,-17.0302,Africa/Nouakchott,MR,CATI,assumed,large
@@ -843,7 +843,7 @@ EPRZ,EPRZ,Rzeszów-Jasionka Airport,50.1098,22.0242,Europe/Warsaw,PL,CATII,faa-c
 EPSC,EPSC,Solidarity Szczecin–Goleniów Airport,53.5847,14.9022,Europe/Warsaw,PL,CATI,assumed,large
 EPWA,EPWA,Warsaw Chopin Airport,52.1657,20.9671,Europe/Warsaw,PL,CATIII,faa-c060,large
 EPWR,EPWR,Copernicus Wrocław Airport,51.1037,16.8821,Europe/Warsaw,PL,CATII,faa-c060,large
-TJSJ,SJU,Luis Munoz Marin International Airport,18.4394,-66.0018,America/Puerto_Rico,PR,CATI,assumed,large
+TJSJ,TJSJ,Luis Munoz Marin International Airport,18.4394,-66.0018,America/Puerto_Rico,PR,CATI,assumed,large
 LPFR,LPFR,Faro - Gago Coutinho International Airport,37.0159,-7.9709,Europe/Lisbon,PT,CATI,assumed,large
 LPMA,LPMA,Cristiano Ronaldo International Airport,32.6978,-16.7746,Atlantic/Madeira,PT,CATI,assumed,large
 LPPD,LPPD,João Paulo II Airport,37.7412,-25.6979,Atlantic/Azores,PT,CATI,assumed,large
@@ -1119,11 +1119,11 @@ KTPA,TPA,Tampa International Airport,27.9755,-82.5332,America/New_York,US,CATIII
 KTUL,TUL,Tulsa International Airport,36.1971,-95.8862,America/Chicago,US,CATII,faa-nasr,large
 KTUS,TUS,Tucson International Airport,32.115,-110.9381,America/Phoenix,US,CATI,faa-nasr,large
 KTYS,TYS,McGhee Tyson Airport,35.811,-83.994,America/New_York,US,CATII,faa-nasr,large
-PANC,ANC,Ted Stevens Anchorage International Airport,61.179,-149.9926,America/Anchorage,US,CATIII,faa-nasr,large
-PHKO,KOA,Ellison Onizuka Kona International Airport at Keāhole,19.7388,-156.0456,Pacific/Honolulu,US,CATI,faa-nasr,large
-PHLI,LIH,Lihue Airport,21.9744,-159.3371,Pacific/Honolulu,US,CATI,faa-nasr,large
-PHNL,HNL,Daniel K. Inouye International Airport,21.3184,-157.9257,Pacific/Honolulu,US,CATI,faa-nasr,large
-PHOG,OGG,Kahului International Airport,20.8963,-156.4318,Pacific/Honolulu,US,CATI,faa-nasr,large
+PANC,PANC,Ted Stevens Anchorage International Airport,61.179,-149.9926,America/Anchorage,US,CATIII,faa-nasr,large
+PHKO,PHKO,Ellison Onizuka Kona International Airport at Keāhole,19.7388,-156.0456,Pacific/Honolulu,US,CATI,faa-nasr,large
+PHLI,PHLI,Lihue Airport,21.9744,-159.3371,Pacific/Honolulu,US,CATI,faa-nasr,large
+PHNL,PHNL,Daniel K. Inouye International Airport,21.3184,-157.9257,Pacific/Honolulu,US,CATI,faa-nasr,large
+PHOG,PHOG,Kahului International Airport,20.8963,-156.4318,Pacific/Honolulu,US,CATI,faa-nasr,large
 SUMU,SUMU,Carrasco General Cesáreo L. Berisso International Airport,-34.8356,-56.0265,America/Montevideo,UY,CATI,assumed,large
 UZFN,UZFN,Namangan International Airport,40.9846,71.5578,Asia/Tashkent,UZ,CATI,assumed,large
 UZNN,UZNN,Nukus International Airport,42.4884,59.6233,Asia/Samarkand,UZ,CATI,assumed,large
@@ -1140,7 +1140,7 @@ SVMI,SVMI,Maiquetía Simón Bolívar International Airport,10.6022,-66.9912,Amer
 SVPR,SVPR,General Manuel Carlos Piar International Airport,8.2885,-62.7604,America/Caracas,VE,CATI,assumed,large
 SVVA,SVVA,Arturo Michelena International Airport,10.1497,-67.9284,America/Caracas,VE,CATI,assumed,large
 TUPJ,TUPJ,Terrance B. Lettsome International Airport,18.4455,-64.5417,America/Tortola,VG,CATI,assumed,large
-TIST,STT,Cyril E. King Airport,18.3371,-64.9773,America/St_Thomas,VI,CATI,assumed,large
+TIST,TIST,Cyril E. King Airport,18.3371,-64.9773,America/St_Thomas,VI,CATI,assumed,large
 VVCI,VVCI,Cat Bi International Airport,20.8174,106.7243,Asia/Bangkok,VN,CATI,assumed,large
 VVCR,VVCR,Cam Ranh International Airport / Cam Ranh Air Base,11.9982,109.219,Asia/Ho_Chi_Minh,VN,CATI,assumed,large
 VVCT,VVCT,Can Tho International Airport,10.0834,105.7094,Asia/Ho_Chi_Minh,VN,CATI,assumed,large
@@ -2675,7 +2675,7 @@ MGPB,MGPB,Puerto Barrios Airport,15.7309,-88.5838,America/Guatemala,GT,CATI,assu
 MGRB,MGRB,Rubelsanto Airport,15.992,-90.4453,America/Guatemala,GT,CATI,assumed,medium
 MGRT,MGRT,Retalhuleu Airport,14.5214,-91.697,America/Guatemala,GT,CATI,assumed,medium
 MGSJ,MGSJ,San José Airport,13.9362,-90.8358,America/Guatemala,GT,CATI,assumed,medium
-PGUA,UAM,Andersen Air Force Base,13.584,144.93,Pacific/Guam,GU,CATI,assumed,medium
+PGUA,PGUA,Andersen Air Force Base,13.584,144.93,Pacific/Guam,GU,CATI,assumed,medium
 SYEC,SYEC,Eugene F. Correia International Airport,6.8059,-58.1077,America/Guyana,GY,CATI,assumed,medium
 SYKA,SYKA,Kaieteur Airport,5.1773,-59.489,America/Guyana,GY,CATI,assumed,medium
 SYLT,SYLT,Lethem Airport,3.3728,-59.7894,America/Guyana,GY,CATI,assumed,medium
@@ -3220,8 +3220,8 @@ ZMKD,ZMKD,Khovd Airport,47.9541,91.6282,Asia/Hovd,MN,CATI,assumed,medium
 ZMMN,ZMMN,Mörön Airport,49.6637,100.1,Asia/Ulaanbaatar,MN,CATI,assumed,medium
 ZMUG,ZMUG,Ulaangom Airport,50.0666,91.9383,Asia/Hovd,MN,CATI,assumed,medium
 ZMUL,ZMUL,Ölgii Mongolei International Airport,48.9933,89.9225,Asia/Hovd,MN,CATI,assumed,medium
-PGSN,GSN,Saipan International Airport,15.1194,145.7288,Pacific/Saipan,MP,CATI,assumed,medium
-PGWT,TNI,Francisco Manglona Borja / Tinian International Airport,14.9992,145.6194,Pacific/Saipan,MP,CATI,assumed,medium
+PGSN,PGSN,Saipan International Airport,15.1194,145.7288,Pacific/Saipan,MP,CATI,assumed,medium
+PGWT,PGWT,Francisco Manglona Borja / Tinian International Airport,14.9992,145.6194,Pacific/Saipan,MP,CATI,assumed,medium
 GQPA,GQPA,Atar International Airport,20.5058,-13.0437,Africa/Nouakchott,MR,CATI,assumed,medium
 GQPZ,GQPZ,Tazadit Airport,22.7573,-12.4822,Africa/Nouakchott,MR,CATI,assumed,medium
 FIMR,FIMR,Sir Charles Gaetan Duval Airport,-19.7567,63.3593,Indian/Mauritius,MU,CATI,assumed,medium
@@ -3592,14 +3592,14 @@ EPSY,EPSY,Olsztyn-Mazury Airport,53.4819,20.9377,Europe/Warsaw,PL,CATII,aip,medi
 EPTM,EPTM,Tomaszów Mazowiecki Military Air Base,51.5844,20.0978,Europe/Warsaw,PL,CATI,assumed,medium
 EPZG,EPZG,Zielona Góra-Babimost Airport,52.1385,15.7986,Europe/Warsaw,PL,CATI,assumed,medium
 LFVP,LFVP,Saint-Pierre Pointe-Blanche Airport,46.7627,-56.175,America/Miquelon,PM,CATIII,aip,medium
-TJAB,ABO,Antonio Nery Juarbe Pol Airport,18.4508,-66.6758,America/Puerto_Rico,PR,CATI,assumed,medium
-TJBQ,BQN,Rafael Hernández International Airport,18.4949,-67.1294,America/Puerto_Rico,PR,CATI,assumed,medium
-TJCP,CPX,Benjamin Rivera Noriega Airport,18.313,-65.3039,America/Puerto_Rico,PR,CATI,assumed,medium
-TJIG,SIG,Fernando Luis Ribas Dominicci Airport,18.4568,-66.0981,America/Puerto_Rico,PR,CATI,assumed,medium
-TJMZ,MAZ,Eugenio Maria De Hostos Airport,18.2557,-67.1485,America/Puerto_Rico,PR,CATI,assumed,medium
-TJPS,PSE,Mercedita International Airport,18.0083,-66.563,America/Puerto_Rico,PR,CATI,assumed,medium
-TJRV,RVR,José Aponte de la Torre Airport,18.2473,-65.6398,America/Puerto_Rico,PR,CATI,assumed,medium
-TJVQ,VQS,Antonio Rivera Rodriguez Airport,18.1348,-65.4936,America/Puerto_Rico,PR,CATI,assumed,medium
+TJAB,TJAB,Antonio Nery Juarbe Pol Airport,18.4508,-66.6758,America/Puerto_Rico,PR,CATI,assumed,medium
+TJBQ,TJBQ,Rafael Hernández International Airport,18.4949,-67.1294,America/Puerto_Rico,PR,CATI,assumed,medium
+TJCP,TJCP,Benjamin Rivera Noriega Airport,18.313,-65.3039,America/Puerto_Rico,PR,CATI,assumed,medium
+TJIG,TJIG,Fernando Luis Ribas Dominicci Airport,18.4568,-66.0981,America/Puerto_Rico,PR,CATI,assumed,medium
+TJMZ,TJMZ,Eugenio Maria De Hostos Airport,18.2557,-67.1485,America/Puerto_Rico,PR,CATI,assumed,medium
+TJPS,TJPS,Mercedita International Airport,18.0083,-66.563,America/Puerto_Rico,PR,CATI,assumed,medium
+TJRV,TJRV,José Aponte de la Torre Airport,18.2473,-65.6398,America/Puerto_Rico,PR,CATI,assumed,medium
+TJVQ,TJVQ,Antonio Rivera Rodriguez Airport,18.1348,-65.4936,America/Puerto_Rico,PR,CATI,assumed,medium
 LPAR,LPAR,Alverca Air Base,38.8833,-9.0301,Europe/Lisbon,PT,CATI,assumed,medium
 LPAZ,LPAZ,Santa Maria Airport,36.9714,-25.1706,Atlantic/Azores,PT,CATI,assumed,medium
 LPBG,LPBG,Bragança Airport,41.8578,-6.7071,Europe/Lisbon,PT,CATI,assumed,medium
@@ -4799,96 +4799,96 @@ KYKM,YKM,Yakima Air Terminal McAllister Field,46.5682,-120.544,America/Los_Angel
 KYKN,YKN,Chan Gurney Municipal Airport,42.9167,-97.3859,America/Chicago,US,CATI,faa-nasr,medium
 KYNG,YNG,Youngstown Warren Regional Airport,41.2607,-80.6791,America/New_York,US,CATI,faa-nasr,medium
 KZZV,ZZV,Zanesville Municipal Airport,39.9444,-81.8921,America/New_York,US,CATI,faa-nasr,medium
-PAAQ,PAQ,"Warren ""Bud"" Woods Palmer Municipal Airport",61.5949,-149.089,America/Anchorage,US,CATI,assumed,medium
-PABA,BTI,Barter Island Long Range Radar Station Airport,70.134,-143.582,America/Anchorage,US,CATI,assumed,medium
-PABE,BET,Bethel Airport,60.7798,-161.838,America/Anchorage,US,CATI,faa-nasr,medium
-PABI,BIG,Allen Army Airfield,63.9945,-145.722,America/Anchorage,US,CATI,faa-nasr,medium
-PABR,BRW,Wiley Post Will Rogers Memorial Airport,71.2854,-156.766,America/Anchorage,US,CATI,faa-nasr,medium
-PABV,BCV,Birchwood Airport,61.4165,-149.507,America/Anchorage,US,CATI,assumed,medium
-PACD,CDB,Cold Bay Airport,55.2079,-162.725,America/Nome,US,CATI,faa-nasr,medium
-PACL,Z84,Clear Airport,64.2997,-149.1174,America/Anchorage,US,CATI,assumed,medium
-PACV,CDV,Merle K (Mudhole) Smith Airport,60.4918,-145.478,America/Anchorage,US,CATI,faa-nasr,medium
-PACZ,CZF,Cape Romanzof LRRS Airport,61.7803,-166.039,America/Nome,US,CATI,assumed,medium
-PADE,DEE,Deering Airport,66.0689,-162.7669,America/Nome,US,CATI,assumed,medium
-PADK,ADK,Adak Airport,51.8836,-176.6428,America/Adak,US,CATI,faa-nasr,medium
-PADL,DLG,Dillingham Airport,59.0447,-158.505,America/Anchorage,US,CATI,faa-nasr,medium
-PADQ,ADQ,Kodiak Airport,57.75,-152.494,America/Anchorage,US,CATI,faa-nasr,medium
-PADU,DUT,Tom Madsen (Dutch Harbor) Airport,53.8988,-166.545,America/Nome,US,CATI,assumed,medium
-PAED,EDF,Elmendorf Air Force Base,61.2517,-149.8071,America/Anchorage,US,CATI,faa-nasr,medium
-PAEH,EHM,Cape Newenham LRRS Airport,58.6464,-162.063,America/Nome,US,CATI,assumed,medium
-PAEI,EIL,Eielson Air Force Base,64.6657,-147.102,America/Anchorage,US,CATI,faa-nasr,medium
-PAEM,ENM,Emmonak Airport,62.7861,-164.491,America/Nome,US,CATI,assumed,medium
-PAEN,ENA,Kenai Municipal Airport,60.5709,-151.2452,America/Anchorage,US,CATI,faa-nasr,medium
-PAFA,FAI,Fairbanks International Airport,64.8151,-147.856,America/Anchorage,US,CATIII,faa-nasr,medium
-PAFB,FBK,Ladd Army Airfield,64.8375,-147.614,America/Anchorage,US,CATI,assumed,medium
-PAFE,AFE,Kake Airport,56.9613,-133.9102,America/Sitka,US,CATI,assumed,medium
-PAFM,AFM,Ambler Airport,67.1055,-157.8553,America/Anchorage,US,CATI,assumed,medium
-PAGA,GAL,Edward G. Pitka Sr Airport,64.7362,-156.937,America/Anchorage,US,CATI,assumed,medium
-PAGK,GKN,Gulkana Airport,62.1559,-145.4547,America/Anchorage,US,CATI,assumed,medium
-PAGM,GAM,Gambell Airport,63.7677,-171.7333,America/Nome,US,CATI,assumed,medium
-PAGS,GST,Gustavus Airport,58.4253,-135.707,America/Juneau,US,CATI,assumed,medium
-PAHC,HCA,Holy Cross Airport,62.1883,-159.775,America/Anchorage,US,CATI,assumed,medium
-PAHL,HLA,Huslia Airport,65.6979,-156.351,America/Anchorage,US,CATI,assumed,medium
-PAHN,HNS,Haines Airport,59.2439,-135.5239,America/Juneau,US,CATI,assumed,medium
-PAHO,HOM,Homer Airport,59.6445,-151.4792,America/Anchorage,US,CATI,assumed,medium
-PAII,EII,Egegik Airport,58.1844,-157.3749,America/Anchorage,US,CATI,assumed,medium
-PAIK,IAN,Bob Baker Memorial Airport,66.9761,-160.439,America/Anchorage,US,CATI,assumed,medium
-PAIL,ILI,Iliamna Airport,59.7544,-154.911,America/Anchorage,US,CATI,assumed,medium
-PAIM,UTO,Indian Mountain LRRS Airport,65.9928,-153.704,America/Anchorage,US,CATI,assumed,medium
-PAJN,JNU,Juneau International Airport,58.3549,-134.5744,America/Juneau,US,CATI,assumed,medium
-PAKN,AKN,King Salmon Airport,58.6778,-156.652,America/Anchorage,US,CATI,faa-nasr,medium
-PAKP,AKP,Anaktuvuk Pass Airport,68.1336,-151.743,America/Anchorage,US,CATI,assumed,medium
-PAKT,KTN,Ketchikan International Airport,55.3556,-131.714,America/Sitka,US,CATI,faa-nasr,medium
-PAKW,AKW,Klawock Airport,55.5792,-133.076,America/Sitka,US,CATI,assumed,medium
-PALU,LUR,Cape Lisburne LRRS Airport,68.8751,-166.11,America/Nome,US,CATI,assumed,medium
-PAMC,MCG,McGrath Airport,62.9529,-155.606,America/Anchorage,US,CATI,faa-nasr,medium
-PAMR,MRI,Merrill Field,61.2128,-149.844,America/Anchorage,US,CATI,assumed,medium
-PAMY,MYU,Mekoryuk Airport,60.3723,-166.2698,America/Nome,US,CATI,assumed,medium
-PANI,ANI,Aniak Airport,61.5816,-159.543,America/Anchorage,US,CATI,faa-nasr,medium
-PANN,ENN,Nenana Municipal Airport,64.5488,-149.0745,America/Anchorage,US,CATI,assumed,medium
-PANT,ANN,Annette Island Airport,55.0377,-131.5726,America/Metlakatla,US,CATI,assumed,medium
-PANV,ANV,Anvik Airport,62.6467,-160.191,America/Anchorage,US,CATI,assumed,medium
-PAOM,OME,Nome Airport,64.5122,-165.445,America/Nome,US,CATI,faa-nasr,medium
-PAOR,ORT,Northway Airport,62.9613,-141.929,America/Anchorage,US,CATI,assumed,medium
-PAOT,OTZ,Ralph Wien Memorial Airport,66.8847,-162.599,America/Nome,US,CATI,faa-nasr,medium
-PAPB,PBV,St George Airport,56.5773,-169.6638,America/Nome,US,CATI,faa-nasr,medium
-PAPC,KPC,Port Clarence Coast Guard Station,65.2537,-166.859,America/Nome,US,CATI,assumed,medium
-PAPG,PSG,Petersburg James A Johnson Airport,56.8017,-132.945,America/Sitka,US,CATI,faa-nasr,medium
-PAPH,PTH,Port Heiden Airport,56.9579,-158.6302,America/Anchorage,US,CATI,assumed,medium
-PAPM,PTU,Platinum Airport,59.0177,-161.8279,America/Anchorage,US,CATI,assumed,medium
-PAQT,AQT,Nuiqsut Airport,70.21,-151.006,America/Anchorage,US,CATI,assumed,medium
-PARC,ARC,Arctic Village Airport,68.1147,-145.579,America/Anchorage,US,CATI,assumed,medium
-PARY,RBY,Ruby Airport,64.7272,-155.47,America/Anchorage,US,CATI,assumed,medium
-PASA,SVA,Savoonga Airport,63.6864,-170.493,America/Nome,US,CATI,assumed,medium
-PASC,SCC,Deadhorse Airport,70.1947,-148.465,America/Anchorage,US,CATI,faa-nasr,medium
-PASD,SDP,Sand Point Airport,55.3139,-160.5221,America/Anchorage,US,CATI,assumed,medium
-PASI,SIT,Sitka Rocky Gutierrez Airport,57.0471,-135.362,America/Sitka,US,CATI,faa-nasr,medium
-PASN,SNP,St Paul Island Airport,57.1663,-170.2226,America/Nome,US,CATI,faa-nasr,medium
-PASV,SVW,Sparrevohn LRRS Airport,61.0974,-155.574,America/Anchorage,US,CATI,assumed,medium
-PASX,SXQ,Soldotna Airport,60.4749,-151.0385,America/Anchorage,US,CATI,assumed,medium
-PASY,SYA,Eareckson Air Station,52.7123,174.114,America/Adak,US,CATI,faa-nasr,medium
-PATK,TKA,Talkeetna Airport,62.3205,-150.094,America/Anchorage,US,CATI,assumed,medium
-PATL,TLJ,Tatalina LRRS Airport,62.8944,-155.977,America/Anchorage,US,CATI,assumed,medium
-PATQ,ATK,Atqasuk Edward Burnell Sr Memorial Airport,70.467,-157.436,America/Anchorage,US,CATI,assumed,medium
-PAUN,UNK,Unalakleet Airport,63.8884,-160.799,America/Anchorage,US,CATI,assumed,medium
-PAVD,VDZ,Valdez Pioneer Field,61.1327,-146.2466,America/Anchorage,US,CATI,faa-nasr,medium
-PAWD,SWD,Seward Airport,60.1305,-149.4186,America/Anchorage,US,CATI,assumed,medium
-PAWG,WRG,Wrangell Airport,56.4843,-132.37,America/Sitka,US,CATI,assumed,medium
-PAWI,AWI,Wainwright Airport,70.638,-159.995,America/Anchorage,US,CATI,assumed,medium
-PAWS,IYS,Wasilla Airport,61.5717,-149.54,America/Anchorage,US,CATI,assumed,medium
-PAYA,YAK,Yakutat Airport,59.5087,-139.6604,America/Yakutat,US,CATI,faa-nasr,medium
-PFYU,FYU,Fort Yukon Airport,66.5717,-145.25,America/Anchorage,US,CATI,assumed,medium
-PHBK,BKH,Barking Sands Airport,22.0228,-159.785,Pacific/Honolulu,US,CATI,assumed,medium
-PHHN,HNM,Hana Airport,20.7956,-156.014,Pacific/Honolulu,US,CATI,assumed,medium
-PHIK,HIK,Hickam Air Force Base,21.3353,-157.9483,Pacific/Honolulu,US,CATI,assumed,medium
-PHJH,JHM,Kapalua Airport,20.9629,-156.673,Pacific/Honolulu,US,CATI,assumed,medium
-PHJR,JRF,Kalaeloa Airport,21.3074,-158.07,Pacific/Honolulu,US,CATI,assumed,medium
-PHMK,MKK,Molokai Airport,21.1529,-157.096,Pacific/Honolulu,US,CATI,assumed,medium
-PHMU,MUE,Waimea Kohala Airport,20.0013,-155.668,Pacific/Honolulu,US,CATI,assumed,medium
-PHNG,NGF,Kaneohe Bay MCAS (Marion E. Carl Field) Airport,21.4505,-157.768,Pacific/Honolulu,US,CATI,assumed,medium
-PHNY,LNY,Lanai Airport,20.7857,-156.9513,Pacific/Honolulu,US,CATI,faa-nasr,medium
-PHTO,ITO,Hilo International Airport,19.7214,-155.0454,Pacific/Honolulu,US,CATI,faa-nasr,medium
-PPIZ,PIZ,Point Lay LRRS Airport,69.7329,-163.005,America/Nome,US,CATI,assumed,medium
+PAAQ,PAAQ,"Warren ""Bud"" Woods Palmer Municipal Airport",61.5949,-149.089,America/Anchorage,US,CATI,assumed,medium
+PABA,PABA,Barter Island Long Range Radar Station Airport,70.134,-143.582,America/Anchorage,US,CATI,assumed,medium
+PABE,PABE,Bethel Airport,60.7798,-161.838,America/Anchorage,US,CATI,faa-nasr,medium
+PABI,PABI,Allen Army Airfield,63.9945,-145.722,America/Anchorage,US,CATI,faa-nasr,medium
+PABR,PABR,Wiley Post Will Rogers Memorial Airport,71.2854,-156.766,America/Anchorage,US,CATI,faa-nasr,medium
+PABV,PABV,Birchwood Airport,61.4165,-149.507,America/Anchorage,US,CATI,assumed,medium
+PACD,PACD,Cold Bay Airport,55.2079,-162.725,America/Nome,US,CATI,faa-nasr,medium
+PACL,PACL,Clear Airport,64.2997,-149.1174,America/Anchorage,US,CATI,assumed,medium
+PACV,PACV,Merle K (Mudhole) Smith Airport,60.4918,-145.478,America/Anchorage,US,CATI,faa-nasr,medium
+PACZ,PACZ,Cape Romanzof LRRS Airport,61.7803,-166.039,America/Nome,US,CATI,assumed,medium
+PADE,PADE,Deering Airport,66.0689,-162.7669,America/Nome,US,CATI,assumed,medium
+PADK,PADK,Adak Airport,51.8836,-176.6428,America/Adak,US,CATI,faa-nasr,medium
+PADL,PADL,Dillingham Airport,59.0447,-158.505,America/Anchorage,US,CATI,faa-nasr,medium
+PADQ,PADQ,Kodiak Airport,57.75,-152.494,America/Anchorage,US,CATI,faa-nasr,medium
+PADU,PADU,Tom Madsen (Dutch Harbor) Airport,53.8988,-166.545,America/Nome,US,CATI,assumed,medium
+PAED,PAED,Elmendorf Air Force Base,61.2517,-149.8071,America/Anchorage,US,CATI,faa-nasr,medium
+PAEH,PAEH,Cape Newenham LRRS Airport,58.6464,-162.063,America/Nome,US,CATI,assumed,medium
+PAEI,PAEI,Eielson Air Force Base,64.6657,-147.102,America/Anchorage,US,CATI,faa-nasr,medium
+PAEM,PAEM,Emmonak Airport,62.7861,-164.491,America/Nome,US,CATI,assumed,medium
+PAEN,PAEN,Kenai Municipal Airport,60.5709,-151.2452,America/Anchorage,US,CATI,faa-nasr,medium
+PAFA,PAFA,Fairbanks International Airport,64.8151,-147.856,America/Anchorage,US,CATIII,faa-nasr,medium
+PAFB,PAFB,Ladd Army Airfield,64.8375,-147.614,America/Anchorage,US,CATI,assumed,medium
+PAFE,PAFE,Kake Airport,56.9613,-133.9102,America/Sitka,US,CATI,assumed,medium
+PAFM,PAFM,Ambler Airport,67.1055,-157.8553,America/Anchorage,US,CATI,assumed,medium
+PAGA,PAGA,Edward G. Pitka Sr Airport,64.7362,-156.937,America/Anchorage,US,CATI,assumed,medium
+PAGK,PAGK,Gulkana Airport,62.1559,-145.4547,America/Anchorage,US,CATI,assumed,medium
+PAGM,PAGM,Gambell Airport,63.7677,-171.7333,America/Nome,US,CATI,assumed,medium
+PAGS,PAGS,Gustavus Airport,58.4253,-135.707,America/Juneau,US,CATI,assumed,medium
+PAHC,PAHC,Holy Cross Airport,62.1883,-159.775,America/Anchorage,US,CATI,assumed,medium
+PAHL,PAHL,Huslia Airport,65.6979,-156.351,America/Anchorage,US,CATI,assumed,medium
+PAHN,PAHN,Haines Airport,59.2439,-135.5239,America/Juneau,US,CATI,assumed,medium
+PAHO,PAHO,Homer Airport,59.6445,-151.4792,America/Anchorage,US,CATI,assumed,medium
+PAII,PAII,Egegik Airport,58.1844,-157.3749,America/Anchorage,US,CATI,assumed,medium
+PAIK,PAIK,Bob Baker Memorial Airport,66.9761,-160.439,America/Anchorage,US,CATI,assumed,medium
+PAIL,PAIL,Iliamna Airport,59.7544,-154.911,America/Anchorage,US,CATI,assumed,medium
+PAIM,PAIM,Indian Mountain LRRS Airport,65.9928,-153.704,America/Anchorage,US,CATI,assumed,medium
+PAJN,PAJN,Juneau International Airport,58.3549,-134.5744,America/Juneau,US,CATI,assumed,medium
+PAKN,PAKN,King Salmon Airport,58.6778,-156.652,America/Anchorage,US,CATI,faa-nasr,medium
+PAKP,PAKP,Anaktuvuk Pass Airport,68.1336,-151.743,America/Anchorage,US,CATI,assumed,medium
+PAKT,PAKT,Ketchikan International Airport,55.3556,-131.714,America/Sitka,US,CATI,faa-nasr,medium
+PAKW,PAKW,Klawock Airport,55.5792,-133.076,America/Sitka,US,CATI,assumed,medium
+PALU,PALU,Cape Lisburne LRRS Airport,68.8751,-166.11,America/Nome,US,CATI,assumed,medium
+PAMC,PAMC,McGrath Airport,62.9529,-155.606,America/Anchorage,US,CATI,faa-nasr,medium
+PAMR,PAMR,Merrill Field,61.2128,-149.844,America/Anchorage,US,CATI,assumed,medium
+PAMY,PAMY,Mekoryuk Airport,60.3723,-166.2698,America/Nome,US,CATI,assumed,medium
+PANI,PANI,Aniak Airport,61.5816,-159.543,America/Anchorage,US,CATI,faa-nasr,medium
+PANN,PANN,Nenana Municipal Airport,64.5488,-149.0745,America/Anchorage,US,CATI,assumed,medium
+PANT,PANT,Annette Island Airport,55.0377,-131.5726,America/Metlakatla,US,CATI,assumed,medium
+PANV,PANV,Anvik Airport,62.6467,-160.191,America/Anchorage,US,CATI,assumed,medium
+PAOM,PAOM,Nome Airport,64.5122,-165.445,America/Nome,US,CATI,faa-nasr,medium
+PAOR,PAOR,Northway Airport,62.9613,-141.929,America/Anchorage,US,CATI,assumed,medium
+PAOT,PAOT,Ralph Wien Memorial Airport,66.8847,-162.599,America/Nome,US,CATI,faa-nasr,medium
+PAPB,PAPB,St George Airport,56.5773,-169.6638,America/Nome,US,CATI,faa-nasr,medium
+PAPC,PAPC,Port Clarence Coast Guard Station,65.2537,-166.859,America/Nome,US,CATI,assumed,medium
+PAPG,PAPG,Petersburg James A Johnson Airport,56.8017,-132.945,America/Sitka,US,CATI,faa-nasr,medium
+PAPH,PAPH,Port Heiden Airport,56.9579,-158.6302,America/Anchorage,US,CATI,assumed,medium
+PAPM,PAPM,Platinum Airport,59.0177,-161.8279,America/Anchorage,US,CATI,assumed,medium
+PAQT,PAQT,Nuiqsut Airport,70.21,-151.006,America/Anchorage,US,CATI,assumed,medium
+PARC,PARC,Arctic Village Airport,68.1147,-145.579,America/Anchorage,US,CATI,assumed,medium
+PARY,PARY,Ruby Airport,64.7272,-155.47,America/Anchorage,US,CATI,assumed,medium
+PASA,PASA,Savoonga Airport,63.6864,-170.493,America/Nome,US,CATI,assumed,medium
+PASC,PASC,Deadhorse Airport,70.1947,-148.465,America/Anchorage,US,CATI,faa-nasr,medium
+PASD,PASD,Sand Point Airport,55.3139,-160.5221,America/Anchorage,US,CATI,assumed,medium
+PASI,PASI,Sitka Rocky Gutierrez Airport,57.0471,-135.362,America/Sitka,US,CATI,faa-nasr,medium
+PASN,PASN,St Paul Island Airport,57.1663,-170.2226,America/Nome,US,CATI,faa-nasr,medium
+PASV,PASV,Sparrevohn LRRS Airport,61.0974,-155.574,America/Anchorage,US,CATI,assumed,medium
+PASX,PASX,Soldotna Airport,60.4749,-151.0385,America/Anchorage,US,CATI,assumed,medium
+PASY,PASY,Eareckson Air Station,52.7123,174.114,America/Adak,US,CATI,faa-nasr,medium
+PATK,PATK,Talkeetna Airport,62.3205,-150.094,America/Anchorage,US,CATI,assumed,medium
+PATL,PATL,Tatalina LRRS Airport,62.8944,-155.977,America/Anchorage,US,CATI,assumed,medium
+PATQ,PATQ,Atqasuk Edward Burnell Sr Memorial Airport,70.467,-157.436,America/Anchorage,US,CATI,assumed,medium
+PAUN,PAUN,Unalakleet Airport,63.8884,-160.799,America/Anchorage,US,CATI,assumed,medium
+PAVD,PAVD,Valdez Pioneer Field,61.1327,-146.2466,America/Anchorage,US,CATI,faa-nasr,medium
+PAWD,PAWD,Seward Airport,60.1305,-149.4186,America/Anchorage,US,CATI,assumed,medium
+PAWG,PAWG,Wrangell Airport,56.4843,-132.37,America/Sitka,US,CATI,assumed,medium
+PAWI,PAWI,Wainwright Airport,70.638,-159.995,America/Anchorage,US,CATI,assumed,medium
+PAWS,PAWS,Wasilla Airport,61.5717,-149.54,America/Anchorage,US,CATI,assumed,medium
+PAYA,PAYA,Yakutat Airport,59.5087,-139.6604,America/Yakutat,US,CATI,faa-nasr,medium
+PFYU,PFYU,Fort Yukon Airport,66.5717,-145.25,America/Anchorage,US,CATI,assumed,medium
+PHBK,PHBK,Barking Sands Airport,22.0228,-159.785,Pacific/Honolulu,US,CATI,assumed,medium
+PHHN,PHHN,Hana Airport,20.7956,-156.014,Pacific/Honolulu,US,CATI,assumed,medium
+PHIK,PHIK,Hickam Air Force Base,21.3353,-157.9483,Pacific/Honolulu,US,CATI,assumed,medium
+PHJH,PHJH,Kapalua Airport,20.9629,-156.673,Pacific/Honolulu,US,CATI,assumed,medium
+PHJR,PHJR,Kalaeloa Airport,21.3074,-158.07,Pacific/Honolulu,US,CATI,assumed,medium
+PHMK,PHMK,Molokai Airport,21.1529,-157.096,Pacific/Honolulu,US,CATI,assumed,medium
+PHMU,PHMU,Waimea Kohala Airport,20.0013,-155.668,Pacific/Honolulu,US,CATI,assumed,medium
+PHNG,PHNG,Kaneohe Bay MCAS (Marion E. Carl Field) Airport,21.4505,-157.768,Pacific/Honolulu,US,CATI,assumed,medium
+PHNY,PHNY,Lanai Airport,20.7857,-156.9513,Pacific/Honolulu,US,CATI,faa-nasr,medium
+PHTO,PHTO,Hilo International Airport,19.7214,-155.0454,Pacific/Honolulu,US,CATI,faa-nasr,medium
+PPIZ,PPIZ,Point Lay LRRS Airport,69.7329,-163.005,America/Nome,US,CATI,assumed,medium
 SUAA,SUAA,Ángel S. Adami International Airport,-34.7892,-56.2647,America/Montevideo,UY,CATI,assumed,medium
 SUDU,SUDU,Santa Bernardina International Airport,-33.3589,-56.4992,America/Montevideo,UY,CATI,assumed,medium
 SULS,SULS,Capitan Corbeta CA Curbelo International Airport,-34.8551,-55.0943,America/Montevideo,UY,CATI,assumed,medium
@@ -4948,7 +4948,7 @@ SVVG,SVVG,Juan Pablo Pérez Alfonso Airport,8.6241,-71.6727,America/Caracas,VE,C
 SVVL,SVVL,Dr. Antonio Nicolás Briceño Airport,9.3405,-70.5841,America/Caracas,VE,CATI,assumed,medium
 SVVP,SVVP,Valle de La Pascua Airport,9.222,-65.9936,America/Caracas,VE,CATI,assumed,medium
 TUPW,TUPW,Virgin Gorda Airport,18.4466,-64.4279,America/Tortola,VG,CATI,assumed,medium
-TISX,STX,Henry E. Rohlsen Airport,17.7014,-64.8026,America/St_Thomas,VI,CATI,assumed,medium
+TISX,TISX,Henry E. Rohlsen Airport,17.7014,-64.8026,America/St_Thomas,VI,CATI,assumed,medium
 VVBM,VVBM,Buon Ma Thuot Airport,12.6683,108.12,Asia/Ho_Chi_Minh,VN,CATI,assumed,medium
 VVCM,VVCM,Cà Mau Airport,9.1777,105.1778,Asia/Ho_Chi_Minh,VN,CATI,assumed,medium
 VVCS,VVCS,Con Dao Airport,8.7318,106.633,Asia/Ho_Chi_Minh,VN,CATI,assumed,medium

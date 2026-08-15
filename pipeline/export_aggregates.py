@@ -39,6 +39,13 @@ def main():
     with open(HERE / list_name) as f:
         meta = {a["icao"]: a for a in csv.DictReader(f)}
 
+    # analysis window (analyze_pilot emits it) — coverage denominators and
+    # the data-through stamp follow the archive, not a hardcoded decade
+    window = {"start": "2016-01-01", "through": "2025-12-31", "hours": 87672}
+    wf = OUT / "window.json"
+    if wf.exists():
+        window.update(json.load(open(wf)))
+
     # minima-aware floors, segmented by OPERATOR EQUIPAGE: the achievable
     # floor is whichever binds — flight deck or ground infrastructure.
     # US: per-ops-level published minima from the FAA ILS Master; LPV from
@@ -136,7 +143,7 @@ def main():
         # reliability: low coverage, or the MYAF signature — sub-CAT-I obs
         # dominated by literal-zero visibility with NO diurnal structure
         # (real fog is morning-skewed; encoding artifacts are flat)
-        cov = 100.0 * valid_hours / 87672
+        cov = 100.0 * valid_hours / window["hours"]
         zr = con.execute("""
             SELECT count(*) FILTER (band IN ('efvs','below')) AS n_sub,
                    count(*) FILTER (band IN ('efvs','below') AND vzero) AS n_zero,
@@ -235,7 +242,7 @@ def main():
             "icao": icao,
             "name": m["name"],
             "validHours": valid_hours,
-            "coveragePct": round(100.0 * valid_hours / 87672, 1),
+            "coveragePct": round(100.0 * valid_hours / window["hours"], 1),
             "efvsGrid": grids["efvs"],
             "belowGrid": grids["below"],
             "monthly": [{"mon": r[0], "efvsPct": r[1], "belowPct": r[2]} for r in monthly],
@@ -244,7 +251,8 @@ def main():
         (APP / "detail" / f"{icao}.json").write_text(json.dumps(detail))
 
     (APP / "airports.json").write_text(json.dumps({
-        "generated": "2016-2025 snapshot",
+        "generated": f"{window['start'][:4]}-{window['through'][:4]} snapshot",
+        "window": window,
         "bands": {"efvs": "300-800m prevailing visibility", "below": "<300m"},
         "airports": index,
     }))

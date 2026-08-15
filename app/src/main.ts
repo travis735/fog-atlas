@@ -23,7 +23,14 @@ const state = {
   ilsOnly: false, lpvOnly: false,
   equip: "cat1" as "cat1" | "hud" | "cat2" | "cat3",
   airports: [] as Airport[],
+  window: null as { start: string; through: string; hours: number } | null,
 };
+
+// climatology span for display: "2016–2026" once the archive extends past
+// the original decade, with the exact data-through date where useful
+const winSpan = () => state.window
+  ? `${state.window.start.slice(0, 4)}–${state.window.through.slice(0, 4)}`
+  : "2016–2025";
 
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
 const hrEl = $<HTMLInputElement>("#hr");
@@ -128,6 +135,14 @@ const heatWeight = (): any => ["*", ["get", "reliable"],
 map.on("load", async () => {
   const data = await (await fetch("/data/airports.json")).json();
   state.airports = data.airports;
+  if (data.window) {
+    state.window = data.window;
+    const tag = document.querySelector("#brand p");
+    if (tag) {
+      tag.textContent = `where the sky closes · ${winSpan()} METAR climatology`;
+      (tag as HTMLElement).title = `data through ${data.window.through}`;
+    }
+  }
 
   const fc = {
     type: "FeatureCollection",
@@ -533,7 +548,7 @@ function openMethodology() {
     <h2>Methodology</h2>
     <p class="sub">what this map can and cannot tell you</p>
     <h3>Observation basis</h3>
-    <p class="note" style="margin-top:6px">Routine hourly METARs 2016–2025 (Iowa Environmental Mesonet archive), one observation per hour — the last routine report in each UTC hour. SPECIs are deliberately excluded so frequencies are an unbiased sample of hours. "% of hours" uses hours with a valid visibility report as the denominator; per-airport archive coverage is shown in each deep-dive.</p>
+    <p class="note" style="margin-top:6px">Routine hourly METARs ${winSpan()} (Iowa Environmental Mesonet archive), one observation per hour — the last routine report in each UTC hour. SPECIs are deliberately excluded so frequencies are an unbiased sample of hours. "% of hours" uses hours with a valid visibility report as the denominator; per-airport archive coverage is shown in each deep-dive.</p>
     <h3>The three bands (visibility OR ceiling)</h3>
     <p class="note" style="margin-top:6px">A CAT I approach needs visibility above minima AND ceiling above the ~200 ft decision height; both terms enter the bands.<br/>
     <b style="color:var(--ink)">Normal</b> — vis ≥ ½ SM (~800 m) and ceiling ≥ 200 ft.<br/>
@@ -774,7 +789,7 @@ async function openAirport(icao: string) {
     <div id="persist"></div>
     <h3>Cause of low visibility</h3>
     <div id="causes"></div>
-    <p class="note">Sub-CAT-I = prevailing visibility below ~800 m or ceiling below 200 ft. Visibility is a climatological proxy for RVR — read as relative risk, not operating minima. Hours are local (${a.tz}). 2016–2025 routine METARs, archive coverage ${detail.coveragePct}%. <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">Full methodology</a>.</p>
+    <p class="note">Sub-CAT-I = prevailing visibility below ~800 m or ceiling below 200 ft. Visibility is a climatological proxy for RVR — read as relative risk, not operating minima. Hours are local (${a.tz}). ${winSpan()} routine METARs, archive coverage ${detail.coveragePct}%. <a href="https://github.com/travis735/fog-atlas/blob/main/METHODOLOGY.md" target="_blank" rel="noopener">Full methodology</a>.</p>
   `;
 
   const cells: { hr: number; mon: string; pct: number }[] = [];

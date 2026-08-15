@@ -31,15 +31,23 @@ cycle drift. Gotchas encoded in the scripts: COPTER ILS rows excluded from
 CAT I floors; cat_curated universe = airports_full.csv US rows (AK/HI carry
 NASR categories despite having no METAR archive); APRA needs Accept: json.
 
-## 2. Quarterly METAR refresh (blocked on incremental fetcher)
-Extend the climatology window in place.
-
-- Prerequisite: incremental-append mode in `fetch_iem.py` — currently treats
-  existing station files as complete; must fetch since-last-timestamp per
-  station, append, dedupe (vis + sky passes)
-- Then: full re-analysis (analyze → persistence → training set if model is
-  retrained) → export → deploy; launchd guard script runs Jan/Apr/Jul/Oct
-- Update the "data through <date>" stamp in the app shell
+## 2. Quarterly METAR refresh — MACHINERY DONE 2026-08-15; needs a schedule
+Incremental-append shipped in `fetch_iem.py` (per-station since-last-day fetch,
+overlap-dropping append, full-fetch fallback, same-start batching; blacklist
+only on full fetches). Window is dynamic end-to-end: analyze emits
+`out/window.json`, export uses real window-hours for coverage, the app binds
+the tagline/notes to it. First refresh ran 2026-08-15: data through
+2026-08-15, +103 airports (see below). The refresh recipe (Mac, ~4h fetch +
+~1h rebuild, all resumable):
+  pipeline: fetch_iem --list airports_full.csv --batch 10 --pause 10 (then --sky)
+  → analyze_pilot → analyze_persistence → export_aggregates (all --list
+  airports_full.csv) → build_chase → copy airports/detail/persistence to
+  app/public/data → forecast: build_truth (stations.json + climo) →
+  build_pages → vite build + pages deploy → commit → re-upload
+  pipeline/out/classified.parquet to R2 reference/ (reference CI contract).
+Remaining: put it on a Jan/Apr/Jul/Oct cadence (scheduled-task ritual like the
+monthly bar check, or launchd). CI-ification would need the 24 GB raw archive
+synced to R2 — possible, not obviously worth it.
 
 ## Smaller candidates
 - International LTS CAT I research pass: which runways have CHARTED LTS CAT I
@@ -48,10 +56,13 @@ Extend the climatology window in place.
   top-40 already-researched airports)
 - Next ~100 international airports' per-runway CAT I floors (agent pass #2;
   Vágar + Nalchik retry with better sources — skipped at low confidence)
-- Alaska + Hawaii are absent from the METAR archive entirely (zero PA*/PH* in
-  airports.json — discovered 2026-08-14; the fetch never covered them). The
-  Aleutians (PACD Cold Bay, PADK Adak, PASN St Paul) are world-class fog with
-  ILS + NASR categories already curated. Fix rides on the fetch_iem
-  incremental work in item 2: fetch AK/HI ASOS networks, reanalyze, re-export.
+- ~~Alaska + Hawaii absent from the METAR archive~~ — DONE 2026-08-15. Root
+  cause: IEM serves AK/HI/territory stations under 4-letter ICAO, not the FAA
+  local code; the wrong id blacklisted all 112 (incl. San Juan + Guam) on day
+  one. Fixed in build_airport_list (local-code only for K-prefixed icaos),
+  unblacklisted, full histories fetched. Atlas now 3,497 airports; Shemya
+  PASY 375 h/yr (top-30 globally), St Paul 160, Barrow 198; Honolulu/San Juan
+  ≈ 0 (clean negative controls). 90 new US chase fields; 102 new stations
+  enrolled in shadow forecasts (NBM covers them).
 - Route/mission view (origin–destination fog risk) from the original design
 - Print-friendly briefing mode

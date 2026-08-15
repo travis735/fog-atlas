@@ -49,7 +49,12 @@ def main():
             tz = tf.timezone_at(lat=lat, lng=lon)
             if not tz:
                 continue
-            if a["iso_country"] in US_COUNTRIES and a["local_code"]:
+            # IEM's US ASOS ids are the FAA local code ONLY for CONUS
+            # K-airports (KSFO -> SFO). Alaska, Hawaii, and the territories
+            # (PA/PH/TJ/TI/PG/NS prefixes) are served under the 4-letter
+            # ICAO — the local-code form returned nothing and got all 109
+            # blacklisted as feedless (found 2026-08-15).
+            if a["iso_country"] in US_COUNTRIES and a["local_code"] and icao.startswith("K"):
                 iem_id = a["local_code"]
             else:
                 iem_id = icao
