@@ -194,7 +194,9 @@ def main():
         """).df()
         print(grid.to_string(index=False))
 
-    con.execute(f"COPY classified TO '{OUT}/classified.parquet' (FORMAT PARQUET)")
+    # zstd keeps the artifact under wrangler's 300 MiB r2-put cap (snappy
+    # crossed it at 3,497 airports; the reference CI pulls this from R2)
+    con.execute(f"COPY classified TO '{OUT}/classified.parquet' (FORMAT PARQUET, CODEC 'zstd')")
     print(f"\nwrote {OUT}/classified.parquet")
 
     # data-through watermark for the dynamic window (from raw file tails —
