@@ -30,6 +30,13 @@ jobs:
     env:
       CLOUDFLARE_ACCOUNT_ID: 5488aa3505290f21c3be9c32b2a5949c
     steps:
+      - name: token fingerprint (id only — match it in the dashboard's edit-page URL)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            https://api.cloudflare.com/client/v4/user/tokens/verify \
+            | python3 -c "import json,sys; r=json.load(sys.stdin).get('result') or {}; print('token id:', r.get('id'), '| status:', r.get('status'))"
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
