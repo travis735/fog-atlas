@@ -13,7 +13,12 @@ name: reference
 on:
   schedule:
     - cron: "40 7 3 * *"   # monthly — edition=current picks up whatever AIRAC cycle is live
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: "deploy the site even when nothing changed (proves the Pages leg / manual redeploy)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -67,7 +72,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
       - name: build + deploy site
-        if: steps.commit.outputs.changed == 'true'
+        if: steps.commit.outputs.changed == 'true' || inputs.force_deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
