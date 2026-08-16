@@ -312,3 +312,12 @@ input[type="range"] { width: 232px; accent-color: var(--accent); }
   #scrub { width: calc(100vw - 24px); gap: 12px; padding: 10px 14px; }
   input[type="range"] { width: 34vw; }
 }
+
+/* "?" hover chip — long explanations live in the title tooltip */
+.qtip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border: 1px solid var(--hairline);
+  border-radius: 50%; font-size: 10px; color: var(--ink-dim);
+  cursor: help; user-select: none; flex: none;
+}
+.qtip:hover { color: var(--ink); border-color: var(--ink-dim); }

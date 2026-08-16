@@ -209,6 +209,8 @@ def main():
         index.append({
             "icao": icao,
             "name": m["name"],
+            "muni": m.get("muni", ""),
+            "st": m.get("st", ""),
             "lat": float(m["lat"]),
             "lon": float(m["lon"]),
             "country": m["country"],

@@ -59,10 +59,16 @@ def main():
             else:
                 iem_id = icao
             cat, conf = curated.get(icao, ("CATI", "assumed"))
+            # city/state for display: region suffix only where it means
+            # something to a reader (US/CA/AU state-province codes)
+            st = (a["iso_region"].split("-")[-1]
+                  if a["iso_country"] in ("US", "CA", "AU") and a["iso_region"] else "")
             rows.append({
                 "icao": icao,
                 "iem_id": iem_id,
                 "name": a["name"].replace(",", ";"),
+                "muni": a["municipality"].replace(",", ";"),
+                "st": st,
                 "lat": round(lat, 4),
                 "lon": round(lon, 4),
                 "tz": tz,

@@ -7,7 +7,8 @@ const MONTHS = ["January","February","March","April","May","June","July","August
 const MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 interface Airport {
-  icao: string; name: string; lat: number; lon: number; country: string; tz: string;
+  icao: string; name: string; muni?: string; st?: string;
+  lat: number; lon: number; country: string; tz: string;
   catIls: string; catConfidence: string; size?: string; coveragePct?: number;
   reliability?: string; ils?: string; lpv?: string; floorM?: number;
   efvsOppHoursPerYear?: number;
@@ -992,6 +993,15 @@ const chasePrefs: ChasePrefs = (() => {
 })();
 const saveChasePrefs = () => localStorage.setItem("fa-chase", JSON.stringify(chasePrefs));
 
+// "Arcata, CA" — city/state for reading an identifier as a place
+const placeTxt = (a?: Airport | null) =>
+  a?.muni ? `${a.muni}${a.st ? ", " + a.st : ""}` : "";
+const icaoPlace = (icao: string) => {
+  const a = state.airports.find((x) => x.icao === icao);
+  const p = placeTxt(a);
+  return p ? `<b>${icao}</b> <span class="chase-badges">(${p})</span>` : `<b>${icao}</b>`;
+};
+
 // stale-base guard: a forgotten saved base silently skews both boards (every
 // ETE, deploy-by time, and ranking radius hangs off it) — surface its age and
 // nudge for re-confirmation when it's old or predates age tracking
@@ -1909,7 +1919,7 @@ function renderDeploy(ringBase?: Airport) {
     return `
     <tr data-icao="${c.b.icao}"${ringBase?.icao === c.b.icao ? ' style="background:#16202b"' : ""}>
       <td class="num">${i + 1}</td>
-      <td><b>${c.b.icao}</b> ${c.b.name.length > 22 ? c.b.name.slice(0, 21) + "…" : c.b.name}<br>
+      <td><b>${c.b.icao}</b> ${c.b.name.length > 18 ? c.b.name.slice(0, 17) + "…" : c.b.name}${placeTxt(c.b) ? ` <span class="chase-badges">· ${placeTxt(c.b)}</span>` : ""}<br>
         <span class="chase-badges" title="destination fields with flight time from ${c.b.icao} (still-air at ${chasePrefs.speed} kt)">go to: ${c.contrib.slice(0, 3).map((x) => `${x.a.icao} in ${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}</span><br>
         <span class="chase-badges" title="the first day in the window when a reachable field is at least 50% likely to go below CAT I">${fl ? `fog likely ${fl.label}` : "no strong fog day in window"}</span></td>
       <td class="num" title="expected chaseable fog hours at fields within ${radius} nm over the next ${deployWindow} days, counting only hours reachable before the fog lifts"><b>${c.s.toFixed(0)}h</b><br>${dep}</td>
@@ -1944,15 +1954,15 @@ function renderDeploy(ringBase?: Airport) {
       const [word, color] = c0.best >= 0.5 ? ["GO", "#7fd49a"] : c0.best >= 0.25 ? ["MARGINAL", "#ffb347"] : ["SCRAP", "#ff5a4d"];
       verdictHtml = `<div style="background:#111823;border:1px solid #233240;border-radius:10px;padding:12px 14px;margin:12px 0">
         <b style="color:${color};font-size:1.05rem;letter-spacing:.04em">${word}</b>
-        <span style="color:var(--ink)"> — ${c0.bi ? `<b>${c0.bi}</b> is ${Math.round(100 * c0.best)}% likely chaseable tomorrow from <b>${vb.b.icao}</b>` : `no reachable field likely tomorrow from <b>${vb.b.icao}</b>`}</span>
-        <div class="note" style="margin-top:5px">calibrated hourly forecast · launch plan below</div>
+        <span style="color:var(--ink)"> — ${c0.bi ? `${icaoPlace(c0.bi)} is ${Math.round(100 * c0.best)}% likely chaseable tomorrow from ${icaoPlace(vb.b.icao)}` : `no reachable field likely tomorrow from ${icaoPlace(vb.b.icao)}`}</span>
+        <div class="note" style="margin-top:5px">launch plan below</div>
       </div>`;
     } else {
       const need = deployWindow >= 14 ? 3 : 2;
       const [word, color] = likely >= need ? ["GO", "#7fd49a"] : likely >= 1 ? ["MARGINAL", "#ffb347"] : ["SCRAP", "#ff5a4d"];
       verdictHtml = `<div style="background:#111823;border:1px solid #233240;border-radius:10px;padding:12px 14px;margin:12px 0">
         <b style="color:${color};font-size:1.05rem;letter-spacing:.04em">${word}</b>
-        <span style="color:var(--ink)"> — ${likely} of ${deployWindow} days have a field ≥50% likely chaseable from <b>${vb.b.icao}</b></span>
+        <span style="color:var(--ink)"> — ${likely} of ${deployWindow} days have a field ≥50% likely chaseable from ${icaoPlace(vb.b.icao)}</span>
         <div style="display:flex;gap:2px;margin-top:9px">${cells.map((c, i) =>
           `<div title="day +${i + 1}: ${c.bi || "no field"} ${(100 * c.best).toFixed(0)}% (${c.bt || "—"})" style="flex:1;height:15px;border-radius:3px;background:${c.best >= 0.5 ? "#7fc0e8" : "#3f76a3"};opacity:${(0.18 + 0.82 * c.best).toFixed(2)}"></div>`).join("")}</div>
         <div class="note" style="margin-top:6px">day cells = best in-reach field's P(chaseable) · ${sk != null ? `days 3–8 <b>fitted</b> (2025 holdout ${sk > 0 ? "+" : ""}${sk.toFixed(1)}% vs climatology)` : "days 3–8 advisory until the fitted tier ships"}</div>
@@ -1971,19 +1981,17 @@ function renderDeploy(ringBase?: Airport) {
         ${[1, 1.5, 2, 2.5, 3, 4].map((h) => `<option value="${h}"${h === chasePrefs.maxEteH ? " selected" : ""}>${eteStr(h)}</option>`).join("")}
       </select></label>
       <span style="color:var(--ink-dim)">= ${radius} nm reach · shared with <a href="#chase" id="deploy-tochase">CHASE</a></span>
+      <span class="qtip" title="Airports must pass your saved CHASE filters. Chaseable = below CAT I. Tier honesty: days 1–2 calibrated; days 3–8 climatology × NBM-extended fog ingredients (advisory, unfitted); days 9–14 climatology × CPC moisture outlook (advisory, US only — Canadian airports stay pure climatology there).">?</span>
     </div>
     ${(() => {
       const age = baseAge();
       if (!home) return `<p class="note" style="margin-top:6px;color:#ffb347">no CHASE base set — deploy-by departure times need one. <a href="#chase" id="deploy-basechange">set base</a></p>`;
       return `<p class="note" style="margin-top:6px" title="every deploy-by time in the table is the latest departure from this base">deploy-by times from your base <b>${home.icao}</b> · <span${age?.stale ? ' style="color:#ffb347"' : ""}>${age?.label ?? ""}${age?.stale ? " — still current?" : ""}</span> <a href="#chase" id="deploy-basechange">change</a>${age?.stale ? ` · <a href="#" id="deploy-baseok">✓ still ${home.icao}</a>` : ""}</p>`;
     })()}
-    <p class="note" style="margin-top:8px">Airports must pass your saved CHASE filters. Chaseable = below CAT I. Tier honesty: days 1–2 <b>calibrated</b>; days 3–8 climatology × NBM-extended fog ingredients (<b>advisory, unfitted</b>); days 9–14 climatology × CPC moisture outlook (<b>advisory</b>, US only — Canadian airports stay pure climatology there).</p>
-    <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span></div>
-    ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num" title="expected chaseable fog hours summed across ALL reachable fields over the window — an inventory of opportunities, not one aircraft's itinerary. Each field counts only hours reachable before its fog lifts.">chaseable hrs</th></tr></thead><tbody>${rows}</tbody></table>`
+    <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span><span class="qtip" title="Click a base row (or its orange dot on the map) to ring its reach and expand the launch plan; click a blue dot for that airport's deep-dive. Dot size = expected chaseable hours. The daily build logs every advisory prediction — the extended tiers earn verification the same way the 48 h model did.">?</span></div>
+    ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num" title="expected chaseable fog hours summed across ALL reachable fields over the window — an inventory of opportunities, not one aircraft's itinerary. Each field counts only the fog-window hours remaining after still-air transit (launch-at-onset + 30 min margin), so a distant field whose fog lifts before arrival counts near zero. Contributor times are ETE from the base.">chaseable hrs</th></tr></thead><tbody>${rows}</tbody></table>`
       : `<p class="note">No expected fog within range of any base under the current filters — widen the CHASE filters or the window.</p>`}
-    <div id="deploy-48"></div>
-    <p class="note">Fields credit only the fog-window hours remaining after still-air transit (launch-at-onset + 30 min margin) — a distant field whose fog lifts before arrival counts near zero. Contributor times are ETE from the base.</p>
-    <p class="note">Click a base to ring its reach on the map; click a blue dot for that airport's deep-dive. Dot size = expected chaseable hours. The daily build logs every advisory prediction — the extended tiers earn verification the same way the 48 h model did.</p>`;
+    <div id="deploy-48"></div>`;
 
   panelContent.querySelectorAll(".equip-chip[data-win]").forEach((b) =>
     b.addEventListener("click", () => {
@@ -2041,11 +2049,18 @@ function renderDeploy(ringBase?: Airport) {
             const peak = Math.max(...p10);
             if (peak < 40) continue;
             const thr = Math.max(15, peak * 0.4);
-            const idx = f.fhrs.findIndex((fh: number, i: number) => p10[i] >= thr && fh <= 30);
-            if (idx < 0) continue;
             const ete = x.nm / chasePrefs.speed;
-            const openMs = cyc + f.fhrs[idx] * 3600e3;
-            if (openMs - Date.now() < ete * 3600e3) continue; // window opens before we could get airborne
+            // first REACHABLE qualifying window: a window that already opened
+            // (or opens before we could be airborne) must not disqualify the
+            // field when the curve shows another one tonight/tomorrow —
+            // otherwise the verdict says GO while the plan says no-launch
+            let openMs = 0;
+            for (let i = 0; i < f.fhrs.length; i++) {
+              if (f.fhrs[i] > 30 || p10[i] < thr) continue;
+              const o = cyc + f.fhrs[i] * 3600e3;
+              if (o - Date.now() >= ete * 3600e3) { openMs = o; break; }
+            }
+            if (!openMs) continue;
             if (!best || peak > best.p) best = { p: peak, icao: x.a.icao, nm: x.nm, ete, openMs, tz: x.a.tz };
           }
           if (best) {
@@ -2053,16 +2068,16 @@ function renderDeploy(ringBase?: Airport) {
             const fmt = (d: Date) => d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: best!.tz });
             launch = `<div style="background:#111823;border:1px solid #7a5a2e;border-radius:10px;padding:12px 14px;margin:10px 0">
               <b style="color:#e8b96a;letter-spacing:.05em">WHEELS UP ~${fmt(wheels)}</b>
-              <span style="color:var(--ink)"> → <b>${best.icao}</b> (${eteStr(best.ete)} out) · fog (&lt;1 mi) ${best.p}%</span>
+              <span style="color:var(--ink)"> → ${icaoPlace(best.icao)} (${eteStr(best.ete)} out) · fog (&lt;1 mi) ${best.p}%</span>
               <div class="note" style="margin-top:4px">night-before plan: launch to arrive as the highest-probability reachable window opens (15 min buffer). Recheck the board before engine start — the forecast refreshes hourly.</div>
             </div>`;
           } else {
-            launch = `<p class="note">no launch recommended in the next ~30 h from ${sel.b.icao} — no reachable field clears 40%.</p>`;
+            launch = `<p class="note">no launch window in the next ~30 h from ${sel.b.icao} — no reachable field's <b>hourly</b> curve clears 40% at a catchable time (the verdict above is day-scale). Forecast refreshes hourly; recheck before committing.</p>`;
           }
         }
         const lines = sel.contrib.slice(0, 5).map((x) => {
           const ch = fogCharacter(x.a, fc);
-          return ch ? `<tr data-icao="${x.a.icao}" class="fpeek"><td><b>${x.a.icao}</b> <span class="chase-badges">${eteStr(x.nm / chasePrefs.speed)} out</span></td><td>${ch}</td></tr>
+          return ch ? `<tr data-icao="${x.a.icao}" class="fpeek"><td><b>${x.a.icao}</b> <span class="chase-badges">${eteStr(x.nm / chasePrefs.speed)} out</span><br><span class="chase-badges">${x.a.name.length > 16 ? x.a.name.slice(0, 15) + "…" : x.a.name}${placeTxt(x.a) ? ` · ${placeTxt(x.a)}` : ""}</span></td><td>${ch}</td></tr>
             <tr class="fdetail" data-for="${x.a.icao}" hidden><td colspan="2">${miniStrip(x.a, fc)}
               <p class="note" style="margin-top:4px"><a href="/fog/${x.a.icao.toLowerCase()}/" target="_blank" rel="noopener">forecast page ↗</a> · <a href="#" class="fdive" data-icao="${x.a.icao}">full 10-yr analysis</a></p></td></tr>` : "";
         }).filter(Boolean).join("");
