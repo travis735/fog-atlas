@@ -266,6 +266,7 @@ map.on("load", async () => {
     });
     map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; tip.remove(); });
     map.on("click", layer, (e) => {
+      if (deployOpen) return; // deploy mode owns map clicks (padded, orange-first)
       const icao = e.features?.[0]?.properties.icao;
       if (icao) openAirport(icao);
     });
@@ -1706,10 +1707,36 @@ function deployApplyMap(targets: { a: Airport; eh: number }[], top: DeployBase[]
       id: "deploy-ring", type: "line", source: "deploy-ring-src",
       paint: { "line-color": "#e8b96a", "line-opacity": 0.6, "line-width": 1.2, "line-dasharray": [2, 2.5] },
     });
-    map.on("click", "deploy-eh", (ev) => {
-      const icao = ev.features?.[0]?.properties.icao;
-      if (icao) openAirport(icao);
+    // one map-level handler, orange-first with a generous hit pad: the user
+    // is aiming at bases — a near-miss must select the base, never fall
+    // through to a blue target dot (or the atlas layers) and leave the
+    // planner. Blue targets need a deliberate, precise click.
+    map.on("click", (ev) => {
+      if (!deployOpen || !map.getLayer("deploy-base")) return;
+      const hit = (layers: string[], p: number) => map.queryRenderedFeatures(
+        [[ev.point.x - p, ev.point.y - p], [ev.point.x + p, ev.point.y + p]] as any,
+        { layers });
+      const bases = hit(["deploy-base"], 16);
+      if (bases.length) {
+        const nearest = bases.map((f: any) => {
+          const [lon, lat] = f.geometry.coordinates;
+          const pt = map.project([lon, lat]);
+          return { icao: f.properties.icao, d: Math.hypot(pt.x - ev.point.x, pt.y - ev.point.y) };
+        }).sort((a: any, b: any) => a.d - b.d)[0];
+        const b = state.airports.find((x) => x.icao === nearest.icao);
+        if (b) {
+          renderDeploy(b);
+          map.flyTo({ center: [b.lon, b.lat], zoom: 5.2, duration: 1400 });
+        }
+        return;
+      }
+      const t = hit(["deploy-eh"], 5);
+      if (t.length) openAirport(t[0].properties.icao);
     });
+    for (const lyr of ["deploy-base", "deploy-eh"]) {
+      map.on("mouseenter", lyr, () => { map.getCanvas().style.cursor = "pointer"; });
+      map.on("mouseleave", lyr, () => { map.getCanvas().style.cursor = ""; });
+    }
   }
   (map.getSource("deploy-src") as any).setData({
     type: "FeatureCollection",
