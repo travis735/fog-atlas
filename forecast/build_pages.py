@@ -25,7 +25,10 @@ build without pipeline/out (same rule as build_chase/build_deploy).
 Output: app/public/fog/{icao}/index.html + data.json, /fog/index.html,
 /fog/_fog.js, /fog/scorecard/, sitemap.xml, robots.txt, llms.txt
 """
+import csv
 import json
+import re
+import unicodedata
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -116,7 +119,8 @@ def bake_answer(a, fc, covered: bool, now_utc):
     mon = now_utc.astimezone(tz).month - 1
     mh = month_hours(a["grid"], mon)
     clim_txt = (f"{MONTHS[mon]} typically brings about {mh} hour{'s' if mh != 1 else ''} of dense fog here"
-                if mh >= 1 else f"{MONTHS[mon]} is usually fog-free here")
+                if mh >= 1 else
+                f"dense fog (visibility under a mile) is rare here in {MONTHS[mon]}")
 
     fa = fc and fc.get("airports", {}).get(icao)
     if not covered:
@@ -214,7 +218,7 @@ def jsonld(a, plain_answer, pk_txt, subH, window, med) -> str:
     return json.dumps({"@context": "https://schema.org", "@graph": graph}, separators=(",", ":"))
 
 
-def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc) -> tuple[str, dict]:
+def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None) -> tuple[str, dict]:
     icao, name = a["icao"], a["name"]
     grid = a["grid"]
     subH = round(a["efvsHoursPerYear"] + a["belowHoursPerYear"])
@@ -265,7 +269,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc) -> tuple[str, d
 <style>{CSS}</style>
 </head><body><main>
 <h1><b>{icao}</b> — {name}</h1>
-<div class="sub">fog forecast &amp; climatology · <a href="{SITE}/#{icao}">full 10-year analysis →</a></div>
+<div class="sub">fog forecast &amp; climatology{f' · <a href="{city_link[1]}">{city_link[0]} city page</a>' if city_link else ''} · <a href="{SITE}/#{icao}">full 10-year analysis →</a></div>
 <div id="answer">{answer_html}</div>
 <div id="verdict" hidden></div>
 <div id="strip"></div>
@@ -361,6 +365,133 @@ FOG_JS = r"""
 """
 
 
+SUFFIX_COUNTRIES = {"US", "CA", "AU"}  # region code disambiguates (Columbus x7 states)
+
+
+def slugify(s: str) -> str:
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
+    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", s.lower())).strip("-")
+
+
+def load_municipalities() -> dict:
+    """icao -> (municipality, iso_region, type) from the committed OurAirports dump."""
+    out = {}
+    with open(HERE.parent / "pipeline" / "data" / "ourairports.csv") as f:
+        for r in csv.DictReader(f):
+            icao = r["icao_code"] or r["gps_code"] or r["ident"]
+            if r["municipality"]:
+                out[icao] = (r["municipality"], r["iso_region"], r["type"])
+    return out
+
+
+def fc_status(a, fc, covered: bool) -> str:
+    if not covered:
+        return "climatology"
+    if fc and a["icao"] in set(fc.get("meta", {}).get("publicAirports", [])):
+        return "live forecast"
+    return "verifying"
+
+
+def city_page(city, stations, primary, fc, window, pers, r10, now_utc) -> tuple[str, dict]:
+    """One page per municipality; multi-airport cities aggregate their stations.
+    The answer comes from the city's primary station (public > covered > large)."""
+    muni, region, country, slug = city
+    st = region.split("-")[-1] if country in SUFFIX_COUNTRIES else ""
+    disp = f"{muni}, {st}" if st else muni
+    url = f"{SITE}/fog/city/{slug}/"
+    a = primary
+    covered = a["_covered"]
+    subH = round(a["efvsHoursPerYear"] + a["belowHoursPerYear"])
+    pk = peak_months(a["grid"])
+    pk_txt = (" and ".join(MONTHS[m] for m in pk) if pk else "no month in particular")
+    med = pers.get(a["icao"])
+    med = {"medianH": med["medianH"], "p25H": med["p25H"], "p75H": med["p75H"], "n": med["n"]} if med else None
+
+    answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc)
+    src = f"Measured at {a['name']} ({a['icao']})."
+    answer_plain_city = f"{answer_plain} {src}"
+
+    rows = "".join(
+        f'<tr><td><a href="/fog/{s["icao"].lower()}/"><b>{s["icao"]}</b></a></td>'
+        f"<td>{s['name']}</td><td>{round(s['efvsHoursPerYear'] + s['belowHoursPerYear'])} h/yr</td>"
+        f"<td>{fc_status(s, fc, s['_covered'])}</td></tr>"
+        for s in stations)
+
+    faq = [
+        {"@type": "Question", "name": f"Will it be foggy in {muni} tomorrow?",
+         "acceptedAnswer": {"@type": "Answer", "text": answer_plain_city}},
+        {"@type": "Question", "name": f"When is fog season in {muni}?",
+         "acceptedAnswer": {"@type": "Answer",
+                            "text": f"Fog in {disp} concentrates in {pk_txt}: the measuring station at "
+                                    f"{a['name']} records about {subH} hours per year below CAT I approach "
+                                    f"minima ({window['start'][:4]}–{window['through'][:4]} average)."}},
+    ]
+    if med:
+        faq.append({"@type": "Question", "name": f"How long does fog last in {muni}?",
+                    "acceptedAnswer": {"@type": "Answer",
+                                       "text": f"Once fog forms it typically lasts about {med['medianH']} "
+                                               f"hour{'s' if med['medianH'] != 1 else ''} here (middle half of "
+                                               f"events: {med['p25H']}–{med['p75H']} h), from {med['n']} observed events at {a['icao']}."}})
+    graph = [
+        {"@type": "City", "@id": url + "#city", "name": muni,
+         "address": {"@type": "PostalAddress", "addressCountry": country,
+                     **({"addressRegion": st} if st else {})}},
+        {"@type": "FAQPage", "@id": url + "#faq", "mainEntity": faq},
+        {"@type": "Dataset", "@id": url + "#data",
+         "name": f"Fog forecast and fog climatology — {disp}",
+         "description": f"Daily fog outlook and {window['start'][:4]}–{window['through'][:4]} fog climatology for {disp}, "
+                        f"measured at {len(stations)} weather station{'s' if len(stations) != 1 else ''}.",
+         "url": url, "temporalCoverage": f"{window['start']}/{window['through']}",
+         "isAccessibleForFree": True,
+         "creator": {"@type": "Organization", "name": "Fog Atlas", "url": SITE},
+         "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json",
+                           "contentUrl": url + "data.json"}]},
+    ]
+
+    html = f"""<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Will it be foggy in {muni} tomorrow? {disp} fog forecast</title>
+<meta name="description" content="{answer_plain_city[:155].replace('"', "'")} Fog season peaks {pk_txt}.">
+<link rel="canonical" href="{url}">
+<link rel="alternate" type="application/json" href="{url}data.json" title="{disp} fog data (JSON)">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:title" content="{disp} fog forecast">
+<meta property="og:description" content="{answer_plain_city[:190].replace('"', "'")}">
+<script type="application/ld+json">{json.dumps({"@context": "https://schema.org", "@graph": graph}, separators=(",", ":"))}</script>
+<style>{CSS}</style>
+</head><body><main>
+<h1>Fog in <b>{disp}</b></h1>
+<div class="sub">daily fog outlook &amp; {window['start'][:4]}–{window['through'][:4]} climatology</div>
+<div id="answer">{answer_html}</div>
+<p class="ctx">{src} {'Forecast percentages for this station have passed live verification.' if machine.get('public') else ('This station is in forecast verification — percentages publish when it clears the accuracy bar.' if covered else 'This station has climatology and live observations only.')}</p>
+<h2>Measuring station{'s' if len(stations) != 1 else ''}</h2>
+<table><tr><th>station</th><th>airport</th><th>fog hours/yr</th><th>forecast</th></tr>{rows}</table>
+<p class="note">Fog is measured where instruments live — airports. Hours/yr = time below CAT I approach minima (visibility under ~½ mile or ceiling under 200 ft), the aviation definition of seriously dense fog.</p>
+<h2>When {muni} fogs in</h2>
+<div class="blk">Fog here concentrates in <b>{pk_txt}</b> — about <b>{subH} hours</b> in a typical year at {a['icao']}{f", usually lasting ~{med['medianH']} h once it forms" if med else ""}. Hour-by-hour patterns, live conditions and the forecast strip live on the <a href="/fog/{a['icao'].lower()}/">{a['icao']} station page</a>.</div>
+<p class="note">Machine access: <a href="{url}data.json">data.json</a> · <a href="/llms.txt">llms.txt</a> · <a href="{SITE}/fog/scorecard/">forecast verification</a>. Not for operational use.</p>
+</main></body></html>"""
+
+    data = {
+        "city": muni, "region": region, "country": country, "slug": slug,
+        "updated": now_utc.strftime("%Y-%m-%dT%H:%MZ"),
+        "window": {"start": window["start"], "through": window["through"]},
+        "stations": [{"icao": s["icao"], "name": s["name"],
+                      "subCat1HoursPerYear": round(s["efvsHoursPerYear"] + s["belowHoursPerYear"]),
+                      "forecast": fc_status(s, fc, s["_covered"])} for s in stations],
+        "primaryStation": a["icao"],
+        "forecast": machine,
+        "climatology": {"subCat1HoursPerYear": subH,
+                        "fogSeasonPeakMonths": [MONTHS[m] for m in pk],
+                        "medianEventHours": med["medianH"] if med else None},
+        "links": {"page": url,
+                  "stationPages": [f"{SITE}/fog/{s['icao'].lower()}/" for s in stations],
+                  "verification": f"{SITE}/fog/scorecard/"},
+    }
+    return html, data
+
+
 def llms_txt(n_airports, n_public, window, now_utc) -> str:
     return f"""# Fog Atlas
 
@@ -383,6 +514,14 @@ Citation: link the airport page. Not for operational use.
 - Machine data: /fog/{{icao_lowercase}}/data.json — stable JSON per airport:
   identity (icao/lat/lon/tz), climatology (hours/yr, monthly hours, fog season,
   median event duration), the current baked forecast answer, and API links
+
+## City pages
+- [City index](/fog/city/): every city with a measuring station
+- Page pattern: /fog/city/{{slug}}/ — US/CA/AU slugs carry a region suffix
+  (/fog/city/san-francisco-ca/); each page names its measuring stations and
+  takes its answer from the city's primary station
+- Machine data: /fog/city/{{slug}}/data.json — stations list with per-station
+  fog hours and forecast status, plus the same baked answer contract
 
 ## Live APIs (JSON unless noted)
 - [/api/forecast](/api/forecast): hourly calibrated issuance, all covered
@@ -416,6 +555,36 @@ def main() -> None:
             f"SELECT icao, mon, hr, r10 FROM '{HERE / 'out' / 'climo.parquet'}'").fetchall():
         r10.setdefault(icao, {})[(m, h)] = r
 
+    # cities: group atlas airports by municipality; slug collisions go to the
+    # city with more stations, losers are skipped (logged) — slugs stay stable
+    munis = load_municipalities()
+    for a in atlas:
+        a["_covered"] = a["icao"] in stations
+    groups: dict = {}
+    for a in atlas:
+        m = munis.get(a["icao"])
+        if m:
+            groups.setdefault((m[0], m[1], a["country"]), []).append(a)
+    for g in groups.values():
+        g.sort(key=lambda s: (not s["_covered"] or not (fc and s["icao"] in set(fc.get("meta", {}).get("publicAirports", []))),
+                              not s["_covered"],
+                              munis[s["icao"]][2] != "large_airport",
+                              -(s["efvsHoursPerYear"] + s["belowHoursPerYear"])))
+    slugs: dict = {}
+    skipped = 0
+    for key, g in sorted(groups.items(), key=lambda kv: -len(kv[1])):
+        muni, region, country = key
+        base = slugify(muni)
+        if not base:
+            continue
+        slug = f"{base}-{region.split('-')[-1].lower()}" if country in SUFFIX_COUNTRIES else base
+        if slug in slugs:
+            skipped += 1
+            continue
+        slugs[slug] = key
+    city_of_icao = {s["icao"]: (key[0], f"{SITE}/fog/city/{slug}/")
+                    for slug, key in slugs.items() for s in groups[key]}
+
     FOG.mkdir(parents=True, exist_ok=True)
     (FOG / "_fog.js").write_text(FOG_JS)
     n = n_baked = 0
@@ -424,13 +593,38 @@ def main() -> None:
         icao = a["icao"]
         d = FOG / icao.lower()
         d.mkdir(exist_ok=True)
-        html, data = page(a, chase.get(icao), icao in stations, r10, fc, window, pers, now_utc)
+        html, data = page(a, chase.get(icao), icao in stations, r10, fc, window, pers, now_utc,
+                          city_link=city_of_icao.get(icao))
         d.joinpath("index.html").write_text(html)
         d.joinpath("data.json").write_text(json.dumps(data, separators=(",", ":")))
         if data["forecast"].get("public"):
             n_baked += 1
         links.append((icao, a["name"], a["country"]))
         n += 1
+
+    city_links = []
+    CITY = FOG / "city"
+    CITY.mkdir(exist_ok=True)
+    for slug, key in slugs.items():
+        g = groups[key]
+        d = CITY / slug
+        d.mkdir(exist_ok=True)
+        html, data = city_page((key[0], key[1], key[2], slug), g, g[0], fc, window, pers, r10, now_utc)
+        d.joinpath("index.html").write_text(html)
+        d.joinpath("data.json").write_text(json.dumps(data, separators=(",", ":")))
+        city_links.append((key[0], key[1].split("-")[-1] if key[2] in SUFFIX_COUNTRIES else key[2], slug))
+    city_links.sort()
+    city_rows = "".join(f'<a href="/fog/city/{s}/" style="display:inline-block;min-width:11em">{m} <span class="tag">{r}</span></a>'
+                        for m, r, s in city_links)
+    (CITY / "index.html").write_text(f"""<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>City fog forecasts — Fog Atlas</title>
+<meta name="description" content="Will it be foggy tomorrow? Daily fog outlooks for {len(city_links)} cities worldwide, measured at their airports and verified publicly.">
+<link rel="canonical" href="{SITE}/fog/city/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><style>{CSS}</style></head><body><main>
+<h1>City fog forecasts</h1>
+<div class="sub">{len(city_links)} cities · <a href="/fog/">by airport</a> · <a href="{SITE}/">the atlas →</a></div>
+<div class="note" style="line-height:2.2">{city_rows}</div>
+</main></body></html>""")
 
     links.sort()
     idx_rows = "".join(f'<a href="/fog/{i.lower()}/" style="display:inline-block;width:5.2em">{i}</a>' for i, _, _ in links)
@@ -440,7 +634,7 @@ def main() -> None:
 <meta name="description" content="Will it be foggy tomorrow? Daily fog outlooks and 10-year fog climatology for {n} airports worldwide, with public verification.">
 <link rel="canonical" href="{SITE}/fog/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><style>{CSS}</style></head><body><main>
 <h1>Airport fog forecasts</h1>
-<div class="sub">{n} airports · rebuilt daily · <a href="{SITE}/">the atlas →</a> · <a href="/llms.txt">machine guide</a></div>
+<div class="sub">{n} airports · rebuilt daily · <a href="/fog/city/">by city</a> · <a href="{SITE}/">the atlas →</a> · <a href="/llms.txt">machine guide</a></div>
 <div class="note" style="line-height:2.2">{idx_rows}</div>
 </main></body></html>""")
 
@@ -487,8 +681,11 @@ def main() -> None:
     with open(APP_PUB / "sitemap.xml", "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         f.write(f"<url><loc>{SITE}/</loc></url>\n<url><loc>{SITE}/fog/</loc><lastmod>{today}</lastmod></url>\n")
+        f.write(f"<url><loc>{SITE}/fog/city/</loc><lastmod>{today}</lastmod></url>\n")
         for i, _, _ in links:
             f.write(f"<url><loc>{SITE}/fog/{i.lower()}/</loc><lastmod>{today}</lastmod></url>\n")
+        for _, _, s in city_links:
+            f.write(f"<url><loc>{SITE}/fog/city/{s}/</loc><lastmod>{today}</lastmod></url>\n")
         f.write("</urlset>\n")
 
     robots = ["User-agent: *", "Allow: /", ""]
@@ -499,7 +696,9 @@ def main() -> None:
     (APP_PUB / "llms.txt").write_text(
         llms_txt(n, len(fc["meta"].get("publicAirports", [])) if fc else 0, window, now_utc))
 
-    print(f"wrote {n} airport pages + data.json ({n_baked} with baked public forecasts) + index + scorecard + sitemap + robots + llms.txt")
+    print(f"wrote {n} airport pages ({n_baked} with baked public forecasts) + "
+          f"{len(city_links)} city pages ({skipped} slug collisions skipped) + "
+          f"indexes + scorecard + sitemap + robots + llms.txt")
 
 
 if __name__ == "__main__":
