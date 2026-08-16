@@ -13,7 +13,7 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       CLOUDFLARE_ACCOUNT_ID: 5488aa3505290f21c3be9c32b2a5949c
       KV_NAMESPACE: 72edf0ce3b1944bca59e4aa47cb67cc4
@@ -45,6 +45,21 @@ jobs:
             python forecast/build_deploy.py
           else
             echo "skipping deploy build (runs on the ~10z pass + manual dispatch)"
+          fi
+      - name: rebuild fog pages + deploy site (daily, on the 10z pass)
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" = "10" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # pages are deploy-time artifacts (gitignored): bake today's
+            # answers from the issuance the engine just wrote, then ship
+            python forecast/build_pages.py
+            cd app && npm ci --no-audit --no-fund && npx vite build
+            npx --yes wrangler@4 pages deploy dist --project-name=fog-atlas
+          else
+            echo "skipping pages rebuild (runs on the ~10z pass + manual dispatch)"
           fi
       - name: upload to KV
         if: steps.gate.outputs.enabled == 'true'

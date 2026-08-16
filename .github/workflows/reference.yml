@@ -85,6 +85,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
+          # fog pages are deploy-time artifacts (gitignored) — every deploy
+          # path must bake them or the site ships without its 3,497 pages
+          python forecast/build_pages.py
           cd app
           npm ci
           npx vite build
