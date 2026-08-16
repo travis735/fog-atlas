@@ -1,100 +1,100 @@
 {
- "generated": "2026-08-14T20:23:21.885628+00:00",
- "runs": 308,
+ "generated": "2026-08-16T15:18:50.728796+00:00",
+ "runs": 350,
  "thresholds": {
   "v10": {
-   "n": 4471613,
-   "brier_model": 0.006239509523763894,
-   "brier_clim": 0.006512656070062506,
-   "skill_pct": 4.194088300689125,
+   "n": 5290546,
+   "brier_model": 0.006449210232758519,
+   "brier_clim": 0.006748348893237183,
+   "skill_pct": 4.432768151309485,
    "by_lead": {
     "01-06": {
-     "n": 921728,
-     "skill_pct": 10.261662256218907
+     "n": 1100372,
+     "skill_pct": 11.100662537025519
     },
     "07-12": {
-     "n": 809964,
-     "skill_pct": 4.040907107799319
+     "n": 979804,
+     "skill_pct": 4.3930508615089625
     },
     "13-24": {
-     "n": 1546417,
-     "skill_pct": 2.8429401954067512
+     "n": 1865515,
+     "skill_pct": 2.9770016913550634
     },
     "25-48": {
-     "n": 1193504,
-     "skill_pct": 1.8368751916648107
+     "n": 1344855,
+     "skill_pct": 1.470172588350882
     }
    }
   },
   "v05": {
-   "n": 4471613,
-   "brier_model": 0.003462282514148312,
-   "brier_clim": 0.003516344955216877,
-   "skill_pct": 1.537461249026706,
+   "n": 5290546,
+   "brier_model": 0.003693990223315767,
+   "brier_clim": 0.0037873956017822064,
+   "skill_pct": 2.4662165848871487,
    "by_lead": {
     "01-06": {
-     "n": 921728,
-     "skill_pct": 7.033852870905499
+     "n": 1100372,
+     "skill_pct": 8.969142491963177
     },
     "07-12": {
-     "n": 809964,
-     "skill_pct": 0.8662479002438883
+     "n": 979804,
+     "skill_pct": 2.086363777152056
     },
     "13-24": {
-     "n": 1546417,
-     "skill_pct": -0.1786363490091647
+     "n": 1865515,
+     "skill_pct": 0.5591633065303969
     },
     "25-48": {
-     "n": 1193504,
-     "skill_pct": 0.4002138329131655
+     "n": 1344855,
+     "skill_pct": 0.5243501369514347
     }
    }
   },
   "v025": {
-   "n": 4471613,
-   "brier_model": 0.0004884926311821281,
-   "brier_clim": 0.0004897662791222199,
-   "skill_pct": 0.2600521910929521,
+   "n": 5290546,
+   "brier_model": 0.0005055672892743512,
+   "brier_clim": 0.0004994323360812081,
+   "skill_pct": -1.2283852586080002,
    "by_lead": {
     "01-06": {
-     "n": 921728,
-     "skill_pct": 0.6230911202636413
+     "n": 1100372,
+     "skill_pct": -0.882441085274488
     },
     "07-12": {
-     "n": 809964,
-     "skill_pct": 0.6307586786945873
+     "n": 979804,
+     "skill_pct": -1.5383414929230455
     },
     "13-24": {
-     "n": 1546417,
-     "skill_pct": 0.517135599243046
+     "n": 1865515,
+     "skill_pct": -1.2458039770350204
     },
     "25-48": {
-     "n": 1193504,
-     "skill_pct": -0.7578129206207374
+     "n": 1344855,
+     "skill_pct": -1.307141682579327
     }
    }
   },
   "sub": {
-   "n": 4471613,
-   "brier_model": 0.00407475210845757,
-   "brier_clim": 0.004230596606204898,
-   "skill_pct": 3.6837475243740925,
+   "n": 5290546,
+   "brier_model": 0.004322323234697644,
+   "brier_clim": 0.0045276319446442646,
+   "skill_pct": 4.534571547704546,
    "by_lead": {
     "01-06": {
-     "n": 921728,
-     "skill_pct": 9.019757276674877
+     "n": 1100372,
+     "skill_pct": 10.685496456078813
     },
     "07-12": {
-     "n": 809964,
-     "skill_pct": 3.4335488599230968
+     "n": 979804,
+     "skill_pct": 4.516511455393413
     },
     "13-24": {
-     "n": 1546417,
-     "skill_pct": 2.5341134449512914
+     "n": 1865515,
+     "skill_pct": 3.2943812108620185
     },
     "25-48": {
-     "n": 1193504,
-     "skill_pct": 1.6674635814677985
+     "n": 1344855,
+     "skill_pct": 1.6972850365504222
     }
    }
   }
@@ -104,1506 +104,1485 @@
   "pass": [
    {
     "icao": "KBHB",
-    "n": 3939,
+    "n": 4719,
     "events_v10": 237,
-    "skill_v10": 41.0,
-    "skill_sub": 35.6
+    "skill_v10": 41.7,
+    "skill_sub": 36.0
    },
    {
     "icao": "KRDU",
-    "n": 4838,
+    "n": 5649,
     "events_v10": 36,
-    "skill_v10": 34.9,
-    "skill_sub": 26.9
+    "skill_v10": 33.2,
+    "skill_sub": 25.7
    },
    {
     "icao": "CYHZ",
-    "n": 4636,
+    "n": 5601,
     "events_v10": 251,
-    "skill_v10": 30.7,
-    "skill_sub": 24.2
+    "skill_v10": 29.4,
+    "skill_sub": 22.1
    },
    {
     "icao": "CYQI",
-    "n": 4676,
+    "n": 5657,
     "events_v10": 825,
-    "skill_v10": 27.0,
-    "skill_sub": 34.2
+    "skill_v10": 28.4,
+    "skill_sub": 34.6
    },
    {
     "icao": "CYKF",
-    "n": 4615,
+    "n": 5563,
     "events_v10": 33,
-    "skill_v10": 24.9,
-    "skill_sub": 16.3
+    "skill_v10": 26.5,
+    "skill_sub": 16.9
    },
    {
-    "icao": "KFFO",
-    "n": 4364,
-    "events_v10": 31,
-    "skill_v10": 24.0,
-    "skill_sub": 16.1
+    "icao": "CYPR",
+    "n": 5319,
+    "events_v10": 396,
+    "skill_v10": 25.4,
+    "skill_sub": 28.2
    },
    {
-    "icao": "KAZO",
-    "n": 4757,
-    "events_v10": 73,
-    "skill_v10": 23.4,
-    "skill_sub": 22.9
+    "icao": "KABR",
+    "n": 5562,
+    "events_v10": 72,
+    "skill_v10": 25.1,
+    "skill_sub": 18.1
    },
    {
     "icao": "KRHI",
-    "n": 4757,
+    "n": 5578,
     "events_v10": 179,
-    "skill_v10": 23.0,
-    "skill_sub": 25.4
+    "skill_v10": 23.8,
+    "skill_sub": 25.9
    },
    {
-    "icao": "CYKY",
-    "n": 4678,
-    "events_v10": 40,
-    "skill_v10": 22.6,
-    "skill_sub": 20.5
+    "icao": "KFFO",
+    "n": 5251,
+    "events_v10": 31,
+    "skill_v10": 23.2,
+    "skill_sub": 15.5
+   },
+   {
+    "icao": "KDEN",
+    "n": 5326,
+    "events_v10": 22,
+    "skill_v10": 22.4,
+    "skill_sub": 13.9
+   },
+   {
+    "icao": "KMPV",
+    "n": 5613,
+    "events_v10": 444,
+    "skill_v10": 22.2,
+    "skill_sub": 18.8
+   },
+   {
+    "icao": "KAZO",
+    "n": 5571,
+    "events_v10": 73,
+    "skill_v10": 21.5,
+    "skill_sub": 21.9
    },
    {
     "icao": "KACK",
-    "n": 4711,
+    "n": 5553,
     "events_v10": 197,
-    "skill_v10": 21.0,
-    "skill_sub": 16.0
+    "skill_v10": 21.3,
+    "skill_sub": 15.5
    },
    {
-    "icao": "KGRB",
-    "n": 4823,
-    "events_v10": 39,
-    "skill_v10": 20.5,
-    "skill_sub": 27.1
-   },
-   {
-    "icao": "KCCY",
-    "n": 4757,
-    "events_v10": 85,
-    "skill_v10": 18.9,
-    "skill_sub": 21.2
-   },
-   {
-    "icao": "CYGP",
-    "n": 4736,
-    "events_v10": 338,
-    "skill_v10": 18.4,
-    "skill_sub": 17.1
-   },
-   {
-    "icao": "KEGI",
-    "n": 4315,
-    "events_v10": 11,
-    "skill_v10": 17.7,
-    "skill_sub": 14.1
-   },
-   {
-    "icao": "KDAY",
-    "n": 4809,
-    "events_v10": 73,
-    "skill_v10": 17.1,
-    "skill_sub": 12.2
-   },
-   {
-    "icao": "KOGB",
-    "n": 3525,
-    "events_v10": 22,
-    "skill_v10": 17.1,
-    "skill_sub": 11.1
-   },
-   {
-    "icao": "CYZV",
-    "n": 4660,
-    "events_v10": 122,
-    "skill_v10": 16.9,
-    "skill_sub": 6.1
-   },
-   {
-    "icao": "KSTJ",
-    "n": 4787,
-    "events_v10": 17,
-    "skill_v10": 16.8,
-    "skill_sub": 17.0
-   },
-   {
-    "icao": "CYTR",
-    "n": 4717,
-    "events_v10": 49,
-    "skill_v10": 16.7,
-    "skill_sub": 4.4
-   },
-   {
-    "icao": "KIKK",
-    "n": 4784,
-    "events_v10": 85,
-    "skill_v10": 16.7,
-    "skill_sub": 9.6
-   },
-   {
-    "icao": "KSGH",
-    "n": 4525,
-    "events_v10": 168,
-    "skill_v10": 16.4,
-    "skill_sub": 11.3
-   },
-   {
-    "icao": "KATW",
-    "n": 4841,
-    "events_v10": 82,
-    "skill_v10": 15.9,
-    "skill_sub": 12.4
-   },
-   {
-    "icao": "KCWA",
-    "n": 4611,
-    "events_v10": 47,
-    "skill_v10": 15.7,
-    "skill_sub": 0.8
-   },
-   {
-    "icao": "KLCK",
-    "n": 4673,
-    "events_v10": 90,
-    "skill_v10": 15.7,
-    "skill_sub": 11.1
-   },
-   {
-    "icao": "KVPZ",
-    "n": 3755,
-    "events_v10": 185,
-    "skill_v10": 15.6,
-    "skill_sub": 13.6
-   },
-   {
-    "icao": "KMFD",
-    "n": 4811,
-    "events_v10": 45,
-    "skill_v10": 15.5,
-    "skill_sub": 9.7
-   },
-   {
-    "icao": "CYQU",
-    "n": 4701,
-    "events_v10": 132,
-    "skill_v10": 15.4,
-    "skill_sub": 14.7
-   },
-   {
-    "icao": "KDAN",
-    "n": 4723,
-    "events_v10": 57,
-    "skill_v10": 15.3,
-    "skill_sub": 17.9
-   },
-   {
-    "icao": "KDUJ",
-    "n": 4841,
-    "events_v10": 164,
-    "skill_v10": 15.3,
-    "skill_sub": 18.0
+    "icao": "CYLJ",
+    "n": 3575,
+    "events_v10": 109,
+    "skill_v10": 20.8,
+    "skill_sub": 16.9
    },
    {
     "icao": "KZZV",
-    "n": 4857,
-    "events_v10": 194,
-    "skill_v10": 14.7,
-    "skill_sub": 15.7
+    "n": 5749,
+    "events_v10": 318,
+    "skill_v10": 20.1,
+    "skill_sub": 19.6
    },
    {
-    "icao": "CYPQ",
-    "n": 4521,
-    "events_v10": 72,
-    "skill_v10": 14.2,
-    "skill_sub": 22.9
+    "icao": "KGRB",
+    "n": 5646,
+    "events_v10": 39,
+    "skill_v10": 19.8,
+    "skill_sub": 26.4
    },
    {
-    "icao": "KBTL",
-    "n": 4669,
-    "events_v10": 60,
-    "skill_v10": 14.2,
-    "skill_sub": 17.3
+    "icao": "KSTJ",
+    "n": 5646,
+    "events_v10": 17,
+    "skill_v10": 19.2,
+    "skill_sub": 18.8
    },
    {
-    "icao": "KJXN",
-    "n": 4846,
-    "events_v10": 112,
-    "skill_v10": 14.2,
-    "skill_sub": 5.4
+    "icao": "CYKY",
+    "n": 5625,
+    "events_v10": 40,
+    "skill_v10": 18.0,
+    "skill_sub": 18.2
    },
    {
-    "icao": "CYOO",
-    "n": 4649,
-    "events_v10": 41,
-    "skill_v10": 13.4,
-    "skill_sub": 17.6
+    "icao": "CYGP",
+    "n": 5717,
+    "events_v10": 338,
+    "skill_v10": 17.9,
+    "skill_sub": 16.4
    },
    {
-    "icao": "KPAH",
-    "n": 4749,
-    "events_v10": 42,
-    "skill_v10": 13.4,
-    "skill_sub": 16.1
+    "icao": "KCTB",
+    "n": 5586,
+    "events_v10": 148,
+    "skill_v10": 17.6,
+    "skill_sub": 15.0
    },
    {
-    "icao": "KBRD",
-    "n": 4740,
-    "events_v10": 24,
-    "skill_v10": 13.2,
-    "skill_sub": 2.9
+    "icao": "KEGI",
+    "n": 5125,
+    "events_v10": 11,
+    "skill_v10": 17.4,
+    "skill_sub": 13.5
    },
    {
-    "icao": "KLAN",
-    "n": 4754,
-    "events_v10": 103,
-    "skill_v10": 13.2,
-    "skill_sub": 11.4
+    "icao": "KOGB",
+    "n": 4358,
+    "events_v10": 22,
+    "skill_v10": 17.0,
+    "skill_sub": 10.4
    },
    {
-    "icao": "KRNH",
-    "n": 4841,
-    "events_v10": 87,
-    "skill_v10": 13.1,
-    "skill_sub": 12.4
+    "icao": "CYZV",
+    "n": 5641,
+    "events_v10": 122,
+    "skill_v10": 16.7,
+    "skill_sub": 6.1
    },
    {
-    "icao": "KILN",
-    "n": 4784,
-    "events_v10": 113,
-    "skill_v10": 13.0,
+    "icao": "CYTR",
+    "n": 5698,
+    "events_v10": 49,
+    "skill_v10": 16.5,
+    "skill_sub": 4.1
+   },
+   {
+    "icao": "KDUJ",
+    "n": 5724,
+    "events_v10": 164,
+    "skill_v10": 16.5,
+    "skill_sub": 18.6
+   },
+   {
+    "icao": "KDAY",
+    "n": 5651,
+    "events_v10": 73,
+    "skill_v10": 16.1,
     "skill_sub": 11.6
    },
    {
-    "icao": "KRST",
-    "n": 4772,
-    "events_v10": 134,
-    "skill_v10": 12.8,
-    "skill_sub": 10.6
+    "icao": "KIKK",
+    "n": 5723,
+    "events_v10": 85,
+    "skill_v10": 15.5,
+    "skill_sub": 8.7
+   },
+   {
+    "icao": "KSGH",
+    "n": 5394,
+    "events_v10": 168,
+    "skill_v10": 15.5,
+    "skill_sub": 10.3
+   },
+   {
+    "icao": "CYQU",
+    "n": 5682,
+    "events_v10": 132,
+    "skill_v10": 15.1,
+    "skill_sub": 14.3
    },
    {
     "icao": "KLWB",
-    "n": 4715,
-    "events_v10": 458,
-    "skill_v10": 12.7,
-    "skill_sub": 17.0
+    "n": 5673,
+    "events_v10": 699,
+    "skill_v10": 14.9,
+    "skill_sub": 16.5
    },
    {
-    "icao": "KDVL",
-    "n": 4719,
-    "events_v10": 27,
-    "skill_v10": 12.6,
-    "skill_sub": 8.3
-   },
-   {
-    "icao": "CYQW",
-    "n": 4720,
-    "events_v10": 160,
-    "skill_v10": 12.5,
-    "skill_sub": 10.5
-   },
-   {
-    "icao": "KCGI",
-    "n": 4789,
-    "events_v10": 123,
-    "skill_v10": 12.5,
-    "skill_sub": 13.1
-   },
-   {
-    "icao": "KESC",
-    "n": 4762,
-    "events_v10": 109,
-    "skill_v10": 12.5,
-    "skill_sub": 7.6
+    "icao": "KMFD",
+    "n": 5672,
+    "events_v10": 45,
+    "skill_v10": 14.8,
+    "skill_sub": 9.8
    },
    {
     "icao": "KVQQ",
-    "n": 4736,
+    "n": 5568,
     "events_v10": 40,
-    "skill_v10": 12.4,
-    "skill_sub": 2.1
+    "skill_v10": 14.5,
+    "skill_sub": 0.2
    },
    {
-    "icao": "KAOO",
-    "n": 4358,
+    "icao": "KDAN",
+    "n": 5489,
+    "events_v10": 57,
+    "skill_v10": 14.4,
+    "skill_sub": 15.0
+   },
+   {
+    "icao": "KELM",
+    "n": 5563,
+    "events_v10": 351,
+    "skill_v10": 14.4,
+    "skill_sub": 16.7
+   },
+   {
+    "icao": "KLCK",
+    "n": 5474,
+    "events_v10": 90,
+    "skill_v10": 14.2,
+    "skill_sub": 10.1
+   },
+   {
+    "icao": "KCGI",
+    "n": 5631,
+    "events_v10": 123,
+    "skill_v10": 14.1,
+    "skill_sub": 13.6
+   },
+   {
+    "icao": "KVPZ",
+    "n": 4417,
+    "events_v10": 185,
+    "skill_v10": 14.1,
+    "skill_sub": 12.1
+   },
+   {
+    "icao": "KBRD",
+    "n": 5473,
     "events_v10": 24,
-    "skill_v10": 12.0,
-    "skill_sub": 11.7
+    "skill_v10": 13.8,
+    "skill_sub": 3.3
    },
    {
-    "icao": "KBLV",
-    "n": 4348,
-    "events_v10": 12,
-    "skill_v10": 11.7,
+    "icao": "KPAH",
+    "n": 5591,
+    "events_v10": 42,
+    "skill_v10": 13.6,
+    "skill_sub": 16.4
+   },
+   {
+    "icao": "KRNH",
+    "n": 5694,
+    "events_v10": 87,
+    "skill_v10": 13.4,
     "skill_sub": 12.5
    },
    {
+    "icao": "KAGC",
+    "n": 5584,
+    "events_v10": 122,
+    "skill_v10": 13.3,
+    "skill_sub": 11.5
+   },
+   {
+    "icao": "KATW",
+    "n": 5716,
+    "events_v10": 104,
+    "skill_v10": 13.3,
+    "skill_sub": 11.2
+   },
+   {
+    "icao": "CYOO",
+    "n": 5645,
+    "events_v10": 41,
+    "skill_v10": 13.2,
+    "skill_sub": 17.2
+   },
+   {
+    "icao": "KBTL",
+    "n": 5451,
+    "events_v10": 60,
+    "skill_v10": 12.9,
+    "skill_sub": 16.6
+   },
+   {
+    "icao": "KLAN",
+    "n": 5637,
+    "events_v10": 103,
+    "skill_v10": 12.8,
+    "skill_sub": 11.3
+   },
+   {
+    "icao": "KCRW",
+    "n": 5571,
+    "events_v10": 267,
+    "skill_v10": 12.6,
+    "skill_sub": 9.1
+   },
+   {
+    "icao": "CYOD",
+    "n": 5675,
+    "events_v10": 205,
+    "skill_v10": 12.5,
+    "skill_sub": 16.5
+   },
+   {
+    "icao": "KCID",
+    "n": 5700,
+    "events_v10": 214,
+    "skill_v10": 12.5,
+    "skill_sub": 8.4
+   },
+   {
+    "icao": "CYQW",
+    "n": 5535,
+    "events_v10": 232,
+    "skill_v10": 12.4,
+    "skill_sub": 10.2
+   },
+   {
+    "icao": "KCCY",
+    "n": 5699,
+    "events_v10": 149,
+    "skill_v10": 12.3,
+    "skill_sub": 13.9
+   },
+   {
     "icao": "KDBQ",
-    "n": 4797,
-    "events_v10": 230,
-    "skill_v10": 11.7,
-    "skill_sub": 7.3
+    "n": 5615,
+    "events_v10": 292,
+    "skill_v10": 12.3,
+    "skill_sub": 8.3
    },
    {
-    "icao": "KSBY",
-    "n": 4751,
-    "events_v10": 11,
-    "skill_v10": 11.6,
-    "skill_sub": 2.2
+    "icao": "KESC",
+    "n": 5620,
+    "events_v10": 109,
+    "skill_v10": 12.2,
+    "skill_sub": 6.9
    },
    {
-    "icao": "CYEG",
-    "n": 4767,
-    "events_v10": 237,
-    "skill_v10": 11.3,
-    "skill_sub": 8.8
+    "icao": "CYZP",
+    "n": 5428,
+    "events_v10": 254,
+    "skill_v10": 12.1,
+    "skill_sub": 3.0
+   },
+   {
+    "icao": "KJXN",
+    "n": 5631,
+    "events_v10": 112,
+    "skill_v10": 12.0,
+    "skill_sub": 4.0
+   },
+   {
+    "icao": "KBLV",
+    "n": 5216,
+    "events_v10": 12,
+    "skill_v10": 11.4,
+    "skill_sub": 12.4
+   },
+   {
+    "icao": "KDVL",
+    "n": 5519,
+    "events_v10": 27,
+    "skill_v10": 11.4,
+    "skill_sub": 7.9
+   },
+   {
+    "icao": "KRST",
+    "n": 5544,
+    "events_v10": 134,
+    "skill_v10": 11.4,
+    "skill_sub": 10.2
+   },
+   {
+    "icao": "KSLK",
+    "n": 5754,
+    "events_v10": 450,
+    "skill_v10": 11.4,
+    "skill_sub": 13.6
+   },
+   {
+    "icao": "KILN",
+    "n": 5582,
+    "events_v10": 113,
+    "skill_v10": 11.1,
+    "skill_sub": 9.5
    },
    {
     "icao": "CYXR",
-    "n": 4645,
+    "n": 5604,
     "events_v10": 32,
-    "skill_v10": 11.3,
-    "skill_sub": 15.7
+    "skill_v10": 10.9,
+    "skill_sub": 14.2
    },
    {
-    "icao": "KEEN",
-    "n": 4740,
-    "events_v10": 321,
-    "skill_v10": 11.3,
-    "skill_sub": 4.8
-   },
-   {
-    "icao": "KMCW",
-    "n": 4795,
-    "events_v10": 136,
-    "skill_v10": 11.0,
-    "skill_sub": 9.3
-   },
-   {
-    "icao": "CYQR",
-    "n": 4784,
-    "events_v10": 31,
-    "skill_v10": 10.8,
-    "skill_sub": 11.0
-   },
-   {
-    "icao": "KNUW",
-    "n": 4542,
-    "events_v10": 181,
-    "skill_v10": 10.6,
+    "icao": "CYEG",
+    "n": 5748,
+    "events_v10": 237,
+    "skill_v10": 10.3,
     "skill_sub": 7.9
    },
    {
     "icao": "CYXU",
-    "n": 4692,
+    "n": 5673,
     "events_v10": 183,
-    "skill_v10": 10.3,
-    "skill_sub": 8.3
-   },
-   {
-    "icao": "KCMH",
-    "n": 4971,
-    "events_v10": 55,
-    "skill_v10": 10.3,
-    "skill_sub": 7.8
-   },
-   {
-    "icao": "KBGM",
-    "n": 4771,
-    "events_v10": 91,
-    "skill_v10": 10.0,
-    "skill_sub": 6.2
-   },
-   {
-    "icao": "KCID",
-    "n": 4784,
-    "events_v10": 67,
     "skill_v10": 9.9,
-    "skill_sub": 9.1
-   },
-   {
-    "icao": "KHYR",
-    "n": 4419,
-    "events_v10": 49,
-    "skill_v10": 9.9,
-    "skill_sub": 7.3
-   },
-   {
-    "icao": "KELM",
-    "n": 4754,
-    "events_v10": 290,
-    "skill_v10": 9.8,
-    "skill_sub": 12.8
-   },
-   {
-    "icao": "KJHW",
-    "n": 4796,
-    "events_v10": 279,
-    "skill_v10": 9.7,
-    "skill_sub": 6.8
-   },
-   {
-    "icao": "KPTK",
-    "n": 4782,
-    "events_v10": 75,
-    "skill_v10": 9.6,
-    "skill_sub": 4.9
-   },
-   {
-    "icao": "KPKB",
-    "n": 4742,
-    "events_v10": 148,
-    "skill_v10": 9.5,
-    "skill_sub": 14.2
-   },
-   {
-    "icao": "CYLJ",
-    "n": 3090,
-    "events_v10": 67,
-    "skill_v10": 9.4,
-    "skill_sub": 10.7
-   },
-   {
-    "icao": "KCMI",
-    "n": 4772,
-    "events_v10": 102,
-    "skill_v10": 9.2,
-    "skill_sub": 4.7
-   },
-   {
-    "icao": "CYBG",
-    "n": 4768,
-    "events_v10": 34,
-    "skill_v10": 9.1,
-    "skill_sub": 8.6
-   },
-   {
-    "icao": "KGSO",
-    "n": 4742,
-    "events_v10": 32,
-    "skill_v10": 9.1,
-    "skill_sub": 9.2
-   },
-   {
-    "icao": "CYQT",
-    "n": 4757,
-    "events_v10": 46,
-    "skill_v10": 8.9,
-    "skill_sub": 6.4
-   },
-   {
-    "icao": "KBAF",
-    "n": 4714,
-    "events_v10": 163,
-    "skill_v10": 8.7,
-    "skill_sub": 5.9
-   },
-   {
-    "icao": "KTOL",
-    "n": 4797,
-    "events_v10": 59,
-    "skill_v10": 8.6,
-    "skill_sub": 5.2
-   },
-   {
-    "icao": "KTRK",
-    "n": 4822,
-    "events_v10": 31,
-    "skill_v10": 8.6,
-    "skill_sub": 9.3
-   },
-   {
-    "icao": "KRWI",
-    "n": 4505,
-    "events_v10": 12,
-    "skill_v10": 8.5,
-    "skill_sub": 0.9
-   },
-   {
-    "icao": "CYOD",
-    "n": 4756,
-    "events_v10": 77,
-    "skill_v10": 8.4,
-    "skill_sub": 9.0
-   },
-   {
-    "icao": "KBMI",
-    "n": 4706,
-    "events_v10": 130,
-    "skill_v10": 8.4,
-    "skill_sub": 2.6
-   },
-   {
-    "icao": "CYBC",
-    "n": 4724,
-    "events_v10": 128,
-    "skill_v10": 8.3,
-    "skill_sub": 4.8
-   },
-   {
-    "icao": "KELO",
-    "n": 4818,
-    "events_v10": 48,
-    "skill_v10": 8.1,
-    "skill_sub": 10.3
-   },
-   {
-    "icao": "KORH",
-    "n": 4673,
-    "events_v10": 114,
-    "skill_v10": 7.9,
-    "skill_sub": 3.5
-   },
-   {
-    "icao": "KSUX",
-    "n": 4904,
-    "events_v10": 95,
-    "skill_v10": 7.8,
     "skill_sub": 7.9
    },
    {
-    "icao": "KFLO",
-    "n": 4777,
-    "events_v10": 104,
-    "skill_v10": 7.7,
-    "skill_sub": 9.8
+    "icao": "KBGM",
+    "n": 5613,
+    "events_v10": 91,
+    "skill_v10": 9.9,
+    "skill_sub": 6.1
    },
    {
-    "icao": "KFNT",
-    "n": 4754,
-    "events_v10": 75,
-    "skill_v10": 7.7,
-    "skill_sub": 9.2
-   },
-   {
-    "icao": "KMPV",
-    "n": 4804,
-    "events_v10": 257,
-    "skill_v10": 7.7,
-    "skill_sub": 8.1
+    "icao": "KCDR",
+    "n": 5562,
+    "events_v10": 22,
+    "skill_v10": 9.9,
+    "skill_sub": 2.5
    },
    {
     "icao": "CYSJ",
-    "n": 4629,
+    "n": 5579,
     "events_v10": 463,
-    "skill_v10": 7.6,
-    "skill_sub": 3.9
+    "skill_v10": 9.7,
+    "skill_sub": 4.9
    },
    {
-    "icao": "KGLD",
-    "n": 4738,
-    "events_v10": 67,
-    "skill_v10": 7.4,
-    "skill_sub": 3.8
-   },
-   {
-    "icao": "KALI",
-    "n": 4665,
-    "events_v10": 68,
-    "skill_v10": 7.2,
-    "skill_sub": 5.3
-   },
-   {
-    "icao": "KLBT",
-    "n": 4783,
-    "events_v10": 106,
-    "skill_v10": 7.1,
-    "skill_sub": 7.0
-   },
-   {
-    "icao": "KFKL",
-    "n": 4791,
-    "events_v10": 109,
-    "skill_v10": 7.0,
-    "skill_sub": 1.3
-   },
-   {
-    "icao": "KMLI",
-    "n": 4764,
-    "events_v10": 45,
-    "skill_v10": 7.0,
-    "skill_sub": 3.6
-   },
-   {
-    "icao": "CYYL",
-    "n": 4758,
-    "events_v10": 17,
-    "skill_v10": 6.9,
-    "skill_sub": 14.4
-   },
-   {
-    "icao": "KBQK",
-    "n": 4807,
-    "events_v10": 33,
-    "skill_v10": 6.9,
-    "skill_sub": 47.8
-   },
-   {
-    "icao": "KDSM",
-    "n": 4777,
-    "events_v10": 65,
-    "skill_v10": 6.6,
-    "skill_sub": 2.2
-   },
-   {
-    "icao": "KPSM",
-    "n": 4568,
-    "events_v10": 23,
-    "skill_v10": 6.6,
-    "skill_sub": 6.4
-   },
-   {
-    "icao": "KRGA",
-    "n": 4878,
-    "events_v10": 44,
-    "skill_v10": 6.6,
-    "skill_sub": 1.1
-   },
-   {
-    "icao": "KGFK",
-    "n": 4737,
-    "events_v10": 11,
-    "skill_v10": 6.4,
+    "icao": "KMRB",
+    "n": 5611,
+    "events_v10": 71,
+    "skill_v10": 9.7,
     "skill_sub": 2.7
    },
    {
-    "icao": "KOGS",
-    "n": 4800,
-    "events_v10": 122,
-    "skill_v10": 6.3,
-    "skill_sub": 5.4
+    "icao": "KALB",
+    "n": 5596,
+    "events_v10": 70,
+    "skill_v10": 9.5,
+    "skill_sub": 3.9
    },
    {
-    "icao": "KFRI",
-    "n": 4329,
-    "events_v10": 32,
-    "skill_v10": 6.2,
-    "skill_sub": 4.0
+    "icao": "KCMH",
+    "n": 5796,
+    "events_v10": 55,
+    "skill_v10": 9.5,
+    "skill_sub": 7.0
    },
    {
-    "icao": "KLEX",
-    "n": 4788,
-    "events_v10": 22,
-    "skill_v10": 6.2,
-    "skill_sub": 0.5
+    "icao": "KWYS",
+    "n": 5640,
+    "events_v10": 232,
+    "skill_v10": 9.3,
+    "skill_sub": 10.2
    },
    {
-    "icao": "CYYY",
-    "n": 4675,
-    "events_v10": 143,
-    "skill_v10": 6.1,
-    "skill_sub": 1.7
+    "icao": "KBQK",
+    "n": 5826,
+    "events_v10": 33,
+    "skill_v10": 9.2,
+    "skill_sub": 44.0
+   },
+   {
+    "icao": "KCWA",
+    "n": 5522,
+    "events_v10": 87,
+    "skill_v10": 9.1,
+    "skill_sub": 1.3
+   },
+   {
+    "icao": "KEEN",
+    "n": 5657,
+    "events_v10": 413,
+    "skill_v10": 9.1,
+    "skill_sub": 5.7
+   },
+   {
+    "icao": "KJHW",
+    "n": 5652,
+    "events_v10": 299,
+    "skill_v10": 9.0,
+    "skill_sub": 6.2
+   },
+   {
+    "icao": "KCMI",
+    "n": 5610,
+    "events_v10": 102,
+    "skill_v10": 8.9,
+    "skill_sub": 4.1
+   },
+   {
+    "icao": "KPTK",
+    "n": 5624,
+    "events_v10": 75,
+    "skill_v10": 8.9,
+    "skill_sub": 4.6
    },
    {
     "icao": "KTRI",
-    "n": 4842,
-    "events_v10": 200,
-    "skill_v10": 6.1,
-    "skill_sub": 3.3
+    "n": 5640,
+    "events_v10": 378,
+    "skill_v10": 8.9,
+    "skill_sub": 7.3
    },
    {
-    "icao": "KDIK",
-    "n": 4163,
-    "events_v10": 74,
-    "skill_v10": 6.0,
-    "skill_sub": 4.7
+    "icao": "CYBG",
+    "n": 5732,
+    "events_v10": 34,
+    "skill_v10": 8.8,
+    "skill_sub": 7.9
    },
    {
-    "icao": "KMTC",
-    "n": 3967,
-    "events_v10": 44,
-    "skill_v10": 6.0,
-    "skill_sub": 2.8
+    "icao": "KHYR",
+    "n": 5239,
+    "events_v10": 49,
+    "skill_v10": 8.8,
+    "skill_sub": 7.0
    },
    {
-    "icao": "CYBU",
-    "n": 4701,
-    "events_v10": 94,
-    "skill_v10": 5.9,
-    "skill_sub": 6.6
+    "icao": "CYBC",
+    "n": 5705,
+    "events_v10": 128,
+    "skill_v10": 8.6,
+    "skill_sub": 4.4
    },
    {
-    "icao": "KMSS",
-    "n": 4786,
-    "events_v10": 39,
-    "skill_v10": 5.9,
-    "skill_sub": 7.2
+    "icao": "KGSO",
+    "n": 5562,
+    "events_v10": 32,
+    "skill_v10": 8.4,
+    "skill_sub": 8.8
+   },
+   {
+    "icao": "KHLG",
+    "n": 5566,
+    "events_v10": 293,
+    "skill_v10": 8.4,
+    "skill_sub": 12.5
+   },
+   {
+    "icao": "CYQT",
+    "n": 5675,
+    "events_v10": 46,
+    "skill_v10": 8.1,
+    "skill_sub": 5.3
+   },
+   {
+    "icao": "KBAF",
+    "n": 5556,
+    "events_v10": 163,
+    "skill_v10": 8.1,
+    "skill_sub": 5.5
+   },
+   {
+    "icao": "KNUW",
+    "n": 5335,
+    "events_v10": 213,
+    "skill_v10": 8.1,
+    "skill_sub": 7.8
+   },
+   {
+    "icao": "KORH",
+    "n": 5515,
+    "events_v10": 114,
+    "skill_v10": 8.1,
+    "skill_sub": 3.8
+   },
+   {
+    "icao": "KLBE",
+    "n": 5480,
+    "events_v10": 191,
+    "skill_v10": 7.9,
+    "skill_sub": 7.8
+   },
+   {
+    "icao": "KFNT",
+    "n": 5591,
+    "events_v10": 75,
+    "skill_v10": 7.8,
+    "skill_sub": 9.3
+   },
+   {
+    "icao": "KHKY",
+    "n": 5624,
+    "events_v10": 221,
+    "skill_v10": 7.7,
+    "skill_sub": 11.2
+   },
+   {
+    "icao": "KAOO",
+    "n": 5226,
+    "events_v10": 160,
+    "skill_v10": 7.6,
+    "skill_sub": 7.9
+   },
+   {
+    "icao": "KALI",
+    "n": 5507,
+    "events_v10": 68,
+    "skill_v10": 7.5,
+    "skill_sub": 5.3
+   },
+   {
+    "icao": "KBMI",
+    "n": 5576,
+    "events_v10": 130,
+    "skill_v10": 7.5,
+    "skill_sub": 2.0
+   },
+   {
+    "icao": "KPSM",
+    "n": 5436,
+    "events_v10": 23,
+    "skill_v10": 7.4,
+    "skill_sub": 6.5
+   },
+   {
+    "icao": "KGLD",
+    "n": 5558,
+    "events_v10": 67,
+    "skill_v10": 6.9,
+    "skill_sub": 3.6
+   },
+   {
+    "icao": "KPKB",
+    "n": 5540,
+    "events_v10": 181,
+    "skill_v10": 6.9,
+    "skill_sub": 6.5
+   },
+   {
+    "icao": "KOTH",
+    "n": 3405,
+    "events_v10": 267,
+    "skill_v10": 6.8,
+    "skill_sub": 8.3
+   },
+   {
+    "icao": "KTRK",
+    "n": 5753,
+    "events_v10": 31,
+    "skill_v10": 6.8,
+    "skill_sub": 6.3
+   },
+   {
+    "icao": "CYSB",
+    "n": 5565,
+    "events_v10": 10,
+    "skill_v10": 6.7,
+    "skill_sub": 9.6
+   },
+   {
+    "icao": "CYYL",
+    "n": 5686,
+    "events_v10": 17,
+    "skill_v10": 6.7,
+    "skill_sub": 17.4
+   },
+   {
+    "icao": "KFLO",
+    "n": 5561,
+    "events_v10": 104,
+    "skill_v10": 6.7,
+    "skill_sub": 8.4
+   },
+   {
+    "icao": "CYXS",
+    "n": 5684,
+    "events_v10": 69,
+    "skill_v10": 6.6,
+    "skill_sub": 6.1
+   },
+   {
+    "icao": "KLBT",
+    "n": 5603,
+    "events_v10": 106,
+    "skill_v10": 6.6,
+    "skill_sub": 6.1
+   },
+   {
+    "icao": "KMCW",
+    "n": 5650,
+    "events_v10": 136,
+    "skill_v10": 6.6,
+    "skill_sub": 8.2
+   },
+   {
+    "icao": "KTOL",
+    "n": 5637,
+    "events_v10": 81,
+    "skill_v10": 6.6,
+    "skill_sub": 4.1
+   },
+   {
+    "icao": "KELO",
+    "n": 5912,
+    "events_v10": 48,
+    "skill_v10": 6.3,
+    "skill_sub": 9.2
    },
    {
     "icao": "KESF",
-    "n": 4867,
+    "n": 5709,
     "events_v10": 172,
+    "skill_v10": 6.3,
+    "skill_sub": 2.9
+   },
+   {
+    "icao": "CYYY",
+    "n": 5656,
+    "events_v10": 143,
+    "skill_v10": 6.1,
+    "skill_sub": 1.6
+   },
+   {
+    "icao": "KFRI",
+    "n": 5213,
+    "events_v10": 32,
+    "skill_v10": 6.1,
+    "skill_sub": 4.2
+   },
+   {
+    "icao": "KOGS",
+    "n": 5758,
+    "events_v10": 122,
+    "skill_v10": 6.0,
+    "skill_sub": 5.2
+   },
+   {
+    "icao": "CYXZ",
+    "n": 3703,
+    "events_v10": 223,
     "skill_v10": 5.8,
-    "skill_sub": 2.4
+    "skill_sub": 6.9
+   },
+   {
+    "icao": "KDIK",
+    "n": 4996,
+    "events_v10": 74,
+    "skill_v10": 5.7,
+    "skill_sub": 4.4
+   },
+   {
+    "icao": "KMTC",
+    "n": 4565,
+    "events_v10": 44,
+    "skill_v10": 5.7,
+    "skill_sub": 2.8
+   },
+   {
+    "icao": "KHUF",
+    "n": 5445,
+    "events_v10": 39,
+    "skill_v10": 5.6,
+    "skill_sub": 5.4
+   },
+   {
+    "icao": "CYGV",
+    "n": 5601,
+    "events_v10": 168,
+    "skill_v10": 5.4,
+    "skill_sub": 3.8
+   },
+   {
+    "icao": "CYQR",
+    "n": 5698,
+    "events_v10": 51,
+    "skill_v10": 5.4,
+    "skill_sub": 4.5
+   },
+   {
+    "icao": "KCEF",
+    "n": 5051,
+    "events_v10": 31,
+    "skill_v10": 5.3,
+    "skill_sub": 6.3
+   },
+   {
+    "icao": "CYKL",
+    "n": 5793,
+    "events_v10": 47,
+    "skill_v10": 5.1,
+    "skill_sub": 2.9
    },
    {
     "icao": "KOTM",
     "n": 4299,
     "events_v10": 115,
-    "skill_v10": 5.8,
-    "skill_sub": 4.2
-   },
-   {
-    "icao": "KPWT",
-    "n": 4716,
-    "events_v10": 272,
-    "skill_v10": 5.8,
-    "skill_sub": 4.8
-   },
-   {
-    "icao": "CYXZ",
-    "n": 3183,
-    "events_v10": 201,
-    "skill_v10": 5.6,
-    "skill_sub": 7.6
-   },
-   {
-    "icao": "CYKL",
-    "n": 4813,
-    "events_v10": 47,
-    "skill_v10": 5.5,
-    "skill_sub": 3.4
-   },
-   {
-    "icao": "KAIA",
-    "n": 4725,
-    "events_v10": 20,
-    "skill_v10": 5.5,
-    "skill_sub": 5.2
-   },
-   {
-    "icao": "KCAE",
-    "n": 4756,
-    "events_v10": 91,
-    "skill_v10": 5.5,
-    "skill_sub": 5.1
-   },
-   {
-    "icao": "KCEF",
-    "n": 4197,
-    "events_v10": 31,
-    "skill_v10": 5.5,
-    "skill_sub": 7.3
-   },
-   {
-    "icao": "CYYW",
-    "n": 4713,
-    "events_v10": 52,
-    "skill_v10": 5.4,
-    "skill_sub": 1.5
-   },
-   {
-    "icao": "CZBF",
-    "n": 4654,
-    "events_v10": 111,
-    "skill_v10": 5.3,
-    "skill_sub": 5.8
-   },
-   {
-    "icao": "KRSL",
-    "n": 4753,
-    "events_v10": 38,
-    "skill_v10": 5.3,
-    "skill_sub": 2.9
-   },
-   {
-    "icao": "CYET",
-    "n": 4707,
-    "events_v10": 253,
-    "skill_v10": 5.2,
-    "skill_sub": 5.6
-   },
-   {
-    "icao": "CYDQ",
-    "n": 4841,
-    "events_v10": 150,
     "skill_v10": 5.1,
-    "skill_sub": 4.6
+    "skill_sub": 3.9
    },
    {
-    "icao": "KHUF",
-    "n": 4625,
-    "events_v10": 39,
+    "icao": "KVBG",
+    "n": 4950,
+    "events_v10": 498,
     "skill_v10": 5.1,
-    "skill_sub": 5.8
+    "skill_sub": 10.7
    },
    {
-    "icao": "CYXS",
-    "n": 4703,
-    "events_v10": 69,
+    "icao": "CYBW",
+    "n": 5803,
+    "events_v10": 217,
     "skill_v10": 5.0,
-    "skill_sub": 5.2
+    "skill_sub": 6.7
+   },
+   {
+    "icao": "KJST",
+    "n": 5660,
+    "events_v10": 247,
+    "skill_v10": 5.0,
+    "skill_sub": 5.5
+   },
+   {
+    "icao": "KMLI",
+    "n": 5558,
+    "events_v10": 45,
+    "skill_v10": 5.0,
+    "skill_sub": 2.7
    },
    {
     "icao": "KMMT",
-    "n": 4269,
+    "n": 5137,
     "events_v10": 80,
     "skill_v10": 5.0,
-    "skill_sub": 2.3
+    "skill_sub": 2.2
    },
    {
-    "icao": "CYMX",
-    "n": 4677,
+    "icao": "CZBF",
+    "n": 5619,
     "events_v10": 111,
     "skill_v10": 4.9,
-    "skill_sub": 6.5
+    "skill_sub": 5.6
    },
    {
-    "icao": "KCEW",
-    "n": 4753,
-    "events_v10": 31,
+    "icao": "KCAE",
+    "n": 5598,
+    "events_v10": 91,
     "skill_v10": 4.9,
-    "skill_sub": 3.5
-   },
-   {
-    "icao": "CYQF",
-    "n": 4717,
-    "events_v10": 191,
-    "skill_v10": 4.8,
     "skill_sub": 4.5
    },
    {
-    "icao": "CYZR",
-    "n": 4767,
-    "events_v10": 68,
-    "skill_v10": 4.8,
-    "skill_sub": 6.4
+    "icao": "KHRO",
+    "n": 5600,
+    "events_v10": 20,
+    "skill_v10": 4.9,
+    "skill_sub": 74.3
    },
    {
-    "icao": "KMIE",
-    "n": 4743,
-    "events_v10": 112,
-    "skill_v10": 4.8,
-    "skill_sub": 9.8
-   },
-   {
-    "icao": "KOSH",
-    "n": 4725,
-    "events_v10": 103,
-    "skill_v10": 4.8,
-    "skill_sub": 4.3
-   },
-   {
-    "icao": "CYQA",
-    "n": 4687,
-    "events_v10": 90,
+    "icao": "KMUI",
+    "n": 5108,
+    "events_v10": 53,
     "skill_v10": 4.7,
-    "skill_sub": 9.5
+    "skill_sub": 3.0
    },
    {
-    "icao": "KOFK",
-    "n": 4768,
-    "events_v10": 123,
-    "skill_v10": 4.7,
-    "skill_sub": 8.7
+    "icao": "CYBU",
+    "n": 5596,
+    "events_v10": 94,
+    "skill_v10": 4.4,
+    "skill_sub": 5.7
    },
    {
-    "icao": "KRDR",
-    "n": 3857,
-    "events_v10": 27,
-    "skill_v10": 4.6,
-    "skill_sub": 3.3
+    "icao": "CYHD",
+    "n": 5579,
+    "events_v10": 51,
+    "skill_v10": 4.4,
+    "skill_sub": 5.8
    },
    {
-    "icao": "CYBR",
-    "n": 4710,
-    "events_v10": 39,
-    "skill_v10": 4.5,
-    "skill_sub": 4.3
-   },
-   {
-    "icao": "CYSB",
-    "n": 4625,
-    "events_v10": 10,
-    "skill_v10": 4.5,
-    "skill_sub": 8.3
-   },
-   {
-    "icao": "KOLU",
-    "n": 4776,
-    "events_v10": 152,
-    "skill_v10": 4.5,
-    "skill_sub": 1.9
-   },
-   {
-    "icao": "KEAR",
-    "n": 4704,
-    "events_v10": 188,
+    "icao": "KCEW",
+    "n": 5550,
+    "events_v10": 31,
     "skill_v10": 4.4,
     "skill_sub": 2.7
    },
    {
-    "icao": "KHRO",
-    "n": 4758,
-    "events_v10": 20,
+    "icao": "KMSS",
+    "n": 5628,
+    "events_v10": 39,
+    "skill_v10": 4.4,
+    "skill_sub": 6.6
+   },
+   {
+    "icao": "KRSL",
+    "n": 5595,
+    "events_v10": 60,
     "skill_v10": 4.3,
-    "skill_sub": 72.0
+    "skill_sub": 2.7
    },
    {
-    "icao": "KMUI",
-    "n": 4298,
-    "events_v10": 53,
+    "icao": "CYYW",
+    "n": 5564,
+    "events_v10": 52,
     "skill_v10": 4.2,
-    "skill_sub": 3.0
+    "skill_sub": 1.1
    },
    {
-    "icao": "KPIR",
-    "n": 4769,
-    "events_v10": 43,
-    "skill_v10": 4.2,
-    "skill_sub": 3.6
+    "icao": "CYBR",
+    "n": 5620,
+    "events_v10": 73,
+    "skill_v10": 4.1,
+    "skill_sub": 0.5
    },
    {
-    "icao": "KSLK",
-    "n": 4898,
-    "events_v10": 280,
-    "skill_v10": 4.2,
-    "skill_sub": 8.1
+    "icao": "KIRK",
+    "n": 5583,
+    "events_v10": 142,
+    "skill_v10": 4.1,
+    "skill_sub": 5.6
    },
    {
-    "icao": "CYOW",
-    "n": 4742,
-    "events_v10": 32,
+    "icao": "KSUX",
+    "n": 5793,
+    "events_v10": 115,
     "skill_v10": 4.1,
     "skill_sub": 4.3
    },
    {
-    "icao": "CYQG",
-    "n": 4709,
-    "events_v10": 59,
-    "skill_v10": 4.1,
-    "skill_sub": 1.5
-   },
-   {
-    "icao": "KJAC",
-    "n": 4675,
-    "events_v10": 42,
+    "icao": "CYQA",
+    "n": 5668,
+    "events_v10": 90,
     "skill_v10": 4.0,
-    "skill_sub": 1.1
+    "skill_sub": 9.0
    },
    {
-    "icao": "CYHM",
-    "n": 4709,
-    "events_v10": 122,
-    "skill_v10": 3.9,
-    "skill_sub": 2.2
-   },
-   {
-    "icao": "CYTH",
-    "n": 4713,
-    "events_v10": 51,
-    "skill_v10": 3.9,
-    "skill_sub": 0.9
-   },
-   {
-    "icao": "KVTN",
-    "n": 4767,
-    "events_v10": 94,
-    "skill_v10": 3.9,
-    "skill_sub": 5.9
-   },
-   {
-    "icao": "KBTV",
-    "n": 4749,
+    "icao": "CYOW",
+    "n": 5723,
     "events_v10": 32,
-    "skill_v10": 3.8,
-    "skill_sub": 4.0
-   },
-   {
-    "icao": "KIRK",
-    "n": 4744,
-    "events_v10": 79,
-    "skill_v10": 3.8,
-    "skill_sub": 7.0
-   },
-   {
-    "icao": "CYZU",
-    "n": 3537,
-    "events_v10": 121,
-    "skill_v10": 3.7,
-    "skill_sub": 6.1
+    "skill_v10": 3.9,
+    "skill_sub": 4.1
    },
    {
     "icao": "KGON",
-    "n": 4794,
+    "n": 5636,
     "events_v10": 48,
-    "skill_v10": 3.7,
-    "skill_sub": 10.3
+    "skill_v10": 3.9,
+    "skill_sub": 10.2
    },
    {
-    "icao": "KLBF",
-    "n": 4811,
-    "events_v10": 203,
-    "skill_v10": 3.7,
-    "skill_sub": 3.9
-   },
-   {
-    "icao": "KPAE",
-    "n": 4798,
-    "events_v10": 43,
-    "skill_v10": 3.7,
-    "skill_sub": 3.0
-   },
-   {
-    "icao": "KRFD",
-    "n": 4770,
-    "events_v10": 40,
-    "skill_v10": 3.7,
-    "skill_sub": 5.3
-   },
-   {
-    "icao": "KMIB",
-    "n": 4277,
-    "events_v10": 57,
-    "skill_v10": 3.5,
-    "skill_sub": 0.9
-   },
-   {
-    "icao": "KGWO",
-    "n": 4759,
-    "events_v10": 30,
-    "skill_v10": 3.3,
-    "skill_sub": 2.9
-   },
-   {
-    "icao": "KUIN",
-    "n": 4708,
-    "events_v10": 55,
-    "skill_v10": 3.3,
-    "skill_sub": 2.5
-   },
-   {
-    "icao": "CYHD",
-    "n": 4708,
-    "events_v10": 29,
-    "skill_v10": 3.2,
-    "skill_sub": 42.0
-   },
-   {
-    "icao": "KHIB",
-    "n": 4739,
-    "events_v10": 148,
-    "skill_v10": 3.1,
-    "skill_sub": 7.4
-   },
-   {
-    "icao": "KTTN",
-    "n": 4749,
-    "events_v10": 55,
-    "skill_v10": 3.1,
-    "skill_sub": 0.4
-   },
-   {
-    "icao": "CYUY",
-    "n": 4689,
-    "events_v10": 67,
-    "skill_v10": 2.9,
-    "skill_sub": 3.1
-   },
-   {
-    "icao": "CYPY",
-    "n": 4679,
+    "icao": "KRDR",
+    "n": 4592,
     "events_v10": 27,
-    "skill_v10": 2.9,
-    "skill_sub": 2.6
+    "skill_v10": 3.9,
+    "skill_sub": 2.4
    },
    {
-    "icao": "CYFS",
-    "n": 3500,
-    "events_v10": 29,
-    "skill_v10": 2.9,
-    "skill_sub": 56.1
+    "icao": "KSBY",
+    "n": 5543,
+    "events_v10": 64,
+    "skill_v10": 3.9,
+    "skill_sub": 0.5
    },
    {
-    "icao": "KVBG",
-    "n": 4195,
-    "events_v10": 498,
-    "skill_v10": 2.8,
-    "skill_sub": 8.7
+    "icao": "CYMX",
+    "n": 5675,
+    "events_v10": 111,
+    "skill_v10": 3.8,
+    "skill_sub": 5.7
    },
    {
-    "icao": "CYGV",
-    "n": 4636,
-    "events_v10": 168,
-    "skill_v10": 2.7,
-    "skill_sub": 1.1
+    "icao": "KMIE",
+    "n": 5604,
+    "events_v10": 112,
+    "skill_v10": 3.8,
+    "skill_sub": 9.0
    },
    {
-    "icao": "CYPL",
-    "n": 4383,
-    "events_v10": 61,
-    "skill_v10": 2.7,
-    "skill_sub": 1.8
+    "icao": "CYQG",
+    "n": 5632,
+    "events_v10": 59,
+    "skill_v10": 3.7,
+    "skill_sub": 1.0
    },
    {
-    "icao": "CYAH",
-    "n": 4622,
-    "events_v10": 68,
-    "skill_v10": 2.4,
-    "skill_sub": 3.5
-   },
-   {
-    "icao": "CYLL",
-    "n": 4791,
-    "events_v10": 62,
-    "skill_v10": 2.4,
-    "skill_sub": 1.7
-   },
-   {
-    "icao": "KABR",
-    "n": 4739,
-    "events_v10": 11,
-    "skill_v10": 2.4,
-    "skill_sub": 0.2
-   },
-   {
-    "icao": "KAHN",
-    "n": 4889,
-    "events_v10": 99,
-    "skill_v10": 2.3,
-    "skill_sub": 4.8
+    "icao": "KDSM",
+    "n": 5611,
+    "events_v10": 65,
+    "skill_v10": 3.7,
+    "skill_sub": 2.0
    },
    {
     "icao": "KEAU",
-    "n": 4849,
+    "n": 5651,
     "events_v10": 34,
-    "skill_v10": 2.3,
-    "skill_sub": 19.4
+    "skill_v10": 3.6,
+    "skill_sub": 19.3
+   },
+   {
+    "icao": "CYDQ",
+    "n": 5822,
+    "events_v10": 150,
+    "skill_v10": 3.5,
+    "skill_sub": 3.0
+   },
+   {
+    "icao": "KGWO",
+    "n": 5601,
+    "events_v10": 30,
+    "skill_v10": 3.5,
+    "skill_sub": 3.0
+   },
+   {
+    "icao": "KHIB",
+    "n": 5559,
+    "events_v10": 148,
+    "skill_v10": 3.5,
+    "skill_sub": 8.0
+   },
+   {
+    "icao": "CYHM",
+    "n": 5690,
+    "events_v10": 122,
+    "skill_v10": 3.4,
+    "skill_sub": 1.7
+   },
+   {
+    "icao": "CYZU",
+    "n": 4170,
+    "events_v10": 121,
+    "skill_v10": 3.3,
+    "skill_sub": 5.4
+   },
+   {
+    "icao": "KBTV",
+    "n": 5591,
+    "events_v10": 32,
+    "skill_v10": 3.3,
+    "skill_sub": 3.7
+   },
+   {
+    "icao": "KEAR",
+    "n": 5503,
+    "events_v10": 188,
+    "skill_v10": 3.3,
+    "skill_sub": 1.6
+   },
+   {
+    "icao": "KPWT",
+    "n": 5492,
+    "events_v10": 272,
+    "skill_v10": 3.3,
+    "skill_sub": 3.0
+   },
+   {
+    "icao": "KVTN",
+    "n": 5587,
+    "events_v10": 94,
+    "skill_v10": 3.3,
+    "skill_sub": 4.8
+   },
+   {
+    "icao": "CYQF",
+    "n": 5645,
+    "events_v10": 231,
+    "skill_v10": 3.2,
+    "skill_sub": 2.4
+   },
+   {
+    "icao": "CYTH",
+    "n": 5621,
+    "events_v10": 51,
+    "skill_v10": 3.2,
+    "skill_sub": 0.5
+   },
+   {
+    "icao": "KOSH",
+    "n": 5543,
+    "events_v10": 103,
+    "skill_v10": 3.2,
+    "skill_sub": 3.1
+   },
+   {
+    "icao": "KPIR",
+    "n": 5611,
+    "events_v10": 43,
+    "skill_v10": 3.2,
+    "skill_sub": 2.6
+   },
+   {
+    "icao": "CYPY",
+    "n": 5600,
+    "events_v10": 27,
+    "skill_v10": 3.2,
+    "skill_sub": 2.7
+   },
+   {
+    "icao": "KLAR",
+    "n": 5591,
+    "events_v10": 44,
+    "skill_v10": 3.0,
+    "skill_sub": 0.5
    },
    {
     "icao": "KOAJ",
-    "n": 4746,
+    "n": 5588,
     "events_v10": 45,
-    "skill_v10": 2.3,
-    "skill_sub": 5.2
+    "skill_v10": 3.0,
+    "skill_sub": 4.3
    },
    {
-    "icao": "KMBG",
-    "n": 4574,
-    "events_v10": 10,
-    "skill_v10": 2.1,
-    "skill_sub": 37.3
+    "icao": "KTTN",
+    "n": 5591,
+    "events_v10": 55,
+    "skill_v10": 3.0,
+    "skill_sub": 0.1
    },
    {
-    "icao": "KLBX",
-    "n": 4715,
-    "events_v10": 39,
-    "skill_v10": 2.0,
-    "skill_sub": 1.5
+    "icao": "KLBF",
+    "n": 5653,
+    "events_v10": 203,
+    "skill_v10": 2.9,
+    "skill_sub": 3.2
+   },
+   {
+    "icao": "KPAE",
+    "n": 5607,
+    "events_v10": 43,
+    "skill_v10": 2.9,
+    "skill_sub": 2.1
+   },
+   {
+    "icao": "CZPC",
+    "n": 5731,
+    "events_v10": 41,
+    "skill_v10": 2.8,
+    "skill_sub": 3.0
+   },
+   {
+    "icao": "KGFK",
+    "n": 5552,
+    "events_v10": 32,
+    "skill_v10": 2.8,
+    "skill_sub": 2.0
+   },
+   {
+    "icao": "KPIT",
+    "n": 5732,
+    "events_v10": 74,
+    "skill_v10": 2.8,
+    "skill_sub": 4.4
+   },
+   {
+    "icao": "KUIN",
+    "n": 5581,
+    "events_v10": 55,
+    "skill_v10": 2.8,
+    "skill_sub": 2.3
    },
    {
     "icao": "KNMM",
-    "n": 4735,
+    "n": 5556,
     "events_v10": 20,
+    "skill_v10": 2.5,
+    "skill_sub": 1.7
+   },
+   {
+    "icao": "CYQZ",
+    "n": 5582,
+    "events_v10": 113,
+    "skill_v10": 2.4,
+    "skill_sub": 1.2
+   },
+   {
+    "icao": "KRGA",
+    "n": 5736,
+    "events_v10": 127,
+    "skill_v10": 2.4,
+    "skill_sub": 0.1
+   },
+   {
+    "icao": "CYUY",
+    "n": 5632,
+    "events_v10": 67,
+    "skill_v10": 2.3,
+    "skill_sub": 3.0
+   },
+   {
+    "icao": "CYZH",
+    "n": 5594,
+    "events_v10": 13,
+    "skill_v10": 2.2,
+    "skill_sub": 0.9
+   },
+   {
+    "icao": "CYET",
+    "n": 5688,
+    "events_v10": 253,
+    "skill_v10": 2.1,
+    "skill_sub": 2.0
+   },
+   {
+    "icao": "KAHN",
+    "n": 5731,
+    "events_v10": 99,
     "skill_v10": 2.0,
-    "skill_sub": 0.4
+    "skill_sub": 4.1
+   },
+   {
+    "icao": "KACY",
+    "n": 3726,
+    "events_v10": 38,
+    "skill_v10": 1.9,
+    "skill_sub": 4.9
+   },
+   {
+    "icao": "KLBX",
+    "n": 5535,
+    "events_v10": 39,
+    "skill_v10": 1.9,
+    "skill_sub": 1.3
+   },
+   {
+    "icao": "KHYI",
+    "n": 5646,
+    "events_v10": 100,
+    "skill_v10": 1.8,
+    "skill_sub": 1.2
+   },
+   {
+    "icao": "KSRR",
+    "n": 5909,
+    "events_v10": 10,
+    "skill_v10": 1.8,
+    "skill_sub": 81.1
+   },
+   {
+    "icao": "KHZY",
+    "n": 5603,
+    "events_v10": 46,
+    "skill_v10": 1.7,
+    "skill_sub": 3.6
    },
    {
     "icao": "KBAZ",
-    "n": 4876,
+    "n": 5708,
     "events_v10": 24,
-    "skill_v10": 1.9,
+    "skill_v10": 1.6,
+    "skill_sub": 0.7
+   },
+   {
+    "icao": "CYEV",
+    "n": 5702,
+    "events_v10": 73,
+    "skill_v10": 1.6,
+    "skill_sub": 2.7
+   },
+   {
+    "icao": "CYPQ",
+    "n": 5401,
+    "events_v10": 154,
+    "skill_v10": 1.5,
+    "skill_sub": 9.7
+   },
+   {
+    "icao": "CYZR",
+    "n": 5671,
+    "events_v10": 112,
+    "skill_v10": 1.5,
+    "skill_sub": 4.5
+   },
+   {
+    "icao": "CYTZ",
+    "n": 5621,
+    "events_v10": 49,
+    "skill_v10": 1.4,
+    "skill_sub": 3.3
+   },
+   {
+    "icao": "KAVP",
+    "n": 5581,
+    "events_v10": 87,
+    "skill_v10": 1.4,
+    "skill_sub": 0.5
+   },
+   {
+    "icao": "KTIW",
+    "n": 5581,
+    "events_v10": 16,
+    "skill_v10": 1.4,
+    "skill_sub": 0.7
+   },
+   {
+    "icao": "KRIW",
+    "n": 5615,
+    "events_v10": 29,
+    "skill_v10": 1.2,
+    "skill_sub": 0.7
+   },
+   {
+    "icao": "CYNA",
+    "n": 5625,
+    "events_v10": 104,
+    "skill_v10": 1.0,
+    "skill_sub": 2.9
+   },
+   {
+    "icao": "KMCK",
+    "n": 5602,
+    "events_v10": 167,
+    "skill_v10": 1.0,
+    "skill_sub": 1.3
+   },
+   {
+    "icao": "KMMU",
+    "n": 5679,
+    "events_v10": 14,
+    "skill_v10": 1.0,
+    "skill_sub": 8.7
+   },
+   {
+    "icao": "KNKT",
+    "n": 5516,
+    "events_v10": 59,
+    "skill_v10": 1.0,
+    "skill_sub": 1.8
+   },
+   {
+    "icao": "CYOJ",
+    "n": 5627,
+    "events_v10": 60,
+    "skill_v10": 1.0,
+    "skill_sub": 1.1
+   },
+   {
+    "icao": "CYPE",
+    "n": 5663,
+    "events_v10": 75,
+    "skill_v10": 1.0,
+    "skill_sub": 0.8
+   },
+   {
+    "icao": "CYAH",
+    "n": 5559,
+    "events_v10": 68,
+    "skill_v10": 0.9,
+    "skill_sub": 2.8
+   },
+   {
+    "icao": "KLFI",
+    "n": 5130,
+    "events_v10": 10,
+    "skill_v10": 0.9,
+    "skill_sub": 99.4
+   },
+   {
+    "icao": "KHTS",
+    "n": 5675,
+    "events_v10": 84,
+    "skill_v10": 0.8,
     "skill_sub": 1.2
    },
    {
     "icao": "KJMS",
-    "n": 4767,
+    "n": 5587,
     "events_v10": 23,
-    "skill_v10": 1.9,
-    "skill_sub": 0.7
-   },
-   {
-    "icao": "KACY",
-    "n": 3330,
-    "events_v10": 38,
-    "skill_v10": 1.8,
-    "skill_sub": 4.6
-   },
-   {
-    "icao": "CYQH",
-    "n": 4651,
-    "events_v10": 55,
-    "skill_v10": 1.8,
-    "skill_sub": 0.5
-   },
-   {
-    "icao": "CYTZ",
-    "n": 4661,
-    "events_v10": 49,
-    "skill_v10": 1.7,
-    "skill_sub": 3.7
-   },
-   {
-    "icao": "KMCK",
-    "n": 4748,
-    "events_v10": 167,
-    "skill_v10": 1.7,
-    "skill_sub": 1.9
-   },
-   {
-    "icao": "KTVF",
-    "n": 4698,
-    "events_v10": 24,
-    "skill_v10": 1.7,
-    "skill_sub": 0.7
-   },
-   {
-    "icao": "KYKN",
-    "n": 4766,
-    "events_v10": 76,
-    "skill_v10": 1.7,
-    "skill_sub": 1.5
-   },
-   {
-    "icao": "CYQZ",
-    "n": 4623,
-    "events_v10": 113,
-    "skill_v10": 1.6,
-    "skill_sub": 1.4
-   },
-   {
-    "icao": "KAVP",
-    "n": 4739,
-    "events_v10": 87,
-    "skill_v10": 1.6,
-    "skill_sub": 0.8
-   },
-   {
-    "icao": "KMLB",
-    "n": 4811,
-    "events_v10": 10,
-    "skill_v10": 1.6,
-    "skill_sub": 34.2
-   },
-   {
-    "icao": "KGRI",
-    "n": 4850,
-    "events_v10": 136,
-    "skill_v10": 1.5,
-    "skill_sub": 0.5
-   },
-   {
-    "icao": "KSRR",
-    "n": 4859,
-    "events_v10": 10,
-    "skill_v10": 1.5,
-    "skill_sub": 78.7
-   },
-   {
-    "icao": "CYQV",
-    "n": 4361,
-    "events_v10": 29,
-    "skill_v10": 1.4,
-    "skill_sub": 2.5
-   },
-   {
-    "icao": "KEDC",
-    "n": 4887,
-    "events_v10": 24,
-    "skill_v10": 1.4,
-    "skill_sub": 0.1
-   },
-   {
-    "icao": "KHZY",
-    "n": 4761,
-    "events_v10": 46,
-    "skill_v10": 1.4,
-    "skill_sub": 3.6
-   },
-   {
-    "icao": "KTIW",
-    "n": 4783,
-    "events_v10": 16,
-    "skill_v10": 1.4,
-    "skill_sub": 0.9
-   },
-   {
-    "icao": "CYWL",
-    "n": 4722,
-    "events_v10": 68,
-    "skill_v10": 1.3,
-    "skill_sub": 78.8
-   },
-   {
-    "icao": "KCMX",
-    "n": 4316,
-    "events_v10": 60,
-    "skill_v10": 1.3,
-    "skill_sub": 2.8
-   },
-   {
-    "icao": "CYEV",
-    "n": 4721,
-    "events_v10": 73,
-    "skill_v10": 1.3,
-    "skill_sub": 2.3
-   },
-   {
-    "icao": "KAXN",
-    "n": 4776,
-    "events_v10": 24,
-    "skill_v10": 1.2,
-    "skill_sub": 0.5
-   },
-   {
-    "icao": "KJST",
-    "n": 4809,
-    "events_v10": 106,
-    "skill_v10": 1.2,
-    "skill_sub": 1.4
-   },
-   {
-    "icao": "KNKT",
-    "n": 4696,
-    "events_v10": 59,
-    "skill_v10": 1.2,
-    "skill_sub": 1.7
-   },
-   {
-    "icao": "KPWK",
-    "n": 4877,
-    "events_v10": 29,
-    "skill_v10": 1.2,
-    "skill_sub": 1.7
-   },
-   {
-    "icao": "KRIW",
-    "n": 4758,
-    "events_v10": 29,
-    "skill_v10": 1.2,
-    "skill_sub": 0.7
-   },
-   {
-    "icao": "KRND",
-    "n": 4175,
-    "events_v10": 15,
-    "skill_v10": 1.2,
-    "skill_sub": 2.9
-   },
-   {
-    "icao": "KSEA",
-    "n": 4770,
-    "events_v10": 129,
-    "skill_v10": 1.2,
-    "skill_sub": 0.7
-   },
-   {
-    "icao": "KAWO",
-    "n": 4752,
-    "events_v10": 63,
-    "skill_v10": 1.1,
-    "skill_sub": 0.1
-   },
-   {
-    "icao": "CYPE",
-    "n": 4682,
-    "events_v10": 75,
-    "skill_v10": 1.1,
-    "skill_sub": 1.1
-   },
-   {
-    "icao": "KGTF",
-    "n": 4761,
-    "events_v10": 44,
-    "skill_v10": 0.9,
-    "skill_sub": 0.1
-   },
-   {
-    "icao": "KLUK",
-    "n": 4699,
-    "events_v10": 82,
-    "skill_v10": 0.9,
-    "skill_sub": 5.7
-   },
-   {
-    "icao": "KPGD",
-    "n": 4744,
-    "events_v10": 15,
     "skill_v10": 0.8,
-    "skill_sub": 6.1
-   },
-   {
-    "icao": "KRAP",
-    "n": 4780,
-    "events_v10": 14,
-    "skill_v10": 0.8,
-    "skill_sub": 0.2
-   },
-   {
-    "icao": "KBPI",
-    "n": 4746,
-    "events_v10": 14,
-    "skill_v10": 0.7,
-    "skill_sub": 0.2
-   },
-   {
-    "icao": "KLFI",
-    "n": 4221,
-    "events_v10": 10,
-    "skill_v10": 0.7,
-    "skill_sub": 99.3
-   },
-   {
-    "icao": "KYIP",
-    "n": 4745,
-    "events_v10": 15,
-    "skill_v10": 0.7,
-    "skill_sub": 3.4
-   },
-   {
-    "icao": "CYOJ",
-    "n": 4668,
-    "events_v10": 60,
-    "skill_v10": 0.7,
-    "skill_sub": 0.5
-   },
-   {
-    "icao": "CYPA",
-    "n": 4736,
-    "events_v10": 51,
-    "skill_v10": 0.6,
-    "skill_sub": 2.0
+    "skill_sub": 0.1
    },
    {
     "icao": "KNRB",
-    "n": 4360,
+    "n": 4473,
     "events_v10": 11,
+    "skill_v10": 0.6,
+    "skill_sub": 82.1
+   },
+   {
+    "icao": "KPWK",
+    "n": 5735,
+    "events_v10": 29,
+    "skill_v10": 0.6,
+    "skill_sub": 1.3
+   },
+   {
+    "icao": "CYLL",
+    "n": 5739,
+    "events_v10": 62,
+    "skill_v10": 0.5,
+    "skill_sub": 0.3
+   },
+   {
+    "icao": "CYYD",
+    "n": 5633,
+    "events_v10": 49,
+    "skill_v10": 0.5,
+    "skill_sub": 3.1
+   },
+   {
+    "icao": "KRND",
+    "n": 5009,
+    "events_v10": 15,
+    "skill_v10": 0.5,
+    "skill_sub": 2.9
+   },
+   {
+    "icao": "KCMX",
+    "n": 5152,
+    "events_v10": 60,
     "skill_v10": 0.4,
-    "skill_sub": 63.8
+    "skill_sub": 0.4
+   },
+   {
+    "icao": "KLVM",
+    "n": 5412,
+    "events_v10": 21,
+    "skill_v10": 0.4,
+    "skill_sub": 3.0
+   },
+   {
+    "icao": "KSEA",
+    "n": 5572,
+    "events_v10": 129,
+    "skill_v10": 0.4,
+    "skill_sub": 0.3
    },
    {
     "icao": "KTXK",
-    "n": 4726,
+    "n": 5568,
     "events_v10": 32,
     "skill_v10": 0.4,
     "skill_sub": 1.3
    },
    {
-    "icao": "KLMT",
-    "n": 4792,
-    "events_v10": 30,
+    "icao": "CYPL",
+    "n": 5258,
+    "events_v10": 61,
     "skill_v10": 0.3,
-    "skill_sub": 49.9
+    "skill_sub": 0.5
    },
    {
-    "icao": "CYHU",
-    "n": 4608,
-    "events_v10": 21,
-    "skill_v10": 0.2,
-    "skill_sub": 2.9
+    "icao": "KDOV",
+    "n": 5130,
+    "events_v10": 52,
+    "skill_v10": 0.3,
+    "skill_sub": 0.7
+   },
+   {
+    "icao": "KJAC",
+    "n": 5423,
+    "events_v10": 75,
+    "skill_v10": 0.3,
+    "skill_sub": 1.7
    },
    {
     "icao": "KORF",
-    "n": 3824,
+    "n": 4614,
     "events_v10": 30,
     "skill_v10": 0.1,
-    "skill_sub": 90.6
+    "skill_sub": 91.3
    },
    {
-    "icao": "KPDT",
-    "n": 4759,
-    "events_v10": 10,
+    "icao": "MMCN",
+    "n": 3397,
+    "events_v10": 18,
     "skill_v10": 0.1,
     "skill_sub": 100.0
    }
@@ -1611,1601 +1590,1818 @@
   "fail": [
    {
     "icao": "KBGR",
-    "n": 4746,
+    "n": 5588,
     "events_v10": 12,
-    "skill_v10": -89.4,
-    "skill_sub": -909.3
-   },
-   {
-    "icao": "KAST",
-    "n": 4721,
-    "events_v10": 30,
-    "skill_v10": -51.7,
-    "skill_sub": -20.7
+    "skill_v10": -83.9,
+    "skill_sub": -825.7
    },
    {
     "icao": "KCEC",
-    "n": 4784,
+    "n": 5604,
     "events_v10": 182,
-    "skill_v10": -49.4,
-    "skill_sub": -151.7
-   },
-   {
-    "icao": "KMSN",
-    "n": 4761,
-    "events_v10": 15,
-    "skill_v10": -45.2,
-    "skill_sub": -1607.4
-   },
-   {
-    "icao": "CYGW",
-    "n": 4801,
-    "events_v10": 106,
-    "skill_v10": -41.0,
-    "skill_sub": -25.5
+    "skill_v10": -65.6,
+    "skill_sub": -183.8
    },
    {
     "icao": "KSBP",
-    "n": 4689,
+    "n": 5531,
     "events_v10": 42,
-    "skill_v10": -40.7,
-    "skill_sub": -26.1
+    "skill_v10": -59.3,
+    "skill_sub": -35.0
    },
    {
-    "icao": "KGUS",
-    "n": 3957,
-    "events_v10": 16,
-    "skill_v10": -40.3,
-    "skill_sub": -921.7
+    "icao": "KAST",
+    "n": 5563,
+    "events_v10": 30,
+    "skill_v10": -51.4,
+    "skill_sub": -21.5
    },
    {
-    "icao": "KBVI",
-    "n": 4661,
-    "events_v10": 10,
-    "skill_v10": -38.4,
-    "skill_sub": -511.2
-   },
-   {
-    "icao": "KCSV",
-    "n": 4791,
-    "events_v10": 19,
-    "skill_v10": -36.4,
-    "skill_sub": -1350.2
-   },
-   {
-    "icao": "KACV",
-    "n": 4713,
-    "events_v10": 219,
-    "skill_v10": -29.9,
-    "skill_sub": -77.1
-   },
-   {
-    "icao": "KALO",
-    "n": 4772,
-    "events_v10": 13,
-    "skill_v10": -28.9,
-    "skill_sub": -609.3
-   },
-   {
-    "icao": "KAUG",
-    "n": 4785,
-    "events_v10": 61,
-    "skill_v10": -25.1,
-    "skill_sub": -278.9
-   },
-   {
-    "icao": "KRHP",
-    "n": 3707,
-    "events_v10": 29,
-    "skill_v10": -23.2,
-    "skill_sub": -17.7
-   },
-   {
-    "icao": "KFWA",
-    "n": 4777,
-    "events_v10": 24,
-    "skill_v10": -21.5,
-    "skill_sub": -2740.0
-   },
-   {
-    "icao": "KEKN",
-    "n": 4903,
-    "events_v10": 171,
-    "skill_v10": -21.2,
-    "skill_sub": -16.9
-   },
-   {
-    "icao": "KSBN",
-    "n": 4410,
-    "events_v10": 29,
-    "skill_v10": -15.2,
-    "skill_sub": -10.6
-   },
-   {
-    "icao": "CYSC",
-    "n": 4726,
-    "events_v10": 17,
-    "skill_v10": -14.7,
-    "skill_sub": -6.5
-   },
-   {
-    "icao": "KEWB",
-    "n": 4738,
+    "icao": "KMSN",
+    "n": 5564,
     "events_v10": 15,
-    "skill_v10": -14.7,
-    "skill_sub": -207.4
+    "skill_v10": -50.3,
+    "skill_sub": -1457.6
    },
    {
-    "icao": "KUNV",
-    "n": 4718,
-    "events_v10": 16,
-    "skill_v10": -14.6,
-    "skill_sub": -14.2
-   },
-   {
-    "icao": "KHTS",
-    "n": 4904,
-    "events_v10": 22,
-    "skill_v10": -14.3,
-    "skill_sub": -8.5
-   },
-   {
-    "icao": "KHUL",
-    "n": 4734,
-    "events_v10": 29,
-    "skill_v10": -12.9,
-    "skill_sub": -611.3
-   },
-   {
-    "icao": "CYYU",
-    "n": 4676,
-    "events_v10": 28,
-    "skill_v10": -12.5,
-    "skill_sub": 3.3
-   },
-   {
-    "icao": "KMGW",
-    "n": 4736,
-    "events_v10": 15,
-    "skill_v10": -12.3,
-    "skill_sub": -156.5
-   },
-   {
-    "icao": "CYZX",
-    "n": 4611,
-    "events_v10": 19,
-    "skill_v10": -12.0,
-    "skill_sub": -661.4
-   },
-   {
-    "icao": "CYGL",
-    "n": 4711,
-    "events_v10": 69,
-    "skill_v10": -11.2,
-    "skill_sub": -3.3
-   },
-   {
-    "icao": "KJQF",
-    "n": 4537,
-    "events_v10": 13,
-    "skill_v10": -11.0,
-    "skill_sub": -7.3
-   },
-   {
-    "icao": "KMBS",
-    "n": 4706,
-    "events_v10": 15,
-    "skill_v10": -10.9,
-    "skill_sub": -8.6
-   },
-   {
-    "icao": "KSMX",
-    "n": 4816,
-    "events_v10": 171,
-    "skill_v10": -10.7,
-    "skill_sub": -99.5
-   },
-   {
-    "icao": "CYWK",
-    "n": 4587,
-    "events_v10": 35,
-    "skill_v10": -10.5,
-    "skill_sub": -153.1
-   },
-   {
-    "icao": "KLEB",
-    "n": 4760,
-    "events_v10": 139,
-    "skill_v10": -10.5,
-    "skill_sub": 6.8
-   },
-   {
-    "icao": "KPWM",
-    "n": 4760,
-    "events_v10": 62,
-    "skill_v10": -9.6,
-    "skill_sub": -18.3
-   },
-   {
-    "icao": "KSHD",
-    "n": 4892,
-    "events_v10": 22,
-    "skill_v10": -9.5,
-    "skill_sub": -11.8
-   },
-   {
-    "icao": "KCRW",
-    "n": 4729,
-    "events_v10": 135,
-    "skill_v10": -9.4,
-    "skill_sub": -19.6
-   },
-   {
-    "icao": "CBBC",
-    "n": 4428,
-    "events_v10": 130,
-    "skill_v10": -8.7,
-    "skill_sub": -4.8
-   },
-   {
-    "icao": "CYZT",
-    "n": 4703,
-    "events_v10": 61,
-    "skill_v10": -8.0,
-    "skill_sub": -76.9
-   },
-   {
-    "icao": "CYNM",
-    "n": 4761,
-    "events_v10": 27,
-    "skill_v10": -7.5,
-    "skill_sub": -4.3
-   },
-   {
-    "icao": "KSME",
-    "n": 4860,
-    "events_v10": 29,
-    "skill_v10": -7.2,
-    "skill_sub": -9.5
-   },
-   {
-    "icao": "KVAD",
-    "n": 4280,
-    "events_v10": 11,
-    "skill_v10": -7.2,
-    "skill_sub": 4.9
-   },
-   {
-    "icao": "KDPA",
-    "n": 4827,
-    "events_v10": 31,
-    "skill_v10": -7.0,
-    "skill_sub": -2412.1
-   },
-   {
-    "icao": "KSTS",
-    "n": 4805,
-    "events_v10": 151,
-    "skill_v10": -7.0,
-    "skill_sub": -6.2
-   },
-   {
-    "icao": "KLSF",
-    "n": 4170,
-    "events_v10": 29,
-    "skill_v10": -6.8,
-    "skill_sub": -11.7
-   },
-   {
-    "icao": "KRME",
-    "n": 4816,
-    "events_v10": 17,
-    "skill_v10": -6.7,
-    "skill_sub": -962.1
-   },
-   {
-    "icao": "KSSC",
-    "n": 4300,
-    "events_v10": 45,
-    "skill_v10": -6.7,
-    "skill_sub": -18.7
-   },
-   {
-    "icao": "KMGC",
-    "n": 4121,
-    "events_v10": 34,
-    "skill_v10": -6.4,
-    "skill_sub": -1.3
-   },
-   {
-    "icao": "KMHT",
-    "n": 4769,
-    "events_v10": 18,
-    "skill_v10": -6.1,
-    "skill_sub": -3.6
-   },
-   {
-    "icao": "KBLF",
-    "n": 4440,
-    "events_v10": 64,
-    "skill_v10": -6.0,
-    "skill_sub": -5.7
-   },
-   {
-    "icao": "KPQI",
-    "n": 4706,
-    "events_v10": 44,
-    "skill_v10": -6.0,
-    "skill_sub": -213.3
-   },
-   {
-    "icao": "KHKY",
-    "n": 4782,
-    "events_v10": 93,
-    "skill_v10": -5.8,
-    "skill_sub": -1.2
-   },
-   {
-    "icao": "KWRI",
-    "n": 4301,
-    "events_v10": 11,
-    "skill_v10": -5.8,
-    "skill_sub": -106.3
-   },
-   {
-    "icao": "KEET",
-    "n": 4779,
-    "events_v10": 16,
-    "skill_v10": -5.7,
-    "skill_sub": -768.8
-   },
-   {
-    "icao": "KFDY",
-    "n": 4787,
-    "events_v10": 16,
-    "skill_v10": -5.4,
-    "skill_sub": 7.4
-   },
-   {
-    "icao": "KHYA",
-    "n": 4758,
-    "events_v10": 15,
-    "skill_v10": -5.2,
-    "skill_sub": -66.9
-   },
-   {
-    "icao": "KCIU",
-    "n": 4750,
-    "events_v10": 16,
-    "skill_v10": -5.1,
-    "skill_sub": -116.2
+    "icao": "CYGW",
+    "n": 4924,
+    "events_v10": 106,
+    "skill_v10": -42.9,
+    "skill_sub": -26.6
    },
    {
     "icao": "KCKB",
-    "n": 4791,
+    "n": 5592,
     "events_v10": 22,
-    "skill_v10": -5.0,
-    "skill_sub": -259.3
+    "skill_v10": -42.2,
+    "skill_sub": -423.0
    },
    {
-    "icao": "KSDM",
-    "n": 4773,
-    "events_v10": 51,
-    "skill_v10": -4.9,
-    "skill_sub": -4.9
+    "icao": "KGUS",
+    "n": 4772,
+    "events_v10": 16,
+    "skill_v10": -41.2,
+    "skill_sub": -817.4
    },
    {
-    "icao": "KOWD",
-    "n": 4777,
-    "events_v10": 197,
-    "skill_v10": -4.8,
-    "skill_sub": 4.2
+    "icao": "KACV",
+    "n": 5544,
+    "events_v10": 219,
+    "skill_v10": -38.8,
+    "skill_sub": -90.5
    },
    {
-    "icao": "MMTJ",
-    "n": 4767,
-    "events_v10": 17,
-    "skill_v10": -4.6,
-    "skill_sub": -11.6
-   },
-   {
-    "icao": "KBAK",
-    "n": 3218,
-    "events_v10": 20,
-    "skill_v10": -4.3,
-    "skill_sub": -3.8
-   },
-   {
-    "icao": "KCMA",
-    "n": 4750,
-    "events_v10": 42,
-    "skill_v10": -4.0,
-    "skill_sub": -8.0
-   },
-   {
-    "icao": "KPRB",
-    "n": 4729,
+    "icao": "KBVI",
+    "n": 5755,
     "events_v10": 10,
-    "skill_v10": -3.8,
-    "skill_sub": -3.5
+    "skill_v10": -38.7,
+    "skill_sub": -392.0
    },
    {
-    "icao": "KGSP",
-    "n": 4774,
+    "icao": "KCSV",
+    "n": 5633,
+    "events_v10": 19,
+    "skill_v10": -38.2,
+    "skill_sub": -1166.7
+   },
+   {
+    "icao": "KEKN",
+    "n": 5672,
+    "events_v10": 171,
+    "skill_v10": -36.7,
+    "skill_sub": -31.1
+   },
+   {
+    "icao": "KSHD",
+    "n": 5986,
+    "events_v10": 22,
+    "skill_v10": -32.6,
+    "skill_sub": -35.4
+   },
+   {
+    "icao": "KCHO",
+    "n": 5533,
+    "events_v10": 18,
+    "skill_v10": -27.6,
+    "skill_sub": -19.5
+   },
+   {
+    "icao": "CBBC",
+    "n": 5294,
+    "events_v10": 130,
+    "skill_v10": -25.0,
+    "skill_sub": -22.6
+   },
+   {
+    "icao": "KFWA",
+    "n": 5566,
+    "events_v10": 24,
+    "skill_v10": -23.1,
+    "skill_sub": -2682.0
+   },
+   {
+    "icao": "KATY",
+    "n": 5424,
+    "events_v10": 25,
+    "skill_v10": -22.8,
+    "skill_sub": -7.1
+   },
+   {
+    "icao": "KAUG",
+    "n": 5627,
+    "events_v10": 61,
+    "skill_v10": -21.9,
+    "skill_sub": -234.1
+   },
+   {
+    "icao": "CYSC",
+    "n": 5676,
+    "events_v10": 17,
+    "skill_v10": -19.9,
+    "skill_sub": -11.8
+   },
+   {
+    "icao": "CYZT",
+    "n": 5555,
+    "events_v10": 83,
+    "skill_v10": -18.0,
+    "skill_sub": -121.2
+   },
+   {
+    "icao": "KSBN",
+    "n": 5214,
+    "events_v10": 29,
+    "skill_v10": -17.6,
+    "skill_sub": -11.5
+   },
+   {
+    "icao": "KSTS",
+    "n": 5645,
+    "events_v10": 151,
+    "skill_v10": -16.1,
+    "skill_sub": -12.0
+   },
+   {
+    "icao": "KMGW",
+    "n": 5600,
+    "events_v10": 46,
+    "skill_v10": -15.2,
+    "skill_sub": -32.0
+   },
+   {
+    "icao": "KRHP",
+    "n": 4665,
+    "events_v10": 51,
+    "skill_v10": -14.0,
+    "skill_sub": -21.3
+   },
+   {
+    "icao": "KSMX",
+    "n": 5619,
+    "events_v10": 171,
+    "skill_v10": -13.9,
+    "skill_sub": -101.6
+   },
+   {
+    "icao": "CYYU",
+    "n": 5572,
+    "events_v10": 28,
+    "skill_v10": -13.6,
+    "skill_sub": 2.4
+   },
+   {
+    "icao": "KEWB",
+    "n": 5574,
+    "events_v10": 15,
+    "skill_v10": -13.1,
+    "skill_sub": -192.2
+   },
+   {
+    "icao": "KJQF",
+    "n": 5417,
     "events_v10": 13,
-    "skill_v10": -3.7,
-    "skill_sub": -1192.0
+    "skill_v10": -12.7,
+    "skill_sub": -7.9
+   },
+   {
+    "icao": "KHUL",
+    "n": 5576,
+    "events_v10": 29,
+    "skill_v10": -12.5,
+    "skill_sub": -511.0
+   },
+   {
+    "icao": "WILL",
+    "n": 5999,
+    "events_v10": 181,
+    "skill_v10": -12.5,
+    "skill_sub": -33.0
+   },
+   {
+    "icao": "CYZX",
+    "n": 5576,
+    "events_v10": 19,
+    "skill_v10": -12.4,
+    "skill_sub": -595.2
+   },
+   {
+    "icao": "KFDY",
+    "n": 5638,
+    "events_v10": 16,
+    "skill_v10": -11.2,
+    "skill_sub": 3.8
+   },
+   {
+    "icao": "KMBG",
+    "n": 5416,
+    "events_v10": 10,
+    "skill_v10": -11.2,
+    "skill_sub": -151.0
+   },
+   {
+    "icao": "KBLF",
+    "n": 5260,
+    "events_v10": 64,
+    "skill_v10": -10.4,
+    "skill_sub": -10.5
+   },
+   {
+    "icao": "KMBS",
+    "n": 5567,
+    "events_v10": 15,
+    "skill_v10": -10.4,
+    "skill_sub": -8.4
    },
    {
     "icao": "KROA",
-    "n": 4672,
+    "n": 5514,
     "events_v10": 10,
-    "skill_v10": -3.7,
-    "skill_sub": -1.8
+    "skill_v10": -9.7,
+    "skill_sub": -5.0
+   },
+   {
+    "icao": "KOWD",
+    "n": 5612,
+    "events_v10": 283,
+    "skill_v10": -9.5,
+    "skill_sub": 3.9
+   },
+   {
+    "icao": "KPWM",
+    "n": 5480,
+    "events_v10": 62,
+    "skill_v10": -9.2,
+    "skill_sub": -18.6
+   },
+   {
+    "icao": "CYWK",
+    "n": 5528,
+    "events_v10": 35,
+    "skill_v10": -9.0,
+    "skill_sub": -129.2
+   },
+   {
+    "icao": "KLSF",
+    "n": 5015,
+    "events_v10": 29,
+    "skill_v10": -8.9,
+    "skill_sub": -14.1
+   },
+   {
+    "icao": "CYSF",
+    "n": 5557,
+    "events_v10": 105,
+    "skill_v10": -8.7,
+    "skill_sub": -10.6
+   },
+   {
+    "icao": "KMGC",
+    "n": 5215,
+    "events_v10": 34,
+    "skill_v10": -8.6,
+    "skill_sub": -4.2
+   },
+   {
+    "icao": "CYQV",
+    "n": 5238,
+    "events_v10": 29,
+    "skill_v10": -8.2,
+    "skill_sub": -2.1
+   },
+   {
+    "icao": "KPRB",
+    "n": 5549,
+    "events_v10": 10,
+    "skill_v10": -8.0,
+    "skill_sub": -7.5
+   },
+   {
+    "icao": "KYKN",
+    "n": 5570,
+    "events_v10": 76,
+    "skill_v10": -7.8,
+    "skill_sub": -5.5
+   },
+   {
+    "icao": "KRME",
+    "n": 5636,
+    "events_v10": 17,
+    "skill_v10": -7.6,
+    "skill_sub": -1061.8
+   },
+   {
+    "icao": "KSSC",
+    "n": 5154,
+    "events_v10": 45,
+    "skill_v10": -7.5,
+    "skill_sub": -21.6
+   },
+   {
+    "icao": "KVAD",
+    "n": 5066,
+    "events_v10": 11,
+    "skill_v10": -7.2,
+    "skill_sub": 4.6
+   },
+   {
+    "icao": "KMRY",
+    "n": 5568,
+    "events_v10": 89,
+    "skill_v10": -7.1,
+    "skill_sub": -42.3
+   },
+   {
+    "icao": "CYNM",
+    "n": 5679,
+    "events_v10": 27,
+    "skill_v10": -7.0,
+    "skill_sub": -3.2
+   },
+   {
+    "icao": "KALO",
+    "n": 5621,
+    "events_v10": 53,
+    "skill_v10": -6.5,
+    "skill_sub": -1033.7
+   },
+   {
+    "icao": "KMHT",
+    "n": 5611,
+    "events_v10": 18,
+    "skill_v10": -6.5,
+    "skill_sub": -4.2
+   },
+   {
+    "icao": "KSME",
+    "n": 5935,
+    "events_v10": 29,
+    "skill_v10": -6.4,
+    "skill_sub": -9.2
+   },
+   {
+    "icao": "KWRI",
+    "n": 5169,
+    "events_v10": 11,
+    "skill_v10": -6.3,
+    "skill_sub": -106.5
+   },
+   {
+    "icao": "MMTJ",
+    "n": 5609,
+    "events_v10": 17,
+    "skill_v10": -5.6,
+    "skill_sub": -31.6
+   },
+   {
+    "icao": "KHYA",
+    "n": 5600,
+    "events_v10": 15,
+    "skill_v10": -5.4,
+    "skill_sub": -74.3
+   },
+   {
+    "icao": "KGSP",
+    "n": 5563,
+    "events_v10": 13,
+    "skill_v10": -5.3,
+    "skill_sub": -1179.9
+   },
+   {
+    "icao": "KMIV",
+    "n": 5565,
+    "events_v10": 19,
+    "skill_v10": -5.3,
+    "skill_sub": -150.7
+   },
+   {
+    "icao": "CYGL",
+    "n": 5640,
+    "events_v10": 139,
+    "skill_v10": -5.1,
+    "skill_sub": -1.1
+   },
+   {
+    "icao": "KBAK",
+    "n": 3653,
+    "events_v10": 20,
+    "skill_v10": -4.9,
+    "skill_sub": -4.4
+   },
+   {
+    "icao": "KCIU",
+    "n": 5552,
+    "events_v10": 16,
+    "skill_v10": -4.9,
+    "skill_sub": -113.9
+   },
+   {
+    "icao": "KRIC",
+    "n": 5589,
+    "events_v10": 10,
+    "skill_v10": -4.7,
+    "skill_sub": -857.2
+   },
+   {
+    "icao": "KPQI",
+    "n": 5548,
+    "events_v10": 44,
+    "skill_v10": -4.5,
+    "skill_sub": -198.8
+   },
+   {
+    "icao": "KUNV",
+    "n": 5609,
+    "events_v10": 36,
+    "skill_v10": -4.5,
+    "skill_sub": -4.0
    },
    {
     "icao": "KOSU",
-    "n": 4720,
+    "n": 5557,
     "events_v10": 32,
-    "skill_v10": -3.5,
+    "skill_v10": -4.4,
+    "skill_sub": -1.6
+   },
+   {
+    "icao": "KCMA",
+    "n": 5570,
+    "events_v10": 42,
+    "skill_v10": -4.3,
+    "skill_sub": -8.5
+   },
+   {
+    "icao": "KOFK",
+    "n": 5537,
+    "events_v10": 123,
+    "skill_v10": -4.0,
+    "skill_sub": -7.6
+   },
+   {
+    "icao": "KHON",
+    "n": 5519,
+    "events_v10": 52,
+    "skill_v10": -3.9,
+    "skill_sub": -13.1
+   },
+   {
+    "icao": "KOMA",
+    "n": 5596,
+    "events_v10": 33,
+    "skill_v10": -3.9,
     "skill_sub": -0.7
    },
    {
     "icao": "KART",
-    "n": 4786,
+    "n": 5608,
     "events_v10": 15,
-    "skill_v10": -3.4,
-    "skill_sub": -721.0
+    "skill_v10": -3.8,
+    "skill_sub": -700.4
    },
    {
-    "icao": "KFTK",
-    "n": 4212,
-    "events_v10": 30,
-    "skill_v10": -3.3,
-    "skill_sub": -8.9
+    "icao": "KLAF",
+    "n": 4998,
+    "events_v10": 118,
+    "skill_v10": -3.7,
+    "skill_sub": 0.3
    },
    {
-    "icao": "KMRY",
-    "n": 4726,
-    "events_v10": 89,
-    "skill_v10": -3.3,
-    "skill_sub": -35.1
-   },
-   {
-    "icao": "KNDZ",
-    "n": 4232,
-    "events_v10": 11,
-    "skill_v10": -3.2,
-    "skill_sub": -1.6
+    "icao": "KLEB",
+    "n": 5561,
+    "events_v10": 212,
+    "skill_v10": -3.6,
+    "skill_sub": 17.0
    },
    {
     "icao": "KAEX",
-    "n": 4640,
+    "n": 5482,
     "events_v10": 33,
-    "skill_v10": -3.1,
-    "skill_sub": -849.1
+    "skill_v10": -3.5,
+    "skill_sub": -854.1
    },
    {
-    "icao": "WILL",
-    "n": 4905,
-    "events_v10": 144,
-    "skill_v10": -3.1,
-    "skill_sub": 11.7
+    "icao": "KSDM",
+    "n": 5615,
+    "events_v10": 51,
+    "skill_v10": -3.5,
+    "skill_sub": -2.7
    },
    {
-    "icao": "KFHR",
-    "n": 4201,
-    "events_v10": 80,
+    "icao": "KNDZ",
+    "n": 4993,
+    "events_v10": 11,
+    "skill_v10": -3.4,
+    "skill_sub": -1.7
+   },
+   {
+    "icao": "CYYN",
+    "n": 5609,
+    "events_v10": 13,
+    "skill_v10": -3.3,
+    "skill_sub": 1.4
+   },
+   {
+    "icao": "CYXJ",
+    "n": 5651,
+    "events_v10": 163,
+    "skill_v10": -3.2,
+    "skill_sub": -2.6
+   },
+   {
+    "icao": "KCON",
+    "n": 5673,
+    "events_v10": 20,
+    "skill_v10": -3.1,
+    "skill_sub": -277.8
+   },
+   {
+    "icao": "KGYY",
+    "n": 5259,
+    "events_v10": 87,
+    "skill_v10": -3.1,
+    "skill_sub": -12.5
+   },
+   {
+    "icao": "KIND",
+    "n": 5597,
+    "events_v10": 22,
+    "skill_v10": -2.9,
+    "skill_sub": -866.0
+   },
+   {
+    "icao": "KAXN",
+    "n": 5575,
+    "events_v10": 24,
     "skill_v10": -2.8,
-    "skill_sub": -4.2
+    "skill_sub": -0.1
+   },
+   {
+    "icao": "CYPA",
+    "n": 5634,
+    "events_v10": 51,
+    "skill_v10": -2.7,
+    "skill_sub": 0.2
    },
    {
     "icao": "KFME",
     "n": 3912,
     "events_v10": 14,
-    "skill_v10": -2.8,
-    "skill_sub": -108.4
-   },
-   {
-    "icao": "KLAF",
-    "n": 4191,
-    "events_v10": 118,
-    "skill_v10": -2.8,
-    "skill_sub": 1.7
-   },
-   {
-    "icao": "KRIC",
-    "n": 4747,
-    "events_v10": 10,
     "skill_v10": -2.7,
-    "skill_sub": -491.8
+    "skill_sub": -142.3
+   },
+   {
+    "icao": "KFTK",
+    "n": 5094,
+    "events_v10": 30,
+    "skill_v10": -2.7,
+    "skill_sub": -9.9
    },
    {
     "icao": "KDXR",
-    "n": 4051,
+    "n": 4546,
     "events_v10": 24,
-    "skill_v10": -2.5,
-    "skill_sub": -4.6
+    "skill_v10": -2.6,
+    "skill_sub": -4.8
    },
    {
-    "icao": "KNFG",
-    "n": 4164,
-    "events_v10": 10,
-    "skill_v10": -2.5,
-    "skill_sub": -1.7
-   },
-   {
-    "icao": "KUOX",
-    "n": 4887,
+    "icao": "KHGR",
+    "n": 5616,
     "events_v10": 20,
-    "skill_v10": -2.4,
-    "skill_sub": -3.7
-   },
-   {
-    "icao": "KHLG",
-    "n": 4710,
-    "events_v10": 120,
-    "skill_v10": -2.3,
-    "skill_sub": 1.8
-   },
-   {
-    "icao": "KVCT",
-    "n": 4850,
-    "events_v10": 21,
-    "skill_v10": -2.3,
-    "skill_sub": -365.3
-   },
-   {
-    "icao": "CYNA",
-    "n": 4660,
-    "events_v10": 104,
-    "skill_v10": -2.2,
-    "skill_sub": 0.3
-   },
-   {
-    "icao": "KBVY",
-    "n": 4780,
-    "events_v10": 48,
-    "skill_v10": -2.2,
-    "skill_sub": 5.2
-   },
-   {
-    "icao": "KSUZ",
-    "n": 4875,
-    "events_v10": 19,
-    "skill_v10": -2.2,
-    "skill_sub": -225.9
-   },
-   {
-    "icao": "KCON",
-    "n": 4831,
-    "events_v10": 20,
-    "skill_v10": -2.1,
-    "skill_sub": -297.0
+    "skill_v10": -2.6,
+    "skill_sub": -2.2
    },
    {
     "icao": "KHVN",
-    "n": 3615,
+    "n": 4457,
     "events_v10": 13,
-    "skill_v10": -2.0,
+    "skill_v10": -2.6,
     "skill_sub": -0.5
    },
    {
-    "icao": "KPBG",
-    "n": 4783,
-    "events_v10": 16,
-    "skill_v10": -2.0,
-    "skill_sub": -3004.0
+    "icao": "KVCT",
+    "n": 5594,
+    "events_v10": 21,
+    "skill_v10": -2.6,
+    "skill_sub": -469.2
+   },
+   {
+    "icao": "KFHR",
+    "n": 5007,
+    "events_v10": 80,
+    "skill_v10": -2.5,
+    "skill_sub": -3.8
+   },
+   {
+    "icao": "KNSE",
+    "n": 5178,
+    "events_v10": 38,
+    "skill_v10": -2.5,
+    "skill_sub": -1.4
    },
    {
     "icao": "KDET",
-    "n": 4725,
+    "n": 5567,
     "events_v10": 15,
-    "skill_v10": -1.9,
-    "skill_sub": -0.7
+    "skill_v10": -2.4,
+    "skill_sub": -1.3
    },
    {
-    "icao": "CYBW",
-    "n": 4901,
-    "events_v10": 69,
-    "skill_v10": -1.8,
-    "skill_sub": 0.3
+    "icao": "KWST",
+    "n": 5501,
+    "events_v10": 30,
+    "skill_v10": -2.3,
+    "skill_sub": 3.9
+   },
+   {
+    "icao": "KPBG",
+    "n": 5566,
+    "events_v10": 16,
+    "skill_v10": -2.2,
+    "skill_sub": -3130.7
+   },
+   {
+    "icao": "KGTF",
+    "n": 5580,
+    "events_v10": 44,
+    "skill_v10": -2.1,
+    "skill_sub": -2.8
+   },
+   {
+    "icao": "KPOB",
+    "n": 5207,
+    "events_v10": 21,
+    "skill_v10": -2.0,
+    "skill_sub": -112.0
+   },
+   {
+    "icao": "KYIP",
+    "n": 5587,
+    "events_v10": 15,
+    "skill_v10": -2.0,
+    "skill_sub": 1.1
    },
    {
     "icao": "KBFD",
-    "n": 4811,
+    "n": 5653,
     "events_v10": 157,
-    "skill_v10": -1.8,
-    "skill_sub": 4.2
+    "skill_v10": -1.9,
+    "skill_sub": 3.5
    },
    {
-    "icao": "KOMA",
-    "n": 4754,
-    "events_v10": 33,
+    "icao": "KSUZ",
+    "n": 5947,
+    "events_v10": 19,
+    "skill_v10": -1.9,
+    "skill_sub": -203.9
+   },
+   {
+    "icao": "CYBD",
+    "n": 3346,
+    "events_v10": 10,
     "skill_v10": -1.8,
-    "skill_sub": -0.2
+    "skill_sub": -664.7
    },
    {
     "icao": "KSWF",
-    "n": 4348,
+    "n": 4980,
     "events_v10": 16,
     "skill_v10": -1.8,
-    "skill_sub": -1013.8
-   },
-   {
-    "icao": "KBHM",
-    "n": 4754,
-    "events_v10": 32,
-    "skill_v10": -1.7,
-    "skill_sub": -464.4
+    "skill_sub": -943.4
    },
    {
     "icao": "KEVV",
-    "n": 4584,
+    "n": 5043,
     "events_v10": 16,
-    "skill_v10": -1.6,
-    "skill_sub": -1412.8
+    "skill_v10": -1.7,
+    "skill_sub": -1553.5
    },
    {
-    "icao": "CYXJ",
-    "n": 4691,
-    "events_v10": 107,
-    "skill_v10": -1.6,
-    "skill_sub": -1.0
+    "icao": "KLUK",
+    "n": 5541,
+    "events_v10": 82,
+    "skill_v10": -1.7,
+    "skill_sub": 2.4
    },
    {
-    "icao": "CYPR",
-    "n": 4420,
-    "events_v10": 145,
+    "icao": "KBHM",
+    "n": 5596,
+    "events_v10": 32,
+    "skill_v10": -1.6,
+    "skill_sub": -375.0
+   },
+   {
+    "icao": "KBVY",
+    "n": 5622,
+    "events_v10": 48,
     "skill_v10": -1.5,
-    "skill_sub": -29.5
+    "skill_sub": 6.6
    },
    {
     "icao": "KHEF",
-    "n": 4630,
+    "n": 5486,
     "events_v10": 90,
     "skill_v10": -1.5,
     "skill_sub": -2.2
    },
    {
-    "icao": "KIND",
-    "n": 4776,
-    "events_v10": 22,
-    "skill_v10": -1.4,
-    "skill_sub": -1011.5
-   },
-   {
-    "icao": "KDHN",
-    "n": 4575,
-    "events_v10": 35,
-    "skill_v10": -1.3,
-    "skill_sub": -0.8
-   },
-   {
-    "icao": "KGYY",
-    "n": 4494,
-    "events_v10": 87,
-    "skill_v10": -1.3,
-    "skill_sub": -6.6
-   },
-   {
-    "icao": "KFPR",
-    "n": 4824,
-    "events_v10": 21,
-    "skill_v10": -1.2,
-    "skill_sub": 7.7
-   },
-   {
-    "icao": "KOLM",
-    "n": 4786,
-    "events_v10": 59,
-    "skill_v10": -1.2,
-    "skill_sub": 1.3
-   },
-   {
-    "icao": "KVRB",
-    "n": 4772,
-    "events_v10": 20,
-    "skill_v10": -1.2,
-    "skill_sub": 0.0
-   },
-   {
-    "icao": "KWST",
-    "n": 4659,
-    "events_v10": 30,
-    "skill_v10": -1.2,
-    "skill_sub": 4.7
-   },
-   {
-    "icao": "KPOB",
-    "n": 4317,
-    "events_v10": 21,
-    "skill_v10": -1.1,
-    "skill_sub": -121.8
-   },
-   {
-    "icao": "KATY",
-    "n": 4611,
-    "events_v10": 25,
-    "skill_v10": -1.0,
-    "skill_sub": -0.3
-   },
-   {
-    "icao": "KHBG",
-    "n": 4719,
-    "events_v10": 17,
-    "skill_v10": -1.0,
-    "skill_sub": -229.7
-   },
-   {
-    "icao": "KNQA",
-    "n": 4469,
+    "icao": "KNFG",
+    "n": 4794,
     "events_v10": 10,
-    "skill_v10": -1.0,
-    "skill_sub": 6.6
-   },
-   {
-    "icao": "KRSW",
-    "n": 4773,
-    "events_v10": 20,
-    "skill_v10": -1.0,
-    "skill_sub": 84.1
-   },
-   {
-    "icao": "KIPT",
-    "n": 4757,
-    "events_v10": 35,
-    "skill_v10": -0.9,
-    "skill_sub": -1104.3
-   },
-   {
-    "icao": "CYYN",
-    "n": 4727,
-    "events_v10": 13,
-    "skill_v10": -0.8,
-    "skill_sub": 3.4
-   },
-   {
-    "icao": "KMLU",
-    "n": 4746,
-    "events_v10": 18,
-    "skill_v10": -0.8,
-    "skill_sub": -511.9
+    "skill_v10": -1.5,
+    "skill_sub": -1.3
    },
    {
     "icao": "KEAT",
-    "n": 3767,
+    "n": 4552,
     "events_v10": 59,
-    "skill_v10": -0.7,
+    "skill_v10": -1.4,
     "skill_sub": -0.0
    },
    {
+    "icao": "KFPR",
+    "n": 5608,
+    "events_v10": 21,
+    "skill_v10": -1.3,
+    "skill_sub": -38.2
+   },
+   {
+    "icao": "KONP",
+    "n": 5973,
+    "events_v10": 289,
+    "skill_v10": -1.3,
+    "skill_sub": -17.6
+   },
+   {
+    "icao": "KRFD",
+    "n": 5567,
+    "events_v10": 40,
+    "skill_v10": -1.2,
+    "skill_sub": 3.3
+   },
+   {
+    "icao": "KUOX",
+    "n": 5981,
+    "events_v10": 20,
+    "skill_v10": -1.2,
+    "skill_sub": -3.0
+   },
+   {
+    "icao": "MYGF",
+    "n": 3948,
+    "events_v10": 17,
+    "skill_v10": -1.2,
+    "skill_sub": 100.0
+   },
+   {
+    "icao": "KOLM",
+    "n": 5606,
+    "events_v10": 59,
+    "skill_v10": -1.1,
+    "skill_sub": 0.9
+   },
+   {
+    "icao": "KDHN",
+    "n": 5401,
+    "events_v10": 35,
+    "skill_v10": -1.0,
+    "skill_sub": -0.7
+   },
+   {
+    "icao": "KNQA",
+    "n": 5293,
+    "events_v10": 10,
+    "skill_v10": -1.0,
+    "skill_sub": 6.1
+   },
+   {
+    "icao": "KOXB",
+    "n": 5473,
+    "events_v10": 41,
+    "skill_v10": -1.0,
+    "skill_sub": -32.8
+   },
+   {
+    "icao": "KVRB",
+    "n": 5508,
+    "events_v10": 20,
+    "skill_v10": -1.0,
+    "skill_sub": 0.0
+   },
+   {
+    "icao": "KGMU",
+    "n": 5571,
+    "events_v10": 13,
+    "skill_v10": -0.9,
+    "skill_sub": -475.8
+   },
+   {
+    "icao": "KIPT",
+    "n": 5618,
+    "events_v10": 35,
+    "skill_v10": -0.9,
+    "skill_sub": -961.8
+   },
+   {
+    "icao": "KPNA",
+    "n": 5765,
+    "events_v10": 14,
+    "skill_v10": -0.9,
+    "skill_sub": -533.9
+   },
+   {
+    "icao": "KRSW",
+    "n": 5527,
+    "events_v10": 20,
+    "skill_v10": -0.9,
+    "skill_sub": 85.7
+   },
+   {
+    "icao": "KIDA",
+    "n": 5638,
+    "events_v10": 10,
+    "skill_v10": -0.8,
+    "skill_sub": -613.7
+   },
+   {
+    "icao": "KMLU",
+    "n": 5588,
+    "events_v10": 18,
+    "skill_v10": -0.8,
+    "skill_sub": -556.5
+   },
+   {
+    "icao": "KORL",
+    "n": 5404,
+    "events_v10": 10,
+    "skill_v10": -0.8,
+    "skill_sub": -32.8
+   },
+   {
     "icao": "CYCB",
-    "n": 4688,
+    "n": 5648,
     "events_v10": 47,
+    "skill_v10": -0.8,
+    "skill_sub": -0.5
+   },
+   {
+    "icao": "CYYE",
+    "n": 5694,
+    "events_v10": 245,
+    "skill_v10": -0.8,
+    "skill_sub": 1.2
+   },
+   {
+    "icao": "KGCC",
+    "n": 5585,
+    "events_v10": 16,
     "skill_v10": -0.7,
-    "skill_sub": -0.3
+    "skill_sub": -0.6
    },
    {
     "icao": "CYMT",
-    "n": 4669,
+    "n": 5650,
     "events_v10": 54,
     "skill_v10": -0.6,
-    "skill_sub": 1.9
+    "skill_sub": 1.6
    },
    {
     "icao": "KAPF",
-    "n": 4816,
+    "n": 5614,
     "events_v10": 17,
     "skill_v10": -0.6,
-    "skill_sub": 80.3
+    "skill_sub": 77.9
    },
    {
     "icao": "KCEZ",
-    "n": 4496,
+    "n": 4866,
     "events_v10": 14,
     "skill_v10": -0.6,
     "skill_sub": 100.0
    },
    {
     "icao": "KDAA",
-    "n": 4222,
+    "n": 5078,
     "events_v10": 13,
     "skill_v10": -0.6,
-    "skill_sub": -173.2
+    "skill_sub": -199.1
+   },
+   {
+    "icao": "KGRI",
+    "n": 5615,
+    "events_v10": 136,
+    "skill_v10": -0.6,
+    "skill_sub": -0.6
+   },
+   {
+    "icao": "KLOU",
+    "n": 5561,
+    "events_v10": 11,
+    "skill_v10": -0.6,
+    "skill_sub": -326.5
    },
    {
     "icao": "KSVN",
-    "n": 4294,
+    "n": 5162,
     "events_v10": 35,
     "skill_v10": -0.6,
-    "skill_sub": -264.0
+    "skill_sub": -284.6
    },
    {
-    "icao": "MUVR",
-    "n": 4761,
-    "events_v10": 10,
+    "icao": "CYFS",
+    "n": 4386,
+    "events_v10": 196,
     "skill_v10": -0.6,
-    "skill_sub": 100.0
+    "skill_sub": 0.2
    },
    {
-    "icao": "KERI",
-    "n": 4786,
-    "events_v10": 13,
+    "icao": "CYHU",
+    "n": 5589,
+    "events_v10": 21,
     "skill_v10": -0.5,
-    "skill_sub": -0.1
+    "skill_sub": 3.0
+   },
+   {
+    "icao": "KADW",
+    "n": 5060,
+    "events_v10": 12,
+    "skill_v10": -0.5,
+    "skill_sub": -139.2
    },
    {
     "icao": "KHOU",
-    "n": 4768,
+    "n": 5610,
     "events_v10": 16,
     "skill_v10": -0.5,
     "skill_sub": 100.0
    },
    {
-    "icao": "KOLS",
-    "n": 4605,
-    "events_v10": 15,
+    "icao": "KILG",
+    "n": 5503,
+    "events_v10": 16,
     "skill_v10": -0.5,
-    "skill_sub": 55.4
+    "skill_sub": -132.4
    },
    {
-    "icao": "KHYI",
-    "n": 4785,
-    "events_v10": 37,
-    "skill_v10": -0.4,
-    "skill_sub": 1.1
-   },
-   {
-    "icao": "KIDA",
-    "n": 4758,
+    "icao": "KPDT",
+    "n": 5566,
     "events_v10": 10,
-    "skill_v10": -0.4,
-    "skill_sub": -458.9
+    "skill_v10": -0.5,
+    "skill_sub": 100.0
    },
    {
-    "icao": "KJBR",
-    "n": 4749,
-    "events_v10": 19,
+    "icao": "KRDM",
+    "n": 5587,
+    "events_v10": 26,
+    "skill_v10": -0.5,
+    "skill_sub": 43.1
+   },
+   {
+    "icao": "MUVR",
+    "n": 5582,
+    "events_v10": 10,
+    "skill_v10": -0.5,
+    "skill_sub": 100.0
+   },
+   {
+    "icao": "KJFK",
+    "n": 5618,
+    "events_v10": 14,
     "skill_v10": -0.4,
-    "skill_sub": -181.4
+    "skill_sub": 0.1
    },
    {
     "icao": "KNBC",
-    "n": 4549,
+    "n": 5368,
     "events_v10": 40,
     "skill_v10": -0.4,
     "skill_sub": -0.1
    },
    {
     "icao": "KPNE",
-    "n": 4753,
+    "n": 5595,
     "events_v10": 11,
     "skill_v10": -0.4,
-    "skill_sub": -261.0
+    "skill_sub": -271.8
    },
    {
-    "icao": "KADW",
-    "n": 4192,
-    "events_v10": 12,
-    "skill_v10": -0.3,
-    "skill_sub": -84.7
-   },
-   {
-    "icao": "KJFK",
-    "n": 4776,
+    "icao": "KRAP",
+    "n": 5551,
     "events_v10": 14,
-    "skill_v10": -0.3,
-    "skill_sub": 0.1
+    "skill_v10": -0.4,
+    "skill_sub": -1.5
    },
    {
-    "icao": "KLOU",
-    "n": 4719,
-    "events_v10": 11,
-    "skill_v10": -0.3,
-    "skill_sub": -284.6
+    "icao": "UHMA",
+    "n": 5991,
+    "events_v10": 119,
+    "skill_v10": -0.4,
+    "skill_sub": -0.7
    },
    {
-    "icao": "KMMU",
-    "n": 4804,
-    "events_v10": 14,
+    "icao": "KAIA",
+    "n": 5601,
+    "events_v10": 57,
     "skill_v10": -0.3,
-    "skill_sub": 8.8
+    "skill_sub": 0.7
    },
    {
-    "icao": "KSFB",
-    "n": 4693,
+    "icao": "KERI",
+    "n": 5628,
     "events_v10": 13,
     "skill_v10": -0.3,
-    "skill_sub": -131.7
+    "skill_sub": -0.0
+   },
+   {
+    "icao": "KFAF",
+    "n": 5156,
+    "events_v10": 28,
+    "skill_v10": -0.3,
+    "skill_sub": -0.0
+   },
+   {
+    "icao": "KJBR",
+    "n": 5591,
+    "events_v10": 19,
+    "skill_v10": -0.3,
+    "skill_sub": -184.8
+   },
+   {
+    "icao": "KPVD",
+    "n": 5641,
+    "events_v10": 39,
+    "skill_v10": -0.3,
+    "skill_sub": -2.2
+   },
+   {
+    "icao": "KSLE",
+    "n": 4967,
+    "events_v10": 54,
+    "skill_v10": -0.3,
+    "skill_sub": -0.3
+   },
+   {
+    "icao": "KHBG",
+    "n": 5561,
+    "events_v10": 17,
+    "skill_v10": -0.2,
+    "skill_sub": -177.7
    },
    {
     "icao": "KMTN",
-    "n": 4663,
+    "n": 5438,
     "events_v10": 30,
     "skill_v10": -0.2,
-    "skill_sub": -209.1
+    "skill_sub": -199.3
    },
    {
     "icao": "KNHK",
-    "n": 4286,
+    "n": 5064,
     "events_v10": 39,
     "skill_v10": -0.2,
     "skill_sub": -0.0
    },
    {
-    "icao": "KORL",
-    "n": 4562,
-    "events_v10": 10,
+    "icao": "KOLS",
+    "n": 5429,
+    "events_v10": 15,
     "skill_v10": -0.2,
-    "skill_sub": 13.7
+    "skill_sub": 62.0
    },
    {
-    "icao": "KOXB",
-    "n": 4626,
-    "events_v10": 41,
+    "icao": "KSFB",
+    "n": 5513,
+    "events_v10": 13,
     "skill_v10": -0.2,
-    "skill_sub": -10.7
-   },
-   {
-    "icao": "KSLE",
-    "n": 4145,
-    "events_v10": 54,
-    "skill_v10": -0.2,
-    "skill_sub": -0.2
+    "skill_sub": -147.4
    },
    {
     "icao": "KTIX",
-    "n": 3281,
-    "events_v10": 16,
+    "n": 3717,
+    "events_v10": 17,
     "skill_v10": -0.2,
-    "skill_sub": -748.5
+    "skill_sub": -898.8
    },
    {
-    "icao": "CYYD",
-    "n": 4686,
-    "events_v10": 49,
+    "icao": "CYWL",
+    "n": 5638,
+    "events_v10": 89,
     "skill_v10": -0.1,
-    "skill_sub": 3.3
+    "skill_sub": 67.2
    },
    {
     "icao": "KAPN",
-    "n": 4716,
+    "n": 5558,
     "events_v10": 33,
     "skill_v10": -0.1,
-    "skill_sub": -1.3
-   },
-   {
-    "icao": "KBAD",
-    "n": 4213,
-    "events_v10": 13,
-    "skill_v10": -0.1,
-    "skill_sub": -35.6
-   },
-   {
-    "icao": "KGMU",
-    "n": 4760,
-    "events_v10": 13,
-    "skill_v10": -0.1,
-    "skill_sub": -700.6
+    "skill_sub": -1.5
    },
    {
     "icao": "KHRT",
-    "n": 4317,
+    "n": 5141,
     "events_v10": 11,
     "skill_v10": -0.1,
-    "skill_sub": -135.8
+    "skill_sub": -200.0
+   },
+   {
+    "icao": "KLGU",
+    "n": 5213,
+    "events_v10": 29,
+    "skill_v10": -0.1,
+    "skill_sub": -442.6
+   },
+   {
+    "icao": "KMFE",
+    "n": 5611,
+    "events_v10": 12,
+    "skill_v10": -0.1,
+    "skill_sub": 100.0
+   },
+   {
+    "icao": "KBAD",
+    "n": 5081,
+    "events_v10": 13,
+    "skill_v10": 0.0,
+    "skill_sub": -36.4
+   },
+   {
+    "icao": "KBKW",
+    "n": 5788,
+    "events_v10": 151,
+    "skill_v10": 0.0,
+    "skill_sub": -26.6
+   },
+   {
+    "icao": "KBXM",
+    "n": 5535,
+    "events_v10": 50,
+    "skill_v10": -0.0,
+    "skill_sub": -2.2
    },
    {
     "icao": "KDAG",
-    "n": 4753,
+    "n": 5559,
     "events_v10": 15,
     "skill_v10": -0.0,
     "skill_sub": 100.0
    },
    {
     "icao": "KELP",
-    "n": 4836,
+    "n": 5678,
     "events_v10": 29,
     "skill_v10": -0.0,
     "skill_sub": 100.0
    },
    {
-    "icao": "KFAF",
-    "n": 4288,
-    "events_v10": 28,
-    "skill_v10": 0.0,
-    "skill_sub": -0.0
-   },
-   {
-    "icao": "KGCC",
-    "n": 4743,
-    "events_v10": 16,
-    "skill_v10": -0.0,
-    "skill_sub": 0.0
-   },
-   {
     "icao": "KGJT",
-    "n": 4759,
+    "n": 5601,
     "events_v10": 11,
     "skill_v10": -0.0,
     "skill_sub": 100.0
    },
    {
     "icao": "KHST",
-    "n": 4054,
+    "n": 4877,
     "events_v10": 13,
     "skill_v10": 0.0,
     "skill_sub": 0.0
    },
    {
-    "icao": "KILG",
-    "n": 4703,
-    "events_v10": 16,
-    "skill_v10": 0.0,
-    "skill_sub": -225.2
-   },
-   {
     "icao": "KINW",
-    "n": 4742,
+    "n": 5584,
     "events_v10": 15,
-    "skill_v10": -0.0,
-    "skill_sub": 100.0
-   },
-   {
-    "icao": "KLGU",
-    "n": 4371,
-    "events_v10": 29,
-    "skill_v10": -0.0,
-    "skill_sub": -231.6
-   },
-   {
-    "icao": "KMDH",
-    "n": 3047,
-    "events_v10": 10,
-    "skill_v10": -0.0,
-    "skill_sub": -160.5
-   },
-   {
-    "icao": "KMFE",
-    "n": 4788,
-    "events_v10": 12,
     "skill_v10": -0.0,
     "skill_sub": 100.0
    },
    {
     "icao": "KMKC",
-    "n": 4792,
+    "n": 5653,
     "events_v10": 18,
     "skill_v10": -0.0,
-    "skill_sub": -447.4
+    "skill_sub": -189.8
    },
    {
     "icao": "KNJK",
-    "n": 4736,
+    "n": 5578,
     "events_v10": 30,
-    "skill_v10": -0.0,
+    "skill_v10": 0.0,
     "skill_sub": -0.0
    },
    {
-    "icao": "KPVD",
-    "n": 4834,
-    "events_v10": 39,
-    "skill_v10": 0.0,
-    "skill_sub": -1.5
-   },
-   {
-    "icao": "KRDM",
-    "n": 4745,
-    "events_v10": 26,
-    "skill_v10": 0.0,
-    "skill_sub": 32.5
+    "icao": "KTVF",
+    "n": 5421,
+    "events_v10": 24,
+    "skill_v10": -0.0,
+    "skill_sub": -0.5
    },
    {
     "icao": "MMCS",
-    "n": 3465,
+    "n": 4042,
     "events_v10": 29,
-    "skill_v10": -0.0,
+    "skill_v10": 0.0,
     "skill_sub": 100.0
    },
    {
-    "icao": "CYYE",
-    "n": 4757,
-    "events_v10": 245,
-    "skill_v10": 0.0,
-    "skill_sub": 2.1
+    "icao": "KCXO",
+    "n": 5521,
+    "events_v10": 26,
+    "skill_v10": 0.1,
+    "skill_sub": -630.6
    },
    {
-    "icao": "KPNA",
-    "n": 4807,
-    "events_v10": 14,
+    "icao": "KEVW",
+    "n": 5404,
+    "events_v10": 40,
     "skill_v10": 0.1,
-    "skill_sub": -549.2
+    "skill_sub": -0.3
    },
    {
     "icao": "KPNS",
-    "n": 4790,
+    "n": 5632,
     "events_v10": 13,
     "skill_v10": 0.1,
-    "skill_sub": -194.6
+    "skill_sub": -173.6
    },
    {
     "icao": "KBDL",
-    "n": 4885,
+    "n": 5727,
     "events_v10": 30,
     "skill_v10": 0.2,
-    "skill_sub": -193.9
+    "skill_sub": -111.2
+   },
+   {
+    "icao": "KLMT",
+    "n": 5634,
+    "events_v10": 30,
+    "skill_v10": 0.2,
+    "skill_sub": -25.8
+   },
+   {
+    "icao": "KMIB",
+    "n": 5133,
+    "events_v10": 57,
+    "skill_v10": 0.2,
+    "skill_sub": -0.3
    },
    {
     "icao": "KPHF",
-    "n": 4743,
+    "n": 5581,
     "events_v10": 44,
     "skill_v10": 0.2,
-    "skill_sub": -75.9
-   },
-   {
-    "icao": "KTPA",
-    "n": 4736,
-    "events_v10": 11,
-    "skill_v10": 0.2,
-    "skill_sub": -47.5
+    "skill_sub": -123.9
    },
    {
     "icao": "MMLM",
-    "n": 3220,
+    "n": 3762,
     "events_v10": 11,
     "skill_v10": 0.2,
     "skill_sub": 0.0
    },
    {
-    "icao": "UHMA",
-    "n": 4897,
-    "events_v10": 119,
-    "skill_v10": 0.2,
-    "skill_sub": -0.2
+    "icao": "KAWO",
+    "n": 5574,
+    "events_v10": 63,
+    "skill_v10": 0.3,
+    "skill_sub": -1.7
    },
    {
-    "icao": "CYSF",
-    "n": 4706,
-    "events_v10": 50,
-    "skill_v10": 0.4,
-    "skill_sub": -0.0
+    "icao": "KDPA",
+    "n": 5596,
+    "events_v10": 75,
+    "skill_v10": 0.3,
+    "skill_sub": -2282.2
    },
    {
-    "icao": "CYGE",
-    "n": 3009,
-    "events_v10": 30,
-    "skill_v10": 0.6,
-    "skill_sub": 0.0
+    "icao": "KFOD",
+    "n": 5572,
+    "events_v10": 64,
+    "skill_v10": 0.3,
+    "skill_sub": -30.4
    },
    {
     "icao": "KRIV",
-    "n": 4176,
+    "n": 5044,
     "events_v10": 11,
-    "skill_v10": 0.6,
-    "skill_sub": -55.1
+    "skill_v10": 0.3,
+    "skill_sub": -260.0
    },
    {
-    "icao": "CYZH",
-    "n": 4647,
-    "events_v10": 13,
+    "icao": "KTPA",
+    "n": 5511,
+    "events_v10": 11,
+    "skill_v10": 0.3,
+    "skill_sub": -48.2
+   },
+   {
+    "icao": "KOFF",
+    "n": 5157,
+    "events_v10": 26,
+    "skill_v10": 0.4,
+    "skill_sub": -5.3
+   },
+   {
+    "icao": "KBPI",
+    "n": 5550,
+    "events_v10": 14,
+    "skill_v10": 0.5,
+    "skill_sub": 0.0
+   },
+   {
+    "icao": "KPGD",
+    "n": 5564,
+    "events_v10": 15,
+    "skill_v10": 0.5,
+    "skill_sub": -12.4
+   },
+   {
+    "icao": "CYGE",
+    "n": 3497,
+    "events_v10": 30,
+    "skill_v10": 0.6,
+    "skill_sub": -0.5
+   },
+   {
+    "icao": "KRUT",
+    "n": 5522,
+    "events_v10": 103,
+    "skill_v10": 0.6,
+    "skill_sub": -6.3
+   },
+   {
+    "icao": "KMDH",
+    "n": 3523,
+    "events_v10": 10,
+    "skill_v10": 0.7,
+    "skill_sub": -173.5
+   },
+   {
+    "icao": "KMKE",
+    "n": 5645,
+    "events_v10": 55,
+    "skill_v10": 0.7,
+    "skill_sub": -3.0
+   },
+   {
+    "icao": "CYBL",
+    "n": 3880,
+    "events_v10": 10,
+    "skill_v10": 0.8,
+    "skill_sub": -13.6
+   },
+   {
+    "icao": "KEDC",
+    "n": 5981,
+    "events_v10": 24,
     "skill_v10": 0.8,
     "skill_sub": -0.3
    },
    {
-    "icao": "KBKW",
-    "n": 4921,
-    "events_v10": 88,
-    "skill_v10": 0.8,
-    "skill_sub": -17.0
-   },
-   {
-    "icao": "KCXO",
-    "n": 4750,
-    "events_v10": 26,
+    "icao": "KCAK",
+    "n": 5670,
+    "events_v10": 29,
     "skill_v10": 0.9,
-    "skill_sub": -560.4
-   },
-   {
-    "icao": "KRUT",
-    "n": 4685,
-    "events_v10": 36,
-    "skill_v10": 1.0,
-    "skill_sub": -253.9
-   },
-   {
-    "icao": "KPBF",
-    "n": 4744,
-    "events_v10": 25,
-    "skill_v10": 1.1,
-    "skill_sub": -269.3
-   },
-   {
-    "icao": "KMCB",
-    "n": 4797,
-    "events_v10": 20,
-    "skill_v10": 1.3,
-    "skill_sub": -0.9
-   },
-   {
-    "icao": "KOFF",
-    "n": 4286,
-    "events_v10": 26,
-    "skill_v10": 1.4,
-    "skill_sub": -3.4
-   },
-   {
-    "icao": "CYBL",
-    "n": 3344,
-    "events_v10": 10,
-    "skill_v10": 1.5,
-    "skill_sub": -330.6
+    "skill_sub": -570.8
    },
    {
     "icao": "KSAW",
-    "n": 4815,
-    "events_v10": 101,
-    "skill_v10": 1.5,
-    "skill_sub": -0.2
+    "n": 5546,
+    "events_v10": 141,
+    "skill_v10": 0.9,
+    "skill_sub": -0.1
    },
    {
-    "icao": "CYHY",
-    "n": 4629,
-    "events_v10": 18,
-    "skill_v10": 1.5,
-    "skill_sub": -59.1
-   },
-   {
-    "icao": "KMSL",
-    "n": 4768,
-    "events_v10": 32,
-    "skill_v10": 1.7,
-    "skill_sub": -1117.3
-   },
-   {
-    "icao": "KCUB",
-    "n": 4751,
-    "events_v10": 27,
-    "skill_v10": 1.8,
-    "skill_sub": -1158.7
-   },
-   {
-    "icao": "KMXF",
-    "n": 4228,
+    "icao": "KGDV",
+    "n": 5518,
     "events_v10": 20,
-    "skill_v10": 1.8,
-    "skill_sub": -269.6
-   },
-   {
-    "icao": "KCAK",
-    "n": 4868,
-    "events_v10": 29,
-    "skill_v10": 1.9,
-    "skill_sub": -582.4
-   },
-   {
-    "icao": "KANB",
-    "n": 4701,
-    "events_v10": 66,
-    "skill_v10": 2.0,
-    "skill_sub": -2.4
-   },
-   {
-    "icao": "KFAY",
-    "n": 4778,
-    "events_v10": 51,
-    "skill_v10": 2.0,
-    "skill_sub": -2.8
-   },
-   {
-    "icao": "KBJI",
-    "n": 4875,
-    "events_v10": 33,
-    "skill_v10": 2.1,
-    "skill_sub": -3.4
-   },
-   {
-    "icao": "KIAG",
-    "n": 4796,
-    "events_v10": 45,
-    "skill_v10": 2.2,
-    "skill_sub": -2.2
+    "skill_v10": 1.0,
+    "skill_sub": -391.0
    },
    {
     "icao": "CYSM",
-    "n": 4644,
-    "events_v10": 28,
-    "skill_v10": 2.2,
-    "skill_sub": -107.6
+    "n": 5581,
+    "events_v10": 91,
+    "skill_v10": 1.1,
+    "skill_sub": -133.0
    },
    {
-    "icao": "KFBG",
-    "n": 4283,
-    "events_v10": 53,
-    "skill_v10": 2.3,
-    "skill_sub": -0.4
+    "icao": "CYZW",
+    "n": 3251,
+    "events_v10": 10,
+    "skill_v10": 1.3,
+    "skill_sub": -6.6
    },
    {
-    "icao": "KBXM",
-    "n": 4572,
-    "events_v10": 50,
-    "skill_v10": 2.4,
-    "skill_sub": -1.2
+    "icao": "KOLU",
+    "n": 5625,
+    "events_v10": 183,
+    "skill_v10": 1.4,
+    "skill_sub": -3.0
    },
    {
-    "icao": "KMKE",
-    "n": 4810,
-    "events_v10": 55,
-    "skill_v10": 2.5,
-    "skill_sub": -1.1
-   },
-   {
-    "icao": "KONP",
-    "n": 4879,
-    "events_v10": 271,
-    "skill_v10": 2.5,
-    "skill_sub": -13.7
-   },
-   {
-    "icao": "KRDG",
-    "n": 4694,
-    "events_v10": 49,
-    "skill_v10": 2.6,
-    "skill_sub": -388.7
-   },
-   {
-    "icao": "KTYS",
-    "n": 4826,
-    "events_v10": 48,
-    "skill_v10": 2.6,
-    "skill_sub": -0.4
-   },
-   {
-    "icao": "KVLD",
-    "n": 4778,
-    "events_v10": 66,
-    "skill_v10": 2.9,
-    "skill_sub": -295.4
-   },
-   {
-    "icao": "CYVO",
-    "n": 4613,
-    "events_v10": 16,
-    "skill_v10": 3.0,
-    "skill_sub": -379.8
-   },
-   {
-    "icao": "KAVL",
-    "n": 4733,
-    "events_v10": 139,
-    "skill_v10": 3.1,
-    "skill_sub": -22.2
-   },
-   {
-    "icao": "KCHA",
-    "n": 4766,
-    "events_v10": 26,
-    "skill_v10": 3.2,
-    "skill_sub": -2710.2
-   },
-   {
-    "icao": "KPIA",
-    "n": 4724,
-    "events_v10": 29,
-    "skill_v10": 3.3,
-    "skill_sub": -787.0
-   },
-   {
-    "icao": "KLSE",
-    "n": 4753,
-    "events_v10": 59,
-    "skill_v10": 3.5,
-    "skill_sub": -244.6
-   },
-   {
-    "icao": "KFOD",
-    "n": 4759,
-    "events_v10": 64,
-    "skill_v10": 3.6,
-    "skill_sub": -26.0
-   },
-   {
-    "icao": "KMKG",
-    "n": 4773,
-    "events_v10": 31,
-    "skill_v10": 3.6,
-    "skill_sub": -1768.7
-   },
-   {
-    "icao": "KCLT",
-    "n": 4714,
-    "events_v10": 24,
-    "skill_v10": 3.8,
-    "skill_sub": -1.1
-   },
-   {
-    "icao": "KGNV",
-    "n": 4806,
-    "events_v10": 79,
-    "skill_v10": 4.3,
-    "skill_sub": -1.7
-   },
-   {
-    "icao": "CYXE",
-    "n": 4741,
-    "events_v10": 26,
-    "skill_v10": 4.4,
-    "skill_sub": -392.8
-   },
-   {
-    "icao": "KWRB",
-    "n": 4269,
-    "events_v10": 60,
-    "skill_v10": 4.6,
+    "icao": "KMCB",
+    "n": 5639,
+    "events_v10": 20,
+    "skill_v10": 1.5,
     "skill_sub": -0.7
    },
    {
-    "icao": "KABE",
-    "n": 4836,
-    "events_v10": 17,
-    "skill_v10": 4.9,
-    "skill_sub": -362.6
+    "icao": "KPBF",
+    "n": 5586,
+    "events_v10": 25,
+    "skill_v10": 1.5,
+    "skill_sub": -198.5
    },
    {
-    "icao": "KCLM",
-    "n": 4794,
-    "events_v10": 44,
-    "skill_v10": 4.9,
-    "skill_sub": -109.8
+    "icao": "KBJI",
+    "n": 5969,
+    "events_v10": 33,
+    "skill_v10": 1.6,
+    "skill_sub": -3.1
    },
    {
-    "icao": "KIMT",
-    "n": 4750,
+    "icao": "KCUB",
+    "n": 5584,
+    "events_v10": 27,
+    "skill_v10": 1.6,
+    "skill_sub": -1038.1
+   },
+   {
+    "icao": "KFAY",
+    "n": 5580,
+    "events_v10": 51,
+    "skill_v10": 1.6,
+    "skill_sub": -4.0
+   },
+   {
+    "icao": "KMLB",
+    "n": 5653,
+    "events_v10": 10,
+    "skill_v10": 1.6,
+    "skill_sub": -14.6
+   },
+   {
+    "icao": "CYQH",
+    "n": 5610,
     "events_v10": 55,
-    "skill_v10": 5.8,
-    "skill_sub": -0.8
+    "skill_v10": 1.6,
+    "skill_sub": -0.1
+   },
+   {
+    "icao": "KFBG",
+    "n": 5247,
+    "events_v10": 53,
+    "skill_v10": 1.8,
+    "skill_sub": -0.6
+   },
+   {
+    "icao": "KIAG",
+    "n": 5638,
+    "events_v10": 45,
+    "skill_v10": 1.8,
+    "skill_sub": -2.3
+   },
+   {
+    "icao": "KMSL",
+    "n": 5624,
+    "events_v10": 32,
+    "skill_v10": 1.8,
+    "skill_sub": -1262.2
+   },
+   {
+    "icao": "CYHY",
+    "n": 5631,
+    "events_v10": 18,
+    "skill_v10": 1.8,
+    "skill_sub": -83.0
+   },
+   {
+    "icao": "KMXF",
+    "n": 5044,
+    "events_v10": 20,
+    "skill_v10": 1.9,
+    "skill_sub": -255.9
+   },
+   {
+    "icao": "KTYS",
+    "n": 5646,
+    "events_v10": 48,
+    "skill_v10": 2.0,
+    "skill_sub": -0.9
+   },
+   {
+    "icao": "KANB",
+    "n": 5543,
+    "events_v10": 66,
+    "skill_v10": 2.1,
+    "skill_sub": -2.6
+   },
+   {
+    "icao": "KPIA",
+    "n": 5542,
+    "events_v10": 29,
+    "skill_v10": 2.1,
+    "skill_sub": -746.1
+   },
+   {
+    "icao": "CYVO",
+    "n": 5594,
+    "events_v10": 16,
+    "skill_v10": 2.5,
+    "skill_sub": -382.3
+   },
+   {
+    "icao": "KRDG",
+    "n": 5536,
+    "events_v10": 49,
+    "skill_v10": 2.5,
+    "skill_sub": -382.6
    },
    {
     "icao": "KDLH",
-    "n": 4682,
+    "n": 5507,
     "events_v10": 26,
-    "skill_v10": 6.0,
+    "skill_v10": 2.6,
+    "skill_sub": -1.1
+   },
+   {
+    "icao": "KISO",
+    "n": 5519,
+    "events_v10": 12,
+    "skill_v10": 2.6,
+    "skill_sub": -457.7
+   },
+   {
+    "icao": "KMKG",
+    "n": 5613,
+    "events_v10": 31,
+    "skill_v10": 2.7,
+    "skill_sub": -1764.8
+   },
+   {
+    "icao": "KVLD",
+    "n": 5601,
+    "events_v10": 66,
+    "skill_v10": 2.7,
+    "skill_sub": -327.5
+   },
+   {
+    "icao": "KCHA",
+    "n": 5608,
+    "events_v10": 26,
+    "skill_v10": 3.3,
+    "skill_sub": -2346.0
+   },
+   {
+    "icao": "KLSE",
+    "n": 5555,
+    "events_v10": 59,
+    "skill_v10": 3.5,
+    "skill_sub": -210.4
+   },
+   {
+    "icao": "KCLM",
+    "n": 5578,
+    "events_v10": 44,
+    "skill_v10": 3.6,
+    "skill_sub": -116.7
+   },
+   {
+    "icao": "KCLT",
+    "n": 5531,
+    "events_v10": 24,
+    "skill_v10": 3.6,
+    "skill_sub": -1.7
+   },
+   {
+    "icao": "CYVC",
+    "n": 5650,
+    "events_v10": 21,
+    "skill_v10": 3.7,
+    "skill_sub": -15.1
+   },
+   {
+    "icao": "CYXE",
+    "n": 5683,
+    "events_v10": 26,
+    "skill_v10": 3.7,
+    "skill_sub": -261.5
+   },
+   {
+    "icao": "KAVL",
+    "n": 5532,
+    "events_v10": 161,
+    "skill_v10": 3.7,
+    "skill_sub": -30.5
+   },
+   {
+    "icao": "KBKF",
+    "n": 4522,
+    "events_v10": 41,
+    "skill_v10": 4.1,
+    "skill_sub": -195.5
+   },
+   {
+    "icao": "KGNV",
+    "n": 5678,
+    "events_v10": 79,
+    "skill_v10": 4.2,
+    "skill_sub": -2.7
+   },
+   {
+    "icao": "KLYH",
+    "n": 5563,
+    "events_v10": 54,
+    "skill_v10": 4.3,
+    "skill_sub": -9.2
+   },
+   {
+    "icao": "KWRB",
+    "n": 5085,
+    "events_v10": 60,
+    "skill_v10": 4.6,
+    "skill_sub": -0.8
+   },
+   {
+    "icao": "KDTW",
+    "n": 5588,
+    "events_v10": 15,
+    "skill_v10": 5.1,
+    "skill_sub": -542.2
+   },
+   {
+    "icao": "KABE",
+    "n": 5614,
+    "events_v10": 17,
+    "skill_v10": 5.3,
+    "skill_sub": -346.8
+   },
+   {
+    "icao": "KBRL",
+    "n": 5487,
+    "events_v10": 72,
+    "skill_v10": 5.4,
+    "skill_sub": -3.0
+   },
+   {
+    "icao": "KIMT",
+    "n": 5570,
+    "events_v10": 55,
+    "skill_v10": 5.4,
+    "skill_sub": -1.7
+   },
+   {
+    "icao": "KLEX",
+    "n": 5630,
+    "events_v10": 22,
+    "skill_v10": 5.8,
+    "skill_sub": 0.0
+   },
+   {
+    "icao": "CYYG",
+    "n": 5722,
+    "events_v10": 30,
+    "skill_v10": 5.9,
+    "skill_sub": -694.5
+   },
+   {
+    "icao": "KJKL",
+    "n": 5481,
+    "events_v10": 71,
+    "skill_v10": 5.9,
+    "skill_sub": -7.5
+   },
+   {
+    "icao": "KPGV",
+    "n": 5677,
+    "events_v10": 21,
+    "skill_v10": 6.2,
+    "skill_sub": -61.5
+   },
+   {
+    "icao": "KRWI",
+    "n": 5303,
+    "events_v10": 12,
+    "skill_v10": 6.2,
     "skill_sub": -0.5
    },
    {
     "icao": "CYAM",
-    "n": 4743,
+    "n": 5683,
     "events_v10": 52,
-    "skill_v10": 6.1,
-    "skill_sub": -11.8
-   },
-   {
-    "icao": "CYYG",
-    "n": 4757,
-    "events_v10": 30,
-    "skill_v10": 6.3,
-    "skill_sub": -669.6
-   },
-   {
-    "icao": "KSUS",
-    "n": 4738,
-    "events_v10": 32,
-    "skill_v10": 6.4,
-    "skill_sub": -120.5
+    "skill_v10": 6.5,
+    "skill_sub": -10.9
    },
    {
     "icao": "KMCN",
-    "n": 4788,
+    "n": 5594,
     "events_v10": 63,
-    "skill_v10": 6.5,
-    "skill_sub": -580.9
-   },
-   {
-    "icao": "KDTW",
-    "n": 4746,
-    "events_v10": 15,
     "skill_v10": 6.6,
-    "skill_sub": -677.5
+    "skill_sub": -528.8
    },
    {
-    "icao": "KPGV",
-    "n": 4797,
-    "events_v10": 21,
-    "skill_v10": 7.1,
-    "skill_sub": -59.8
+    "icao": "KSUS",
+    "n": 5580,
+    "events_v10": 32,
+    "skill_v10": 7.6,
+    "skill_sub": -82.1
    },
    {
-    "icao": "KISO",
-    "n": 4644,
-    "events_v10": 12,
-    "skill_v10": 7.2,
-    "skill_sub": -403.1
-   },
-   {
-    "icao": "KBRL",
-    "n": 4709,
-    "events_v10": 39,
-    "skill_v10": 7.9,
-    "skill_sub": -2.2
-   },
-   {
-    "icao": "KJKL",
-    "n": 4666,
-    "events_v10": 71,
-    "skill_v10": 9.2,
-    "skill_sub": -19.2
-   },
-   {
-    "icao": "KGRR",
-    "n": 4800,
-    "events_v10": 74,
-    "skill_v10": 10.8,
-    "skill_sub": -1.1
-   },
-   {
-    "icao": "KLNS",
-    "n": 4783,
-    "events_v10": 89,
-    "skill_v10": 10.9,
-    "skill_sub": -15.6
+    "icao": "KFKL",
+    "n": 5652,
+    "events_v10": 129,
+    "skill_v10": 8.4,
+    "skill_sub": -0.2
    },
    {
     "icao": "CYLD",
-    "n": 3440,
+    "n": 4048,
     "events_v10": 16,
-    "skill_v10": 11.4,
-    "skill_sub": -806.8
+    "skill_v10": 10.5,
+    "skill_sub": -727.2
+   },
+   {
+    "icao": "KGRR",
+    "n": 5661,
+    "events_v10": 74,
+    "skill_v10": 10.6,
+    "skill_sub": -1.6
+   },
+   {
+    "icao": "KLNS",
+    "n": 5619,
+    "events_v10": 89,
+    "skill_v10": 11.0,
+    "skill_sub": -14.9
    },
    {
     "icao": "KPLN",
-    "n": 4485,
+    "n": 5283,
     "events_v10": 39,
-    "skill_v10": 11.4,
-    "skill_sub": -1.1
-   },
-   {
-    "icao": "KRKD",
-    "n": 4708,
-    "events_v10": 211,
-    "skill_v10": 12.5,
-    "skill_sub": -29.7
+    "skill_v10": 11.5,
+    "skill_sub": -1.4
    },
    {
     "icao": "KENW",
-    "n": 4634,
+    "n": 5448,
     "events_v10": 190,
+    "skill_v10": 13.3,
+    "skill_sub": -2.5
+   },
+   {
+    "icao": "CYCP",
+    "n": 3248,
+    "events_v10": 32,
+    "skill_v10": 13.4,
+    "skill_sub": -0.2
+   },
+   {
+    "icao": "KRKD",
+    "n": 5550,
+    "events_v10": 211,
     "skill_v10": 14.3,
-    "skill_sub": -1.1
-   },
-   {
-    "icao": "KALB",
-    "n": 4796,
-    "events_v10": 11,
-    "skill_v10": 16.1,
-    "skill_sub": -533.5
-   },
-   {
-    "icao": "KMWA",
-    "n": 4741,
-    "events_v10": 24,
-    "skill_v10": 20.9,
-    "skill_sub": -102.6
+    "skill_sub": -26.7
    },
    {
     "icao": "KVOK",
-    "n": 4302,
-    "events_v10": 210,
-    "skill_v10": 21.5,
-    "skill_sub": -17.7
+    "n": 5122,
+    "events_v10": 248,
+    "skill_v10": 17.0,
+    "skill_sub": -11.0
+   },
+   {
+    "icao": "KMWA",
+    "n": 5650,
+    "events_v10": 24,
+    "skill_v10": 23.5,
+    "skill_sub": -67.9
    },
    {
     "icao": "CYQM",
-    "n": 4801,
+    "n": 5766,
     "events_v10": 47,
-    "skill_v10": 29.8,
-    "skill_sub": -1.8
+    "skill_v10": 29.4,
+    "skill_sub": -2.9
    }
   ],
-  "insufficient_n": 552
+  "insufficient_n": 620
  }
 }
