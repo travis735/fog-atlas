@@ -181,7 +181,7 @@ def bake_answer(a, fc, covered: bool, now_utc):
              "guidanceSignal": bool(signal), "wording": plain})
 
 
-def jsonld(a, plain_answer, pk_txt, subH, window, med) -> str:
+def jsonld(a, plain_answer, season_plain, subH, window, med) -> str:
     icao, name = a["icao"], a["name"]
     url = f"{SITE}/fog/{icao.lower()}/"
     faq = [
@@ -189,9 +189,8 @@ def jsonld(a, plain_answer, pk_txt, subH, window, med) -> str:
          "acceptedAnswer": {"@type": "Answer", "text": plain_answer}},
         {"@type": "Question", "name": f"When is fog season at {name}?",
          "acceptedAnswer": {"@type": "Answer",
-                            "text": f"Fog at {name} concentrates in {pk_txt}: about {subH} hours per year "
-                                    f"fall below CAT I approach minima (visibility under about half a mile "
-                                    f"or ceiling under 200 ft), based on {window['start'][:4]}–{window['through'][:4]} observations."}},
+                            "text": f"{season_plain} {name} records about {subH} hours per year below CAT I "
+                                    f"approach minima ({window['start'][:4]}–{window['through'][:4]} observations)."}},
     ]
     if med:
         faq.append({"@type": "Question", "name": f"How long does fog usually last at {name}?",
@@ -228,6 +227,8 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None)
     med = {"medianH": med["medianH"], "p25H": med["p25H"], "p75H": med["p75H"], "n": med["n"]} if med else None
 
     answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc)
+    sp = season_profile(a)
+    season_html, season_plain = season_section(a, sp, med, name)
 
     if covered and icao in r10_by_mh:
         clim = [[round(100 * r10_by_mh[icao].get((m + 1, h), 0.0), 1) for h in range(24)] for m in range(12)]
@@ -265,7 +266,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None)
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta property="og:title" content="{icao} fog forecast — {name}">
 <meta property="og:description" content="{answer_plain[:190].replace('"', "'")}">
-<script type="application/ld+json">{jsonld(a, answer_plain, pk_txt, subH, window, med)}</script>
+<script type="application/ld+json">{jsonld(a, answer_plain, season_plain, subH, window, med)}</script>
 <style>{CSS}</style>
 </head><body><main>
 <h1><b>{icao}</b> — {name}</h1>
@@ -277,6 +278,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None)
 {facts}
 <h2>When this airport fogs in</h2>
 <div class="blk">In a typical year {name} spends <b>{subH} hours</b> below CAT I approach minima (visibility under ~½ mile or ceiling under 200 ft), concentrated in <b>{pk_txt}</b>. The strip above shows the hour-by-hour pattern for the current month from ten years of weather observations.</div>
+{season_html}
 {rwy_html}
 <h2>For flight operations</h2>
 <p class="note">EFVS crews: the <a href="{SITE}/#chase">CHASE board</a> ranks airports by live fog status, approach lighting, go-around height and flight time from your base. Forecast probabilities publish here per-airport once the calibrated model beats climatology on live verification — receipts on the <a href="{SITE}/fog/scorecard/">scorecard</a>. <a href="{SITE}/#methodology">Methodology</a>.</p>
@@ -296,6 +298,10 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None)
             "fogSeasonPeakMonths": [MONTHS[m] for m in pk],
             "monthlyHours": monthly,
             "medianEventHours": med["medianH"] if med else None,
+            "season": {"summary": season_plain,
+                       "months": [MONTHS[m] for m in sp.get("seasonMonths", [])],
+                       "timeOfDay": sp.get("bandTxt"),
+                       "typicallyClearsBy": sp.get("clearsBy")},
         },
         "forecast": machine,
         "links": {
@@ -365,6 +371,116 @@ FOG_JS = r"""
 """
 
 
+MONTHS_S = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def hour12(h: int) -> str:
+    return "midnight" if h == 0 else "noon" if h == 12 else f"{h} AM" if h < 12 else f"{h - 12} PM"
+
+
+def season_profile(a) -> dict:
+    """Evergreen fog-season facts from the climatology grid: which months,
+    what time of day, when it typically clears. All local time."""
+    grid = a["grid"]
+    monthly = [month_hours(grid, m) for m in range(12)]
+    peak_m = max(range(12), key=lambda m: monthly[m])
+    if monthly[peak_m] < 2:
+        return {"monthly": monthly, "low": True}
+    thr = max(2, monthly[peak_m] * 0.25)
+    inseason = [m for m in range(12) if monthly[m] >= thr]
+    # describe as a contiguous range when it is one (with Dec->Jan wrap)
+    span = None
+    if len(inseason) < 12:
+        ext = sorted(inseason) + [m + 12 for m in sorted(inseason)]
+        runs, cur = [], [ext[0]]
+        for x in ext[1:]:
+            if x == cur[-1] + 1:
+                cur.append(x)
+            else:
+                runs.append(cur); cur = [x]
+        runs.append(cur)
+        best = max(runs, key=len)
+        if len(best) == len(inseason):
+            span = (best[0] % 12, best[-1] % 12)
+    if span and span[0] != span[1]:
+        season_txt = f"{MONTHS[span[0]]} through {MONTHS[span[1]]}"
+    elif len(inseason) == 12:
+        season_txt = "year-round"
+    elif len(inseason) == 1:
+        season_txt = MONTHS[inseason[0]]
+    else:
+        season_txt = ", ".join(MONTHS[m] for m in sorted(inseason))
+
+    # diurnal shape across the season months
+    diurnal = [sum(grid[m][h] for m in inseason) for h in range(24)]
+    ph = max(range(24), key=lambda h: diurnal[h])
+    band = [h for h in range(24) if diurnal[h] >= diurnal[ph] * 0.5]
+    allday = len(band) > 14
+    # walk forward from the peak to the first hour it thins to a quarter
+    clears = None
+    if not allday:
+        for i in range(1, 13):
+            if diurnal[(ph + i) % 24] < diurnal[ph] * 0.25:
+                clears = (ph + i) % 24
+                break
+    # contiguous band around the peak for "3-9 AM" phrasing
+    lo = hi = ph
+    while diurnal[(lo - 1) % 24] >= diurnal[ph] * 0.5 and (ph - lo) < 12:
+        lo -= 1
+    while diurnal[(hi + 1) % 24] >= diurnal[ph] * 0.5 and (hi - ph) < 12:
+        hi += 1
+    return {"monthly": monthly, "low": False, "seasonMonths": sorted(inseason),
+            "seasonTxt": season_txt, "peakMonth": peak_m, "allDay": allday,
+            "bandTxt": ("any hour of the day" if allday
+                        else f"{hour12(lo % 24)}–{hour12(hi % 24)}"),
+            "clearsBy": None if clears is None else hour12(clears)}
+
+
+def season_svg(monthly) -> str:
+    """Server-rendered 12-month bars — crawlers see the shape of the year."""
+    peak = max(monthly) or 1
+    bars = "".join(
+        f'<rect x="{m * 56 + 4}" y="{60 - round(52 * v / peak)}" width="48" '
+        f'height="{round(52 * v / peak)}" rx="3" fill="#3f76a3" opacity="{0.95 if v == peak else 0.75 if v else 0.25}">'
+        f"<title>{MONTHS[m]}: ~{v} h</title></rect>"
+        f'<text x="{m * 56 + 28}" y="72" text-anchor="middle" fill="#8294a3" font-size="10">{MONTHS_S[m]}</text>'
+        for m, v in enumerate(monthly))
+    return (f'<svg viewBox="0 0 672 76" role="img" aria-label="Fog hours by month" '
+            f'style="width:100%;height:auto;display:block">{bars}</svg>')
+
+
+def season_section(a, sp, med, subject: str) -> tuple[str, str]:
+    """(html section, plain-language summary) — the summary also feeds the
+    FAQ answer and data.json so humans, Google and AI read the same fact."""
+    if sp["low"]:
+        plain = (f"{subject} has no real fog season — dense fog is rare in every month "
+                 f"(under 2 hours even in the peak month).")
+        html = f"""
+  <h2>Fog season</h2>
+  {season_svg(sp["monthly"])}
+  <div class="blk">{plain}</div>"""
+        return html, plain
+    bits = [f"Fog season {'runs' if 'through' in sp['seasonTxt'] else 'is'} <b>{sp['seasonTxt']}</b>, peaking in {MONTHS[sp['peakMonth']]}"]
+    plain_bits = [f"Fog season {'runs' if 'through' in sp['seasonTxt'] else 'is'} {sp['seasonTxt']}, peaking in {MONTHS[sp['peakMonth']]}"]
+    tod = (f"fog here can hit at {sp['bandTxt']}" if sp["allDay"]
+           else f"fog is mostly a <b>{sp['bandTxt']}</b> phenomenon")
+    tod_p = tod.replace("<b>", "").replace("</b>", "")
+    bits.append(tod)
+    plain_bits.append(tod_p)
+    if sp["clearsBy"]:
+        bits.append(f"typically thinning out by <b>{sp['clearsBy']}</b>")
+        plain_bits.append(f"typically thinning out by {sp['clearsBy']}")
+    if med:
+        bits.append(f"a typical event lasts about {med['medianH']} hour{'s' if med['medianH'] != 1 else ''} once it forms")
+        plain_bits.append(f"a typical event lasts about {med['medianH']} hour{'s' if med['medianH'] != 1 else ''}")
+    plain = "; ".join(plain_bits) + " (local time, 10-year average)."
+    html = f"""
+  <h2>Fog season</h2>
+  {season_svg(sp["monthly"])}
+  <div class="blk">{"; ".join(bits)} <span class="tag">local time · 10-yr average</span></div>"""
+    return html, plain
+
+
 SUFFIX_COUNTRIES = {"US", "CA", "AU"}  # region code disambiguates (Columbus x7 states)
 
 
@@ -410,6 +526,8 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc) -> tuple[
     answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc)
     src = f"Measured at {a['name']} ({a['icao']})."
     answer_plain_city = f"{answer_plain} {src}"
+    sp = season_profile(a)
+    season_html, season_plain = season_section(a, sp, med, disp)
 
     rows = "".join(
         f'<tr><td><a href="/fog/{s["icao"].lower()}/"><b>{s["icao"]}</b></a></td>'
@@ -422,9 +540,8 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc) -> tuple[
          "acceptedAnswer": {"@type": "Answer", "text": answer_plain_city}},
         {"@type": "Question", "name": f"When is fog season in {muni}?",
          "acceptedAnswer": {"@type": "Answer",
-                            "text": f"Fog in {disp} concentrates in {pk_txt}: the measuring station at "
-                                    f"{a['name']} records about {subH} hours per year below CAT I approach "
-                                    f"minima ({window['start'][:4]}–{window['through'][:4]} average)."}},
+                            "text": f"{season_plain} Measured at {a['name']}: about {subH} hours per year "
+                                    f"below CAT I approach minima ({window['start'][:4]}–{window['through'][:4]} average)."}},
     ]
     if med:
         faq.append({"@type": "Question", "name": f"How long does fog last in {muni}?",
@@ -470,6 +587,7 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc) -> tuple[
 <p class="note">Fog is measured where instruments live — airports. Hours/yr = time below CAT I approach minima (visibility under ~½ mile or ceiling under 200 ft), the aviation definition of seriously dense fog.</p>
 <h2>When {muni} fogs in</h2>
 <div class="blk">Fog here concentrates in <b>{pk_txt}</b> — about <b>{subH} hours</b> in a typical year at {a['icao']}{f", usually lasting ~{med['medianH']} h once it forms" if med else ""}. Hour-by-hour patterns, live conditions and the forecast strip live on the <a href="/fog/{a['icao'].lower()}/">{a['icao']} station page</a>.</div>
+{season_html}
 <p class="note">Machine access: <a href="{url}data.json">data.json</a> · <a href="/llms.txt">llms.txt</a> · <a href="{SITE}/fog/scorecard/">forecast verification</a>. Not for operational use.</p>
 </main></body></html>"""
 
@@ -484,7 +602,11 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc) -> tuple[
         "forecast": machine,
         "climatology": {"subCat1HoursPerYear": subH,
                         "fogSeasonPeakMonths": [MONTHS[m] for m in pk],
-                        "medianEventHours": med["medianH"] if med else None},
+                        "medianEventHours": med["medianH"] if med else None,
+                        "season": {"summary": season_plain,
+                                   "months": [MONTHS[m] for m in sp.get("seasonMonths", [])],
+                                   "timeOfDay": sp.get("bandTxt"),
+                                   "typicallyClearsBy": sp.get("clearsBy")}},
         "links": {"page": url,
                   "stationPages": [f"{SITE}/fog/{s['icao'].lower()}/" for s in stations],
                   "verification": f"{SITE}/fog/scorecard/"},
