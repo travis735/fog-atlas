@@ -40,6 +40,11 @@ APP_PUB = HERE.parent / "app" / "public"
 APP_DATA = APP_PUB / "data"
 FOG = APP_PUB / "fog"
 SITE = "https://fogatlas.org"
+# legacy fog-atlas.pages.dev visitors hop to the real domain (crawlers
+# consolidate via the canonical tags; a host-based 301 isn't possible on
+# pages.dev without metering every static request through Functions)
+REDIRECT = ('<script>location.hostname.endsWith(".pages.dev")&&'
+            'location.replace("https://fogatlas.org"+location.pathname+location.search+location.hash)</script>')
 MONTHS = ["January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December"]
 
@@ -258,6 +263,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None)
 
     html = f"""<!doctype html>
 <html lang="en"><head>
+{REDIRECT}
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{name} fog forecast — will it be foggy tomorrow? ({icao})</title>
 <meta name="description" content="{answer_plain[:150].replace('"', "'")} 10-year fog climatology: {subH} low-visibility hours/yr, season peaks {pk_txt}.">
@@ -567,6 +573,7 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc) -> tuple[
 
     html = f"""<!doctype html>
 <html lang="en"><head>
+{REDIRECT}
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Will it be foggy in {muni} tomorrow? {disp} fog forecast</title>
 <meta name="description" content="{answer_plain_city[:155].replace('"', "'")} Fog season peaks {pk_txt}.">
@@ -739,6 +746,7 @@ def main() -> None:
     city_rows = "".join(f'<a href="/fog/city/{s}/" style="display:inline-block;min-width:11em">{m} <span class="tag">{r}</span></a>'
                         for m, r, s in city_links)
     (CITY / "index.html").write_text(f"""<!doctype html><html lang="en"><head>
+{REDIRECT}
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>City fog forecasts — Fog Atlas</title>
 <meta name="description" content="Will it be foggy tomorrow? Daily fog outlooks for {len(city_links)} cities worldwide, measured at their airports and verified publicly.">
@@ -751,6 +759,7 @@ def main() -> None:
     links.sort()
     idx_rows = "".join(f'<a href="/fog/{i.lower()}/" style="display:inline-block;width:5.2em">{i}</a>' for i, _, _ in links)
     (FOG / "index.html").write_text(f"""<!doctype html><html lang="en"><head>
+{REDIRECT}
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Airport fog forecasts — Fog Atlas</title>
 <meta name="description" content="Will it be foggy tomorrow? Daily fog outlooks and 10-year fog climatology for {n} airports worldwide, with public verification.">
@@ -763,6 +772,7 @@ def main() -> None:
     sc = FOG / "scorecard"
     sc.mkdir(exist_ok=True)
     sc.joinpath("index.html").write_text(f"""<!doctype html><html lang="en"><head>
+{REDIRECT}
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Forecast verification — Fog Atlas</title>
 <meta name="description" content="How the Fog Atlas fog forecasts are scored: every issued probability is logged and verified against what actually happened.">
