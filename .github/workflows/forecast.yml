@@ -37,30 +37,50 @@ jobs:
         run: |
           pip install --quiet duckdb pyshp eccodes
           python forecast/engine.py
-      - name: deploy planner data (daily, on the 09z-cycle run)
+      - name: bake gate — does the live site still need today's bake?
+        id: bake
         if: steps.gate.outputs.enabled == 'true'
         run: |
-          HOUR=$(date -u +%H)
-          if [ "$HOUR" = "10" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            python forecast/build_deploy.py
-          else
-            echo "skipping deploy build (runs on the ~10z pass + manual dispatch)"
+          # A clock gate (HOUR == 10) silently lost whole days: GitHub's cron
+          # drifts and sheds runs, so no run may ever START inside 10z. Ask the
+          # live site what day it last baked instead — the first run at/after
+          # 10z that finds it stale bakes. Fail-open: an unreadable probe costs
+          # one idempotent rebuild, never a stale day.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "manual dispatch — baking"
+            echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0
           fi
-      - name: rebuild fog pages + deploy site (daily, on the 10z pass)
-        if: steps.gate.outputs.enabled == 'true'
+          HOUR=$((10#$(date -u +%H)))
+          TODAY=$(date -u +%F)
+          if [ "$HOUR" -lt 10 ]; then
+            echo "before 10z — today's bake not owed yet"
+            echo "needed=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          LIVE=$(curl -sf --max-time 30 https://fogatlas.org/fog/ksfo/data.json \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["updated"][:10])' \
+            || echo unreadable)
+          echo "live bake: $LIVE / today: $TODAY"
+          if [ "$LIVE" = "$TODAY" ]; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: deploy planner data (daily, with the bake)
+        if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
+        run: python forecast/build_deploy.py
+      - name: rebuild fog pages + deploy site (daily, with the bake)
+        if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          HOUR=$(date -u +%H)
-          if [ "$HOUR" = "10" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # pages are deploy-time artifacts (gitignored): bake today's
-            # answers from the issuance the engine just wrote, then ship
-            python forecast/build_pages.py
-            cd app && npm ci --no-audit --no-fund && npx vite build
-            npx --yes wrangler@4 pages deploy dist --project-name=fog-atlas
-          else
-            echo "skipping pages rebuild (runs on the ~10z pass + manual dispatch)"
-          fi
+          # pages are deploy-time artifacts (gitignored): bake today's
+          # answers from the issuance the engine just wrote, then ship
+          python forecast/build_pages.py
+          cd app && npm ci --no-audit --no-fund && npx vite build
+          npx --yes wrangler@4 pages deploy dist --project-name=fog-atlas
+      - name: ping IndexNow with the rebaked URLs
+        if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
+        run: python forecast/ping_indexnow.py || echo "IndexNow ping failed (non-fatal)"
       - name: upload to KV
         if: steps.gate.outputs.enabled == 'true'
         env:

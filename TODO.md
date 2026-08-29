@@ -1,6 +1,12 @@
 # Roadmap / TODO
 
-## 0. CHASE Canada tier (design agreed, deferred to a fresh session)
+## 0. CHASE Canada tier — DONE 2026-07-20 (shipped with CHASE V2)
+Shipped same day as the rest of CHASE V2: Sonnet fleet researched the CAP/CFS
+charts (147 claims confirmed, 8 refuted-and-corrected, 15 low-confidence ends
+dropped), all five C060 probes passed with per-end precision. `chase.json`
+carries 810 US + 37 CA airports (111 curated Canadian runway ends, `cur:1`
+badges in the panel). Original design note kept below for the record.
+
 Curated Canadian airports for the fog-chase board — border belt + Maritimes +
 every high-fog Canadian field already in our rankings (CYQI 555 h/yr, CYYT 516,
 CYHZ 395, CYHM, CYXU, CYQG…). Nav Canada publishes no NASR equivalent, so a
@@ -50,6 +56,26 @@ on the 15th of Feb/May/Aug/Nov at 9am (quarter-anchored to the 2026-08-15
 refresh; runs on next app launch if the Mac was closed), with plausibility
 gates that hold the deploy on anomalies. CI-ification would need the 24 GB
 raw archive synced to R2 — possible, not obviously worth it.
+
+## 3. SEO / distribution (arc started 2026-08-15; phase 2 opened 2026-08-29)
+Shipped: baked static answers + city pages + season sections (2026-08-15/16),
+crawler-visible root identity + WebSite JSON-LD (08-17), legacy
+fog-atlas.pages.dev → fogatlas.org redirect (08-18), Search Console verified
+via DNS TXT. 2026-08-29: the daily bake gate was rebuilt after it silently
+missed two days — GitHub cron drift meant no run ever *started* inside the
+10z hour; the gate now asks the live site (`/fog/ksfo/data.json` `updated`)
+whether today's bake happened and fires on the first run at/after 10z that
+finds it stale (fail-open). Same day: IndexNow wired in — key file at site
+root + full-sitemap ping (~6,800 genuinely-daily-changing URLs) after every
+successful bake deploy, reaching Bing/Copilot/DuckDuckGo/Seznam/Naver.
+Still owed:
+- Travis: peek at Search Console indexation coverage (6,777 pages on a young
+  domain — check for "Discovered – not crawled" purgatory); query-shape
+  verdict planned ~mid-Sep per the original arc
+- Travis: Bing Webmaster Tools — one-click import of the GSC property
+  (IndexNow works without it, but the dashboard shows what Bing did with us)
+- og:image cards (pages currently have og:title/description only)
+- let GSC data arbitrate the next build: more surface (route pages) vs depth
 
 ## Smaller candidates
 - International LTS CAT I research pass: which runways have CHARTED LTS CAT I
