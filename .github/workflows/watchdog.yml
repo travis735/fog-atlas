@@ -115,6 +115,12 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "failed=true" >> "$GITHUB_OUTPUT"; fi
           { echo "### watchdog $(date -u +%FT%H:%MZ)"; sed 's/^/    /' report.txt; } >> "$GITHUB_STEP_SUMMARY"
           exit 0
+      - name: close the watchdog issue once everything passes again
+        if: steps.probe.outputs.failed != 'true'
+        run: |
+          for n in $(gh issue list --label watchdog --state open --json number -q '.[].number'); do
+            gh issue close "$n" --comment "$(printf 'All checks passing again on %s:\n\n```\n%s\n```' "$(date -u +%FT%H:%MZ)" "$(cat report.txt)")"
+          done
       - name: open or update the watchdog issue
         if: steps.probe.outputs.failed == 'true'
         run: |

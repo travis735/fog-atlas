@@ -1391,7 +1391,9 @@ def scorecard_page(sc, fc, now_utc) -> str:
                  [("Fog Atlas", f"{SITE}/"), ("Verification", None)], body, sc_graph, now_utc)
 
 
-def write_404_and_redirects(iata_by_icao: dict, covered: set, atlas_icaos: set, slugs: set):
+def write_404_and_redirects(iata_by_icao: dict, covered: set, atlas_icaos: set, slugs: set,
+                            priority=(), by_size=None):
+    by_size = by_size or {}
     """Real 404 (Pages otherwise SPA-falls-back every unknown path to the map
     shell with HTTP 200) + IATA/city alias 301s. _redirects is capped at 2,000
     static lines by Cloudflare, so covered airports go there; the full IATA map
@@ -1401,13 +1403,18 @@ def write_404_and_redirects(iata_by_icao: dict, covered: set, atlas_icaos: set, 
         if target in slugs and alias not in slugs:
             lines.append(f"/fog/city/{alias}/ /fog/city/{target}/ 301")
             lines.append(f"/fog/city/{alias} /fog/city/{target}/ 301")
-    # one source form per IATA code keeps 1,176 covered airports under the
-    # 2,000-line cap; Pages matches the trailing-slash variant of a source too
-    # (verify live after the first deploy: /fog/sfo/ and /fog/sfo → /fog/ksfo/)
-    for icao in sorted(covered):
+    # Pages does NOT match the trailing-slash variant of a source (verified
+    # live 2026-09-12: /fog/sfo → 301, /fog/sfo/ → 404), and the file is
+    # capped at 2,000 lines: the airports people actually type get both
+    # forms, the rest of the covered set gets the bare form, and the inline
+    # map in 404.html rescues everything else client-side
+    both = {i for i in covered if by_size.get(i) == "large"} | set(priority)
+    for icao in sorted(both | covered):
         i = iata_by_icao.get(icao)
         if i and icao in atlas_icaos:
             lines.append(f"/fog/{i.lower()} /fog/{icao.lower()}/ 301")
+            if icao in both:
+                lines.append(f"/fog/{i.lower()}/ /fog/{icao.lower()}/ 301")
     if len(lines) > 1990:
         print(f"  _redirects: {len(lines)} lines exceeds the cap — truncating to 1990")
         lines = lines[:1990]
@@ -1624,7 +1631,10 @@ def main() -> None:
     scd.mkdir(exist_ok=True)
     scd.joinpath("index.html").write_text(scorecard_page(sc, fc, now_utc))
 
-    n_redirects = write_404_and_redirects(iata_by_icao, stations, set(by_icao), set(slugs))
+    demand_primaries = {city_primary[s] for s in DEMAND_CITIES if s in city_primary}
+    n_redirects = write_404_and_redirects(iata_by_icao, stations | demand_primaries, set(by_icao), set(slugs),
+                                          priority=public_set | demand_primaries,
+                                          by_size={a["icao"]: a.get("size") for a in atlas})
 
     # sitemaps: priority child first (public cohort + their cities + demand
     # cities + lists + docs), then airports, then cities; lastmod is honest
