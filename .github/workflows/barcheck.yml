@@ -1,0 +1,93 @@
+# Monthly bar-check SCORING in CI — the mechanical half of the ritual.
+#
+# The local Claude ritual (scheduled task fogatlas-monthly-bar-check) used to
+# do this itself with wrangler + a sandbox bypass, and stalled on the first
+# unattended prompt (2026-09-02) while the scheduler reported success. CI
+# already holds every credential: this job syncs the R2 shadow logs, runs
+# score_shadow.py --bar, uploads the report to the KV key the site serves at
+# /api/scorecard, and commits forecast/out/shadow_report.json (which also
+# counts as repository activity for GitHub's 60-day schedule auto-disable).
+# The JUDGMENT half — graduates, demotions, holds, the owner's approval —
+# stays with the ritual, now reading the committed report.
+name: barcheck
+on:
+  schedule:
+    - cron: "0 12 1 * *"   # 1st of the month, 12z — before the 9am local ritual
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CLOUDFLARE_ACCOUNT_ID: 5488aa3505290f21c3be9c32b2a5949c
+      KV_NAMESPACE: 72edf0ce3b1944bca59e4aa47cb67cc4
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: restore cached shadow logs (only new objects are fetched)
+        uses: actions/cache@v4
+        with:
+          path: forecast/data/shadowlogs
+          key: shadowlogs-${{ github.run_id }}
+          restore-keys: shadowlogs-
+      - name: sync shadow logs from R2
+        run: |
+          pip install --quiet duckdb
+          npm install -g wrangler@4 >/dev/null 2>&1
+          mkdir -p forecast/data/shadowlogs
+          python3 - <<'PY'
+          import json, os, urllib.request
+          acct, tok = os.environ["CLOUDFLARE_ACCOUNT_ID"], os.environ["CLOUDFLARE_API_TOKEN"]
+          have = set(os.listdir("forecast/data/shadowlogs"))
+          keys, cursor = [], None
+          while True:
+              url = (f"https://api.cloudflare.com/client/v4/accounts/{acct}/r2/buckets/fogatlas-forecast/objects"
+                     f"?prefix=logs/&per_page=1000" + (f"&cursor={cursor}" if cursor else ""))
+              req = urllib.request.Request(url, headers={"Authorization": f"Bearer {tok}"})
+              d = json.load(urllib.request.urlopen(req, timeout=60))
+              if not d.get("success"):
+                  raise SystemExit(f"R2 list failed: {d.get('errors')}")
+              keys += [o["key"] for o in d["result"]]
+              cursor = (d.get("result_info") or {}).get("cursor")
+              if not cursor or not d["result"]:
+                  break
+          missing = [k for k in keys if os.path.basename(k) not in have]
+          print(f"{len(keys)} logs in R2, {len(have)} cached, {len(missing)} to fetch")
+          open("missing.txt", "w").write("\n".join(missing) + ("\n" if missing else ""))
+          PY
+          if [ -s missing.txt ]; then
+            xargs -P 8 -I{} sh -c 'wrangler r2 object get "fogatlas-forecast/{}" --file "forecast/data/shadowlogs/$(basename {})" --remote >/dev/null 2>&1 || echo "FAILED {}"' < missing.txt | tee fetch.log
+            if grep -q FAILED fetch.log; then echo "::warning::some log objects failed to download — retrying once"; grep FAILED fetch.log | cut -d' ' -f2 | xargs -P 4 -I{} sh -c 'wrangler r2 object get "fogatlas-forecast/{}" --file "forecast/data/shadowlogs/$(basename {})" --remote >/dev/null 2>&1 || echo "STILL FAILED {}"'; fi
+          fi
+          echo "$(ls forecast/data/shadowlogs | wc -l) logs on disk"
+      - name: score every airport against the pre-registered bar
+        run: |
+          python forecast/score_shadow.py --bar | tail -40
+          python3 -c "
+          import json; r = json.load(open('forecast/out/shadow_report.json'))
+          b = r['bar']; print('generated', r['generated'], 'runs', r['runs'], 'pass', len(b['pass']), 'fail', len(b['fail']), 'insufficient', b.get('insufficient_n'))
+          open('summary.txt','w').write(f\"scorecard {r['generated'][:10]}: {r['runs']} runs · {len(b['pass'])} pass · {len(b['fail'])} fail · {b.get('insufficient_n')} insufficient · pooled v10 skill {r['thresholds']['v10']['skill_pct']:+.1f}%\")
+          "
+          cat summary.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: publish the scorecard (KV key the site serves) and verify
+        run: |
+          wrangler kv key put scorecard --path forecast/out/shadow_report.json --namespace-id "$KV_NAMESPACE" --remote
+          wrangler kv key get scorecard --namespace-id "$KV_NAMESPACE" --remote > got.json
+          python3 -c "
+          import json, sys; s = open('got.json').read(); d = json.loads(s[s.find('{'):])
+          assert d['generated'] == json.load(open('forecast/out/shadow_report.json'))['generated'], 'KV put did not land'
+          print('KV scorecard verified:', d['generated'])
+          "
+      - name: commit the report
+        run: |
+          git config user.name "fogatlas-ci"
+          git config user.email "ci@fogatlas.org"
+          git add forecast/out/shadow_report.json
+          git commit -m "forecast: monthly shadow scorecard — $(cat summary.txt)" || echo "report unchanged"
+          git push

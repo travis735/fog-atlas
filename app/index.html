@@ -4,25 +4,38 @@
     <script>location.hostname.endsWith(".pages.dev")&&location.replace("https://fogatlas.org"+location.pathname+location.search+location.hash)</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Fog Atlas — where the sky closes</title>
-    <meta name="description" content="Aviation weather reference: fog climatology and daily fog forecasts for 3,497 airports worldwide, from ten years of METAR observations and NOAA/NWS guidance." />
+    <title>Fog Atlas — live world fog map, fog forecasts and 10-year fog climatology for 3,497 airports</title>
+    <meta name="description" content="Live fog map and daily fog forecasts for 3,497 airports and 3,000+ cities worldwide, with ten-year fog climatology and public forecast verification, built from NOAA/NWS and FAA data." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href="https://fogatlas.org/" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://fogatlas.org/#site","name":"Fog Atlas","url":"https://fogatlas.org/","description":"Free aviation-weather reference: fog climatology and verified daily fog forecasts for 3,497 airports worldwide, built from NOAA/NWS and FAA public data."},{"@type":"Organization","@id":"https://fogatlas.org/#org","name":"Fog Atlas","url":"https://fogatlas.org/"}]}</script>
+    <link rel="describedby" href="/llms.txt" />
+    <meta property="og:type" content="website" /><meta property="og:url" content="https://fogatlas.org/" />
+    <meta property="og:title" content="Fog Atlas — live world fog map and fog forecasts" />
+    <meta property="og:description" content="Will it be foggy tomorrow? Daily fog forecasts and ten-year fog climatology for 3,497 airports, every forecast logged and publicly verified." />
+    <meta property="og:image" content="https://fogatlas.org/og.png" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://fogatlas.org/#site","name":"Fog Atlas","alternateName":["FogAtlas","fogatlas.org","Fog Atlas fog map"],"url":"https://fogatlas.org/","description":"Live world fog map, daily fog forecasts and ten-year fog climatology for 3,497 airports worldwide, built from NOAA/NWS and FAA public data; every forecast logged and publicly verified."},{"@type":"Organization","@id":"https://fogatlas.org/#org","name":"Fog Atlas","url":"https://fogatlas.org/","logo":"https://fogatlas.org/og.png","founder":{"@type":"Person","name":"Travis Danner"},"sameAs":["https://github.com/travis735/fog-atlas"]}]}</script>
   </head>
   <body>
     <div id="map"></div>
     <noscript>
       <main style="max-width:680px;margin:40px auto;padding:0 16px;font-family:sans-serif">
-        <h1>Fog Atlas</h1>
-        <p>A free aviation-weather reference: fog climatology and daily fog
-        forecasts for 3,497 airports worldwide, built from ten years of METAR
-        weather observations (NOAA / Iowa Environmental Mesonet), National
-        Weather Service model guidance, and FAA airport data. The interactive
-        atlas needs JavaScript, but every airport and city has a static page:</p>
+        <h1>Fog Atlas — live world fog map</h1>
+        <p>A free reference for "will it be foggy tomorrow?": a live map of
+        every airport currently below approach minima, daily fog forecasts and
+        ten-year fog climatology for 3,497 airports and 3,000+ cities worldwide,
+        built from ten years of METAR weather observations (NOAA / Iowa
+        Environmental Mesonet), National Weather Service model guidance, and FAA
+        airport data — every forecast logged and publicly verified. The
+        interactive map needs JavaScript, but every airport and city has a
+        static page:</p>
         <p><a href="/fog/">Airport fog forecasts</a> ·
         <a href="/fog/city/">City fog forecasts</a> ·
+        <a href="/fog/region/central-valley/">Tule fog (Central Valley)</a> ·
+        <a href="/fog/foggiest-airports/">Foggiest airports</a> ·
         <a href="/fog/scorecard/">Forecast verification</a> ·
+        <a href="/methodology/">Methodology</a> ·
+        <a href="/about/">About</a> ·
         <a href="/llms.txt">Machine-readable guide</a></p>
       </main>
     </noscript>

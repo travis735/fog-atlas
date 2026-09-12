@@ -19,3 +19,10 @@ forecast/data/gefs/
 pipeline/data/raw_sky/
 app/public/fog/
 app/public/sitemap.xml
+app/public/sitemap-*.xml
+app/public/llms.txt
+app/public/404.html
+app/public/_redirects
+app/public/about/
+app/public/methodology/
+notes/

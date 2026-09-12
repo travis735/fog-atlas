@@ -1,0 +1,128 @@
+# Consumer-side health check for the live site. Everything it asserts was
+# once silently broken: the daily bake stalled for two days (Aug 2026), the
+# scorecard went 28 days stale when the monthly ritual froze on a sandbox
+# prompt, the reference refresh was cancelled by its own timeout, a 403
+# IndexNow run showed as a green step.
+#
+# Limits it cannot cover, on purpose:
+#   - GitHub disables scheduled workflows in public repos after 60 days without
+#     repository activity — this watchdog's own cron dies with them. The
+#     defense is commit cadence (barcheck.yml commits monthly; keep shipping).
+#   - Edge probes from a runner exercise Cloudflare's UNVERIFIED-bot path only;
+#     a verified-bot block (Cloudflare AI-bot policy) is invisible from here
+#     and stays an owner checklist item at every Cloudflare default change.
+name: watchdog
+on:
+  schedule:
+    - cron: "17 16 * * *"   # after the ~10z bake has had six hours
+    - cron: "47 20 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: probe the live site
+        id: probe
+        shell: bash
+        run: |
+          UA='Mozilla/5.0 (compatible; fogatlas-watchdog; +https://fogatlas.org/about/)'
+          set +e
+          python3 - "$UA" > report.txt <<'PY'
+          import json, sys, urllib.request, urllib.error
+          from datetime import datetime, timezone, timedelta, date
+          UA = sys.argv[1]
+          now = datetime.now(timezone.utc)
+          fails, notes = [], []
+          def get(url, js=True):
+              req = urllib.request.Request(url, headers={"User-Agent": UA})
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  b = r.read()
+                  return json.loads(b) if js else b
+          def status(url):
+              try:
+                  req = urllib.request.Request(url, headers={"User-Agent": UA}, method="HEAD")
+                  return urllib.request.urlopen(req, timeout=30).status
+              except urllib.error.HTTPError as e:
+                  return e.code
+              except Exception as e:
+                  return f"error {e}"
+          # 1. the daily bake happened (first run at/after 10z bakes; give it until 12z)
+          try:
+              upd = get("https://fogatlas.org/fog/ksfo/data.json")["updated"][:10]
+              exp = (now.date() if now.hour >= 12 else (now - timedelta(days=1)).date()).isoformat()
+              (fails if upd < exp else notes).append(f"bake: pages baked {upd} (expected >= {exp})")
+          except Exception as e:
+              fails.append(f"bake: /fog/ksfo/data.json unreadable — {e}")
+          # 2. the hourly engine is issuing (cron sheds runs; 12 h is the alarm line)
+          public = set()
+          try:
+              fc = get("https://fogatlas.org/api/forecast")
+              cyc = datetime.fromisoformat(fc["meta"]["cycle"].replace("Z", "+00:00"))
+              age = (now - cyc).total_seconds() / 3600
+              (fails if age > 12 else notes).append(f"forecast: newest cycle {fc['meta']['cycle']} ({age:.1f} h old, limit 12)")
+              public = set(fc["meta"].get("publicAirports", []))
+          except Exception as e:
+              fails.append(f"forecast: /api/forecast unreadable — {e}")
+          # 3. the receipts are fresh and every public airport has one (holds live in 'fail' by design)
+          try:
+              sc = get("https://fogatlas.org/api/scorecard")
+              gen = sc["generated"][:10]
+              gage = (now.date() - date.fromisoformat(gen)).days
+              scored = {r["icao"] for r in sc["bar"].get("pass", [])} | {r["icao"] for r in sc["bar"].get("fail", [])}
+              line = f"scorecard: generated {gen} ({gage} d old), {len(sc['bar'].get('pass', []))} pass, {len(public)} public"
+              if gage > 40:
+                  fails.append(line + " — STALE (>40 d)")
+              elif now.day >= 4 and gen < now.strftime("%Y-%m-01"):
+                  fails.append(line + " — the monthly bar-check (barcheck.yml) has not refreshed it this month")
+              else:
+                  notes.append(line)
+              missing = sorted(public - scored)
+              if missing:
+                  fails.append(f"scorecard: {len(missing)} public airports have no pass/fail receipt: {' '.join(missing[:12])}")
+          except Exception as e:
+              fails.append(f"scorecard: /api/scorecard unreadable — {e}")
+          # 4. static plumbing
+          for url, want, label in [
+              ("https://fogatlas.org/a94ea7fb1a87935bb7c2ec7dc6976f62.txt", 200, "IndexNow key file"),
+              ("https://fogatlas.org/fog/zzzz/", 404, "unknown /fog/ path is a real 404"),
+              ("https://fogatlas.org/sitemap-priority.xml", 200, "priority sitemap"),
+              ("https://fogatlas.org/about/", 200, "about page"),
+          ]:
+              s = status(url)
+              (notes if s == want else fails).append(f"{label}: HTTP {s} (want {want})")
+          # 5. the analytics beacon is on the baked pages
+          try:
+              b = get("https://fogatlas.org/fog/ksfo/", js=False)
+              ok = b"cloudflareinsights" in b
+              (notes if ok else fails).append("analytics beacon on baked pages: " + ("present" if ok else "MISSING"))
+          except Exception as e:
+              fails.append(f"baked page unreadable — {e}")
+          for n in notes: print("ok  ", n)
+          for f in fails: print("FAIL", f)
+          sys.exit(1 if fails else 0)
+          PY
+          rc=$?
+          cat report.txt
+          if [ "$rc" -ne 0 ]; then echo "failed=true" >> "$GITHUB_OUTPUT"; fi
+          { echo "### watchdog $(date -u +%FT%H:%MZ)"; sed 's/^/    /' report.txt; } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+      - name: open or update the watchdog issue
+        if: steps.probe.outputs.failed == 'true'
+        run: |
+          gh label create watchdog --color d73a4a --description "live-site health failure" --force >/dev/null 2>&1 || true
+          existing=$(gh issue list --label watchdog --state open --json number -q '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file report.txt
+          else
+            gh issue create --label watchdog --title "watchdog: live-site check failed $(date -u +%F)" --body-file report.txt
+          fi
+          exit 1

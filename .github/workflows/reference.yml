@@ -26,7 +26,9 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # the R2 parquet pull + full aggregate re-export ran 45m17s on 2026-09-03
+    # and was killed by the old 45-minute cap — silently, no alert
+    timeout-minutes: 120
     env:
       CLOUDFLARE_ACCOUNT_ID: 5488aa3505290f21c3be9c32b2a5949c
     steps:

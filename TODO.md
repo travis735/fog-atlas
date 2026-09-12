@@ -57,25 +57,94 @@ refresh; runs on next app launch if the Mac was closed), with plausibility
 gates that hold the deploy on anomalies. CI-ification would need the 24 GB
 raw archive synced to R2 — possible, not obviously worth it.
 
-## 3. SEO / distribution (arc started 2026-08-15; phase 2 opened 2026-08-29)
-Shipped: baked static answers + city pages + season sections (2026-08-15/16),
-crawler-visible root identity + WebSite JSON-LD (08-17), legacy
-fog-atlas.pages.dev → fogatlas.org redirect (08-18), Search Console verified
-via DNS TXT. 2026-08-29: the daily bake gate was rebuilt after it silently
-missed two days — GitHub cron drift meant no run ever *started* inside the
-10z hour; the gate now asks the live site (`/fog/ksfo/data.json` `updated`)
-whether today's bake happened and fires on the first run at/after 10z that
-finds it stale (fail-open). Same day: IndexNow wired in — key file at site
-root + full-sitemap ping (~6,800 genuinely-daily-changing URLs) after every
-successful bake deploy, reaching Bing/Copilot/DuckDuckGo/Seznam/Naver.
-Still owed:
-- Travis: peek at Search Console indexation coverage (6,777 pages on a young
-  domain — check for "Discovered – not crawled" purgatory); query-shape
-  verdict planned ~mid-Sep per the original arc
-- Travis: Bing Webmaster Tools — one-click import of the GSC property
-  (IndexNow works without it, but the dashboard shows what Bing did with us)
-- og:image cards (pages currently have og:title/description only)
-- let GSC data arbitrate the next build: more surface (route pages) vs depth
+## 3. SEO / distribution — audit 2026-09-11, phase 3 shipped 2026-09-12
+History: baked static answers + city pages + season sections (2026-08-15/16),
+crawler-visible root identity (08-17), pages.dev JS hop (08-18), self-healing
+bake gate + IndexNow (08-29 — IndexNow has returned HTTP 200 daily since).
+
+**Audit verdict (six-lens, adversarially verified, 2026-09-11):** the site was
+technically sound but invisible and unmeasured — a 52-day-old domain with
+6,777 templated pages, one confirmed indexed page, zero inbound links, no
+analytics on any baked page, a site-wide soft-404 (every unknown path served
+the map shell with HTTP 200), a receipts page 28 days stale and contradicting
+the cohort count, 65% of airport pages answering "will it be foggy tomorrow?"
+with "No fog forecast feed exists", and GitHub's 60-day idle rule set to
+disable every cron ~2026-10-28. Refuted along the way: "run the bar-check so
+Central Valley airports carry percentages by tule season" — under the
+pre-registered live bar (>=10 fog event-hours since 2026-07-21) they cannot
+graduate before the Dec 1 ritual, whatever we do.
+
+**Shipped 2026-09-12 (all in build_pages.py + workflows, riding the daily bake):**
+- analytics beacon on every baked page; real `404.html` + `_redirects` (IATA
+  → ICAO for covered airports, city aliases delhi/sydney/melbourne/bangalore…,
+  lower-casing + full IATA map inline in the 404 page); `www` → apex 301 via a
+  zone Redirect Rule (pages.dev stays canonical + JS hop — Pages can't host-match)
+- every non-public page now leads with a climatology-first answer plus the
+  airport's OWN terminal forecast (AWC TAF, attributed, fog/mist parsed, ~30 h
+  horizon) and an age-stamped latest observation; public pages get a
+  verification receipt line; "through Friday" now means the 36-h horizon end
+- airport pages: ICAO/IATA in title/H1/JSON-LD, approach-capability + cause +
+  EFVS + reliability facts as prose and FAQ, monthly hours table, tule-fog
+  block (Central Valley), marine-layer honesty block + FAQ (SFO/OAK/SJC + SF
+  city), breadcrumbs + hub/home links + nearby airports, og:image/twitter
+  cards, snippet fixes (word-boundary truncation, capitalisation, "most of
+  the year" seasons); city pages same chrome, Bangalore/Bengaluru merged,
+  "Will it be foggy in Delhi tomorrow?" title alias
+- new pages: /about/, /methodology/ (from README/METHODOLOGY.md), regions
+  /fog/region/central-valley/ (tule fog) and /fog/region/north-india/,
+  /fog/foggiest-airports/, /fog/foggiest-us-airports/ (quality-gated),
+  /fog/cat-iii-airports/, /fog/cat-ii-airports/, /fog/efvs/; scorecard page
+  rendered server-side from /api/scorecard (status line, pass table, stale
+  warning) — no more hard-coded "shadow mode"
+- machine layer: /fog/index.json + /fog/city/index.json, llms.txt to spec
+  (absolute links, Optional section, "unverified p must not be quoted"),
+  data.json schemaVersion/refreshCadence/validThrough/thresholdDefinition/
+  currentObservation/capability/nearby, current robots tokens
+- crawl: sitemap index (priority child = public cohort + their cities +
+  demand cities + lists/docs; then airports; then cities) with honest lastmod;
+  IndexNow submits only today's changed URLs and reports its real status
+  (step fails the run AFTER the KV upload)
+- pipeline health: watchdog.yml (twice daily: bake fresh, issuance <12 h,
+  scorecard <40 d and refreshed monthly, every public airport has a receipt,
+  key file, real 404, priority sitemap, about page, beacon → opens/updates a
+  `watchdog` issue); barcheck.yml (1st of month: sync R2 logs → score →
+  KV `scorecard` verified → commit shadow_report.json — the monthly ritual
+  now only READS that file, no wrangler, no sandbox prompt); reference.yml
+  timeout 45 → 120 min (09-03 run was killed at 45m17s); bake prints a
+  page-uniqueness metric to the step summary
+
+**Travis-only, time-critical:**
+- BEFORE 2026-09-15: Cloudflare dashboard → fogatlas.org → Security →
+  Settings → AI bot policy: allow Search + Agent (+ Training if you want
+  CCBot). Cloudflare blocks AI crawlers by default on zones onboarded after
+  July 2025 and changes defaults again on Sep 15; edge probes cannot see
+  verified-bot blocks. Common Crawl has zero captures of fogatlas.org.
+- Bing Webmaster Tools: Import from Google Search Console (auto-verified),
+  read IndexNow Insights + AI Performance — the only view of what Bing did
+  with 14+ days of submissions.
+- Search Console: Page indexing counts (Soft 404 / Crawled–not indexed /
+  Discovered–not indexed / Duplicate without user-selected canonical),
+  Sitemaps status (resubmit /sitemap.xml — it is now an index), Performance
+  queries+pages; paste to Claude. Optional: service account → GSC_SA_KEY secret.
+- Keep one real commit landing every <8 weeks (GitHub disables schedules in
+  public repos after 60 idle days; barcheck.yml's monthly bot commit may or
+  may not count). Optional: healthchecks.io ping after the deploy step.
+- Decide: notes/decision-shadow-page-wording.md (A raw-NBM attributed / B
+  hindcast admission / C keep guidance), a data license (CC BY 4.0
+  suggested), a contact email for About / Organization JSON-LD.
+- Send: notes/distribution-drafts-2026-09.md — two SF emails now, OPSGROUP
+  mid-Oct, one Show HN late Oct, press after; never PPRuNe; Reddit only
+  after reading each sub's rules yourself. Wayback "Save Page Now" on the
+  four hub pages (zero captures exist).
+
+**Later (gated on the GSC/Bing reads):** single-station city↔airport
+canonical decision (96% of city pages restate one airport page); country /
+US-state sub-hubs; per-page og:image cards (needs a rasterizer in CI); c8
+phase 2 regions (Punjab, UAE, UK, Auckland, Melbourne, Atlantic Canada) +
+/fog/season-2026/ story page; Hindi variant for ~40 IN/PK stations (only if
+the English India pages index); weekly GSC/Bing API pull + urlInspection
+census; Oct 15 checkpoint — if priority-sitemap indexation <30%, drop the
+2,282 uncovered long-tail airports from the sitemap rather than add pages.
 
 ## Smaller candidates
 - International LTS CAT I research pass: which runways have CHARTED LTS CAT I

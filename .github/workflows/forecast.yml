@@ -78,9 +78,11 @@ jobs:
           python forecast/build_pages.py
           cd app && npm ci --no-audit --no-fund && npx vite build
           npx --yes wrangler@4 pages deploy dist --project-name=fog-atlas
-      - name: ping IndexNow with the rebaked URLs
+      - name: ping IndexNow with today's changed URLs
+        id: indexnow
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
-        run: python forecast/ping_indexnow.py || echo "IndexNow ping failed (non-fatal)"
+        continue-on-error: true   # the real outcome fails the run at the end, after the KV upload
+        run: python forecast/ping_indexnow.py
       - name: upload to KV
         if: steps.gate.outputs.enabled == 'true'
         env:
@@ -102,3 +104,8 @@ jobs:
             npx --yes wrangler@4 r2 object put \
               "fogatlas-forecast/deploylogs/$(basename "$DLOG")" --file "$DLOG" --remote || true
           fi
+      - name: surface an IndexNow failure (issuance already safe in KV)
+        if: steps.indexnow.outcome == 'failure'
+        run: |
+          echo "::error::IndexNow ping failed — see the 'ping IndexNow' step log"
+          exit 1
