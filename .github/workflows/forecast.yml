@@ -13,7 +13,9 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # the daily bake fetches ~140 AWC batches; a throttled AWC once stretched
+    # it past the old 25-minute cap and the job was cancelled mid-deploy
+    timeout-minutes: 40
     env:
       CLOUDFLARE_ACCOUNT_ID: 5488aa3505290f21c3be9c32b2a5949c
       KV_NAMESPACE: 72edf0ce3b1944bca59e4aa47cb67cc4
@@ -37,6 +39,20 @@ jobs:
         run: |
           pip install --quiet duckdb pyshp eccodes
           python forecast/engine.py
+      - name: upload the issuance to KV + R2 (the hourly product — never waits on the daily bake)
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4 kv key put current \
+            --path forecast/out/current.json --namespace-id "$KV_NAMESPACE" --remote
+          LOG=$(ls forecast/out/log/run_*.json.gz | tail -1)
+          # R2 is the log home; KV fallback keeps the record unbroken if the
+          # token lacks R2 scope (migrate strays with the next R2-capable run)
+          npx --yes wrangler@4 r2 object put \
+            "fogatlas-forecast/logs/$(basename "$LOG")" --file "$LOG" --remote \
+          || npx --yes wrangler@4 kv key put "log:$(basename "$LOG" .json.gz)" \
+            --path "$LOG" --namespace-id "$KV_NAMESPACE" --remote
       - name: bake gate — does the live site still need today's bake?
         id: bake
         if: steps.gate.outputs.enabled == 'true'
@@ -72,6 +88,7 @@ jobs:
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PYTHONUNBUFFERED: "1"   # the bake's AWC progress lines must reach the log as they happen
         run: |
           # pages are deploy-time artifacts (gitignored): bake today's
           # answers from the issuance the engine just wrote, then ship
@@ -83,20 +100,11 @@ jobs:
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
         continue-on-error: true   # the real outcome fails the run at the end, after the KV upload
         run: python forecast/ping_indexnow.py
-      - name: upload to KV
-        if: steps.gate.outputs.enabled == 'true'
+      - name: upload the deploy-planner data to KV + R2 (daily, with the bake)
+        if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          npx --yes wrangler@4 kv key put current \
-            --path forecast/out/current.json --namespace-id "$KV_NAMESPACE" --remote
-          LOG=$(ls forecast/out/log/run_*.json.gz | tail -1)
-          # R2 is the log home; KV fallback keeps the record unbroken if the
-          # token lacks R2 scope (migrate strays with the next R2-capable run)
-          npx --yes wrangler@4 r2 object put \
-            "fogatlas-forecast/logs/$(basename "$LOG")" --file "$LOG" --remote \
-          || npx --yes wrangler@4 kv key put "log:$(basename "$LOG" .json.gz)" \
-            --path "$LOG" --namespace-id "$KV_NAMESPACE" --remote
           if [ -f forecast/out/deploy.json ]; then
             npx --yes wrangler@4 kv key put deploy \
               --path forecast/out/deploy.json --namespace-id "$KV_NAMESPACE" --remote

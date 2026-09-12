@@ -182,31 +182,42 @@ def load_forecast():
 AWC = "https://aviationweather.gov/api/data"
 
 
-def awc_batch(kind: str, icaos, per=50) -> dict:
+def awc_batch(kind: str, icaos, per=50, budget_s=360) -> dict:
     """Latest TAF or METAR per station from the NOAA AWC data API (the same
-    feed /api/metar proxies). Best-effort: a failed batch just leaves those
-    stations without the attributed line — the climatology answer stands."""
+    feed /api/metar proxies). Best-effort AND time-bounded: a failed batch
+    just leaves those stations without the attributed line (the climatology
+    answer stands), and the whole pass stops at `budget_s` — a throttled AWC
+    once dragged the bake past the CI job timeout and cancelled the deploy."""
     import time
-    out = {}
+    out, t0, failed = {}, time.monotonic(), 0
     ids = sorted(icaos)
     for i in range(0, len(ids), per):
+        if time.monotonic() - t0 > budget_s:
+            print(f"  awc {kind}: time budget hit after {i}/{len(ids)} stations — continuing with what we have")
+            break
         chunk = ids[i:i + per]
         url = f"{AWC}/{kind}?ids={','.join(chunk)}&format=json"
-        for attempt in range(3):
+        for attempt in range(2):
             try:
                 req = urllib.request.Request(url, headers={"User-Agent": "fogatlas-build (fogatlas.org)"})
-                with urllib.request.urlopen(req, timeout=30) as r:
+                with urllib.request.urlopen(req, timeout=15) as r:
                     for rec in json.load(r):
                         ic = rec.get("icaoId")
                         if ic and (ic not in out or kind == "taf" and rec.get("mostRecent")):
                             out[ic] = rec
                 break
             except Exception as e:
-                if attempt == 2:
-                    print(f"  awc {kind} batch {i // per} failed: {e}")
-                time.sleep(2 * (attempt + 1))
+                if attempt == 1:
+                    failed += 1
+                    if failed <= 3:
+                        print(f"  awc {kind} batch {i // per} failed: {e}")
+                else:
+                    time.sleep(3)
+        if failed >= 8:
+            print(f"  awc {kind}: {failed} batches failed — AWC is throttling, stopping this pass")
+            break
         time.sleep(0.3)
-    print(f"  awc {kind}: {len(out)}/{len(ids)} stations")
+    print(f"  awc {kind}: {len(out)}/{len(ids)} stations in {time.monotonic() - t0:.0f}s")
     return out
 
 
