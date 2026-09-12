@@ -1326,18 +1326,27 @@ def bake_lists(atlas, by_icao, fc, now_utc) -> list[tuple[str, str, dict]]:
 
 
 def load_scorecard():
-    """Live /api/scorecard (what the site serves) with the committed report as
-    fallback — the receipts page renders from this at bake, no JS required."""
+    """The newer of the live /api/scorecard (edge-cached for an hour on a
+    fixed key — stale for up to an hour after barcheck.yml writes KV) and the
+    committed report barcheck commits alongside it. The receipts page and the
+    per-airport receipt lines render from this at bake, no JS required."""
+    cands = []
     try:
         req = urllib.request.Request(f"{SITE}/api/scorecard", headers={"User-Agent": "fogatlas-build"})
         with urllib.request.urlopen(req, timeout=20) as r:
             sc = json.load(r)
             if sc.get("bar"):
-                return sc, "live"
+                cands.append((sc.get("generated", ""), sc, "live"))
     except Exception as e:
         print(f"  live scorecard unavailable ({e})")
     p = HERE / "out" / "shadow_report.json"
-    return (json.load(open(p)), "committed") if p.exists() else (None, None)
+    if p.exists():
+        sc = json.load(open(p))
+        cands.append((sc.get("generated", ""), sc, "committed"))
+    if not cands:
+        return None, None
+    _, sc, src = max(cands, key=lambda c: c[0])
+    return sc, src
 
 
 def scorecard_page(sc, fc, now_utc) -> str:
