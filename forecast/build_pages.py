@@ -221,6 +221,42 @@ def awc_batch(kind: str, icaos, per=50, budget_s=360) -> dict:
     return out
 
 
+AWC_CACHE = HERE / "out" / "awc_cache.json"
+
+
+def awc_with_last_good(tafs: dict, obs: dict, now_utc, max_age_h=30) -> tuple[dict, dict]:
+    """AWC 504s for an hour at a time; a bake during an outage must not strip
+    the TAF/observation layer from 6,000 pages. Merge the last good snapshot
+    (kept in the CI cache) for stations the fresh pass missed, only while the
+    TAF issue time / observation time is younger than max_age_h — the page
+    stamps that time, so an older line is still honest. Then save the merge."""
+    cutoff = (now_utc - timedelta(hours=max_age_h)).timestamp()
+    used = 0
+    if AWC_CACHE.exists():
+        try:
+            prev = json.load(open(AWC_CACHE))
+            for ic, rec in prev.get("taf", {}).items():
+                if ic not in tafs:
+                    t = rec.get("issueTime", "")
+                    try:
+                        ts = datetime.fromisoformat(t.replace("Z", "+00:00")).timestamp()
+                    except ValueError:
+                        continue
+                    if ts >= cutoff:
+                        tafs[ic] = rec; used += 1
+            for ic, rec in prev.get("metar", {}).items():
+                if ic not in obs and (rec.get("obsTime") or 0) >= cutoff:
+                    obs[ic] = rec; used += 1
+            if used:
+                print(f"  awc: reused {used} last-good entries from {prev.get('saved', '?')}")
+        except Exception as e:
+            print(f"  awc cache unreadable ({e})")
+    AWC_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    AWC_CACHE.write_text(json.dumps({"saved": now_utc.strftime("%Y-%m-%dT%H:%MZ"), "taf": tafs, "metar": obs},
+                                    separators=(",", ":")))
+    return tafs, obs
+
+
 def _vis_mi(v):
     if v is None:
         return None
@@ -1510,6 +1546,7 @@ def main() -> None:
     all_icaos = [a["icao"] for a in atlas]
     tafs = awc_batch("taf", [i for i in all_icaos if i not in public_set])
     obs = awc_batch("metar", all_icaos)
+    tafs, obs = awc_with_last_good(tafs, obs, now_utc)
 
     sc, sc_src = load_scorecard()
     receipts = {}
