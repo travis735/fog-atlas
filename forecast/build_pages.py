@@ -90,6 +90,9 @@ BEACON = ('<script defer src="https://static.cloudflareinsights.com/beacon.min.j
           'data-cf-beacon=\'{"token": "0b01c59e4c9a4287a1a8016059328982"}\'></script>')
 OG_IMAGE = f"{SITE}/og.png"
 SCHEMA_VERSION = "2026-09"
+LICENSE = {"name": "CC BY 4.0", "url": "https://creativecommons.org/licenses/by/4.0/",
+           "attribution": "Fog Atlas (fogatlas.org) — link the airport or city page you used"}
+CONTACT_EMAIL = None  # published once hello@fogatlas.org routing is live
 # Central Valley stations whose winter fog is the named "tule fog" searchers ask for
 TULE_FOG = {"KFAT", "KBFL", "KSMF", "KSCK", "KMOD", "KVIS", "KMCE", "KRDD", "KSAC", "KMHR", "KMYV", "KMER", "KPTV", "KHJO"}
 # Bay Area stations where "fog" to a local means the marine stratus deck, not sub-CAT-I ground fog
@@ -470,7 +473,7 @@ def jsonld(a, plain_answer, season_plain, subH, window, med, extra_faq=(), crumb
          "description": f"Hourly fog climatology ({window['start'][:4]}–{window['through'][:4]} METAR observations) "
                         f"and daily-refreshed calibrated fog forecast for {name}.",
          "url": url, "temporalCoverage": f"{window['start']}/{window['through']}",
-         "isAccessibleForFree": True,
+         "isAccessibleForFree": True, "license": LICENSE["url"],
          "creator": {"@type": "Organization", "name": "Fog Atlas", "url": SITE},
          "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json",
                            "contentUrl": url + "data.json"}],
@@ -666,7 +669,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
 {near_html}
 <h2>For flight operations</h2>
 <p class="note">EFVS crews: the <a href="{SITE}/#chase">CHASE board</a> ranks airports by live fog status, approach lighting, go-around height and flight time from your base. Forecast probabilities publish here per-airport once the calibrated model beats climatology on live verification — receipts on the <a href="{SITE}/fog/scorecard/">scorecard</a>.</p>
-<p class="note">Sources: NOAA/NWS National Blend of Models guidance · NOAA Aviation Weather Center TAF/METAR · METAR observations {yrs} (Iowa Environmental Mesonet) · FAA NASR. <a href="{SITE}/methodology/">Methodology</a> · <a href="{SITE}/about/">About</a> · <a href="{SITE}/fog/">all airports</a> · <a href="{SITE}/fog/city/">by city</a>. Machine access: <a href="/fog/{icao.lower()}/data.json">data.json</a> · <a href="/llms.txt">llms.txt</a>. Not for operational use.</p>
+<p class="note">Sources: NOAA/NWS National Blend of Models guidance · NOAA Aviation Weather Center TAF/METAR · METAR observations {yrs} (Iowa Environmental Mesonet) · FAA NASR. <a href="{SITE}/fog/forecast/">where it will be foggy tomorrow</a> · <a href="{SITE}/methodology/">Methodology</a> · <a href="{SITE}/about/">About</a> · <a href="{SITE}/fog/">all airports</a> · <a href="{SITE}/fog/city/">by city</a>. Machine access: <a href="/fog/{icao.lower()}/data.json">data.json</a> · <a href="/llms.txt">llms.txt</a>. Not for operational use.</p>
 <script>window.__FOG={{icao:"{icao}",clim:{json.dumps(clim)},climLabel:"{clim_label}",covered:{str(covered).lower()},tz:"{a['tz']}"}}</script>
 <script src="/fog/_fog.js" defer></script>
 {BEACON}
@@ -678,6 +681,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
         "country": a["country"], "tz": a["tz"],
         "updated": now_utc.strftime("%Y-%m-%dT%H:%MZ"),
         "refreshCadence": "daily",
+        "license": LICENSE,
         "validThrough": (now_utc + timedelta(hours=48)).strftime("%Y-%m-%dT%H:%MZ"),
         "window": {"start": window["start"], "through": window["through"]},
         "climatology": {
@@ -1001,7 +1005,7 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
          "description": f"Daily fog outlook and {window['start'][:4]}–{window['through'][:4]} fog climatology for {disp}, "
                         f"measured at {len(stations)} weather station{'s' if len(stations) != 1 else ''}.",
          "url": url, "temporalCoverage": f"{window['start']}/{window['through']}",
-         "isAccessibleForFree": True,
+         "isAccessibleForFree": True, "license": LICENSE["url"],
          "creator": {"@type": "Organization", "name": "Fog Atlas", "url": SITE},
          "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json",
                            "contentUrl": url + "data.json"}]},
@@ -1035,7 +1039,7 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
 <div class="blk">Fog here concentrates in <b>{pk_txt}</b> — about <b>{subH} hours</b> in a typical year at {a['icao']}{f", usually lasting ~{med['medianH']} h once it forms" if med else ""}. Hour-by-hour patterns, live conditions and the forecast strip live on the <a href="/fog/{a['icao'].lower()}/">{a['icao']} station page</a>.</div>
 {season_html}
 <table class="months"><tr><th>month</th><th>hours below CAT I at {a['icao']}</th></tr>{month_rows}</table>
-<p class="note"><a href="{SITE}/fog/city/">All cities</a> · <a href="{SITE}/fog/">all airports</a> · <a href="{SITE}/methodology/">methodology</a> · <a href="{SITE}/about/">about</a>. Machine access: <a href="{url}data.json">data.json</a> · <a href="/llms.txt">llms.txt</a> · <a href="{SITE}/fog/scorecard/">forecast verification</a>. Not for operational use.</p>
+<p class="note"><a href="{SITE}/fog/forecast/">Where it will be foggy tomorrow</a> · <a href="{SITE}/fog/city/">all cities</a> · <a href="{SITE}/fog/">all airports</a> · <a href="{SITE}/methodology/">methodology</a> · <a href="{SITE}/about/">about</a>. Machine access: <a href="{url}data.json">data.json</a> · <a href="/llms.txt">llms.txt</a> · <a href="{SITE}/fog/scorecard/">forecast verification</a>. Not for operational use.</p>
 {BEACON}
 </main></body></html>"""
 
@@ -1044,6 +1048,7 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
         "city": muni, "region": region, "country": country, "slug": slug,
         "updated": now_utc.strftime("%Y-%m-%dT%H:%MZ"),
         "refreshCadence": "daily",
+        "license": LICENSE,
         "validThrough": (now_utc + timedelta(hours=48)).strftime("%Y-%m-%dT%H:%MZ"),
         "currentObservation": ob[1] if ob else None,
         "window": {"start": window["start"], "through": window["through"]},
@@ -1081,7 +1086,7 @@ def llms_txt(n_airports, n_public, window, now_utc) -> str:
 > all issued forecasts are logged and scored — receipts at /fog/scorecard/.
 
 Updated {now_utc.strftime("%Y-%m-%d")}. Pages rebuild daily; the forecast API updates hourly.
-Citation: link the airport page. Not for operational use.
+License: CC BY 4.0 — reuse freely, attribution = a link to the airport or city page you used. Not for operational use.
 
 ## Per-airport pages (start here)
 - [Airport index]({SITE}/fog/): every airport, linked; pattern {SITE}/fog/{{icao_lowercase}}/ (e.g. {SITE}/fog/ksfo/). The first block is today's answer in plain language; a facts box carries the climatology and approach-capability numbers
@@ -1092,6 +1097,9 @@ Citation: link the airport page. Not for operational use.
 - [City index]({SITE}/fog/city/): every city with a measuring station; pattern {SITE}/fog/city/{{slug}}/ — US/CA/AU slugs carry a region suffix ({SITE}/fog/city/san-francisco-ca/); each page names its measuring stations and takes its answer from the city's primary station
 - [City machine index]({SITE}/fog/city/index.json): slug, city, region, country, stations, primary station, page and data.json URLs
 - [Example city data]({SITE}/fog/city/san-francisco-ca/data.json)
+
+## Where it will be foggy tomorrow
+- [Fog forecast — where fog is expected in the next 36 hours]({SITE}/fog/forecast/): rebuilt daily; airports with a verified calibrated probability of 50% or more, airports whose own terminal forecast (TAF) calls for dense fog, and airports reporting fog at the latest observation, worldwide
 
 ## Regions, rankings and capability lists
 - [Tule fog — California Central Valley]({SITE}/fog/region/central-valley/) and [North India winter fog]({SITE}/fog/region/north-india/): season, member airports, aggregated monthly hours
@@ -1237,7 +1245,7 @@ def list_page(url, title, h1, sub, intro, headers, rows, monthly_agg, faq, desc,
     faq_nodes = [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": t}} for q, t in faq]
     graph = [{"@type": "FAQPage", "@id": url + "#faq", "mainEntity": faq_nodes},
              {"@type": "Dataset", "@id": url + "#data", "name": title, "description": desc, "url": url,
-              "isAccessibleForFree": True, "creator": {"@type": "Organization", "name": "Fog Atlas", "url": SITE},
+              "isAccessibleForFree": True, "license": LICENSE["url"], "creator": {"@type": "Organization", "name": "Fog Atlas", "url": SITE},
               "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": url + "data.json"}]}]
     season_line = ""
     if monthly_agg and max(monthly_agg) > 0:
@@ -1372,6 +1380,77 @@ def bake_lists(atlas, by_icao, fc, now_utc) -> list[tuple[str, str, dict]]:
     return out
 
 
+def forecast_hub(entries, now_utc) -> tuple[str, dict]:
+    """/fog/forecast/ — the page for the place-less head query. Search Console
+    showed the site 6,200+ times for 'fog forecast' / 'fog forecast tomorrow' at
+    position 6–7 in early September and earned 2 clicks: a page about one place
+    cannot answer a question about no place. This one says WHERE, worldwide,
+    from the same daily bake: verified probabilities, official TAFs, and the
+    latest observations."""
+    url = f"{SITE}/fog/forecast/"
+    def loc(e):
+        return f'<a href="/fog/{e["icao"].lower()}/">{e["icao"]}</a> {e["name"]}' + (f' <span class="tag">{e["place"]}</span>' if e["place"] else "")
+    def peak_when(fc):
+        try:
+            t = datetime.fromisoformat(fc["peakAtLocal"])
+            return f"{t.strftime('%a')} {t.strftime('%-I %p').lower()} local"
+        except Exception:
+            return ""
+    likely = sorted([e for e in entries if e["fc"].get("public") and (e["fc"].get("peakPct") or 0) >= 50], key=lambda e: -e["fc"]["peakPct"])
+    some = sorted([e for e in entries if e["fc"].get("public") and 20 <= (e["fc"].get("peakPct") or 0) < 50], key=lambda e: -e["fc"]["peakPct"])[:40]
+    taf_dense = sorted([e for e in entries if (e["fc"].get("taf") or {}).get("verdict") == "dense fog"], key=lambda e: (e["country"], e["icao"]))
+    taf_poss = sorted([e for e in entries if (e["fc"].get("taf") or {}).get("verdict") == "possible dense fog"], key=lambda e: (e["country"], e["icao"]))[:80]
+    now_fog = sorted([e for e in entries if (e.get("obs") or {}).get("fog")], key=lambda e: (e["country"], e["icao"]))[:150]
+    stamp = now_utc.strftime("%A %-d %B, %H:%MZ")
+    def table(rows, cols):
+        return ("<table class=\"rank\"><tr>" + "".join(f"<th>{c}</th>" for c in cols) + "</tr>" +
+                "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows) + "</table>") if rows else "<p class=\"note\">none at this build.</p>"
+    likely_rows = [(loc(e), e["country"], f"<b>{e['fc']['peakPct']}%</b>", peak_when(e["fc"])) for e in likely]
+    some_rows = [(loc(e), e["country"], f"{e['fc']['peakPct']}%", peak_when(e["fc"])) for e in some]
+    taf_rows = [(loc(e), e["country"], f"TAF issued {e['fc']['taf']['issued'][11:16]}Z", "dense fog") for e in taf_dense] + \
+               [(loc(e), e["country"], f"TAF issued {e['fc']['taf']['issued'][11:16]}Z", "possible (TEMPO/PROB)") for e in taf_poss]
+    obs_rows = [(loc(e), e["country"], f"{'unknown' if e['obs']['visibilityMi'] is None else str(e['obs']['visibilityMi']) + ' mi'}", e["obs"]["time"][11:16] + "Z") for e in now_fog]
+    answer = (f"As of {stamp}: fog is likely (a verified calibrated probability of 50% or more) at {len(likely)} airport{'s' if len(likely) != 1 else ''}, "
+              f"{len(taf_dense)} more airports' own terminal forecasts call for dense fog in the next ~30 hours, and {len(now_fog)} "
+              f"airports reported fog at their latest observation. The lists name them; every airport and city page carries its own answer.")
+    faq = [("Where will it be foggy tomorrow?", answer),
+           ("How is 'fog likely' decided?", "A Fog Atlas percentage appears only for airports whose calibrated forecast has beaten that airport's own ten-year climatology on live verification (the public scorecard). 'Fog likely' means that verified probability of visibility under 1 mile reaches 50% within the next 36 hours."),
+           ("What about airports without a percentage?", "They show their official terminal forecast (TAF) from the NOAA Aviation Weather Center — dense fog means visibility under 1 mile or a FG group — plus their climatology for the month. Airports with neither still have a page with ten years of fog hours by month and hour."),
+           ("How do I find my city?", f"Every city with an airport weather station has a page at {SITE}/fog/city/ and every airport at {SITE}/fog/; the live map on the home page shows where fog is right now.")]
+    faq_nodes = [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": t}} for q, t in faq]
+    graph = [{"@type": "FAQPage", "@id": url + "#faq", "mainEntity": faq_nodes},
+             {"@type": "Dataset", "@id": url + "#data", "name": "Where fog is expected — daily worldwide fog forecast summary",
+              "description": answer, "url": url, "isAccessibleForFree": True, "license": LICENSE["url"],
+              "creator": {"@type": "Organization", "name": "Fog Atlas", "url": SITE},
+              "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": url + "data.json"}]}]
+    body = f"""<h1>Where will it be <b>foggy tomorrow</b>?</h1>
+<div class="sub">worldwide · rebuilt daily · {stamp}</div>
+<div id="answer">{answer}</div>
+<div class="blk">Looking for one place? <a href="/fog/city/">Find your city</a> · <a href="/fog/">find your airport</a> · <a href="/">see the live fog map</a>. Regions in season: <a href="/fog/region/central-valley/">Central Valley tule fog</a> · <a href="/fog/region/north-india/">North India</a>.</div>
+<h2>Fog likely in the next 36 hours — verified forecasts</h2>
+{table(likely_rows, ["airport", "country", "peak chance", "peak time"])}
+<p class="note">Calibrated probability of visibility under 1 mile, published only for airports that have passed the <a href="/fog/scorecard/">verification bar</a>.</p>
+<h2>Some chance of fog (20–49%)</h2>
+{table(some_rows, ["airport", "country", "peak chance", "peak time"])}
+<h2>Dense fog in the airport's own forecast (TAF)</h2>
+{table(taf_rows, ["airport", "country", "source", "forecast"])}
+<p class="note">Official terminal forecasts from the NOAA Aviation Weather Center for airports without a verified Fog Atlas percentage; 'possible' marks TEMPO/PROB groups. Attributed, never a Fog Atlas number.</p>
+<h2>Fog at the latest observation</h2>
+{table(obs_rows, ["airport", "country", "visibility", "observed"])}
+<p class="note">Latest METAR at page build; the <a href="/">live map</a> updates every few minutes.</p>
+""" + "".join(f"<h2>{q}</h2><div class=\"blk\">{t}</div>" for q, t in faq[1:]) + f"""
+<p class="note">Machine access: <a href="{url}data.json">data.json</a> · <a href="/llms.txt">llms.txt</a>.</p>"""
+    html = shell(url, "Fog forecast tomorrow — where fog is expected, worldwide (verified forecasts, TAFs, live observations)",
+                 answer, [("Fog Atlas", f"{SITE}/"), ("Fog forecast", None)], body, graph, now_utc)
+    data = {"schemaVersion": SCHEMA_VERSION, "updated": now_utc.strftime("%Y-%m-%dT%H:%MZ"), "license": LICENSE,
+            "summary": answer,
+            "likely": [{"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"], "peakPct": e["fc"]["peakPct"], "peakAtLocal": e["fc"].get("peakAtLocal")} for e in likely],
+            "someChance": [{"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"], "peakPct": e["fc"]["peakPct"], "peakAtLocal": e["fc"].get("peakAtLocal")} for e in some],
+            "tafDenseFog": [{"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"], "tafIssued": e["fc"]["taf"]["issued"], "verdict": e["fc"]["taf"]["verdict"]} for e in taf_dense + taf_poss],
+            "fogAtLatestObservation": [{"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"], "time": e["obs"]["time"], "visibilityMi": e["obs"]["visibilityMi"]} for e in now_fog]}
+    return html, data
+
+
 def load_scorecard():
     """The newer of the live /api/scorecard (edge-cached for an hour on a
     fixed key — stale for up to an hour after barcheck.yml writes KV) and the
@@ -1422,7 +1501,7 @@ def scorecard_page(sc, fc, now_utc) -> str:
         pooled = table = ""
     sc_graph = [{"@type": "Dataset", "@id": f"{SITE}/fog/scorecard/#data", "name": "Fog Atlas forecast verification scorecard",
                  "description": "Per-airport Brier skill of the calibrated fog forecast versus climatology on live verification; the publication bar.",
-                 "url": f"{SITE}/fog/scorecard/", "isAccessibleForFree": True,
+                 "url": f"{SITE}/fog/scorecard/", "isAccessibleForFree": True, "license": LICENSE["url"],
                  "creator": {"@type": "Organization", "name": "Fog Atlas", "url": SITE},
                  "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": f"{SITE}/api/scorecard"}]}]
     body = f"""<h1>Forecast verification</h1>
@@ -1584,7 +1663,7 @@ def main() -> None:
     today = now_utc.strftime("%Y-%m-%d")
     month1 = now_utc.strftime("%Y-%m-01")
     n = n_baked = n_taf = 0
-    links, air_lastmod, air_index = [], {}, []
+    links, air_lastmod, air_index, entries = [], {}, [], []
     for a in atlas:
         icao = a["icao"]
         d = FOG / icao.lower()
@@ -1613,8 +1692,11 @@ def main() -> None:
                           "ilsCategory": a.get("catIls"),
                           "forecastStatus": "public" if icao in public_set else "verifying" if a["_covered"] else "none",
                           "page": f"{SITE}/fog/{icao.lower()}/", "data": f"{SITE}/fog/{icao.lower()}/data.json"})
+        entries.append({"icao": icao, "name": a["name"], "country": a["country"],
+                        "place": city_of_icao.get(icao, (None,))[0] or a.get("muni"),
+                        "fc": data["forecast"], "obs": data.get("currentObservation")})
         n += 1
-    (FOG / "index.json").write_text(json.dumps({"schemaVersion": SCHEMA_VERSION, "updated": now_utc.strftime("%Y-%m-%dT%H:%MZ"),
+    (FOG / "index.json").write_text(json.dumps({"schemaVersion": SCHEMA_VERSION, "updated": now_utc.strftime("%Y-%m-%dT%H:%MZ"), "license": LICENSE,
                                                  "count": n, "airports": air_index}, separators=(",", ":")))
 
     city_links, city_lastmod, city_index, city_primary = [], {}, [], {}
@@ -1646,7 +1728,7 @@ def main() -> None:
         [("Fog Atlas", f"{SITE}/"), ("Cities", None)],
         f"""<h1>City fog forecasts</h1>
 <div class="sub">{len(city_links)} cities · rebuilt daily · <a href="/fog/">by airport</a> · <a href="/fog/city/index.json">machine index</a></div>
-<div class="blk">Every city with an airport weather station gets a daily answer to "will it be foggy tomorrow?", a ten-year fog season profile and its stations' live observations. Regions and rankings: <a href="/fog/region/central-valley/">tule fog (Central Valley)</a> · <a href="/fog/region/north-india/">North India winter fog</a> · <a href="/fog/foggiest-airports/">foggiest airports</a>.</div>
+<div class="blk"><a href="/fog/forecast/"><b>Where will it be foggy tomorrow?</b></a> — the daily worldwide summary. Every city with an airport weather station gets a daily answer to "will it be foggy tomorrow?", a ten-year fog season profile and its stations' live observations. Regions and rankings: <a href="/fog/region/central-valley/">tule fog (Central Valley)</a> · <a href="/fog/region/north-india/">North India winter fog</a> · <a href="/fog/foggiest-airports/">foggiest airports</a>.</div>
 <div class="note" style="line-height:2.2">{city_rows}</div>""", now_utc=now_utc))
 
     links.sort()
@@ -1657,7 +1739,7 @@ def main() -> None:
         [("Fog Atlas", f"{SITE}/"), ("Airports", None)],
         f"""<h1>Airport fog forecasts</h1>
 <div class="sub">{n} airports · rebuilt daily · <a href="/fog/city/">by city</a> · <a href="/fog/index.json">machine index</a> · <a href="/llms.txt">machine guide</a></div>
-<div class="blk">Rankings and lists: <a href="/fog/foggiest-airports/">foggiest airports in the world</a> · <a href="/fog/foggiest-us-airports/">foggiest US airports</a> · <a href="/fog/cat-iii-airports/">CAT III airports</a> · <a href="/fog/cat-ii-airports/">CAT II airports</a> · <a href="/fog/efvs/">EFVS credit explained</a>. Regions: <a href="/fog/region/central-valley/">Central Valley tule fog</a> · <a href="/fog/region/north-india/">North India winter fog</a>.</div>
+<div class="blk"><a href="/fog/forecast/"><b>Where will it be foggy tomorrow?</b></a> — the daily worldwide summary. Rankings and lists: <a href="/fog/foggiest-airports/">foggiest airports in the world</a> · <a href="/fog/foggiest-us-airports/">foggiest US airports</a> · <a href="/fog/cat-iii-airports/">CAT III airports</a> · <a href="/fog/cat-ii-airports/">CAT II airports</a> · <a href="/fog/efvs/">EFVS credit explained</a>. Regions: <a href="/fog/region/central-valley/">Central Valley tule fog</a> · <a href="/fog/region/north-india/">North India winter fog</a>.</div>
 <div class="note" style="line-height:2.2">{idx_rows}</div>""", now_utc=now_utc))
 
     # region / ranking / capability pages, about + methodology, scorecard
@@ -1668,11 +1750,22 @@ def main() -> None:
         d.joinpath("index.html").write_text(html)
         d.joinpath("data.json").write_text(json.dumps(data, separators=(",", ":")))
         extra_urls.append(url)
+    hub_html, hub_data = forecast_hub(entries, now_utc)
+    (FOG / "forecast").mkdir(exist_ok=True)
+    (FOG / "forecast" / "index.html").write_text(hub_html)
+    (FOG / "forecast" / "data.json").write_text(json.dumps(hub_data, separators=(",", ":")))
+    extra_urls.insert(0, f"{SITE}/fog/forecast/")
     root = HERE.parent
     about_extra = ("<h2>Who makes this</h2><p>Fog Atlas is built and run by Travis Danner as an open, public-data reference — "
                    f"the pipeline and methodology are on <a href=\"https://github.com/travis735/fog-atlas\">GitHub</a>. "
                    "Every forecast the site issues is logged and publicly scored on the <a href=\"/fog/scorecard/\">verification page</a>. "
-                   "Not for operational use.</p>")
+                   "Not for operational use.</p>"
+                   "<h2>Reuse</h2><p>Everything here is licensed <a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>: "
+                   "reuse the numbers, charts and JSON freely with a link to the airport or city page you used. "
+                   "Every page has a <code>data.json</code>; the site-wide indexes are <a href=\"/fog/index.json\">/fog/index.json</a> and "
+                   "<a href=\"/fog/city/index.json\">/fog/city/index.json</a>.</p>"
+                   + (f"<h2>Contact</h2><p><a href=\"mailto:{CONTACT_EMAIL}\">{CONTACT_EMAIL}</a> — corrections to any airport's "
+                      f"approach capability or fog record are especially welcome.</p>" if CONTACT_EMAIL else ""))
     for slug, title, path, desc, extra in [
         ("about", "About Fog Atlas — who makes it, what it shows, and its honest limits",
          root / "README.md", "What Fog Atlas is: ten years of airport weather observations distilled into fog climatology and verified fog forecasts, who makes it, its data sources and honest limitations.", about_extra),
