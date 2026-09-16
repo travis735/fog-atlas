@@ -113,6 +113,23 @@ graduate before the Dec 1 ritual, whatever we do.
   timeout 45 → 120 min (09-03 run was killed at 45m17s); bake prints a
   page-uniqueness metric to the step summary
 
+**Search Console read (2026-09-16) + response:** 6,584 indexed / 903 not on a
+57-day-old domain — indexation is solved (the Oct 15 sitemap checkpoint is
+retired). 3-month performance: 66 clicks, all long-tail place queries on
+city/airport pages (CYTZ, Prince Rupert, Auckland, Prague…); Google tested
+the site on the bare head terms "fog forecast" (3,633 imp, pos 6.0) and "fog
+forecast tomorrow" (2,604 imp, pos 7.1) Sep 4–9 at 0.06% CTR and pulled
+back. Shipped: /fog/forecast/ "Where will it be foggy tomorrow?" — the
+location-less answer (verified ≥50% list, TAF dense-fog list by country,
+fog-at-latest-observation list; daily; linked from every page). Decisions
+taken: option C wording (keep guidance + TAF), CC BY 4.0 (in every data.json,
+Dataset node, About, llms.txt), contact hello@fogatlas.org (published once
+Email Routing is live — the zone token cannot create routing rules,
+destination addresses or Email Sending: dashboard or token scope).
+Cloudflare AI-bot policy confirmed Allow/Allow/Allow. Still wanted from GSC:
+the "Why pages aren't indexed" reasons for the 903, and the page(s) Google
+shows for the head terms (Performance → filter query → Pages).
+
 **Travis-only, time-critical:**
 - BEFORE 2026-09-15: Cloudflare dashboard → fogatlas.org → Security →
   Settings → AI bot policy: allow Search + Agent (+ Training if you want
