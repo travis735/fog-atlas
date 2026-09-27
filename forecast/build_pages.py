@@ -15,8 +15,10 @@ else the live /api/forecast) — pages are rebuilt daily in CI so the static
 HTML always carries a fresh answer for crawlers that never execute JS.
 
 Shadow-mode honesty (unchanged law): pages never print model percentages
-for an airport that hasn't cleared its verification bar — those get NWS
-guidance wording; uncovered stations get climatology only.
+for an airport that hasn't cleared its verification bar — those get
+attributed wording (NWS model guidance = National Blend of Models, the
+airport's own TAF, and for US airports the NWS public point forecast quoted
+verbatim); uncovered stations get climatology only.
 
 Pages are DEPLOY-TIME ARTIFACTS (gitignored): every deploy path runs this
 script first. All inputs fall back to committed copies so CI runners can
@@ -28,6 +30,7 @@ Output: app/public/fog/{icao}/index.html + data.json, /fog/index.html,
 import csv
 import json
 import re
+import sys
 import unicodedata
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -35,6 +38,12 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).parent
+sys.path.insert(0, str(HERE))
+# the NWS public point forecast layer (api.weather.gov), US airports only —
+# quoted verbatim and attributed, never turned into a Fog Atlas number
+from nws import load_points, nws_batch, nws_with_last_good, nws_summary, phrase_for_prose  # noqa: E402
+
+GUIDANCE_SOURCE = "NOAA/NWS National Blend of Models"
 PIPE_OUT = HERE.parent / "pipeline" / "out"
 APP_PUB = HERE.parent / "app" / "public"
 APP_DATA = APP_PUB / "data"
@@ -112,6 +121,34 @@ def trunc(s: str, n: int) -> str:
         return s
     cut = s[:n].rsplit(" ", 1)[0].rstrip(" ,;:-—")
     return cut + "…"
+
+
+def snippet(answer: str, tail="", body_cap: int = 150, cap: int = 158) -> str:
+    """Meta description from whole sentences: take leading sentences of the
+    answer while they fit body_cap (the first sentence is always the answer),
+    then the tail only if the whole thing still fits cap. A mid-sentence cut
+    ('…NWS model guidance (National Blend of Models) shows… 75 fog…') is what
+    this replaces; when even the first sentence is too long, fall back to the
+    word-boundary trunc. `tail` may be a list of candidates, first fit wins."""
+    answer = answer.replace('"', "'")
+    out = ""
+    # a sentence ends at . ! ? — but not the period inside "St. Louis, MO"
+    # (the LSX office name) or "Martin Luther King Jr. Day" (an NWS period)
+    for sent in re.split(r"(?<=[.!?])(?<!\bSt\.)(?<!\bJr\.)\s+", answer.strip()):
+        if not sent:
+            continue
+        cand = f"{out} {sent}".strip()
+        if len(cand) > body_cap:
+            break
+        out = cand
+    if not out:
+        out = trunc(answer, body_cap)
+    for t in ([tail] if isinstance(tail, str) else tail):
+        t = (t or "").strip()
+        if t and len(out) + 1 + len(t) <= cap:
+            out = f"{out} {t}"
+            break
+    return out
 
 
 def og_tags(url: str, title: str, desc: str) -> str:
@@ -364,29 +401,101 @@ def clim_sentence(a, sp, mon: int) -> str:
     return s + "."
 
 
-def bake_answer(a, fc, covered: bool, now_utc, sp=None, taf=None):
+def nws_mention(nws):
+    """The mention a page quotes first: the EARLIEST fog mention inside the
+    horizon (mentions are in period order) — a page asking "foggy tomorrow?"
+    must not skip tonight's "Patchy fog after 4am" for a more severe mention
+    two days out. None when the forecast has no fog wording."""
+    if not nws or nws.get("verdict", "no fog") == "no fog" or not nws.get("mentions"):
+        return None
+    return nws["mentions"][0]
+
+
+def nws_mention_top(nws):
+    """The first mention of the most severe kind (the verdict): what the hub
+    ranks and lists on; a page quotes it AFTER the earliest one when it is worse."""
+    m0 = nws_mention(nws)
+    if not m0:
+        return None
+    return next((m for m in nws["mentions"] if m.get("kind") == nws["verdict"]), m0)
+
+
+def nws_upgrade(nws):
+    """A later, more severe mention than the earliest — else None."""
+    m0, mt = nws_mention(nws), nws_mention_top(nws)
+    return mt if m0 and mt is not m0 and mt.get("kind") != m0.get("kind") else None
+
+
+def nws_label(m) -> str:
+    """The period as prose prints it: resolved ("Friday night") from the
+    period's own start time, else the raw NWS name (data.json keeps the raw one)."""
+    return m.get("periodLabel") or m.get("period") or ""
+
+
+def nws_office(nws) -> str:
+    """'Portland, OR' — falls back to the office code, then 'point'."""
+    return nws.get("officeName") or nws.get("office") or "point"
+
+
+def desc_tails(nws_s, machine, clim_tail: str) -> list:
+    """Meta-description tail candidates for snippet(), first fit wins. On a
+    PUBLIC page the calibrated sentence leads and the NWS clause comes after
+    the climatology sentence, so the leading-whole-sentences rule never
+    reached it and the search snippet read "No, fog is unlikely…" while the
+    NWS office forecast areas of fog. A bounded, attributed NWS tail goes
+    first (the earliest mention, as on the page); climatology is the fallback."""
+    m0 = nws_mention(nws_s)
+    if not (m0 and (machine or {}).get("public")):
+        return [clim_tail]
+    off = nws_office(nws_s)
+    return [f"NWS {off}: {phrase_for_prose(m0)}.", f"NWS {off}: {m0['kind']} ({nws_label(m0)}).", clim_tail]
+
+
+def bake_answer(a, fc, covered: bool, now_utc, sp=None, taf=None, nws=None):
     """(html, plain, machine) for the static answer block. Never prints model
     percentages unless the airport is on the public (bar-passed) list.
     Non-public pages lead with climatology and, where AWC has one, the
-    airport's own TAF — attributed official data, never a Fog Atlas number."""
+    airport's own TAF — attributed official data, never a Fog Atlas number.
+
+    `nws` is the nws_summary() dict for the airport's NWS public point
+    forecast (US airports only) or None. Its fog wording is quoted verbatim
+    and attributed to the issuing office; "NWS model guidance" always names
+    the National Blend of Models so a "no signal" line can never read as
+    "NWS says no fog" when the NWS's own forecast says otherwise (KPDX,
+    2026-09-26: guidance 3-4%, NWS Portland "Patchy fog before 8am", fog)."""
     icao, tz = a["icao"], ZoneInfo(a["tz"])
     mon = now_utc.astimezone(tz).month - 1
     clim_txt = clim_sentence(a, sp, mon)
     taf_txt = f" {taf['sentence']}" if taf else ""
     taf_m = {"taf": {k: v for k, v in taf.items() if k != "sentence"}} if taf else {}
+    nws_m = {"nws": nws} if nws else {}
     feed_note = (f"Fog Atlas publishes its own calibrated fog percentage only where it has beaten "
                  f"climatology on live verification; {icao} has no NWS model feed, so none is published here.")
+    # the NWS public forecast, two honest shapes: a verbatim quote when it
+    # mentions fog, an explicit "does not mention fog" when it doesn't — both
+    # stamped with the issue time (a last-good record can be a day old)
+    m0 = nws_mention(nws)   # the earliest fog mention in the horizon
+    m1 = nws_upgrade(nws)   # a later, more severe one: quoted too, never instead
+    nws_calls = (phrase_for_prose(m0) + (f", and {phrase_for_prose(m1)}" if m1 else "")) if m0 else ""
+    nws_lead = (f"The NWS {nws_office(nws)} forecast (issued {nws['issuedLocal']}) calls for {nws_calls}."
+                if m0 else "")
+    nws_none = (f" The NWS {nws_office(nws)} forecast (issued {nws['issuedLocal']}) does not mention fog through {nws['horizonEndLocal']}."
+                if nws and not m0 else "")
 
     fa = fc and fc.get("airports", {}).get(icao)
     if not covered:
         plain = f"{clim_txt}{taf_txt} {feed_note}"
         lead = "Dense fog in the airport's own forecast" if taf and taf["verdict"] == "dense fog" else "Climatology answer"
         html = f'<b>{lead}</b> — {clim_txt}{taf_txt} <span class="asof">{feed_note}</span>'
-        return html, plain, {"covered": False, "public": False, "wording": plain, **taf_m}
+        return html, plain, {"covered": False, "public": False, "wording": plain, **taf_m, **nws_m}
     if not fa:  # covered, but absent from the newest issuance (feed initializing)
-        plain = f"{clim_txt}{taf_txt} This station's NWS model feed is initializing; a calibrated percentage publishes only after live verification."
-        return (f"<b>Climatology answer</b> — {clim_txt}{taf_txt}", plain,
-                {"covered": True, "public": False, "inIssuance": False, "wording": plain, **taf_m})
+        lead_txt = f"{nws_lead} " if nws_lead else ""
+        plain = f"{lead_txt}{clim_txt}{taf_txt} This station's NWS model feed is initializing; a calibrated percentage publishes only after live verification."
+        html = (f"<b>Fog in the NWS forecast</b> — {nws_lead[0].lower() + nws_lead[1:]} {clim_txt}{taf_txt}" if nws_lead
+                else f"<b>Climatology answer</b> — {clim_txt}{taf_txt}")
+        return (html, plain,
+                {"covered": True, "public": False, "inIssuance": False, "guidanceSource": GUIDANCE_SOURCE,
+                 "wording": plain, **taf_m, **nws_m})
 
     public = icao in set(fc.get("meta", {}).get("publicAirports", []))
     cyc = datetime.fromisoformat(fc["meta"]["cycle"].replace("Z", "+00:00"))
@@ -403,6 +512,7 @@ def bake_answer(a, fc, covered: bool, now_utc, sp=None, taf=None):
         thr = max(15, peak_p * 0.4)
         win = [fh for fh, p in horizon if p >= thr]
         machine = {"covered": True, "public": True, "cycle": fc["meta"]["cycle"],
+                   "guidanceSource": GUIDANCE_SOURCE,
                    "peakPct": peak_p, "peakAtLocal": peak_at.isoformat(),
                    "horizonEndLocal": end_at.isoformat()}
         if peak_p >= 50:
@@ -420,24 +530,59 @@ def bake_answer(a, fc, covered: bool, now_utc, sp=None, taf=None):
         else:
             plain = (f"No, fog is unlikely through {end_txt} — the calibrated forecast "
                      f"peaks at just {peak_p}%. {clim_txt}")
-            html = f'<span class="ok">Fog unlikely</span> through {end_txt} (peak {peak_p}%). {clim_txt}'
+            # no green badge when the NWS forecaster calls for dense fog: the
+            # sources disagree and typography must not settle it
+            lead = "<b>Fog unlikely</b>" if nws and nws.get("verdict") == "dense fog" else '<span class="ok">Fog unlikely</span>'
+            html = f'{lead} through {end_txt} (peak {peak_p}%). {clim_txt}'
+        # the calibrated sentence stays the lead; the NWS public forecast is
+        # appended, attributed, honest both ways (agreement AND disagreement)
+        if m0 and peak_p >= 20:
+            nws_add = f" The NWS {nws_office(nws)} forecast (issued {nws['issuedLocal']}) also calls for {nws_calls}."
+        elif m0:
+            # under a "fog unlikely" verdict the quote is stamped, kind-aware and
+            # reconciled: lighter NWS "fog" is not the vis < 1 mi event the
+            # percentage measures; dense fog is a real disagreement, said so
+            quoted = " and ".join(f'{m["kind"]} — "{m["phrase"]}" ({nws_label(m)})' for m in (m0, m1) if m)
+            if nws["verdict"] == "dense fog":
+                nws_add = (f" Note: the NWS {nws_office(nws)} forecast (issued {nws['issuedLocal']}) calls for {quoted} — "
+                           f"which disagrees with the calibrated percentage above; the percentage is Fog Atlas's verified "
+                           f"number, the quote is the NWS forecaster's call.")
+            else:
+                nws_add = (f' Note: the NWS {nws_office(nws)} forecast (issued {nws["issuedLocal"]}) mentions {quoted}; '
+                           f'NWS "fog" wording includes fog lighter than the visibility-under-a-mile fog this percentage measures.')
+        elif nws and peak_p >= 50:
+            nws_add = nws_none
+        else:
+            nws_add = ""
+        plain += nws_add
+        html += nws_add
         machine["wording"] = plain
+        machine.update(nws_m)
         return html + asof, plain, machine
 
-    # covered but shadow: guidance wording, no model percentages (the bar rule)
+    # covered but shadow: attributed guidance wording, no model percentages
+    # (the bar rule). "Guidance" = the National Blend of Models; "dense fog"
+    # = visibility under a mile — both said out loud so the line cannot be
+    # read as "NWS says no fog" when the NWS public forecast says otherwise
     vis = [v for v in fa.get("vis", []) if v is not None]
     liv = [v for v in fa.get("liv", []) if v is not None]
     signal = (vis and min(vis) < 1.0) or (liv and max(liv) >= 40)
-    if signal:
-        plain = (f"NWS guidance shows a fog signal here in the next 48 hours.{taf_txt} {clim_txt} "
+    guid = (f"NWS model guidance (National Blend of Models) shows {'a' if signal else 'no'} dense-fog signal, "
+            f"visibility under a mile, in the next 48 hours.")
+    if m0:
+        plain = f"{nws_lead} {guid}{taf_txt} {clim_txt}"
+        html = f"<b>Fog in the NWS forecast</b> — {nws_lead[0].lower() + nws_lead[1:]} {guid}{taf_txt} {clim_txt}"
+    elif signal:
+        plain = (f"{guid}{nws_none}{taf_txt} {clim_txt} "
                  "This station's calibrated percentages publish after live verification clears the accuracy bar.")
-        html = f"<b>Fog possible</b> — NWS guidance shows a fog signal in the next 48 hours.{taf_txt} {clim_txt}"
+        html = f"<b>Fog possible</b> — {guid}{nws_none}{taf_txt} {clim_txt}"
     else:
-        plain = f"No fog signal in NWS guidance for the next 48 hours.{taf_txt} {clim_txt}"
-        html = f'<span class="ok">No fog signal</span> in NWS guidance for the next 48 hours.{taf_txt} {clim_txt}'
+        plain = f"No dense-fog signal (visibility under a mile) in NWS model guidance for the next 48 hours.{nws_none}{taf_txt} {clim_txt}"
+        html = f'<span class="ok">No dense-fog signal</span> (visibility under a mile) in NWS model guidance for the next 48 hours.{nws_none}{taf_txt} {clim_txt}'
     return (html + asof, plain,
             {"covered": True, "public": False, "cycle": fc["meta"]["cycle"],
-             "guidanceSignal": bool(signal), "wording": plain, **taf_m})
+             "guidanceSource": GUIDANCE_SOURCE, "guidanceSignal": bool(signal),
+             "wording": plain, **taf_m, "nws": nws})
 
 
 def jsonld(a, plain_answer, season_plain, subH, window, med, extra_faq=(), crumb=None, now_utc=None, iata=None) -> str:
@@ -513,8 +658,20 @@ def cause_text(a) -> str:
     return ", ".join(f"{CAUSE_LABEL.get(k, k.lower())} {round(v)}%" for k, v in top if v >= 1)
 
 
+def nws_faq(nws_s, subject: str, prep: str = "at") -> tuple[str, str]:
+    """The attributed, verbatim NWS point-forecast FAQ entry for a US page."""
+    if nws_s.get("mentions"):
+        says = "calls for: " + "; ".join(f"{m['phrase']} ({nws_label(m)})" for m in nws_s["mentions"])
+    else:
+        says = f"does not mention fog through {nws_s['horizonEndLocal']}"
+    return (f"What does the NWS forecast say about fog {prep} {subject}?",
+            f"The NWS {nws_office(nws_s)} point forecast issued {nws_s['issuedLocal']} {says}. "
+            f"This is the National Weather Service's own wording, quoted verbatim — not a Fog Atlas probability. "
+            f"Source: {nws_s.get('source') or 'https://api.weather.gov/'}")
+
+
 def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
-         iata=None, taf=None, obs=None, nearby=(), receipt=None) -> tuple[str, dict]:
+         iata=None, taf=None, obs=None, nearby=(), receipt=None, nws=None, nws_pt=None) -> tuple[str, dict]:
     icao, name = a["icao"], a["name"]
     grid = a["grid"]
     tz = ZoneInfo(a["tz"])
@@ -526,7 +683,9 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
     sp = season_profile(a)
     public_now = bool(fc and icao in set(fc.get("meta", {}).get("publicAirports", [])))
     taf_s = taf_summary(taf, tz) if (taf and not public_now) else None
-    answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc, sp=sp, taf=taf_s)
+    # the NWS public point forecast rides on public AND shadow pages (US only)
+    nws_s = nws_summary(nws, tz, now_utc, points_entry=nws_pt) if nws else None
+    answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc, sp=sp, taf=taf_s, nws=nws_s)
     season_html, season_plain = season_section(a, sp, med, name)
     ob = obs_line(obs, tz) if obs else None
     yrs = f"{window['start'][:4]}–{window['through'][:4]}"
@@ -633,10 +792,12 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
         extra_faq.append((f"Is the fog at {name} tule fog?",
                           f"Yes — the Central Valley's winter radiation fog. {icao} averages {monthly[11] + monthly[0]} hours below "
                           f"CAT I minima in December and January combined; fog season here {'runs ' + sp['seasonTxt'] if sp.get('seasonTxt') else 'is winter'}."))
+    if nws_s:
+        extra_faq.append(nws_faq(nws_s, name))
 
     crumb_html, crumb_node = breadcrumb([("Fog Atlas", f"{SITE}/"), ("Airports", f"{SITE}/fog/"), (code, None)])
     title = f"{code} fog forecast — will it be foggy at {name} tomorrow?"
-    desc = f"{trunc(answer_plain, 150)} {subH} fog hours/yr, season peaks {pk_txt}."
+    desc = snippet(answer_plain, desc_tails(nws_s, machine, f"{subH} fog hours/yr, season peaks {pk_txt}."))
     url = f"{SITE}/fog/{icao.lower()}/"
 
     html = f"""<!doctype html>
@@ -649,7 +810,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
 <link rel="alternate" type="application/json" href="{url}data.json" title="{icao} fog data (JSON)">
 <link rel="describedby" href="/llms.txt">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-{og_tags(url, f"{code} fog forecast — {name}", answer_plain)}
+{og_tags(url, f"{code} fog forecast — {name}", desc)}
 <script type="application/ld+json">{jsonld(a, answer_plain, season_plain, subH, window, med, extra_faq, crumb_node, now_utc, iata)}</script>
 <style>{CSS}</style>
 </head><body><main>
@@ -673,7 +834,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
 {near_html}
 <h2>For flight operations</h2>
 <p class="note">EFVS crews: the <a href="{SITE}/#chase">CHASE board</a> ranks airports by live fog status, approach lighting, go-around height and flight time from your base. Forecast probabilities publish here per-airport once the calibrated model beats climatology on live verification — receipts on the <a href="{SITE}/fog/scorecard/">scorecard</a>.</p>
-<p class="note">Sources: NOAA/NWS National Blend of Models guidance · NOAA Aviation Weather Center TAF/METAR · METAR observations {yrs} (Iowa Environmental Mesonet) · FAA NASR. <a href="{SITE}/fog/forecast/">where it will be foggy tomorrow</a> · <a href="{SITE}/methodology/">Methodology</a> · <a href="{SITE}/about/">About</a> · <a href="{SITE}/fog/">all airports</a> · <a href="{SITE}/fog/city/">by city</a>. Machine access: <a href="/fog/{icao.lower()}/data.json">data.json</a> · <a href="/llms.txt">llms.txt</a>. Not for operational use.</p>
+<p class="note">Sources: NOAA/NWS National Blend of Models (model guidance) · NWS point forecasts (api.weather.gov) · NOAA Aviation Weather Center TAF/METAR · METAR observations {yrs} (Iowa Environmental Mesonet) · FAA NASR. <a href="{SITE}/fog/forecast/">where it will be foggy tomorrow</a> · <a href="{SITE}/methodology/">Methodology</a> · <a href="{SITE}/about/">About</a> · <a href="{SITE}/fog/">all airports</a> · <a href="{SITE}/fog/city/">by city</a>. Machine access: <a href="/fog/{icao.lower()}/data.json">data.json</a> · <a href="/llms.txt">llms.txt</a>. Not for operational use.</p>
 <script>window.__FOG={{icao:"{icao}",clim:{json.dumps(clim)},climLabel:"{clim_label}",covered:{str(covered).lower()},tz:"{a['tz']}"}}</script>
 <script src="/fog/_fog.js" defer></script>
 {BEACON}
@@ -706,8 +867,12 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
                        "ils": a.get("ils"), "lpv": a.get("lpv"),
                        "efvsRecoverableHoursPerYear": efvs, "summary": cap_txt},
         "forecast": {**machine,
+                     "guidanceSource": machine.get("guidanceSource"),
+                     "nws": nws_s,
                      "thresholdDefinition": "peakPct = calibrated P(visibility < 1 statute mile) in the worst hour of the next 36 h; "
-                                            "published only for airports on the public (bar-passed) list — climatology above uses the CAT I band"},
+                                            "published only for airports on the public (bar-passed) list — climatology above uses the CAT I band",
+                     "nwsDefinition": "nws = the NWS public point forecast for this airport (api.weather.gov), fog wording quoted verbatim "
+                                      "and attributed to the issuing office; NWS wording, never a Fog Atlas probability. US airports only"},
         "currentObservation": ob[1] if ob else None,
         "verification": receipt,
         "nearby": [{"icao": b["icao"], "name": b["name"], "nm": nm,
@@ -927,7 +1092,8 @@ def fc_status(a, fc, covered: bool) -> str:
     return "verifying"
 
 
-def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None, obs=None) -> tuple[str, dict]:
+def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None, obs=None,
+              nws=None, nws_pt=None) -> tuple[str, dict]:
     """One page per municipality; multi-airport cities aggregate their stations.
     The answer comes from the city's primary station (public > covered > large)."""
     muni, region, country, slug = city
@@ -946,7 +1112,8 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
     sp = season_profile(a)
     public_now = bool(fc and a["icao"] in set(fc.get("meta", {}).get("publicAirports", [])))
     taf_s = taf_summary(taf, tz) if (taf and not public_now) else None
-    answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc, sp=sp, taf=taf_s)
+    nws_s = nws_summary(nws, tz, now_utc, points_entry=nws_pt) if nws else None  # primary station's NWS point forecast
+    answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc, sp=sp, taf=taf_s, nws=nws_s)
     ob = obs_line(obs, tz) if obs else None
     if a["icao"] in MARINE_LAYER:
         ml = (f"{muni}'s famous \"fog\" is usually the marine layer — a low stratus deck at roughly 500–1,500 ft — while this page "
@@ -997,6 +1164,10 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
                                        "text": "Only where it drops to the ground. The Bay Area marine layer is a stratus deck that usually sits at "
                                                "500–1,500 ft, which is why SFO records only about ten hours a year below CAT I approach minima; "
                                                "summer arrival delays come from that low ceiling, not from visibility."}})
+    if nws_s:
+        q, t = nws_faq(nws_s, ask, prep="in")
+        faq.append({"@type": "Question", "name": q,
+                    "acceptedAnswer": {"@type": "Answer", "text": f"At {a['name']} ({a['icao']}): {t}"}})
     graph = [
         {"@type": "City", "@id": url + "#city", "name": muni,
          "address": {"@type": "PostalAddress", "addressCountry": country,
@@ -1016,17 +1187,18 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
     ]
 
     month_rows = "".join(f"<tr><td>{MONTHS[m]}</td><td>{monthly[m]} h</td></tr>" for m in range(12))
+    desc = snippet(answer_plain, desc_tails(nws_s, machine, f"Fog season peaks {pk_txt}."))
     html = f"""<!doctype html>
 <html lang="en"><head>
 {REDIRECT}
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Will it be foggy in {ask} tomorrow? {disp} fog forecast</title>
-<meta name="description" content="{trunc(answer_plain, 150)} Fog season peaks {pk_txt}.">
+<meta name="description" content="{desc}">
 <link rel="canonical" href="{url}">
 <link rel="alternate" type="application/json" href="{url}data.json" title="{disp} fog data (JSON)">
 <link rel="describedby" href="/llms.txt">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-{og_tags(url, f"Will it be foggy in {ask} tomorrow? {disp} fog forecast", answer_plain)}
+{og_tags(url, f"Will it be foggy in {ask} tomorrow? {disp} fog forecast", desc)}
 <script type="application/ld+json">{json.dumps({"@context": "https://schema.org", "@graph": graph}, separators=(",", ":"))}</script>
 <style>{CSS}</style>
 </head><body><main>
@@ -1096,6 +1268,7 @@ License: CC BY 4.0 — reuse freely, attribution = a link to the airport or city
 - [Airport index]({SITE}/fog/): every airport, linked; pattern {SITE}/fog/{{icao_lowercase}}/ (e.g. {SITE}/fog/ksfo/). The first block is today's answer in plain language; a facts box carries the climatology and approach-capability numbers
 - [Airport machine index]({SITE}/fog/index.json): one row per airport — icao, iata, name, city, country, lat/lon, tz, fog hours/yr, peak months, forecast status, page and data.json URLs
 - [Example airport data]({SITE}/fog/ksfo/data.json): the per-airport JSON contract (schemaVersion, identity, climatology incl. monthly hours and causes, approach capability, today's baked answer with threshold definition, latest observation, verification receipt, nearby airports, validThrough)
+- Three attributed forecast sources on US pages: NWS model guidance (the National Blend of Models — "forecast.guidanceSource" — which is what the calibration uses; "dense-fog signal" there means visibility under a mile), the airport's own terminal forecast (TAF, "forecast.taf"), and the NWS public point forecast from api.weather.gov quoted verbatim and attributed to the issuing office ("forecast.nws": office, issued, verdict, mentions[].phrase/period). A fog mention in "forecast.nws" is NWS wording — "patchy fog", "areas of fog", "widespread fog", "dense fog" — not a Fog Atlas probability, and the site never converts it into one; mentions[].period is the NWS period name verbatim and mentions[].periodLabel resolves a relative one ("Tonight") to the day it meant. Non-US pages carry the TAF and, where covered, the model guidance
 
 ## City pages
 - [City index]({SITE}/fog/city/): every city with a measuring station; pattern {SITE}/fog/city/{{slug}}/ — US/CA/AU slugs carry a region suffix ({SITE}/fog/city/san-francisco-ca/); each page names its measuring stations and takes its answer from the city's primary station
@@ -1103,7 +1276,7 @@ License: CC BY 4.0 — reuse freely, attribution = a link to the airport or city
 - [Example city data]({SITE}/fog/city/san-francisco-ca/data.json)
 
 ## Where it will be foggy tomorrow
-- [Fog forecast — where fog is expected in the next 36 hours]({SITE}/fog/forecast/): rebuilt daily; airports with a verified calibrated probability of 50% or more, airports whose own terminal forecast (TAF) calls for dense fog, and airports reporting fog at the latest observation, worldwide
+- [Fog forecast — where fog is expected in the next 36 hours]({SITE}/fog/forecast/): rebuilt daily; airports with a verified calibrated probability of 50% or more, airports whose own terminal forecast (TAF) calls for dense fog, US airports whose NWS public point forecast mentions fog (quoted verbatim, "nwsForecastFog" in data.json), and airports reporting fog at the latest observation, worldwide
 
 ## Regions, rankings and capability lists
 - [Tule fog — California Central Valley]({SITE}/fog/region/central-valley/) and [North India winter fog]({SITE}/fog/region/north-india/): season, member airports, aggregated monthly hours
@@ -1384,13 +1557,16 @@ def bake_lists(atlas, by_icao, fc, now_utc) -> list[tuple[str, str, dict]]:
     return out
 
 
+NWS_RANK = {"dense fog": 0, "widespread fog": 1, "areas of fog": 2, "patchy fog": 3, "fog": 4}
+
+
 def forecast_hub(entries, now_utc) -> tuple[str, dict]:
     """/fog/forecast/ — the page for the place-less head query. Search Console
     showed the site 6,200+ times for 'fog forecast' / 'fog forecast tomorrow' at
     position 6–7 in early September and earned 2 clicks: a page about one place
     cannot answer a question about no place. This one says WHERE, worldwide,
-    from the same daily bake: verified probabilities, official TAFs, and the
-    latest observations."""
+    from the same daily bake: verified probabilities, official TAFs, the NWS
+    public point forecasts that mention fog (US), and the latest observations."""
     url = f"{SITE}/fog/forecast/"
     def loc(e):
         return f'<a href="/fog/{e["icao"].lower()}/">{e["icao"]}</a> {e["name"]}' + (f' <span class="tag">{e["place"]}</span>' if e["place"] else "")
@@ -1405,6 +1581,15 @@ def forecast_hub(entries, now_utc) -> tuple[str, dict]:
     taf_dense = sorted([e for e in entries if (e["fc"].get("taf") or {}).get("verdict") == "dense fog"], key=lambda e: (e["country"], e["icao"]))
     taf_poss = sorted([e for e in entries if (e["fc"].get("taf") or {}).get("verdict") == "possible dense fog"], key=lambda e: (e["country"], e["icao"]))[:80]
     now_fog = sorted([e for e in entries if (e.get("obs") or {}).get("fog")], key=lambda e: (e["country"], e["icao"]))[:150]
+    # US airports whose NWS public point forecast mentions fog — quoted, attributed
+    nws_all = sorted([e for e in entries if nws_mention(e["fc"].get("nws"))],
+                     key=lambda e: (NWS_RANK.get(e["fc"]["nws"]["verdict"], 9), e["country"], e["icao"]))
+    nws_fog = nws_all[:120]   # the HTML table; data.json carries the whole list
+    # absence of the layer must not read as "no NWS forecast mentions fog": a
+    # bake that fetched (or reused) fewer than half the US points says so
+    nws_read = sum(1 for e in entries if e["fc"].get("nws"))
+    nws_us = sum(1 for e in entries if e["country"] == "US")
+    nws_seen = nws_read >= max(1, nws_us // 2)
     stamp = now_utc.strftime("%A %-d %B, %H:%MZ")
     def table(rows, cols):
         return ("<table class=\"rank\"><tr>" + "".join(f"<th>{c}</th>" for c in cols) + "</tr>" +
@@ -1414,12 +1599,26 @@ def forecast_hub(entries, now_utc) -> tuple[str, dict]:
     taf_rows = [(loc(e), e["country"], f"TAF issued {e['fc']['taf']['issued'][11:16]}Z", "dense fog") for e in taf_dense] + \
                [(loc(e), e["country"], f"TAF issued {e['fc']['taf']['issued'][11:16]}Z", "possible (TEMPO/PROB)") for e in taf_poss]
     obs_rows = [(loc(e), e["country"], f"{'unknown' if e['obs']['visibilityMi'] is None else str(e['obs']['visibilityMi']) + ' mi'}", e["obs"]["time"][11:16] + "Z") for e in now_fog]
+    def nws_row(e):   # the most severe mention (the list is ranked on it), stamped like the TAF rows
+        n, m = e["fc"]["nws"], nws_mention_top(e["fc"]["nws"])
+        return (loc(e), e["country"], f"NWS {nws_office(n)} · issued {n.get('issuedShort') or n.get('issued')}",
+                f"{m['phrase']} ({nws_label(m)})")
+    nws_rows = [nws_row(e) for e in nws_fog]
+    nws_cols = ["airport", "country", "source", "forecast wording"]
+    nws_section = (table(nws_rows, nws_cols) if nws_seen else
+                   f'<p class="note">NWS point forecasts were not available at this build ({nws_read} of {nws_us} US airports '
+                   f'read); each US airport page shows its own when it is.</p>' + (table(nws_rows, nws_cols) if nws_rows else ""))
+    nws_cap_note = (f"The {len(nws_fog)} most severe of {len(nws_all)} are listed here; all {len(nws_all)} are in data.json. "
+                    if len(nws_all) > len(nws_fog) else "")
+    nws_clause = ((f" {len(nws_all)} US airports' NWS forecasts mention fog," if len(nws_all) != 1
+                   else " 1 US airport's NWS forecast mentions fog,") if nws_all else "")
     answer = (f"As of {stamp}: fog is likely (a verified calibrated probability of 50% or more) at {len(likely)} airport{'s' if len(likely) != 1 else ''}, "
-              f"{len(taf_dense)} more airports' own terminal forecasts call for dense fog in the next ~30 hours, and {len(now_fog)} "
+              f"{len(taf_dense)} more airports' own terminal forecasts call for dense fog in the next ~30 hours,{nws_clause} and {len(now_fog)} "
               f"airports reported fog at their latest observation. The lists name them; every airport and city page carries its own answer.")
     faq = [("Where will it be foggy tomorrow?", answer),
            ("How is 'fog likely' decided?", "A Fog Atlas percentage appears only for airports whose calibrated forecast has beaten that airport's own ten-year climatology on live verification (the public scorecard). 'Fog likely' means that verified probability of visibility under 1 mile reaches 50% within the next 36 hours."),
-           ("What about airports without a percentage?", "They show their official terminal forecast (TAF) from the NOAA Aviation Weather Center — dense fog means visibility under 1 mile or a FG group — plus their climatology for the month. Airports with neither still have a page with ten years of fog hours by month and hour."),
+           ("What about airports without a percentage?", "They show their official terminal forecast (TAF) from the NOAA Aviation Weather Center — dense fog means visibility under 1 mile or a FG group — plus their climatology for the month; US airports also quote their NWS public point forecast. Airports with none of these still have a page with ten years of fog hours by month and hour."),
+           ("What does 'NWS forecast mentions fog' mean?", "For every US airport the daily bake reads the National Weather Service public point forecast for the airport (api.weather.gov) and quotes any fog wording verbatim — 'patchy fog', 'areas of fog', 'widespread fog', 'dense fog' — attributed to the issuing NWS office. It is the NWS's own wording, not a Fog Atlas number, and it is never converted into a probability; 'fog' there means whatever the forecaster meant, which is often lighter than the visibility-under-a-mile fog the calibrated percentages measure."),
            ("How do I find my city?", f"Every city with an airport weather station has a page at {SITE}/fog/city/ and every airport at {SITE}/fog/; the live map on the home page shows where fog is right now.")]
     faq_nodes = [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": t}} for q, t in faq]
     graph = [{"@type": "FAQPage", "@id": url + "#faq", "mainEntity": faq_nodes},
@@ -1439,18 +1638,30 @@ def forecast_hub(entries, now_utc) -> tuple[str, dict]:
 <h2>Dense fog in the airport's own forecast (TAF)</h2>
 {table(taf_rows, ["airport", "country", "source", "forecast"])}
 <p class="note">Official terminal forecasts from the NOAA Aviation Weather Center for airports without a verified Fog Atlas percentage; 'possible' marks TEMPO/PROB groups. Attributed, never a Fog Atlas number.</p>
+<h2>Fog in the NWS public forecast (US airports)</h2>
+{nws_section}
+<p class="note">{nws_cap_note}Quoted verbatim from the National Weather Service point forecast for each airport (api.weather.gov), attributed to the issuing office, most severe wording first (dense fog › widespread fog › areas of fog › patchy fog › fog). These are the NWS's public forecasts, not Fog Atlas numbers, and are never converted into a probability.</p>
 <h2>Fog at the latest observation</h2>
 {table(obs_rows, ["airport", "country", "visibility", "observed"])}
 <p class="note">Latest METAR at page build; the <a href="/">live map</a> updates every few minutes.</p>
 """ + "".join(f"<h2>{q}</h2><div class=\"blk\">{t}</div>" for q, t in faq[1:]) + f"""
 <p class="note">Machine access: <a href="{url}data.json">data.json</a> · <a href="/llms.txt">llms.txt</a>.</p>"""
-    html = shell(url, "Fog forecast tomorrow — where fog is expected, worldwide (verified forecasts, TAFs, live observations)",
+    html = shell(url, "Fog forecast tomorrow — where fog is expected, worldwide (verified forecasts, TAFs, NWS forecasts, live observations)",
                  answer, [("Fog Atlas", f"{SITE}/"), ("Fog forecast", None)], body, graph, now_utc)
+    def nws_item(e):
+        n, m = e["fc"]["nws"], nws_mention_top(e["fc"]["nws"])
+        return {"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"],
+                "office": n.get("office"), "officeName": n.get("officeName"), "verdict": n["verdict"],
+                "phrase": m["phrase"], "period": m["period"], "periodLabel": m.get("periodLabel"), "issued": n.get("issued")}
     data = {"schemaVersion": SCHEMA_VERSION, "updated": now_utc.strftime("%Y-%m-%dT%H:%MZ"), "license": LICENSE,
             "summary": answer,
             "likely": [{"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"], "peakPct": e["fc"]["peakPct"], "peakAtLocal": e["fc"].get("peakAtLocal")} for e in likely],
             "someChance": [{"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"], "peakPct": e["fc"]["peakPct"], "peakAtLocal": e["fc"].get("peakAtLocal")} for e in some],
             "tafDenseFog": [{"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"], "tafIssued": e["fc"]["taf"]["issued"], "verdict": e["fc"]["taf"]["verdict"]} for e in taf_dense + taf_poss],
+            "nwsForecastFog": [nws_item(e) for e in nws_all],
+            "nwsForecastFogDefinition": "US airports whose NWS public point forecast (api.weather.gov) mentions fog in the next 48 h; phrase is the NWS sentence verbatim, attributed to the issuing office — NWS wording, not a Fog Atlas probability; empty with nwsForecastFogAvailable false means the layer was not read at this build, not that no forecast mentions fog",
+            "nwsForecastFogAvailable": nws_seen,
+            "nwsForecastsRead": nws_read,
             "fogAtLatestObservation": [{"icao": e["icao"], "name": e["name"], "place": e["place"], "country": e["country"], "time": e["obs"]["time"], "visibilityMi": e["obs"]["visibilityMi"]} for e in now_fog]}
     return html, data
 
@@ -1630,6 +1841,10 @@ def main() -> None:
     tafs = awc_batch("taf", [i for i in all_icaos if i not in public_set])
     obs = awc_batch("metar", all_icaos)
     tafs, obs = awc_with_last_good(tafs, obs, now_utc)
+    # the NWS public point forecast for every US airport (public AND shadow):
+    # quoted verbatim on the page, attributed to the office, never a number
+    pts = load_points()
+    nws_raw = nws_with_last_good(nws_batch({i: pts[i] for i in all_icaos if i in pts}, budget_s=300), now_utc)
 
     sc, sc_src = load_scorecard()
     receipts = {}
@@ -1666,8 +1881,8 @@ def main() -> None:
     (FOG / "_fog.js").write_text(FOG_JS)
     today = now_utc.strftime("%Y-%m-%d")
     month1 = now_utc.strftime("%Y-%m-01")
-    n = n_baked = n_taf = 0
-    links, air_lastmod, air_index, entries = [], {}, [], []
+    n = n_baked = n_taf = n_nws = n_nws_fog = 0
+    links, air_lastmod, air_index, entries, nws_log = [], {}, [], [], []
     for a in atlas:
         icao = a["icao"]
         d = FOG / icao.lower()
@@ -1675,13 +1890,21 @@ def main() -> None:
         html, data = page(a, chase.get(icao), icao in stations, r10, fc, window, pers, now_utc,
                           city_link=city_of_icao.get(icao), iata=iata_by_icao.get(icao),
                           taf=tafs.get(icao), obs=obs.get(icao), nearby=nearby.get(icao, ()),
-                          receipt=receipts.get(icao))
+                          receipt=receipts.get(icao), nws=nws_raw.get(icao), nws_pt=pts.get(icao))
         d.joinpath("index.html").write_text(html)
         d.joinpath("data.json").write_text(json.dumps(data, separators=(",", ":")))
         if data["forecast"].get("public"):
             n_baked += 1
         if data["forecast"].get("taf"):
             n_taf += 1
+        nws_s = data["forecast"].get("nws")
+        if nws_s:
+            n_nws += 1
+            n_nws_fog += nws_s.get("verdict", "no fog") != "no fog"
+            # the verification log: does "patchy fog" in the NWS forecast
+            # become dense fog at the airport? scored later against METAR truth
+            nws_log.append({"icao": icao, "office": nws_s.get("office"), "issued": nws_s.get("issued"),
+                            "verdict": nws_s.get("verdict"), "mentions": nws_s.get("mentions", [])})
         # honest lastmod: a page whose answer text changed today (forecast feed,
         # TAF or observation) says so; a station with none of those changes
         # only when the month sentence rolls over
@@ -1702,6 +1925,9 @@ def main() -> None:
         n += 1
     (FOG / "index.json").write_text(json.dumps({"schemaVersion": SCHEMA_VERSION, "updated": now_utc.strftime("%Y-%m-%dT%H:%MZ"), "license": LICENSE,
                                                  "count": n, "airports": air_index}, separators=(",", ":")))
+    (HERE / "out").mkdir(parents=True, exist_ok=True)
+    (HERE / "out" / "nws_mentions.json").write_text(json.dumps(
+        {"date": today, "generated": now_utc.strftime("%Y-%m-%dT%H:%M:%SZ"), "airports": nws_log}, separators=(",", ":")))
 
     city_links, city_lastmod, city_index, city_primary = [], {}, [], {}
     CITY = FOG / "city"
@@ -1712,7 +1938,7 @@ def main() -> None:
         d.mkdir(exist_ok=True)
         prim = g[0]["icao"]
         html, data = city_page((key[0], key[1], key[2], slug), g, g[0], fc, window, pers, r10, now_utc,
-                               taf=tafs.get(prim), obs=obs.get(prim))
+                               taf=tafs.get(prim), obs=obs.get(prim), nws=nws_raw.get(prim), nws_pt=pts.get(prim))
         d.joinpath("index.html").write_text(html)
         d.joinpath("data.json").write_text(json.dumps(data, separators=(",", ":")))
         city_links.append((key[0], key[1].split("-")[-1] if key[2] in SUFFIX_COUNTRIES else key[2], slug))
@@ -1839,6 +2065,7 @@ def main() -> None:
     shares = [sum(1 for w in d if df[w] <= len(docs) * 0.1) / max(1, len(d)) for d in docs]
     uniq = 100 * sorted(shares)[len(shares) // 2]
     summary = (f"wrote {n} airport pages ({n_baked} public forecasts, {n_taf} with TAF, {len(obs)} with observation) + "
+               f"{n_nws} with NWS forecast ({n_nws_fog} mention fog) + "
                f"{len(city_links)} city pages ({skipped} slug collisions skipped) + {len(extra_urls)} list/doc pages + "
                f"scorecard ({sc_src or 'none'}) + {n_redirects} redirects + sitemap index ({len(prio_u)} priority URLs) + "
                f"robots + llms.txt · median page-specific word share {uniq:.1f}%")

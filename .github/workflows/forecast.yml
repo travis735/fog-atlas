@@ -88,6 +88,17 @@ jobs:
           path: forecast/out/awc_cache.json
           key: awc-${{ github.run_id }}
           restore-keys: awc-
+      - name: restore the last-good NWS point-forecast snapshot (reused only while <30 h old)
+        if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
+        uses: actions/cache@v4
+        with:
+          # its own step, not a second path on the AWC step: actions/cache
+          # hashes the path list into the cache version, so widening the AWC
+          # step's paths would have made every existing awc-* cache invisible
+          # (a cold start for the TAF/METAR fallback too, not just this layer)
+          path: forecast/out/nws_cache.json
+          key: nws-${{ github.run_id }}
+          restore-keys: nws-
       - name: deploy planner data (daily, with the bake)
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
         run: python forecast/build_deploy.py
@@ -102,6 +113,20 @@ jobs:
           python forecast/build_pages.py
           cd app && npm ci --no-audit --no-fund && npx vite build
           npx --yes wrangler@4 pages deploy dist --project-name=fog-atlas
+      - name: log the NWS fog mentions to R2 (future verification)
+        if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # every US airport's quoted NWS point-forecast fog mentions from this
+          # bake — kept per day so a later pass can score "patchy fog" against
+          # METAR truth. Best-effort: a failed upload never fails the deploy.
+          if [ -f forecast/out/nws_mentions.json ]; then
+            NAME="nws_$(date -u +%Y%m%dT%H%M).json.gz"
+            gzip -c forecast/out/nws_mentions.json > "$RUNNER_TEMP/$NAME"
+            npx --yes wrangler@4 r2 object put \
+              "fogatlas-forecast/nws/$NAME" --file "$RUNNER_TEMP/$NAME" --remote || true
+          fi
       - name: ping IndexNow with today's changed URLs
         id: indexnow
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'

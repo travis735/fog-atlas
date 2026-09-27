@@ -149,8 +149,57 @@ our IndexNow use as "batch mode" (one ~6,400-URL POST per day) — Bing's
 guidance: don't re-submit the sitemap daily, IndexNow is for priority pages
 at the moment they change — so ping_indexnow.py now submits only the
 priority child's changed URLs (~540); long-tail pages ride the sitemap.
-Travis: submit https://fogatlas.org/sitemap.xml under Bing → Sitemaps; check
-Bing → IndexNow (warning cleared?) + AI Performance after ~48 h. Still wanted from GSC: Performance → filter Query = "fog
+Sitemap submitted in Bing 2026-09-27; check Bing → IndexNow (warning
+cleared?) + AI Performance after ~48 h.
+
+**KPDX incident → NWS point forecast as a third attributed source (2026-09-27,
+built by a 3-implementer workflow + a 31-agent adversarial review):** on 09-26
+KPDX had 1/4–1/2 SM FG 14:31–15:53Z; the NWS Portland public forecast said
+"Patchy fog before 8am", the NWS TAF said P6SM, NBM guidance and our
+calibrated model gave 3–4% (R2 logs run_20260926T0142/0751/1313); the page
+said "No fog signal in NWS guidance" — true of the National Blend, but it
+reads as "NWS says no fog", and Google paired that stale snippet with the
+live NWS one. Shipped: (A) wording names the product and threshold ("No
+dense-fog signal (visibility under a mile) in NWS model guidance…"; bare
+"NWS guidance" is gone everywhere); (B) forecast/nws.py + committed
+forecast/nws_points.json (901 US airports → api.weather.gov gridpoints,
+121 offices; needs User-Agent AND Accept-Encoding: gzip or the edge drops
+the connection) fetch every US airport's NWS public point forecast per bake
+(4 workers, 300 s budget, last-good nws_cache.json < 30 h in its own
+actions/cache key, empty-200 treated as failure so it never poisons the
+cache, ::warning:: when < half fetched); nws_summary quotes fog mentions
+verbatim with resolved period labels ("Tonight" → "Friday night"), earliest
+first + a later more-severe upgrade, verdict dense > widespread > areas >
+patchy > fog (freezing/ice fog handled); shadow pages lead with "The NWS
+Portland, OR forecast (issued 8:41 pm Friday) calls for patchy fog before
+8am Saturday.", public pages append "also calls for…" or a stamped,
+kind-aware Note that explains why NWS "fog" can differ from the vis<1-mile
+percentage (green badge dropped when NWS says dense fog); "does not mention
+fog through …" is stamped with the issue time; extra FAQ; data.json
+forecast.nws + guidanceSource; hub section "Fog in the NWS public forecast"
+(table capped 120, data.json full, availability flag when the layer is
+absent); sentence-aware meta descriptions (snippet(): whole sentences ≤150,
+tail only if it fits 158, "St. Louis" safe); daily nws_mentions.json → R2
+nws/ (future "does 'patchy fog' become dense fog?" scorecard line);
+watchdog check 6 asserts /fog/kpdx/data.json forecast.nws is present and
+< 40 h old. forecast/test_nws.py 15/15. Non-US pages unchanged.
+
+**"fog forecast" query cross-tab (GSC screenshots, 2026-09-27, 3 months):**
+487 pages and 92 countries received impressions for the bare query, and
+Google served the RIGHT local city page almost everywhere — Lisbon 221 imp
+(Portugal 241), Guayaquil 219 (Ecuador 264), Bengaluru 150 + Chennai 113 +
+Ahmedabad 77 + Mumbai 54 (India 551), Singapore 143 (=143), Balkanabat 121,
+Minsk 105 (Belarus 124), Mexico City 93 (Mexico 224), Tivat 93, Vilnius 67
+(Lithuania 130), Casablanca 67 (Morocco 79), Tbilisi 65, Yerevan 55, Sarajevo
+54, Dublin 53, Ho Chi Minh City 52; US 534 imp spread thin across many pages.
+Clicks: 2 (Auckland, from 4 imp) — every other row is 0. Reading: the
+localisation is correct, the /fog/forecast/ hub is NOT what Google shows for
+the head term (not in the top 20 pages), and the zero-click outcome is the
+honest off-season snippet ("no fog" / climatology + TAF) doing its job —
+these are non-US pages with no NWS point forecast, so the NWS build does not
+change them. What would: fog season, position (links), and eventually the
+Hindi/Spanish/Portuguese variants (India 551, Ecuador/Mexico/Colombia/Chile
+~640, Portugal/Brazil 341 impressions on English pages). Still wanted from GSC: Performance → filter Query = "fog
 forecast" → Pages + Countries tabs (which local pages Google auditioned, and
 whether /fog/forecast/ has a row yet); the "Crawled – currently not indexed"
 list; the new "generative AI features" report.

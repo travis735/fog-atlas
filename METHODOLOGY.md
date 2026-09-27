@@ -109,9 +109,26 @@ US DOT/BTS on-time data (2023–2024, 13.9M scheduled departures) joined to our 
 
 Two honest readings of the structure. First, the below-300m multiplier being *lower* than the EFVS band's looks backwards until you notice where that exposure lives: mostly at CAT III-equipped hubs (ORD, DTW, SEA) where autoland keeps the operation running — which is the CAT II/III-absence thesis showing up in cancellation data. Second, BTS "weather" cancellations are generic: Denver's high multiplier is blizzard-driven, not fog-driven; treat the aggregate as validation that the bands mark operationally hostile hours, not as a fog-specific cost model. JFK's *below-baseline* rate during sub-CAT-I hours (0.05%) likely reflects proactive schedule thinning being coded as carrier/NAS rather than weather.
 
+## Forecast pages (/fog/{icao}/)
+
+Every airport page leads with a daily-baked answer to "will it be foggy tomorrow?". A **Fog Atlas percentage** (calibrated P(visibility < 1 mile), from NOAA/NWS National Blend of Models guidance recalibrated per airport against ten years of METAR truth) appears **only** for airports whose calibrated model has beaten that airport's own climatology on live verification — the pre-registered bar on the [scorecard](https://fogatlas.org/fog/scorecard/). Every other forecast statement on a page is attributed to its source and is never presented as a Fog Atlas number.
+
+### Three attributed sources on US pages
+
+US airport pages (and the city pages that take their answer from a US station) carry up to three forecast sources, each named for what it is:
+
+1. **NWS model guidance** — the National Blend of Models, the same feed the calibration uses. Pages say "NWS model guidance (National Blend of Models) shows a / no dense-fog signal, visibility under a mile" — the guidance name and the fog definition are spelled out because an unqualified "no fog signal" attributed to the NWS reads as "the NWS says no fog", and the NWS's own forecast can say otherwise (Portland, 2026-09-26: guidance 3–4%, the NWS Portland forecast said "Patchy fog before 8am", and KPDX went to ¼–½ mile in fog).
+2. **The airport's own terminal forecast (TAF)** from the NOAA Aviation Weather Center — "dense fog" there means visibility under 1 mile or a FG group in the next ~30 h.
+3. **The NWS public point forecast** for the airport's grid point (api.weather.gov), read for every US airport at each daily bake. Any sentence in the next 48 h of periods that mentions fog is **quoted verbatim** and attributed to the issuing office ("the NWS Portland, OR forecast (issued 8:41 pm Friday) calls for patchy fog before 8am Saturday"); when the forecast does not mention fog the page says so explicitly, with the same issue stamp. The page quotes the earliest mention in the horizon first (a later, more severe one is added after it, never substituted for it), and a period the NWS names relative to its issuance ("Tonight", "Overnight") is printed as the day it meant ("Friday night", "early Saturday") because the page is served for a day after the bake; `data.json` keeps the NWS period name verbatim alongside. It appears in `data.json` as `forecast.nws` (office, issue time, verdict, the quoted mentions and the source URL) and, site-wide, on the [fog forecast hub](https://fogatlas.org/fog/forecast/) as `nwsForecastFog`.
+
+Honesty note: the NWS text is **never converted into a number**. "Patchy fog" is not a probability, is not folded into the calibrated percentage, and does not move an airport across the publication bar; "fog" in an NWS forecast is whatever the forecaster meant, often lighter than the visibility-under-a-mile fog the percentages measure. The daily mentions are logged (`nws/` in the forecast bucket) so a later scoring pass can ask, against METAR truth, how often "patchy fog" became dense fog — that is future verification, not a current claim.
+
 ## Sources
 
 - Iowa Environmental Mesonet ASOS/METAR archive (primary)
+- NOAA/NWS National Blend of Models (forecast guidance; calibrated per airport)
+- NWS public point forecasts, api.weather.gov (US airports; quoted verbatim, attributed)
+- NOAA Aviation Weather Center TAF/METAR (terminal forecasts, latest observations)
 - NOAA ISD (international backfill, planned)
 - OurAirports (airport metadata)
 - FAA CIFP (US approach capability)
