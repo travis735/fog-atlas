@@ -143,8 +143,14 @@ Hamilton 8.7, Delhi 10.0) — only links move that. Bug found + fixed: the
 SFO/OAK/SJC airport and SF/Oakland/San Jose city pages opened their meta
 description, FAQ answer and OG text with the marine-layer caveat, so the
 snippet for "fog forecast san francisco" (393 imp, 0 clicks) was a truncated
-disclaimer — now forecast first, caveat second. Bing Webmaster import done
-2026-09-26. Still wanted from GSC: Performance → filter Query = "fog
+disclaimer — now forecast first, caveat second (38fa5e41, live-verified).
+Bing Webmaster import done 2026-09-26; its home page immediately flagged
+our IndexNow use as "batch mode" (one ~6,400-URL POST per day) — Bing's
+guidance: don't re-submit the sitemap daily, IndexNow is for priority pages
+at the moment they change — so ping_indexnow.py now submits only the
+priority child's changed URLs (~540); long-tail pages ride the sitemap.
+Travis: submit https://fogatlas.org/sitemap.xml under Bing → Sitemaps; check
+Bing → IndexNow (warning cleared?) + AI Performance after ~48 h. Still wanted from GSC: Performance → filter Query = "fog
 forecast" → Pages + Countries tabs (which local pages Google auditioned, and
 whether /fog/forecast/ has a row yet); the "Crawled – currently not indexed"
 list; the new "generative AI features" report.

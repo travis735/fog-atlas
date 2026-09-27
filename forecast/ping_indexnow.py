@@ -4,8 +4,14 @@ with the URLs whose content changed in today's bake.
 
 The sitemap index's children carry an honest lastmod (today only for pages
 whose answer text changed: a forecast feed, a fresh TAF or a fresh
-observation), so the change-list is every URL with lastmod == today. A legacy
-flat sitemap submits everything. IndexNow accepts up to 10,000 URLs per POST.
+observation). The change-list is every URL with lastmod == today in the
+PRIORITY child only (public cohort + their cities + demand cities + hubs,
+~540 URLs): Bing reads the whole sitemap index daily and prioritises by
+lastmod on its own, and submitting all ~6,400 daily-changed URLs in one
+scheduled POST is exactly what Bing Webmaster Tools flagged as IndexNow
+"batch mode" (2026-09-26), which slows indexing instead of speeding it. A
+legacy flat sitemap submits everything. IndexNow accepts up to 10,000 URLs
+per POST.
 
 The key is not a secret — the protocol requires it to be publicly served at
 the key location; possessing it only lets someone ask engines to recrawl
@@ -37,6 +43,10 @@ def changed_urls() -> list[str]:
     children = re.findall(r"<loc>https://fogatlas\.org/(sitemap-[a-z]+\.xml)</loc>", idx)
     if not children:
         return re.findall(r"<loc>(https://fogatlas\.org[^<]*)</loc>", idx)
+    # priority child only (see module docstring); every child if the index
+    # has no priority child, which the report line makes visible by count
+    if "sitemap-priority.xml" in children:
+        children = ["sitemap-priority.xml"]
     urls = []
     for fn in children:
         for u, lm in re.findall(r"<url><loc>([^<]+)</loc><lastmod>([^<]+)</lastmod>", open(f"{DIST}/{fn}").read()):
