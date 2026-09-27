@@ -126,9 +126,28 @@ taken: option C wording (keep guidance + TAF), CC BY 4.0 (in every data.json,
 Dataset node, About, llms.txt), contact hello@fogatlas.org (published once
 Email Routing is live — the zone token cannot create routing rules,
 destination addresses or Email Sending: dashboard or token scope).
-Cloudflare AI-bot policy confirmed Allow/Allow/Allow. Still wanted from GSC:
-the "Why pages aren't indexed" reasons for the 903, and the page(s) Google
-shows for the head terms (Performance → filter query → Pages).
+Cloudflare AI-bot policy confirmed Allow/Allow/Allow.
+
+**Search Console read (2026-09-26):** 106 clicks / 11.9K imp over 3 months
+(66 / 9.6K on 09-16 → ~4 clicks/day since, ~2% CTR on the long-tail place
+queries that make up 5/6 of the new impressions); 6,680 indexed / 866 not.
+Corrections + findings: the head-term audition never hit the homepage (8 imp
+in the 09-16 export vs 7,244 on city pages, 2,682 on airport pages) — Google
+LOCALISES "fog forecast" to the searcher's nearest city/airport page, which
+is why the zero-click impressions came from IN/MX/EC/CO. The 467 "Alternate
+page with proper canonical" are pre-09-12 URL shapes (unknown paths served
+the map shell whose canonical is the homepage; www served duplicates) —
+benign, shrinking on recrawl; 197+197 "currently not indexed" ≈ 5%, normal.
+Named place queries sit at pos 7–10 (SF 7.6, Auckland 7.8, Casablanca 7.7,
+Hamilton 8.7, Delhi 10.0) — only links move that. Bug found + fixed: the
+SFO/OAK/SJC airport and SF/Oakland/San Jose city pages opened their meta
+description, FAQ answer and OG text with the marine-layer caveat, so the
+snippet for "fog forecast san francisco" (393 imp, 0 clicks) was a truncated
+disclaimer — now forecast first, caveat second. Bing Webmaster import done
+2026-09-26. Still wanted from GSC: Performance → filter Query = "fog
+forecast" → Pages + Countries tabs (which local pages Google auditioned, and
+whether /fog/forecast/ has a row yet); the "Crawled – currently not indexed"
+list; the new "generative AI features" report.
 
 **Travis-only, time-critical:**
 - BEFORE 2026-09-15: Cloudflare dashboard → fogatlas.org → Security →
@@ -136,13 +155,13 @@ shows for the head terms (Performance → filter query → Pages).
   CCBot). Cloudflare blocks AI crawlers by default on zones onboarded after
   July 2025 and changes defaults again on Sep 15; edge probes cannot see
   verified-bot blocks. Common Crawl has zero captures of fogatlas.org.
-- Bing Webmaster Tools: Import from Google Search Console (auto-verified),
-  read IndexNow Insights + AI Performance — the only view of what Bing did
-  with 14+ days of submissions.
-- Search Console: Page indexing counts (Soft 404 / Crawled–not indexed /
-  Discovered–not indexed / Duplicate without user-selected canonical),
-  Sitemaps status (resubmit /sitemap.xml — it is now an index), Performance
-  queries+pages; paste to Claude. Optional: service account → GSC_SA_KEY secret.
+- DONE 2026-09-26: Bing Webmaster Tools import. Next Bing read (mid-Oct):
+  IndexNow Insights + AI Performance — the only view of what Bing did with
+  the daily submissions.
+- Search Console, next pull: Performance → filter Query "fog forecast" →
+  Pages + Countries (export both); Page indexing → "Crawled – currently not
+  indexed" (export); the "generative AI features" report. Paste to Claude.
+  Optional: service account → GSC_SA_KEY secret.
 - Keep one real commit landing every <8 weeks (GitHub disables schedules in
   public repos after 60 idle days; barcheck.yml's monthly bot commit may or
   may not count). Optional: healthchecks.io ping after the deploy step.

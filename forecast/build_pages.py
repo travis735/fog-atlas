@@ -535,9 +535,13 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
     if icao in MARINE_LAYER:
         ml = (f"Bay Area \"fog\" is usually the marine layer — a low stratus deck at roughly 500–1,500 ft — while this page "
               f"measures dense ground fog (visibility under a mile or ceiling under 200 ft), which {icao} records only "
-              f"about {subH} hours a year; summer arrival delays at SFO come from that low ceiling, not from visibility. ")
-        answer_html = f"<b>Marine layer ≠ dense fog.</b> {ml}" + answer_html
-        answer_plain = ml + answer_plain
+              f"about {subH} hours a year; summer arrival delays at SFO come from that low ceiling, not from visibility.")
+        # forecast first, caveat second: the meta description, FAQ answer and
+        # OG text are all cut from the head of answer_plain, and a snippet that
+        # opened with what the page is NOT earned 0 clicks from 393 "fog
+        # forecast san francisco" impressions (Search Console, 2026-09-26)
+        answer_html = f"{answer_html} <b>Marine layer ≠ dense fog.</b> {ml}"
+        answer_plain = f"{answer_plain.rstrip()} {ml}"
 
     if covered and icao in r10_by_mh:
         clim = [[round(100 * r10_by_mh[icao].get((m + 1, h), 0.0), 1) for h in range(24)] for m in range(12)]
@@ -947,9 +951,9 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
     if a["icao"] in MARINE_LAYER:
         ml = (f"{muni}'s famous \"fog\" is usually the marine layer — a low stratus deck at roughly 500–1,500 ft — while this page "
               f"measures dense ground fog (visibility under a mile or ceiling under 200 ft), which {a['icao']} records only "
-              f"about {subH} hours a year. ")
-        answer_html = f"<b>Marine layer ≠ dense fog.</b> {ml}" + answer_html
-        answer_plain = ml + answer_plain
+              f"about {subH} hours a year.")
+        answer_html = f"{answer_html} <b>Marine layer ≠ dense fog.</b> {ml}"  # forecast first (see page())
+        answer_plain = f"{answer_plain.rstrip()} {ml}"
     src = f"Measured at {a['name']} ({a['icao']})."
     answer_plain_city = f"{answer_plain} {src}"
     season_html, season_plain = season_section(a, sp, med, disp)
