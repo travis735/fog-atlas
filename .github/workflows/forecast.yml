@@ -34,6 +34,11 @@ jobs:
       - uses: actions/setup-python@v5
         if: steps.gate.outputs.enabled == 'true'
         with: { python-version: "3.12" }
+      # pinned, not the runner's preinstalled Node: 24.22.1 is the 2026-10-21
+      # security release (Brotli RCE, TLS hostname bypasses, eMudhra CA) — bump deliberately
+      - uses: actions/setup-node@v7
+        if: steps.gate.outputs.enabled == 'true'
+        with: { node-version: "24.22.1" }
       - name: engine
         if: steps.gate.outputs.enabled == 'true'
         run: |
