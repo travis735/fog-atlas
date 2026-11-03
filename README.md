@@ -1,5 +1,7 @@
 # Fog Atlas
 
+[![tests](https://github.com/travis735/fog-atlas/actions/workflows/tests.yml/badge.svg)](https://github.com/travis735/fog-atlas/actions/workflows/tests.yml)
+
 > A worldwide map of where the sky closes — ten years of METAR observations distilled into when, where, and how often airports drop below approach minima, and how much of that an EFVS-equipped aircraft gets back.
 
 Enhanced Flight Vision Systems (EFVS) let suitably equipped aircraft fly approaches in visibility that would otherwise force a diversion. The value of that equipment is concentrated at a specific kind of airport: one that is frequently fogbound **and** lacks CAT II/III ILS infrastructure. Fog Atlas maps that intersection from public data.
@@ -31,6 +33,16 @@ METAR prevailing visibility is a proxy for RVR, not a substitute. Band threshold
 
 - `pipeline/` — Python + DuckDB ingestion and aggregation (offline; produces static JSON)
 - `app/` — static web app (Vite + MapLibre GL + Observable Plot)
+- `forecast/` — the forecast engine: NBM parsing, calibration, hourly issuance, shadow-mode scorecard
+
+## Tests
+
+```sh
+pip install -r forecast/requirements-test.txt
+pytest
+```
+
+The suite is offline (network calls are stubbed) and runs on every push and pull request via [`.github/workflows/tests.yml`](.github/workflows/tests.yml). It covers the NBM text parser, the engine's climatology prior, scorer, AWC truth flags and a full issuance, the calibration offset solver plus a contract check on the committed `calibration.json` / `climo.parquet`, and the scorecard's Brier/skill maths and bar check against hand-computed values.
 
 ## Live
 
