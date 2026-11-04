@@ -1,7 +1,12 @@
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import * as Plot from "@observablehq/plot";
 import "./style.css";
+
+// maplibre 6 finds its worker next to its own module URL, which the bundle
+// rewrites — point it at the copy vite emits instead
+maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
