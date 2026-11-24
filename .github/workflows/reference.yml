@@ -50,7 +50,7 @@ jobs:
         with: { node-version: "24.22.1" }
       - name: refresh reference data
         run: |
-          pip install --quiet xlrd openpyxl duckdb timezonefinder
+          pip install --quiet -c .github/pip-constraints.txt xlrd openpyxl duckdb timezonefinder
           python pipeline/fetch_nasr.py
           python pipeline/refresh_reference.py
           python pipeline/build_chase.py
@@ -60,7 +60,7 @@ jobs:
         run: |
           if git status --porcelain pipeline/data/us_ils_levels.csv pipeline/data/us_lpv.csv \
                pipeline/data/egnos_lpv.csv pipeline/cat_curated.csv | grep -q .; then
-            npx --yes wrangler@4 r2 object get fogatlas-forecast/reference/classified.parquet \
+            npx --yes wrangler@4.167.0 r2 object get fogatlas-forecast/reference/classified.parquet \
               --file pipeline/out/classified.parquet --remote
             python pipeline/build_airport_list.py
             python pipeline/export_aggregates.py --list airports_full.csv
@@ -97,4 +97,4 @@ jobs:
           cd app
           npm ci
           npx vite build
-          npx --yes wrangler@4 pages deploy dist --project-name=fog-atlas
+          npx --yes wrangler@4.167.0 pages deploy dist --project-name=fog-atlas

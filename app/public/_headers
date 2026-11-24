@@ -1,0 +1,17 @@
+# Cloudflare Pages response headers for every static asset and baked page.
+# (Pages Functions under /api/* set their own headers; these do not apply there.)
+#
+# - HSTS: browsers refuse plain http for a year after one https visit. The
+#   zone-level HSTS switch in the Cloudflare dashboard is off, so it is set here.
+# - X-Frame-Options: the site cannot be framed by another origin.
+# - Permissions-Policy: device APIs the site never uses are switched off.
+# - Content-Security-Policy-Report-Only: a candidate policy that BLOCKS NOTHING.
+#   Violations are only logged to the browser console. It stays report-only
+#   until the map (MapLibre worker + CARTO tiles), the baked pages (inline
+#   chart scripts) and the analytics beacon have all been seen clean under it;
+#   'unsafe-inline' is required by the baked pages' inline scripts and styles.
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), browsing-topics=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com; font-src 'self' data:; connect-src 'self' https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://cloudflareinsights.com https://static.cloudflareinsights.com; worker-src 'self' blob:; child-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'

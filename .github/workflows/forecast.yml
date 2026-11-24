@@ -42,21 +42,21 @@ jobs:
       - name: engine
         if: steps.gate.outputs.enabled == 'true'
         run: |
-          pip install --quiet duckdb pyshp eccodes
+          pip install --quiet -c .github/pip-constraints.txt duckdb pyshp eccodes
           python forecast/engine.py
       - name: upload the issuance to KV + R2 (the hourly product — never waits on the daily bake)
         if: steps.gate.outputs.enabled == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          npx --yes wrangler@4 kv key put current \
+          npx --yes wrangler@4.167.0 kv key put current \
             --path forecast/out/current.json --namespace-id "$KV_NAMESPACE" --remote
           LOG=$(ls forecast/out/log/run_*.json.gz | tail -1)
           # R2 is the log home; KV fallback keeps the record unbroken if the
           # token lacks R2 scope (migrate strays with the next R2-capable run)
-          npx --yes wrangler@4 r2 object put \
+          npx --yes wrangler@4.167.0 r2 object put \
             "fogatlas-forecast/logs/$(basename "$LOG")" --file "$LOG" --remote \
-          || npx --yes wrangler@4 kv key put "log:$(basename "$LOG" .json.gz)" \
+          || npx --yes wrangler@4.167.0 kv key put "log:$(basename "$LOG" .json.gz)" \
             --path "$LOG" --namespace-id "$KV_NAMESPACE" --remote
       - name: bake gate — does the live site still need today's bake?
         id: bake
@@ -117,7 +117,7 @@ jobs:
           # answers from the issuance the engine just wrote, then ship
           python forecast/build_pages.py
           cd app && npm ci --no-audit --no-fund && npx vite build
-          npx --yes wrangler@4 pages deploy dist --project-name=fog-atlas
+          npx --yes wrangler@4.167.0 pages deploy dist --project-name=fog-atlas
       - name: log the NWS fog mentions to R2 (future verification)
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
         env:
@@ -129,7 +129,7 @@ jobs:
           if [ -f forecast/out/nws_mentions.json ]; then
             NAME="nws_$(date -u +%Y%m%dT%H%M).json.gz"
             gzip -c forecast/out/nws_mentions.json > "$RUNNER_TEMP/$NAME"
-            npx --yes wrangler@4 r2 object put \
+            npx --yes wrangler@4.167.0 r2 object put \
               "fogatlas-forecast/nws/$NAME" --file "$RUNNER_TEMP/$NAME" --remote || true
           fi
       - name: ping IndexNow with today's changed URLs
@@ -143,10 +143,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           if [ -f forecast/out/deploy.json ]; then
-            npx --yes wrangler@4 kv key put deploy \
+            npx --yes wrangler@4.167.0 kv key put deploy \
               --path forecast/out/deploy.json --namespace-id "$KV_NAMESPACE" --remote
             DLOG=$(ls forecast/out/deploylog/deploy_*.json.gz | tail -1)
-            npx --yes wrangler@4 r2 object put \
+            npx --yes wrangler@4.167.0 r2 object put \
               "fogatlas-forecast/deploylogs/$(basename "$DLOG")" --file "$DLOG" --remote || true
           fi
       - name: surface an IndexNow failure (issuance already safe in KV)

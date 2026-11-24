@@ -1,5 +1,74 @@
 # Roadmap / TODO
 
+## ★ 2026-11-24 audit — three silent outages found and fixed; what is still open
+Travis plans live chase use from ~2026-12-08. An audit that day found three
+things broken for three weeks with every workflow green:
+
+1. **Forecast empty since 2026-11-03 18Z.** NOAA dropped the version token
+   from the NBM station header (`NBM V5.0 NBH GUIDANCE` → `NBM  NBH GUIDANCE`);
+   `parse_nbm.py` required it, matched 0 stations, and the engine published
+   `{"airports": {}}` for 21 days: /api/forecast empty, 0 public forecasts
+   baked, DEPLOY on climatology×CPC only, ~65 empty issuance logs. A local
+   fix written 11-15 was never committed. FIXED 7bea01d4: tolerant header
+   regex (also `build_truth.py`), the engine raises before writing/uploading
+   when under half the stations parse (KV keeps the last good issuance),
+   `build_deploy.py` annotates a thin NBE parse, watchdog checks 2/7/8 assert
+   CONTENTS (≥600 airports in the issuance; ≥half the planner's airports on
+   the calibrated tier day 1 and a forecast tier day 5; sampled public pages
+   carry a calibrated forecast), `test_parse_nbm.py`.
+2. **CHASE runway data garbage since 2026-11-03.** The 2026-10-29 NASR cycle
+   widened APT.txt's pavement-classification field 11→16 chars, shifting every
+   runway-end field 5 columns; `build_chase.py` read the old columns and the
+   monthly CI refresh committed + deployed ends named "HIG"/"0R", ALS "TMRN",
+   97% of ends in the no-approach tier. FIXED 3c940ef2: offsets are read from
+   `Layout_Data/apt_rf.txt` (ships in the zip), and the build exits without
+   writing when <90% of ends have a plausible identifier, >70% are tier 400
+   or <15% match an ILS; chase.json rebuilt from the 10-29 cycle (937
+   airports); `test_build_chase.py`.
+3. **Coverage >100% on 1,864 airports since 2026-11-03**, because the CI
+   re-export had the August parquet but no `out/window.json`. FIXED 3c940ef2
+   with the quarterly METAR refresh (window through 2026-11-15, gates passed,
+   parquet 283,086,159 bytes re-uploaded to R2) and `export_aggregates.py`
+   inheriting the committed window.
+
+Hardening shipped the same day: `npm audit fix` (0 advisories; Vite 8.3.8,
+build + map verified in a browser), every workflow `pip install` pinned via
+`.github/pip-constraints.txt`, wrangler pinned to 4.167.0, third-party text
+(TAF/METAR/NWS) stripped of markup where it enters the bake
+(`clean_upstream`), JSON-LD through `ld_json` (`</` guard), `app/public/_headers`
+(HSTS, X-Frame-Options, Permissions-Policy, a REPORT-ONLY CSP).
+
+**The rule this incident adds:** a producer that parses someone else's feed
+fails when it extracts ~nothing and never overwrites the last good artifact;
+every freshness check has a volume check beside it; parsers of third-party
+formats read the layout the publisher ships instead of hard-coding it.
+
+**Still open**
+- **Hourly is not hourly.** GitHub sheds the `25 * * * *` cron: 3 scheduled
+  runs/day, median gap 7.8 h (last 14 days; was 4.9 h in October). Fix: a
+  Cloudflare Worker cron that dispatches `forecast.yml` hourly + once at
+  10:40Z. Needs Travis's fine-grained GitHub token (Actions read/write on
+  this repo). After it lands, tighten watchdog check 2 from 12 h to 3 h.
+- **Verification hole 2026-11-03 → 11-24** (no forecasts logged; the Dec 1
+  bar check will be thin). NOAA archives the bulletins, so the frozen
+  calibration could be replayed over them. That is a replay, not live
+  issuance: Travis decides whether it counts toward the bar.
+- **Dec 3 reference run** is the first scheduled one with the new chase
+  reader and gate; it will also meet the 2026-11-26 NASR cycle. Check it.
+- **Travis, Cloudflare dashboard:** minimum TLS 1.2 (is 1.0), HSTS, DNSSEC,
+  SPF `v=spf1 -all` + DMARC `p=reject` (the domain is spoofable today), one
+  rate-limiting rule on `/api/*` (Functions share the Free plan's 100k
+  requests/day), confirm the CI API token has no near expiry.
+- **Travis, GitHub:** enable Dependabot alerts (Settings → Code security).
+- CSP is report-only; promote it once the console is clean on map + pages.
+- Actions still on Node-20-era majors (checkout@v4, setup-python@v5,
+  cache@v4): a deprecation warning today, forced onto Node 24 and working.
+- Pages deploy uploads 17,087 files; the Free plan cap is 20,000.
+- PRs #3 (pytest suite + tests.yml) and #4 (README) from 2026-11-03 are
+  unmerged; #3's parser fixtures predate the header change.
+- bar_status.json still lists 235 public airports; 414 pass (ritual not run
+  since 2026-08-16).
+
 ## 0. CHASE Canada tier — DONE 2026-07-20 (shipped with CHASE V2)
 Shipped same day as the rest of CHASE V2: Sonnet fleet researched the CAP/CFS
 charts (147 claims confirmed, 8 refuted-and-corrected, 15 low-confidence ends

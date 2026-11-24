@@ -42,8 +42,8 @@ jobs:
           restore-keys: shadowlogs-
       - name: sync shadow logs from R2
         run: |
-          pip install --quiet duckdb
-          npm install -g wrangler@4 >/dev/null 2>&1
+          pip install --quiet -c .github/pip-constraints.txt duckdb
+          npm install -g wrangler@4.167.0 >/dev/null 2>&1
           mkdir -p forecast/data/shadowlogs
           python3 - <<'PY'
           import json, os, urllib.request

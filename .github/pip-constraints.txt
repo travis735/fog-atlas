@@ -1,0 +1,34 @@
+# Exact versions for every `pip install` in the workflows (used as
+#   pip install -c .github/pip-constraints.txt <packages>
+# so each workflow still names only what it needs, and a package that is not
+# requested is simply ignored).
+#
+# Why: the hourly forecast job installed whatever PyPI served that hour. A
+# breaking release of any of these would have stopped the forecast with no
+# code change on our side. These are the versions the runner resolved on
+# 2026-11-24 (Python 3.12, manylinux x86_64) while every workflow was green.
+#
+# To bump: change a version here, dispatch forecast.yml and reference.yml, and
+# keep the change only if both stay green. Resolve a fresh set with
+#   python3 -m pip install --dry-run --ignore-installed --python-version 3.12 \
+#     --implementation cp --abi cp312 --platform manylinux_2_28_x86_64 \
+#     --only-binary=:all: --target /tmp/x --report - <packages>
+#
+# forecast.yml: duckdb pyshp eccodes        barcheck.yml: duckdb
+# reference.yml: xlrd openpyxl duckdb timezonefinder
+attrs==26.1.0
+cffi==2.1.1
+duckdb==2.0.1
+eccodes==2.50.1
+eccodeslib==2.50.0.34
+eckitlib==2.5.0.34
+et_xmlfile==2.0.0
+findlibs==0.1.5
+flatbuffers==25.12.19
+numpy==2.5.5
+openpyxl==3.1.5
+pycparser==3.12
+pyshp==3.1.9
+timezonefinder==9.2.0
+timezonefinder-data==4.2026.6
+xlrd==2.0.2

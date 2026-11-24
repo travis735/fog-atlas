@@ -123,6 +123,37 @@ def trunc(s: str, n: int) -> str:
     return cut + "…"
 
 
+_MARKUP = re.compile(r"[<>\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
+def clean_upstream(obj):
+    """Neutralise markup in third-party text before any of it reaches a page.
+
+    TAF/METAR records (aviationweather.gov) and NWS point forecasts
+    (api.weather.gov) are quoted verbatim into ~7,000 static pages, their
+    <meta> descriptions and their JSON-LD, at dozens of interpolation points.
+    None of that text legitimately contains an angle bracket, so the brackets
+    are removed once, here, where the feeds enter the bake — a compromised or
+    malformed upstream response then cannot open a tag or close a <script> on
+    fogatlas.org, whatever a later template does with the string. Ampersands
+    and quotes are left alone: neither can start markup, and trunc()/snippet()
+    already swap double quotes out of attribute values."""
+    if isinstance(obj, str):
+        return _MARKUP.sub(" ", obj) if _MARKUP.search(obj) else obj
+    if isinstance(obj, dict):
+        return {k: clean_upstream(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [clean_upstream(v) for v in obj]
+    return obj
+
+
+def ld_json(obj) -> str:
+    """JSON for a <script type="application/ld+json"> block. json.dumps escapes
+    quotes but not '</', and the HTML parser ends a script element at the
+    first '</script' it sees, inside a JSON string or not."""
+    return json.dumps(obj, separators=(",", ":")).replace("</", "<\\/")
+
+
 def snippet(answer: str, tail="", body_cap: int = 150, cap: int = 158) -> str:
     """Meta description from whole sentences: take leading sentences of the
     answer while they fit body_cap (the first sentence is always the answer),
@@ -624,7 +655,7 @@ def jsonld(a, plain_answer, season_plain, subH, window, med, extra_faq=(), crumb
                            "contentUrl": url + "data.json"}],
          "isBasedOn": ["https://mesonet.agron.iastate.edu/", "https://www.weather.gov/mdl/nbm_home"]},
     ]
-    return json.dumps({"@context": "https://schema.org", "@graph": graph}, separators=(",", ":"))
+    return ld_json({"@context": "https://schema.org", "@graph": graph})
 
 
 CONF_LABEL = {"faa-nasr": "FAA NASR", "faa-c060": "FAA OpSpec C060", "aip": "national AIP", "assumed": "assumed"}
@@ -1199,7 +1230,7 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
 <link rel="describedby" href="/llms.txt">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 {og_tags(url, f"Will it be foggy in {ask} tomorrow? {disp} fog forecast", desc)}
-<script type="application/ld+json">{json.dumps({"@context": "https://schema.org", "@graph": graph}, separators=(",", ":"))}</script>
+<script type="application/ld+json">{ld_json({"@context": "https://schema.org", "@graph": graph})}</script>
 <style>{CSS}</style>
 </head><body><main>
 {crumb_html}
@@ -1366,7 +1397,7 @@ def shell(url, title, desc, crumbs, body, jsonld_graph=None, now_utc=None) -> st
 <link rel="describedby" href="/llms.txt">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 {og_tags(url, title, desc)}
-<script type="application/ld+json">{json.dumps({"@context": "https://schema.org", "@graph": graph}, separators=(",", ":"))}</script>
+<script type="application/ld+json">{ld_json({"@context": "https://schema.org", "@graph": graph})}</script>
 <style>{CSS}</style>
 </head><body><main>
 {crumb_html}
@@ -1845,6 +1876,9 @@ def main() -> None:
     # quoted verbatim on the page, attributed to the office, never a number
     pts = load_points()
     nws_raw = nws_with_last_good(nws_batch({i: pts[i] for i in all_icaos if i in pts}, budget_s=300), now_utc)
+    # third-party text enters the bake here and nowhere else (the last-good
+    # caches hold raw upstream records too, so clean after the merge)
+    tafs, obs, nws_raw = clean_upstream(tafs), clean_upstream(obs), clean_upstream(nws_raw)
 
     sc, sc_src = load_scorecard()
     receipts = {}
