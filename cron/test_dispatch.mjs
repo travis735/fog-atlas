@@ -2,9 +2,12 @@
 //   node cron/test_dispatch.mjs
 // fetch is replaced with a scripted fake, so nothing touches GitHub.
 import assert from "node:assert/strict";
-import worker, { dispatch } from "./src/index.js";
+import { readFileSync } from "node:fs";
+import worker, { dispatch, JOBS } from "./src/index.js";
 
-const ENV = { GH_PAT: "test-token-not-real", GH_REPO: "travis735/fog-atlas", GH_WORKFLOW: "forecast.yml", GH_REF: "main" };
+const ENV = { GH_PAT: "test-token-not-real", GH_REPO: "travis735/fog-atlas", GH_REF: "main" };
+const HOURLY = "25 * * * *";
+const WATCHDOG = "50 * * * *";
 const realFetch = globalThis.fetch;
 const quiet = { log: console.log, error: console.error };
 
@@ -20,9 +23,9 @@ function script(responses) {
 }
 
 const tests = {
-  async "a 204 is one POST with the right URL, auth and ref"() {
+  async "the hourly tick dispatches forecast.yml with force_bake false"() {
     const calls = script([{ status: 204 }]);
-    assert.equal(await dispatch(ENV, "25 * * * *"), 204);
+    assert.equal(await dispatch(ENV, HOURLY), 204);
     assert.equal(calls.length, 1);
     assert.equal(calls[0].method, "POST");
     assert.equal(calls[0].url, "https://api.github.com/repos/travis735/fog-atlas/actions/workflows/forecast.yml/dispatches");
@@ -31,14 +34,38 @@ const tests = {
     // force_bake must be the STRING "false": the hourly tick follows the daily bake gate
     assert.deepEqual(JSON.parse(calls[0].body), { ref: "main", inputs: { force_bake: "false" } });
   },
+  async "the 10:40Z tick is the same forecast dispatch"() {
+    const calls = script([{ status: 204 }]);
+    await dispatch(ENV, "40 10 * * *");
+    assert.ok(calls[0].url.endsWith("/workflows/forecast.yml/dispatches"));
+    assert.deepEqual(JSON.parse(calls[0].body).inputs, { force_bake: "false" });
+  },
+  async "the :50 tick dispatches watchdog.yml with no inputs"() {
+    const calls = script([{ status: 204 }]);
+    assert.equal(await dispatch(ENV, WATCHDOG), 204);
+    assert.ok(calls[0].url.endsWith("/workflows/watchdog.yml/dispatches"));
+    // watchdog.yml declares no inputs; GitHub answers 422 to unexpected ones
+    assert.deepEqual(JSON.parse(calls[0].body), { ref: "main" });
+  },
+  async "every cron trigger in wrangler.jsonc has a job, and nothing else does"() {
+    const cfg = readFileSync(new URL("./wrangler.jsonc", import.meta.url), "utf8");
+    const block = cfg.slice(cfg.indexOf('"crons"'), cfg.indexOf("]", cfg.indexOf('"crons"')));
+    const crons = [...block.matchAll(/^\s*"([^"]+)"/gm)].map((m) => m[1]).filter((c) => c !== "crons");
+    assert.deepEqual([...crons].sort(), Object.keys(JOBS).sort());
+  },
+  async "an unmapped cron trigger fails loudly and sends nothing"() {
+    const calls = script([]);
+    await assert.rejects(dispatch(ENV, "0 0 * * *"), /no workflow is mapped/);
+    assert.equal(calls.length, 0);
+  },
   async "a missing secret fails before any request"() {
     const calls = script([]);
-    await assert.rejects(dispatch({ ...ENV, GH_PAT: undefined }, "x"), /GH_PAT secret is not set/);
+    await assert.rejects(dispatch({ ...ENV, GH_PAT: undefined }, HOURLY), /GH_PAT secret is not set/);
     assert.equal(calls.length, 0);
   },
   async "a bad token (401) fails loudly and does not probe further"() {
     const calls = script([{ status: 401, body: '{"message":"Bad credentials"}' }]);
-    await assert.rejects(dispatch(ENV, "x"), /HTTP 401.*Bad credentials/);
+    await assert.rejects(dispatch(ENV, HOURLY), /HTTP 401.*Bad credentials/);
     assert.equal(calls.length, 1);
   },
   async "a workflow disabled for inactivity is re-enabled and dispatched"() {
@@ -48,19 +75,19 @@ const tests = {
       { status: 204 },
       { status: 204 },
     ]);
-    assert.equal(await dispatch(ENV, "x"), 204);
+    assert.equal(await dispatch(ENV, WATCHDOG), 204);
     assert.deepEqual(calls.map((c) => `${c.method} ${c.url.split("/workflows/")[1]}`),
-      ["POST forecast.yml/dispatches", "GET forecast.yml", "PUT forecast.yml/enable", "POST forecast.yml/dispatches"]);
+      ["POST watchdog.yml/dispatches", "GET watchdog.yml", "PUT watchdog.yml/enable", "POST watchdog.yml/dispatches"]);
   },
   async "another failure on an active workflow is reported, not retried"() {
     const calls = script([{ status: 404, body: '{"message":"Not Found"}' }, { status: 200, body: '{"state":"active"}' }]);
-    await assert.rejects(dispatch(ENV, "x"), /HTTP 404/);
+    await assert.rejects(dispatch(ENV, HOURLY), /forecast\.yml dispatch: HTTP 404/);
     assert.equal(calls.length, 2);
   },
   async "the scheduled handler hands the dispatch to waitUntil"() {
     script([{ status: 204 }]);
     let waited;
-    worker.scheduled({ cron: "25 * * * *" }, ENV, { waitUntil: (p) => { waited = p; } });
+    worker.scheduled({ cron: HOURLY }, ENV, { waitUntil: (p) => { waited = p; } });
     assert.ok(waited instanceof Promise);
     assert.equal(await waited, 204);
     assert.equal(worker.fetch, undefined, "the Worker must not expose an HTTP handler");

@@ -174,10 +174,23 @@ jobs:
         if: steps.probe.outputs.failed == 'true'
         run: |
           gh label create watchdog --color d73a4a --description "live-site health failure" --force >/dev/null 2>&1 || true
+          # The cron Worker runs this hourly. Comment again only when the SET of
+          # failing checks changes, or once a day while it stays the same —
+          # the numbers inside a line ("6.4 h old") change every run and must
+          # not turn one outage into 24 emails. The key rides in the comment.
+          key="$(grep '^FAIL' report.txt | sed -E 's/^FAIL ([^:]+):.*/\1/' | sort -u | paste -sd'|' -) @ $(date -u +%F)"
+          marker="<!-- watchdog-key: $key -->"
+          { echo "Checked $(date -u +%FT%H:%MZ):"; echo; echo '```'; cat report.txt; echo '```'; echo; echo "$marker"; } > body.md
           existing=$(gh issue list --label watchdog --state open --json number -q '.[0].number')
           if [ -n "$existing" ]; then
-            gh issue comment "$existing" --body-file report.txt
+            last=$(gh issue view "$existing" --json body,comments -q '[.body] + [.comments[].body] | join("\n")' \
+              | grep -o '<!-- watchdog-key: [^>]* -->' | tail -1)
+            if [ "$last" = "$marker" ]; then
+              echo "same failing checks as the last report today — not commenting on #$existing again"
+            else
+              gh issue comment "$existing" --body-file body.md
+            fi
           else
-            gh issue create --label watchdog --title "watchdog: live-site check failed $(date -u +%F)" --body-file report.txt
+            gh issue create --label watchdog --title "watchdog: live-site check failed $(date -u +%F)" --body-file body.md
           fi
           exit 1

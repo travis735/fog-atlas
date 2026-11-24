@@ -1,4 +1,4 @@
-// fogatlas-cron: dispatches .github/workflows/forecast.yml on a reliable
+// fogatlas-cron: dispatches the forecast and watchdog workflows on a reliable
 // clock (see src/index.js for why). Deploy from this directory:
 //   npx wrangler@4.167.0 deploy
 // The one secret is set separately and never lives in this file:
@@ -14,14 +14,16 @@
   "workers_dev": false,
   "preview_urls": false,
   "triggers": {
+    // every entry here needs a matching key in JOBS (src/index.js);
+    // test_dispatch.mjs fails if the two lists differ
     "crons": [
-      "25 * * * *", // hourly at :25 — the same minute forecast.yml's own cron asks for
-      "40 10 * * *" // a second chance for the daily bake (first run at/after 10Z bakes)
+      "25 * * * *", // forecast.yml, hourly — the same minute its own cron asks for
+      "40 10 * * *", // forecast.yml again: a second chance for the daily bake
+      "50 * * * *" // watchdog.yml, hourly, 25 min after the forecast tick
     ]
   },
   "vars": {
     "GH_REPO": "travis735/fog-atlas",
-    "GH_WORKFLOW": "forecast.yml",
     "GH_REF": "main"
   },
   "observability": {
