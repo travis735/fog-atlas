@@ -29,3 +29,6 @@ notes/
 forecast/out/awc_cache.json
 forecast/out/nws_cache.json
 forecast/out/nws_mentions.json
+
+# wrangler local state (any directory)
+.wrangler/
