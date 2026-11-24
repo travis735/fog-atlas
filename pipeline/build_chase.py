@@ -22,6 +22,7 @@ Output: out/app/chase.json  (+ mirrored to ../app/public/data/chase.json)
 """
 import json
 import re
+import sys
 from collections import Counter
 from pathlib import Path
 
@@ -32,33 +33,115 @@ APP_DATA = HERE.parent / "app" / "public" / "data"
 
 MIN_RWY_LEN_FT = 2000  # drop helipads / ultralight strips outright
 
-# NASR APT.txt fixed-width offsets (1-based starts from Layout_Data/apt_rf.txt)
-# APT record: ICAO 1211 len 7; site 4 len 11
-# RWY record: id 17 len 7, length 24 len 5,
-#   base end: id 66 len 3, RVR 234 len 3, ALS 238 len 8
-#   recip end: id 288 len 3, RVR 456 len 3, ALS 460 len 8
+# NASR APT.txt is fixed-width and the FAA moves the columns: the 2026-10-29
+# cycle widened the pavement-classification field from 11 to 16 characters
+# (PCN -> PCR), shifting every runway-end field 5 columns right. Hard-coded
+# offsets then read "HIG" (from "HIGH" edge lights) as the runway end and
+# "P4L" (a PAPI code) as the RVR; the 2026-11-03 CI refresh committed and
+# deployed that, and the CHASE board ran on garbage for three weeks. So the
+# offsets come from Layout_Data/apt_rf.txt, which ships in the same zip and
+# describes the file it sits next to; APT_DEFAULT (the 2026-10-29 layout) is
+# only a fallback, and sanity_problems() below refuses to write nonsense.
+APT_DEFAULT = {  # 0-based slices
+    "icao": (1210, 1217), "site": (3, 14), "len": (23, 28),
+    "base": (70, 73), "base_rvr": (238, 241), "base_als": (242, 250),
+    "recip": (292, 295), "recip_rvr": (460, 463), "recip_als": (464, 472),
+}
+_RF_LINE = re.compile(r"^\s*[LR]\s+[A-Z]{1,2}\s+(\d+)\s+(\d+)\s+\S+\s+(.+?)\s*$")
 
 
-def parse_apt(path: Path):
+def apt_layout(rf_path: Path) -> dict:
+    """Field slices for APT.txt from the FAA's own record-layout file."""
+    if not rf_path.exists():
+        print(f"WARNING: {rf_path} missing — using the built-in 2026-10-29 APT layout")
+        return dict(APT_DEFAULT)
+    fields = []  # (start_1based, length, NAME) in file order
+    for line in open(rf_path, encoding="latin-1"):
+        m = _RF_LINE.match(line)
+        if m:
+            fields.append((int(m.group(2)), int(m.group(1)), m.group(3).upper()))
+
+    def after(i0, prefix):
+        for i in range(i0, len(fields)):
+            if fields[i][2].startswith(prefix):
+                return i
+        raise KeyError(prefix)
+
+    try:
+        lay = {}
+        sl = lambda i: (fields[i][0] - 1, fields[i][0] - 1 + fields[i][1])  # noqa: E731
+        lay["icao"] = sl(after(0, "ICAO IDENTIFIER"))
+        lay["site"] = sl(after(0, "LANDING FACILITY SITE NUMBER"))
+        i_len = after(0, "PHYSICAL RUNWAY LENGTH")
+        lay["len"] = sl(i_len)
+        i_base = after(i_len, "BASE END IDENTIFIER")
+        i_recip = after(i_base, "RECIPROCAL END IDENTIFIER")
+        lay["base"] = sl(i_base)
+        lay["base_rvr"] = sl(after(i_base, "RUNWAY VISUAL RANGE EQUIPMENT"))
+        lay["base_als"] = sl(after(i_base, "APPROACH LIGHT SYSTEM"))
+        lay["recip"] = sl(i_recip)
+        lay["recip_rvr"] = sl(after(i_recip, "RUNWAY VISUAL RANGE EQUIPMENT"))
+        lay["recip_als"] = sl(after(i_recip, "APPROACH LIGHT SYSTEM"))
+        # a base-end field found beyond the reciprocal end means the layout
+        # text changed shape, not just columns — do not trust it
+        if not (lay["base"][0] < lay["base_rvr"][0] < lay["base_als"][0] < lay["recip"][0]
+                < lay["recip_rvr"][0] < lay["recip_als"][0]):
+            raise KeyError("field order")
+    except KeyError as e:
+        print(f"WARNING: could not read {e} from {rf_path.name} — using the built-in 2026-10-29 APT layout")
+        return dict(APT_DEFAULT)
+    if lay != APT_DEFAULT:
+        moved = {k: (APT_DEFAULT[k], v) for k, v in lay.items() if v != APT_DEFAULT[k]}
+        print(f"APT layout from {rf_path.name} differs from the built-in default: {moved}")
+    return lay
+
+
+RWY_ID_RE = re.compile(r"^(0?[1-9]|[12]\d|3[0-6])[LRCWSUGX]?$|^[NSEW]{1,3}$|^H\d*[A-Z]?$")
+
+
+def sanity_problems(airports: dict) -> list[str]:
+    """Reasons this build must not be written. Healthy (2026-08 cycle): 98% of
+    ends carry a real runway identifier, 46% sit in the no-approach tier and
+    29% have an ILS category. Mis-parsed (2026-10 cycle at the old offsets):
+    4%, 97% and 1%."""
+    ends = [e for v in airports.values() for e in v if not e.get("cur")]  # FAA-derived ends only
+    if len(ends) < 2000:
+        return [f"only {len(ends)} FAA runway ends (expected ~3,700)"]
+    ident = sum(1 for e in ends if RWY_ID_RE.match(str(e["e"]))) / len(ends)
+    tier400 = sum(1 for e in ends if e["tier"] == 400) / len(ends)
+    ils = sum(1 for e in ends if e["ils"]) / len(ends)
+    out = []
+    if ident < 0.90:
+        out.append(f"{ident:.0%} of runway ends have a plausible identifier (need >= 90%)")
+    if tier400 > 0.70:
+        out.append(f"{tier400:.0%} of runway ends are in the no-approach tier (healthy ~46%, limit 70%)")
+    if ils < 0.15:
+        out.append(f"{ils:.0%} of runway ends matched an ILS category (healthy ~29%, need >= 15%)")
+    return out
+
+
+def parse_apt(path: Path, lay: dict | None = None):
+    lay = lay or APT_DEFAULT
+    cut = lambda line, k: line[lay[k][0]:lay[k][1]]  # noqa: E731
     site_icao: dict[str, str] = {}
     rwys: dict[str, list] = {}
     for line in open(path, encoding="latin-1"):
         rec = line[0:3]
         if rec == "APT":
-            icao = line[1210:1217].strip()
+            icao = cut(line, "icao").strip()
             if icao:
-                site_icao[line[3:14].strip()] = icao
+                site_icao[cut(line, "site").strip()] = icao
         elif rec == "RWY":
-            site = line[3:14].strip()
+            site = cut(line, "site").strip()
             try:
-                length = int(line[23:28].strip() or 0)
+                length = int(cut(line, "len").strip() or 0)
             except ValueError:
                 length = 0
             if length < MIN_RWY_LEN_FT:
                 continue
             for eid, als, rvr in (
-                (line[65:68], line[237:245], line[233:236]),
-                (line[287:290], line[459:467], line[455:458]),
+                (cut(line, "base"), cut(line, "base_als"), cut(line, "base_rvr")),
+                (cut(line, "recip"), cut(line, "recip_als"), cut(line, "recip_rvr")),
             ):
                 eid = eid.strip()
                 if not eid:
@@ -125,7 +208,7 @@ def main() -> None:
     atlas = json.load(open(src))["airports"]
     us_icaos = {a["icao"] for a in atlas if a["country"] == "US"}
 
-    site_icao, rwys = parse_apt(NASR / "APT.txt")
+    site_icao, rwys = parse_apt(NASR / "APT.txt", apt_layout(NASR / "Layout_Data" / "apt_rf.txt"))
     ils = parse_ils(NASR / "ILS.txt")
     lpv = parse_lpv(NASR / "FAACIFP18")
 
@@ -182,6 +265,18 @@ def main() -> None:
         "ca": n_ca,
     }
     out = {"meta": meta, "airports": airports}
+
+    # refuse to write (and so to commit and deploy) an implausible build —
+    # exiting non-zero fails the CI job before its commit step
+    problems = sanity_problems(airports)
+    if problems:
+        for probe in ("KSFO", "KSTS", "KOSH"):
+            print(probe, json.dumps(airports.get(probe, "MISSING"))[:400])
+        sys.exit("build_chase: output failed its sanity checks, chase.json NOT written — "
+                 + "; ".join(problems) + f". Source: {meta['nasr_file']}. The FAA has probably "
+                 "changed a fixed-width layout again: compare Layout_Data/apt_rf.txt and ils_rf.txt "
+                 "with the offsets in this file.")
+
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "chase.json").write_text(json.dumps(out, separators=(",", ":")))
     APP_DATA.mkdir(parents=True, exist_ok=True)

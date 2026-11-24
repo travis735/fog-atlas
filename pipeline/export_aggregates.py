@@ -43,8 +43,14 @@ def main():
     # the data-through stamp follow the archive, not a hardcoded decade
     window = {"start": "2016-01-01", "through": "2025-12-31", "hours": 87672}
     wf = OUT / "window.json"
+    committed = HERE.parent / "app" / "public" / "data" / "airports.json"
     if wf.exists():
         window.update(json.load(open(wf)))
+    elif committed.exists():
+        # CI runners (reference.yml) have the R2 parquet but no out/window.json
+        # (gitignored) — inherit the last refresh's window, or coverage
+        # denominators fall back to 2016-2025 and read >100% (Nov 2026 incident)
+        window.update(json.load(open(committed)).get("window", {}))
 
     # minima-aware floors, segmented by OPERATOR EQUIPAGE: the achievable
     # floor is whichever binds — flight deck or ground infrastructure.
