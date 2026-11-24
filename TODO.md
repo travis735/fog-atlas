@@ -43,12 +43,23 @@ fails when it extracts ~nothing and never overwrites the last good artifact;
 every freshness check has a volume check beside it; parsers of third-party
 formats read the layout the publisher ships instead of hard-coding it.
 
+**Hourly is hourly again — DONE 2026-11-24 (7f884b95, 6360a925).** GitHub
+was shedding the `25 * * * *` cron down to 3 runs/day (median gap 7.8 h). The
+clock is now `cron/` → Cloudflare Worker `fogatlas-cron` (Cron Triggers
+`25 * * * *` and `40 10 * * *`, no HTTP surface), which POSTs a
+workflow_dispatch for `forecast.yml` with `force_bake=false`; its secret
+`GH_PAT` is Travis's fine-grained token (Actions read/write, this repo only).
+First tick 18:25:07Z → HTTP 204 → run started 2 s later → 17Z cycle live at
+18:25:59Z. `force_bake` exists because that first tick also ran the full page
+bake: a dispatch without the input still means "a person wants a redeploy".
+Watchdog check 2 is now 4 h (one missed tick tolerated, two alarm). The
+GitHub cron stays as a fallback. If the token is revoked or expires, ticks
+log HTTP 401 in Workers Logs and the watchdog raises the issue; replace it
+with `cd cron && npx wrangler@4.167.0 secret put GH_PAT`.
+
 **Still open**
-- **Hourly is not hourly.** GitHub sheds the `25 * * * *` cron: 3 scheduled
-  runs/day, median gap 7.8 h (last 14 days; was 4.9 h in October). Fix: a
-  Cloudflare Worker cron that dispatches `forecast.yml` hourly + once at
-  10:40Z. Needs Travis's fine-grained GitHub token (Actions read/write on
-  this repo). After it lands, tighten watchdog check 2 from 12 h to 3 h.
+- The watchdog itself still runs on GitHub's shed cron (twice a day, hours
+  late). The Worker could dispatch it too.
 - **Verification hole 2026-11-03 → 11-24** (no forecasts logged; the Dec 1
   bar check will be thin). NOAA archives the bulletins, so the frozen
   calibration could be replayed over them. That is a replay, not live
