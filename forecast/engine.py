@@ -190,6 +190,21 @@ def main() -> None:
                           "liv": [byf[f]["liv"] for f in fhrs],
                           "vis": [byf[f]["vis_sm"] for f in fhrs]}
 
+    # A full-size bulletin that parses to (almost) nothing is an upstream
+    # FORMAT change, and it must fail the run, not publish. On 2026-11-03 NOAA
+    # dropped the version token from the NBM station headers, the parser
+    # matched 0 stations, and this script wrote {"airports": {}} to KV on every
+    # run for 21 days — all green. Raising here stops the job BEFORE
+    # current.json is written or uploaded: KV keeps the last good issuance, the
+    # run goes red, and the watchdog's age check turns the gap into an issue.
+    floor = len(stations) // 2
+    if len(airports) < floor:
+        raise RuntimeError(
+            f"parsed forecasts for {len(airports)} of {len(stations)} stations (floor {floor}) from a "
+            f"{len(nbh) // 1024} KB NBH bulletin — the NBM text format has probably changed "
+            f"(see HEADER_RE and ROWS in forecast/parse_nbm.py). Nothing was published; "
+            f"KV still holds the last good issuance.")
+
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     # per-airport public flips: the committed record of deliberate bar-check
     # decisions (forecast/bar_status.json). Absent file = full shadow.

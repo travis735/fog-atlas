@@ -70,6 +70,12 @@ jobs:
               age = (now - cyc).total_seconds() / 3600
               (fails if age > 12 else notes).append(f"forecast: newest cycle {fc['meta']['cycle']} ({age:.1f} h old, limit 12)")
               public = set(fc["meta"].get("publicAirports", []))
+              # ...and the issuance has CONTENTS. A fresh, empty issuance passed
+              # the age check for 21 days in Nov 2026 (NBM header format change:
+              # 0 stations parsed, {"airports": {}} published hourly). Normal is
+              # ~1,100 airports; 600 is the floor.
+              n_air = len(fc.get("airports") or {})
+              (fails if n_air < 600 else notes).append(f"forecast: {n_air} airports in the issuance (floor 600)")
           except Exception as e:
               fails.append(f"forecast: /api/forecast unreadable — {e}")
           # 3. the receipts are fresh and every public airport has one (holds live in 'fail' by design)
@@ -121,6 +127,30 @@ jobs:
                   (fails if fage > 40 else notes).append(f"nws layer: KPDX NWS {nws.get('office')} forecast fetched {nws['fetched']} ({fage:.1f} h old, limit 40), verdict {nws.get('verdict')}")
           except Exception as e:
               fails.append(f"nws layer: /fog/kpdx/data.json unreadable — {e}")
+          # 7. the DEPLOY planner is running on forecasts, not on climatology.
+          #    Healthy (2026-11-02): 926 of 937 airports on the calibrated tier
+          #    for day 1 and 936 on a fitted/NBE tier for day 5. Broken
+          #    (2026-11-04..24): 0 and 0 — every day was "climo"/"cpc" and the
+          #    payload still looked fresh. Floor: half the airports on each.
+          try:
+              dp = get("https://fogatlas.org/api/deploy")["airports"]
+              n = len(dp)
+              d1 = sum(1 for v in dp.values() if v["tiers"][0] == "cal")
+              d5 = sum(1 for v in dp.values() if v["tiers"][4] in ("fit", "nbe"))
+              bad = n < 400 or d1 < n / 2 or d5 < n / 2
+              (fails if bad else notes).append(f"deploy planner: {n} airports, {d1} calibrated on day 1, {d5} on a forecast tier on day 5 (floor: half of each)")
+          except Exception as e:
+              fails.append(f"deploy planner: /api/deploy unreadable — {e}")
+          # 8. the baked pages carry calibrated answers: at least one of the
+          #    first three public airports has a public forecast in its data.json
+          #    (the Nov 2026 bakes wrote "0 public forecasts" and stayed green)
+          try:
+              sample = sorted(public)[:3]
+              got = [i for i in sample if get(f"https://fogatlas.org/fog/{i.lower()}/data.json")["forecast"].get("public")]
+              if public:
+                  (notes if got else fails).append(f"public pages: {len(got)} of {len(sample)} sampled public airports ({' '.join(sample)}) carry a calibrated forecast")
+          except Exception as e:
+              fails.append(f"public pages: sample data.json unreadable — {e}")
           for n in notes: print("ok  ", n)
           for f in fails: print("FAIL", f)
           sys.exit(1 if fails else 0)

@@ -265,7 +265,14 @@ def main() -> None:
         nbe_f.setdefault(k, []).append(spread_wind_factor(spread, r["wsp"]))
         if spread is not None:
             nbe_raw.setdefault(k, []).append((spread, r["wsp"] if r["wsp"] is not None else 5.0))
-    print(f"NBE cycle {nbe_t.isoformat()} — day-factors for {len({k[0] for k in nbe_f})} airports")
+    n_nbe = len({k[0] for k in nbe_f})
+    print(f"NBE cycle {nbe_t.isoformat()} — day-factors for {n_nbe} airports")
+    if n_nbe < len(stations) // 2:
+        # the planner degrades to climatology x CPC rather than failing the
+        # bake; say so where a human looks (run annotation) — the watchdog's
+        # deploy-tier check is the alarm. Nov 2026: 0 airports for 21 days.
+        print(f"::warning::deploy planner: NBE day-factors for only {n_nbe} of {len(stations)} airports — "
+              f"days 3-8 fall back to the climatology/CPC tiers (NBE bulletin format change or outage?)")
 
     cpc = cpc_factors(coords)
     dayscale = load_dayscale()

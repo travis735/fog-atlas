@@ -11,7 +11,10 @@ import re
 from pathlib import Path
 
 HEADER_RE = re.compile(
-    r"^ ([A-Z0-9]{3,5})\s+NBM V[\d.]+ (NBH|NBS|NBE) GUIDANCE\s+"
+    # NBM dropped the "V4.x" version token from station headers ~2026-11-03
+    # ("KSFO   NBM  NBH GUIDANCE"); the strict pattern matched 0 stations and
+    # the engine silently issued empty forecasts for ~12 days
+    r"^ ([A-Z0-9]{3,5})\s+NBM(?: V[\d.]+)?\s+(NBH|NBS|NBE) GUIDANCE\s+"
     r"(\d+)/(\d+)/(\d{4})\s+(\d{4}) UTC")
 ROWS = ("FHR", "UTC", "TMP", "DPT", "WSP", "CIG", "IFC", "VIS", "IFV", "LIC", "LIV")
 

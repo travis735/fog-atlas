@@ -28,7 +28,8 @@ OUT = HERE / "out"
 def covered_stations(collective: Path) -> list[str]:
     ids = set()
     for line in open(collective, encoding="latin-1"):
-        m = re.match(r"^ ([A-Z0-9]{3,5})\s+NBM V", line)
+        # version token is optional: NOAA dropped "V5.0" from the headers on 2026-11-03
+        m = re.match(r"^ ([A-Z0-9]{3,5})\s+NBM\s", line)
         if m:
             ids.add(m.group(1))
     atlas = json.load(open(PIPE / "out" / "app" / "airports.json"))["airports"]
