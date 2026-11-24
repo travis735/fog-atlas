@@ -31,7 +31,10 @@ async function postDispatch(env) {
   const res = await fetch(`${API}/repos/${env.GH_REPO}/actions/workflows/${env.GH_WORKFLOW}/dispatches`, {
     method: "POST",
     headers: headers(env),
-    body: JSON.stringify({ ref: env.GH_REF }),
+    // force_bake=false: an hourly tick must follow forecast.yml's once-a-day
+    // bake gate. A dispatch without it means "a person wants a redeploy" and
+    // runs the full page bake + site deploy — the first tick did exactly that.
+    body: JSON.stringify({ ref: env.GH_REF, inputs: { force_bake: "false" } }),
   });
   // GitHub's error bodies are a few hundred bytes of JSON; cap the read anyway
   const detail = res.status === 204 ? "" : (await res.text()).slice(0, 500);

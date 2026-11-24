@@ -62,13 +62,17 @@ jobs:
               (fails if upd < exp else notes).append(f"bake: pages baked {upd} (expected >= {exp})")
           except Exception as e:
               fails.append(f"bake: /fog/ksfo/data.json unreadable — {e}")
-          # 2. the hourly engine is issuing (cron sheds runs; 12 h is the alarm line)
+          # 2. the hourly engine is issuing. The fogatlas-cron Worker dispatches
+          #    it at :25 every hour and each run publishes the previous hour's NBM
+          #    cycle, so the newest cycle is 1.4 h old right after a run and 2.4 h
+          #    old just before the next. 4 h tolerates one missed tick and alarms
+          #    on two. (It was 12 h while GitHub's own cron was the only clock.)
           public = set()
           try:
               fc = get("https://fogatlas.org/api/forecast")
               cyc = datetime.fromisoformat(fc["meta"]["cycle"].replace("Z", "+00:00"))
               age = (now - cyc).total_seconds() / 3600
-              (fails if age > 12 else notes).append(f"forecast: newest cycle {fc['meta']['cycle']} ({age:.1f} h old, limit 12)")
+              (fails if age > 4 else notes).append(f"forecast: newest cycle {fc['meta']['cycle']} ({age:.1f} h old, limit 4)")
               public = set(fc["meta"].get("publicAirports", []))
               # ...and the issuance has CONTENTS. A fresh, empty issuance passed
               # the age check for 21 days in Nov 2026 (NBM header format change:

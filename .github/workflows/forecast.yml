@@ -6,9 +6,17 @@
 # Account id is not a secret; it's public in wrangler.toml deploys.
 name: forecast
 on:
+  # GitHub's schedule is best-effort (3 runs/day by Nov 2026), so the real
+  # clock is the fogatlas-cron Cloudflare Worker (cron/), which dispatches this
+  # workflow hourly at :25 with force_bake=false. This cron stays as a fallback.
   schedule:
     - cron: "25 * * * *"   # hourly at :25 — NBM mirror lag margin
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force_bake:
+        description: "Rebuild and deploy the pages even if today's bake already ran. Leave on for a manual redeploy; the hourly cron Worker sends false so it follows the once-a-day bake gate."
+        type: boolean
+        default: true
 
 jobs:
   run:
@@ -67,7 +75,12 @@ jobs:
           # live site what day it last baked instead — the first run at/after
           # 10z that finds it stale bakes. Fail-open: an unreadable probe costs
           # one idempotent rebuild, never a stale day.
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          # A dispatch from a person means "redeploy now" (force_bake defaults
+          # to true). The cron Worker dispatches every hour with
+          # force_bake=false and must fall through to the state gate below:
+          # its first tick ran the full 5-minute bake + Pages deploy + IndexNow
+          # ping, which would otherwise have happened 24 times a day.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force_bake }}" != "false" ]; then
             echo "manual dispatch — baking"
             echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0
           fi

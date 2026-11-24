@@ -28,7 +28,8 @@ const tests = {
     assert.equal(calls[0].url, "https://api.github.com/repos/travis735/fog-atlas/actions/workflows/forecast.yml/dispatches");
     assert.equal(calls[0].headers.Authorization, "Bearer test-token-not-real");
     assert.ok(calls[0].headers["User-Agent"], "GitHub rejects requests without a User-Agent");
-    assert.deepEqual(JSON.parse(calls[0].body), { ref: "main" });
+    // force_bake must be the STRING "false": the hourly tick follows the daily bake gate
+    assert.deepEqual(JSON.parse(calls[0].body), { ref: "main", inputs: { force_bake: "false" } });
   },
   async "a missing secret fails before any request"() {
     const calls = script([]);
