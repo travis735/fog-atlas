@@ -1,46 +1,143 @@
 # Roadmap / TODO
 
-## ★ Chase readiness for 2026-12-08 — the five-item plan (status 2026-11-25 03Z)
+## ★ Chase readiness for 2026-12-08 — the five-item plan (status 2026-11-25 20Z)
 From the readiness review of 2026-11-24 (notes/chase-readiness-2026-11-24.md).
 
-1. **DEPLOY day-level chance recalibrated — LIVE (ae4df0b4).** Day 1 goes
-   through a hindcast-fitted map (`forecast/fit_daycal.py` →
-   `forecast/out/daycal.json`): 2025 holdout +10.3% Brier skill over
-   climatology where the bare product scored −4.1%; days shown at 50%+
-   verified 58% (n=420). Peak hourly chance and expected hours sit beside the
-   verdict. Known limits, all printed on screen:
-   - **Wrong by region.** At 50%+ the pooled map ran 30 points high in the
-     Central Valley, 11 high on the rest of the West Coast, 14 high in the
-     Northeast, 16–22 low in the Great Lakes and Southeast. Those fields show
-     "Not calibrated for <area> fields: ran about N points high/low". Regional
-     maps are in the item-3 build.
-   - Day 1 is published only from 09Z–21Z cycles (00Z failed its check).
-   - Day 2 failed on real 09Z cycles and is on the climatology tier until the
-     item-3 build gives it forecast numbers back.
-   - Values shown at 75%+ verified about 67%.
+**Resume here (next session, Sunday 2026-11-29):**
+1. Ship the NEXT 48 H list fix. It is built and verified but NOT committed
+   or deployed: the change sits in the working tree (`app/src/plan.ts`,
+   `app/src/main.ts`, `app/test/test_plan.mjs`). One thing first: while a
+   forecast request is pending, the page now starts another `/api/forecast`
+   request on every 30 s tick (44 requests against 2 in a test where the
+   request hangs). Allow one request in flight at a time, check it, then
+   commit, push and run `forecast.yml`.
+2. Owner decisions at the bottom of this section.
+
+1. **DEPLOY day-level chance recalibrated — LIVE (ae4df0b4, reworked in
+   a081c75f).** Day-level chance goes through hindcast-fitted maps
+   (`forecast/fit_daycal.py` → `forecast/out/daycal.json`, version 3), keyed by
+   cycle-hour bucket and area. Peak hourly chance and expected hours sit beside
+   the verdict. Pooled check at 50%+ (shown / observed): 09Z 0.619 / 0.556
+   (n 252), 12Z 0.638 / 0.581, 15Z 0.631 / 0.588, 18Z 0.644 / 0.575, 21Z
+   0.647 / 0.605; evening cycles 03Z 0.704 / 0.617, 06Z 0.722 / 0.647.
 2. **CHASE refuses a bad live feed — LIVE (ae4df0b4).** `app/src/feed.ts`
    reads the feed by column name and refuses an HTTP error, a layout change, a
    short or stale file, missing visibilities, or a stall of the chase
    airports' own reports. Banner "LIVE FEED DOWN. THIS BOARD IS NOT CURRENT."
-   with the real observation age; retry every 60 s. Watchdog checks 9 and 10
-   read `/api/now` and `/api/metar` the way the app does.
-3. **Hourly planner, dated days, plan age, verification status — IN BUILD.**
-   Also: day-level chance by region and by cycle hour, day 2 on the forecast
-   again.
+   with the real observation age; retry every 60 s.
+3. **Hourly planner, dated days, plan age, verification status — LIVE
+   (a081c75f, 2026-11-25 16:06Z).**
+   - `forecast.yml` rebuilds the planner payload on every hourly tick, reads
+     it back from KV and logs each build to R2 (`deploylogs/`). A failed
+     build still uploads the issuance, still bakes when owed, and ends red.
+   - Days are labelled from a service day (UTC date of build time minus
+     10 h); the labels flip at 10:00Z. `meta.format` is 2.
+   - The screen prints when the plan was built, from which cycle, and its
+     age; amber and red states as it ages.
+   - Day 2 has no day-level chance from any cycle hour November to February
+     (it failed its check); it shows expected hours, peak hour and window.
+   - A chance a cycle cannot make is carried by date from a payload under
+     24 h old and is marked carried.
+   - **Central Valley** fields use their own area map, which stops at
+     22–23%. Under a peak hour of 25%+ the one-day panel says NO VERDICT.
+     Central Valley days with a peak hour at 50%+ fogged 39% of the time
+     (n 56). **West Coast** keeps the pooled number with its record (from
+     00Z–06Z cycles it ran 23–27 points high at 50%+).
+   - WHEELS UP prints the chance of the hour the launch reaches, not the
+     forecast's peak.
 4. **Replay Nov 3–24 and fix the bar check before Dec 1 — NOT STARTED** (not
    yet asked for). Barcheck needs R2 pagination and a memory fix first.
-5. **LED approach lights on the FAA CSV tables, then phone alerts — IN
-   BUILD.** Phone alerts ship switched off until a Pushover account exists.
+5. **LED approach lights — LIVE (a081c75f). Phone alerts — BUILT, OFF.**
+   - `pipeline/build_chase.py` reads the FAA CSV tables by header name and
+     writes an `led` block to chase.json: cycle 2026-10-29, 47 airports,
+     54 runway ends (35 airports / 42 ends on the chase board; 3 ends are
+     LED + IR; hand-curated rows live in `pipeline/data/led_ir_curated.csv`). The monthly
+     reference run picks up new installs; first run on the new builder is
+     2026-12-03 07:40Z.
+   - LED tick in the top bar: rings, board tags, show all / avoid / only.
+   - Phone alerts: code is in `cron/` (five-minute trigger, Pushover). **The
+     Worker has NOT been redeployed**: production still runs the previous
+     Worker code. To switch on: Pushover account, `cd cron && npx
+     wrangler@4.167.0 deploy` (between hh:52 and hh:08), `wrangler secret put
+     PUSHOVER_TOKEN` and `PUSHOVER_USER`, write the board with
+     `cron/make_board.mjs`. See `cron/README.md`. A Worker rollback is a
+     deploy of the old `cron/` directory, not `wrangler rollback` (that
+     leaves the new trigger on old code).
 
-Deferred from the item 1–2 review, still open: the app loads no airports if
-the basemap host does not answer (boot sits inside the map `load` handler);
-fitted-tier days 6–8 at 50%+ verified 32–38% and still count toward the
-multi-day GO; whether the edge holds an upstream `/api/now` error for the full
-cache time; no workflow runs the test scripts.
+Checked before release by five independent reviewers, a fixer and a verifier
+(2026-11-25): four issues found and closed (a day map that had lost an area
+loaded cleanly; `main()` and `gefs_live()` had no test; WHEELS UP printed a
+peak that could be behind the clock; a Central Valley base could read SCRAP
+beside a 56% peak hour). 167 Python and 128 node tests pass.
 
-Owner decisions open: where the GO and MARGINAL bars sit now the number is
-honest (still 50% / 25%); Pushover account or wait for the iPhone app; whether
-the public bar should count distinct fog hours instead of forecast pairs.
+Checked on the live site after release (2026-11-25 16Z–18Z): three hourly
+plans matched an independent recomputation at all 937 airports; a rebuild
+from the released commit reproduced the live plan exactly; a real browser
+compared 18,495 values on the DEPLOY screens with the API responses and found
+no mismatch; the hourly rebuilds and the watchdog (22 ok lines) ran green.
+Not yet seen live: the 10:00Z day flip and a carried chance.
+
+Still open, known:
+- **NEXT 48 H list (fix built, not shipped; see "Resume here").** Live, the
+  lines name no day and print the 48-hour peak beside the first window, so a
+  line can show one night's number beside another night's hours (KMFR read
+  47% beside "08–09 local"; Thursday 08–09 was 25% and the 47% was Friday
+  07). Until the fix ships, take the day and the chance from the WHEELS UP
+  box, which is right.
+- **Public airport pages print expired terminal forecasts as current.**
+  `forecast/build_pages.py` never compares a TAF's end time with the build
+  time (VABP showed "dense fog Thursday" from a TAF issued 18 Nov; 9 of 140
+  rows on /fog/forecast/ were over 30 h old). Not on CHASE or DEPLOY. Fix:
+  drop a TAF whose `validTimeTo` is before the build, in `main()` right after
+  `awc_with_last_good`, then rebuild the pages. Waiting for the owner's go.
+- The launch plan tests its 40% bar against the highest hour in the whole
+  48-hour forecast, so WHEELS UP can name a field whose reachable hours are
+  20–26% (3 of 113 boxes; the numbers printed in the box are right), and a
+  field whose peak has passed can still be the one named.
+- The cron Worker does not retry a failed trigger: the 15:50Z watchdog run on
+  2026-11-25 never started, during a GitHub Actions incident.
+- The 7- and 14-day word can read SCRAP at a Central Valley base, because
+  those day chances stop at 23%. Owner's call (below).
+- A comment in `app/src/main.ts` (deployPick) still says Mountain West has
+  its own map; it is on the pooled map.
+- `forecast.yml`: the planner's "fetch the live payload" step has a 4-minute
+  timeout and no `continue-on-error`; a hung KV read fails that tick and skips
+  its planner build and bake gate until the next tick.
+- No workflow runs the 19 test files; they protect a release only when run
+  by hand.
+- A hand edit of `daycal.json` that changes (rather than removes) a value
+  still loads.
+- 375 px: the page is about 125 px wider than the screen in every phone
+  state measured, the bare map included (the search box sits off screen).
+- From the item 1–2 review: the app loads no airports if the basemap host
+  does not answer; fitted-tier days 6–8 at 50%+ verified 32–38% and still
+  count toward the multi-day GO; 14-day "CHASEABLE HRS" sums over every field
+  in reach.
+- `refresh_cat_nasr` must move to the FAA CSV tables before 2027-03-03.
+
+Owner decisions open:
+- Go or no-go on the expired-forecast fix for the public pages (above).
+- Go or no-go on making the launch plan's 40% bar apply to hours the launch
+  can still reach; some bases would then read "no launch time yet" where
+  they now show a low-chance launch.
+- KMCC, KBAB and KSUU are filed as West Coast, so they show an uncapped day
+  chance (KMCC 49%) beside capped Central Valley neighbours 7–9 nm away
+  (KMHR 23%). The 2023–25 record does not support moving KMCC or KBAB; KSUU
+  leans the other way. A move is a refit with `fit_daycal.py`, not a hand
+  edit.
+- Pushover account now, or wait for the iPhone app.
+- Where the GO and MARGINAL bars sit (still 50% / 25%).
+- What a Central Valley day should read when the capped day chance (22–23%)
+  sits under a high peak hour: NO VERDICT today on the one-day view, SCRAP
+  possible on the 7- and 14-day views.
+- Evening cycles (03Z, 06Z) judged "from the build on" miss by about 10
+  points; under that rule they would stop publishing a day-level chance.
+- Mountain West is back on the pooled map under a rule added after the fact
+  (an area map only where the pooled map failed and ran high).
+- LOC/GS counted as an ILS on the CHASE board (69 ends, 13 airports).
+- Curating KSNS 31, KTOP 13 and KOPF 9L as LED.
+- Day 2 from 18–20Z cycles, March to October.
+- Whether the public bar should count distinct fog hours.
 
 ## ★ 2026-11-24 audit — three silent outages found and fixed; what is still open
 Travis plans live chase use from ~2026-12-08. An audit that day found three
