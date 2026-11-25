@@ -94,7 +94,23 @@ jobs:
             | python3 -c 'import json,sys; print(json.load(sys.stdin)["updated"][:10])' \
             || echo unreadable)
           echo "live bake: $LIVE / today: $TODAY"
-          if [ "$LIVE" = "$TODAY" ]; then
+          if [ "$LIVE" != "$TODAY" ]; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          # The pages are today's. The planner payload can still be
+          # yesterday's: a manual redeploy before 10z bakes the pages, but
+          # build_deploy.py leaves the live planner payload alone at an hour
+          # the day map is not checked on ("keep"). Without this second probe
+          # the 10z bake was then skipped and the planner showed yesterday's
+          # "tomorrow" for a whole day. After 10z the payload's day 1 must be
+          # tomorrow's UTC date. An unreadable probe does NOT bake: the pages
+          # are current, and the watchdog reports an unreadable planner.
+          TOMORROW=$(python3 -c 'from datetime import datetime, timedelta, timezone; print((datetime.now(timezone.utc) + timedelta(days=1)).date())')
+          PLAN=$(curl -sf --max-time 30 https://fogatlas.org/api/deploy \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["meta"]["day1"])' \
+            || echo unreadable)
+          echo "live planner day 1: $PLAN / owed: $TOMORROW"
+          if [ "$PLAN" = "$TOMORROW" ] || [ "$PLAN" = "unreadable" ]; then
             echo "needed=false" >> "$GITHUB_OUTPUT"
           else
             echo "needed=true" >> "$GITHUB_OUTPUT"

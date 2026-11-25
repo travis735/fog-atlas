@@ -3,6 +3,12 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import * as Plot from "@observablehq/plot";
 import "./style.css";
+import {
+  readFeed, feedThrown, feedTrackInit, feedTrackRead, feedView, feedDownAlertDue, feedBanner, feedDownWords,
+  jsonCeil, jsonVis, subCat1, chunkIds, ageText, clockText,
+  FEED_POLL_MS, FEED_RETRY_MS, FEED_TIMEOUT_MS, FEED_REPORT_MAX_AGE_MS, FEED_REASON_LABEL, AWC_ROW_CAP, METAR_CHUNK,
+  type LiveOb, type FeedRead, type FeedTrack, type FeedView,
+} from "./feed.ts";
 
 // maplibre 6 finds its worker next to its own module URL, which the bundle
 // rewrites — point it at the copy vite emits instead
@@ -317,55 +323,98 @@ $<HTMLInputElement>("#lpv-only").addEventListener("change", (e) => {
 });
 
 // ---------- NOW mode: live below-minima layer (worldwide, one fetch) ----------
-let nowTimer: ReturnType<typeof setInterval> | undefined;
+let nowTimer: ReturnType<typeof setTimeout> | undefined;
+let nowSeq = 0;
+let nowShownAt: number | null = null; // when the glow on the map last came from a healthy read
 
-function parseNowCsv(text: string) {
-  // first column (raw_text) is quoted and contains commas; strip it, then
-  // the rest splits cleanly. AWC cache column order is fixed.
-  const sub: { icao: string; sev: "amber" | "red" }[] = [];
-  let asOf = "";
-  for (const line of text.split("\n")) {
-    if (!line.startsWith('"')) continue;
-    const close = line.indexOf('",');
-    if (close < 0) continue;
-    const cols = line.slice(close + 2).split(",");
-    const icao = cols[0];
-    const visRaw = cols[9];
-    const vis = visRaw ? (visRaw.includes("+") ? 10 : parseFloat(visRaw)) : NaN;
-    let ceil = Infinity;
-    for (const k of [21, 23, 25, 27]) {
-      if (["BKN", "OVC", "OVX"].includes(cols[k])) {
-        const b = parseFloat(cols[k + 1]);
-        if (!Number.isNaN(b)) ceil = Math.min(ceil, b);
+// One read of /api/now for whoever asks (this layer and the CHASE board share
+// a request that is already in flight). It never throws and never hands back
+// a guess: the result is a healthy read or a failed one with a named reason
+// (./feed.ts). cache: "no-store" because the response is max-age=180, the same
+// as the poll period, so a poll could otherwise be answered by the browser
+// cache and a "feed checked" time would be a lie.
+let feedInFlight: Promise<FeedRead> | null = null;
+function readLiveFeed(): Promise<FeedRead> {
+  if (!feedInFlight) {
+    const p = (async () => {
+      // a request that hangs (headers or body) must become a failed read
+      // before the next retry is due, or the board waits on it forever
+      const ctl = new AbortController();
+      const kill = setTimeout(() => ctl.abort(), FEED_TIMEOUT_MS);
+      try {
+        const r = await fetch("/api/now", { cache: "no-store", signal: ctl.signal });
+        return readFeed(r.status, r.ok ? await r.text() : "",
+          chaseData ? Object.keys(chaseData.airports) : null, Date.now());
+      } catch (e) {
+        return feedThrown(e);
+      } finally {
+        clearTimeout(kill);
       }
-    }
-    const below = !Number.isNaN(vis) && vis < 0.19;
-    const isSub = (!Number.isNaN(vis) && vis < 0.5) || ceil < 200;
-    if (isSub) sub.push({ icao, sev: below ? "red" : "amber" });
-    if (!asOf && cols[1]) asOf = cols[1];
+    })();
+    feedInFlight = p;
+    p.finally(() => { if (feedInFlight === p) feedInFlight = null; });
   }
-  return { sub, asOf };
+  return feedInFlight;
+}
+
+// a failed read must not look like a clear sky: the last glow stays, dimmed
+function nowGlowDim(dim: boolean) {
+  if (!map.getLayer("now-glow")) return;
+  map.setPaintProperty("now-glow", "circle-opacity", dim ? 0.18 : 0.55);
+  map.setPaintProperty("now-core", "circle-opacity", dim ? 0.35 : 1);
 }
 
 async function refreshNow() {
+  const seq = ++nowSeq;
+  clearTimeout(nowTimer);
+  // The read is held against the chase airports (feed.ts coverage gates). With
+  // the list not loaded only the 3,000-station floor was left, and a file cut
+  // to 70% of its lines passed it: "7 below CAT I now" where the whole file
+  // gave 17. So the list is fetched here too, not only when CHASE opens. If
+  // it will not load, the read goes ahead on the floor alone.
+  await loadChaseData();
+  const read = await readLiveFeed();
+  if (seq !== nowSeq) return; // NOW was switched off, or restarted, while this read was in flight
   try {
-    const text = await (await fetch("/api/now")).text();
-    const { sub } = parseNowCsv(text);
+    paintNow(read);
+  } finally {
+    // Scheduled in a finally: the next read used to be the last statement
+    // after the painting, so one exception in between ended the layer's
+    // polling for good with the chip still showing its last count.
+    // 60 s while the feed is down, 180 s once it is healthy (same as the CHASE board).
+    if (seq === nowSeq) nowTimer = setTimeout(refreshNow, read.ok ? FEED_POLL_MS : FEED_RETRY_MS);
+  }
+}
+
+function paintNow(read: FeedRead) {
+  const chip = $("#now-chip");
+  chip.hidden = false;
+  if (read.ok) {
     const byIcao = new Map(state.airports.map((a) => [a.icao, a]));
-    const feats = sub.flatMap(({ icao, sev }) => {
-      const a = byIcao.get(icao);
-      return a ? [{
+    const feats: any[] = [];
+    let reds = 0;
+    for (const [icao, ob] of read.obs) {
+      const a = ob.sub ? byIcao.get(icao) : undefined;
+      if (!a) continue;
+      if (ob.below) reds++;
+      feats.push({
         type: "Feature",
         geometry: { type: "Point", coordinates: [a.lon, a.lat] },
-        properties: { icao, sev },
-      }] : [];
-    });
+        properties: { icao, sev: ob.below ? "red" : "amber" },
+      });
+    }
     (map.getSource("nowsrc") as any)?.setData({ type: "FeatureCollection", features: feats });
-    const chip = $("#now-chip");
-    chip.hidden = false;
-    const reds = feats.filter((f) => f.properties.sev === "red").length;
+    nowShownAt = Date.now();
+    nowGlowDim(false);
     chip.textContent = `${feats.length} below CAT I now${reds ? ` · ${reds} below 300 m` : ""}`;
-  } catch { /* keep previous state */ }
+  } else {
+    // Until 2026-11-24 a 502 or an error page parsed to nothing and this chip
+    // said "0 below CAT I now" over an emptied map. Say the feed is down and
+    // why, and keep what was last known on the map, dimmed and timed.
+    nowGlowDim(true);
+    chip.textContent = `live feed unavailable — ${FEED_REASON_LABEL[read.reason]}` +
+      (nowShownAt ? ` · map shows ${clockText(nowShownAt)}` : "");
+  }
 }
 
 $<HTMLInputElement>("#now-mode").addEventListener("change", (e) => {
@@ -398,10 +447,10 @@ $<HTMLInputElement>("#now-mode").addEventListener("change", (e) => {
     }
     map.setLayoutProperty("now-glow", "visibility", "visible");
     map.setLayoutProperty("now-core", "visibility", "visible");
-    refreshNow();
-    nowTimer = setInterval(refreshNow, 180_000);
+    refreshNow(); // schedules its own next read: 180 s after a healthy one, 60 s after a failed one
   } else {
-    clearInterval(nowTimer);
+    clearTimeout(nowTimer);
+    nowSeq++; // a read still in flight must not repaint the chip or restart the timer
     if (map.getLayer("now-glow")) {
       map.setLayoutProperty("now-glow", "visibility", "none");
       map.setLayoutProperty("now-core", "visibility", "none");
@@ -475,6 +524,7 @@ let rankCatIOnly = true;
 
 function openRankings() {
   history.replaceState(null, "", "#rankings");
+  panelToolSeq++; // a CHASE or DEPLOY that is still loading must not open over this
   closeChaseMap();
   closeDeployMap();
   setSelected(null);
@@ -548,6 +598,7 @@ $("#methodology").addEventListener("click", (e) => { e.preventDefault(); openMet
 // ---------- methodology ----------
 function openMethodology() {
   history.replaceState(null, "", "#methodology");
+  panelToolSeq++; // a CHASE or DEPLOY that is still loading must not open over this
   closeChaseMap();
   closeDeployMap();
   setSelected(null);
@@ -657,6 +708,7 @@ $("#play").addEventListener("click", () => {
 $("#close").addEventListener("click", () => {
   panel.hidden = true;
   document.body.classList.remove("panel-open");
+  panelToolSeq++; // a CHASE or DEPLOY that is still loading must not open over this
   closeChaseMap();
   closeDeployMap();
   setSelected(null);
@@ -668,10 +720,17 @@ let nowcastModel: any | null | undefined;
 
 // V3 forecast (shadow-aware): one /api/forecast fetch, cached 10 min
 let fcCache: { at: number; data: any } | null = null;
+// Only a real issuance is returned or cached. /api/forecast answers 503 with a
+// JSON body ({"error": ...}) when KV has nothing: that parsed fine, was cached
+// for 10 minutes and threw "Cannot read properties of undefined (reading
+// 'cycle')" in the DEPLOY launch plan, leaving an empty section under a GO.
 async function getForecast(): Promise<any | null> {
   if (fcCache && Date.now() - fcCache.at < 600_000) return fcCache.data;
   try {
-    const data = await (await fetch("/api/forecast")).json();
+    const r = await fetch("/api/forecast");
+    if (!r.ok) return null;
+    const data = await r.json();
+    if (!data?.meta?.cycle || !data.airports || typeof data.airports !== "object") return null;
     fcCache = { at: Date.now(), data };
     return data;
   } catch { return null; }
@@ -714,6 +773,7 @@ const TODS = ["night", "morning", "afternoon", "evening"];
 async function openAirport(icao: string) {
   const a = state.airports.find((x) => x.icao === icao);
   if (!a) return;
+  panelToolSeq++; // a CHASE or DEPLOY that is still loading must not open over this
   closeChaseMap();
   closeDeployMap();
   if (persistenceTable === undefined) {
@@ -869,22 +929,43 @@ async function openAirport(icao: string) {
     nowcastModel = null;
     try { nowcastModel = await (await fetch("/data/model_y2.json")).json(); } catch {}
   }
-  fetch(`/api/metar?ids=${icao}&hours=3`).then((r) => r.json()).then((arr) => {
-    const ob = arr?.[0];
-    if (!ob || !panelContent.querySelector("#live")) return;
-    const parseVis = (v: any) => v == null ? null
-      : typeof v === "string" ? (v.includes("+") ? 10 : parseFloat(v)) : v;
-    const ceilOf = (o: any) => {
-      const cs = (o.clouds ?? [])
-        .filter((c: any) => ["BKN", "OVC", "VV"].includes(c.cover) && c.base != null)
-        .map((c: any) => c.base);
-      return cs.length ? Math.min(...cs) : null;
-    };
+  // an error status is not a report: the proxy answers 400/502 with text
+  fetch(`/api/metar?ids=${icao}&hours=3`).then((r) => (r.ok ? r.json() : null)).then((arr) => {
+    const ob = Array.isArray(arr) ? arr[0] : null;
+    const liveEl = panelContent.querySelector("#live");
+    if (!ob || !liveEl) return;
+    // The same readers and the same two rules as the CHASE board (feed.ts), so
+    // the two screens cannot disagree. This block had neither rule: on
+    // 2026-11-25 the board listed KMER and KNYL under NO CURRENT REPORT and a
+    // click on either row opened "RIGHT NOW … 7 SM, no ceiling · normal ops"
+    // from a report 1 h 50 min old; a report with no visibility read
+    // "? SM, no ceiling · normal ops".
+    const parseVis = jsonVis;
+    // AWC's JSON writes vertical visibility as cover "OVX" (this used to look
+    // for "VV" and saw no ceiling)
+    const ceilOf = (o: any) => jsonCeil(o.clouds);
     const vis = parseVis(ob.visib);
     const ceil = ceilOf(ob);
-    const sub = (vis != null && vis < 0.5) || (ceil != null && ceil < 200);
+    const sub = subCat1(vis, ceil);
     const below = vis != null && vis < 0.19;
-    const when = (ob.rawOb?.match(/\d{6}Z/) ?? [""])[0];
+    const when = (String(ob.rawOb ?? "").match(/\d{6}Z/) ?? [""])[0];
+    const obsMs = typeof ob.obsTime === "number" ? ob.obsTime * 1000 : 0;
+    const ageMs = obsMs ? Date.now() - obsMs : null;
+    const said = `${vis != null ? `${ob.visib} SM` : "visibility not reported"}${ceil != null ? `, ceiling ${ceil} ft` : vis != null ? ", no ceiling" : ""}`;
+    if (ageMs == null || ageMs > FEED_REPORT_MAX_AGE_MS) {
+      // over 75 min old: what it said is shown as history, with no verdict
+      // and no nowcast — neither is about now
+      liveEl.innerHTML = `
+      <div class="live-line">NO CURRENT REPORT · last report ${escHtml(when || "time unknown")}${ageMs != null ? `, ${ageText(ageMs)} old` : ""} — it said ${escHtml(said)}.</div>`;
+      return;
+    }
+    if (vis == null && !sub) {
+      // no visibility and no ceiling under 200 ft: the report cannot say
+      // whether the field is below CAT I, so nothing here may say it is not
+      liveEl.innerHTML = `
+      <div class="live-line">LATEST REPORT · ${escHtml(when)}, ${ageText(ageMs)} old — ${escHtml(said)}. It does not say whether the field is below CAT I.</div>`;
+      return;
+    }
     let verdict: string;
     if (below) verdict = `<b style="color:#ff9a9a">below 300 m — beyond EFVS</b>`;
     else if (sub) verdict = `<b style="color:var(--accent)">below CAT I — EFVS-recoverable</b>`;
@@ -937,8 +1018,8 @@ async function openAirport(icao: string) {
       nowcast = ` <span class="nowcast" title="Logistic nowcast trained on 2016–2023, validated on 2024–25 (Brier 39% better than climatology, AUC 0.95). Experimental — not for operational use.">Model: P(below CAT I within 2 h) ≈ <b>${p < 0.01 ? "<1" : Math.round(p * 100)}%</b></span>`;
     }
 
-    panelContent.querySelector("#live")!.innerHTML = `
-      <div class="live-line">RIGHT NOW · ${when} — ${ob.visib ?? "?"} SM${ceil != null ? `, ceiling ${ceil} ft` : ", no ceiling"} · ${verdict}.${lift}${nowcast}</div>`;
+    liveEl.innerHTML = `
+      <div class="live-line">RIGHT NOW · ${escHtml(when)}, ${ageText(ageMs)} old — ${escHtml(said)} · ${verdict}.${lift}${nowcast}</div>`;
   }).catch(() => {});
 
   // V3 forecast strip: calibrated percentages ONLY once meta.public is true
@@ -1022,6 +1103,35 @@ function baseAge(): { label: string; stale: boolean } | null {
 let chaseData: { meta: any; airports: Record<string, ChaseEnd[]> } | null | undefined;
 let chaseOpen = false;
 
+// chase.json: the airport list both boards and the feed's coverage gates stand
+// on. One request at a time, shared by whoever asks, and a failure is not
+// remembered: CHASE and DEPLOY each latched `null` after one failed fetch, so
+// one dropped request left "IN FOG NOW 0 of 0 … no airports pass the filters
+// within range" (and DEPLOY's "No expected fog within range of any base") on
+// screen for the rest of the session. An error status or a body with no
+// airports is a failure too.
+let chaseDataLoading: Promise<boolean> | null = null;
+function loadChaseData(): Promise<boolean> {
+  if (chaseData) return Promise.resolve(true);
+  chaseDataLoading ??= (async () => {
+    try {
+      const r = await fetch("/data/chase.json");
+      const j = r.ok ? await r.json() : null;
+      if (j?.airports && typeof j.airports === "object" && Object.keys(j.airports).length) chaseData = j;
+    } catch { /* stays unloaded; the next caller tries again */ }
+    if (!chaseData) chaseData = null;
+    chaseDataLoading = null;
+    return !!chaseData;
+  })();
+  return chaseDataLoading;
+}
+
+// CHASE and DEPLOY share one panel and both open after awaits. Whichever was
+// asked for LAST owns it: clicking CHASE then DEPLOY on a slow first load used
+// to settle on the CHASE panel under the #deploy hash (and the other way
+// round, with the CHASE timers running under the planner).
+let panelToolSeq = 0;
+
 const NM_R = 3440.065;
 const rad = (d: number) => (d * Math.PI) / 180;
 function distNm(a: { lat: number; lon: number }, b: { lat: number; lon: number }): number {
@@ -1056,55 +1166,16 @@ const ALS_LABEL: Record<string, string> = {
 interface ChaseCand { a: Airport; end: ChaseEnd; nm: number; ete: number }
 
 // ---- live conditions: one AWC cache fetch feeds the whole board ----
-interface LiveOb {
-  obsMs: number; vis: number | null; ceil: number | null;
-  rvr: string | null; rvrFt: number | null; wx: string | null;
-  sub: boolean; below: boolean;
-  tempC: number | null; dewpC: number | null; wspd: number | null;
-}
+// The parser and the health gates are in ./feed.ts (shared with the NOW layer).
+// chaseLive is "the observations on hand", NOT "current conditions": it keeps
+// the last readable set through an outage. Whether it may be shown as current
+// is feedView(chaseFeed, now).phase === "ok", asked again at every repaint.
 let chaseLive: Map<string, LiveOb> | null = null;
-let chaseTimer: ReturnType<typeof setInterval> | undefined;
-
-const RVR_RE = /\bR(\d{2}[LRC]?)\/([MP]?)(\d{4})(?:V[MP]?\d{4})?FT/g;
-
-// same CSV the NOW layer reads, but keep raw text (RVR lives there), obs
-// time, and weather string per station instead of just the sub/below verdict
-function parseChaseLiveCsv(text: string): Map<string, LiveOb> {
-  const out = new Map<string, LiveOb>();
-  for (const line of text.split("\n")) {
-    if (!line.startsWith('"')) continue;
-    const close = line.indexOf('",');
-    if (close < 0) continue;
-    const raw = line.slice(1, close);
-    const cols = line.slice(close + 2).split(",");
-    const icao = cols[0];
-    if (out.has(icao)) continue; // cache lists newest first per station
-    const visRaw = cols[9];
-    const vis = visRaw ? (visRaw.includes("+") ? 10 : parseFloat(visRaw)) : null;
-    let ceil: number | null = null;
-    for (const k of [21, 23, 25, 27]) {
-      if (["BKN", "OVC", "OVX"].includes(cols[k])) {
-        const b = parseFloat(cols[k + 1]);
-        if (!Number.isNaN(b)) ceil = Math.min(ceil ?? Infinity, b);
-      }
-    }
-    let rvr: string | null = null, rvrFt: number | null = null;
-    for (const m of raw.matchAll(RVR_RE)) {
-      const ft = m[2] === "P" ? 6001 : parseInt(m[3], 10);
-      if (rvrFt == null || ft < rvrFt) { rvrFt = ft; rvr = `${m[1]}/${m[2]}${m[3]}`; }
-    }
-    const below = vis != null && vis < 0.19;
-    const sub = (vis != null && vis < 0.5) || (ceil != null && ceil < 200);
-    const num = (s: string) => { const v = parseFloat(s); return Number.isNaN(v) ? null : v; };
-    out.set(icao, {
-      obsMs: Date.parse(cols[1]) || 0,
-      vis: vis != null && !Number.isNaN(vis) ? vis : null,
-      ceil, rvr, rvrFt, wx: cols[20] || null, sub, below,
-      tempC: num(cols[4]), dewpC: num(cols[5]), wspd: num(cols[7]),
-    });
-  }
-  return out;
-}
+let chaseFeed: FeedTrack = feedTrackInit();
+let chaseTimer: ReturnType<typeof setTimeout> | undefined;      // next read: 180 s healthy, 60 s failed
+let chaseTickTimer: ReturnType<typeof setInterval> | undefined; // 30 s: ages and banner advance in place
+let chaseReadSeq = 0;
+const CHASE_TICK_MS = 30_000;
 
 // ---- rolling per-station history: feeds the nowcast trend features ----
 // One /api/now snapshot every 3 min while the board is open; entries dedupe
@@ -1132,26 +1203,32 @@ function updateChaseHist() {
   }
 }
 
+// The warm start goes out in chunks, one after another. It used to be a single
+// request for up to 150 airports, which failed twice over: /api/metar took one
+// id only and answered 400 (from 2026-07-10 until 2026-11-24, swallowed by the
+// catch below), and AWC caps a response at 400 reports, newest first, so even
+// an accepted 150-airport request comes back with its oldest hour missing.
+// Still one bounded batch per session: 4 requests for 150 airports, 12 at most.
 async function warmChaseHist(cands: ChaseCand[]) {
-  const ids = cands.slice(0, 150).map((c) => c.a.icao);
-  if (!ids.length) return;
-  try {
-    const arr = await (await fetch(`/api/metar?ids=${ids.join(",")}&hours=3`)).json();
-    for (const o of Array.isArray(arr) ? arr : []) {
-      const icao = o.icaoId;
-      if (!icao || o.obsTime == null) continue;
-      const vis = o.visib == null ? null
-        : typeof o.visib === "string" ? (o.visib.includes("+") ? 10 : parseFloat(o.visib)) : o.visib;
-      const cs = (o.clouds ?? [])
-        .filter((c: any) => ["BKN", "OVC", "VV"].includes(c.cover) && c.base != null)
-        .map((c: any) => c.base);
-      const ceil = cs.length ? Math.min(...cs) : null;
-      pushHist(icao, {
-        t: o.obsTime * 1000, vis, ceil,
-        sub: (vis != null && vis < 0.5) || (ceil != null && ceil < 200),
-      });
-    }
-  } catch { /* trend features just start cold */ }
+  const ids = cands.slice(0, 150).map((c) => c.a.icao).filter((id) => /^[A-Z0-9]{4}$/.test(id));
+  const queue = chunkIds(ids, METAR_CHUNK);
+  for (let sent = 0; queue.length && sent < 12; sent++) {
+    const chunk = queue.shift()!;
+    try {
+      const r = await fetch(`/api/metar?ids=${chunk.join(",")}&hours=3`);
+      if (!r.ok || r.status === 204) continue; // those airports just start cold
+      const arr = await r.json();
+      if (!Array.isArray(arr)) continue;
+      // a full response means AWC cut the oldest reports: ask again in halves
+      if (arr.length >= AWC_ROW_CAP && chunk.length > 1) queue.push(...chunkIds(chunk, Math.ceil(chunk.length / 2)));
+      for (const o of arr) {
+        const icao = o?.icaoId;
+        if (!icao || typeof o.obsTime !== "number") continue;
+        const vis = jsonVis(o.visib), ceil = jsonCeil(o.clouds);
+        pushHist(icao, { t: o.obsTime * 1000, vis, ceil, sub: subCat1(vis, ceil) });
+      }
+    } catch { /* trend features just start cold */ }
+  }
 }
 
 // ---- tab-open alerts: notify + chime when an airport ENTERS stratum 1 ----
@@ -1159,12 +1236,35 @@ async function warmChaseHist(cands: ChaseCand[]) {
 // open); only fresh-ob transitions alert. Static site: works while the tab
 // lives, no server push — that's a documented limitation, not a bug.
 let chaseFogPrev: Set<string> | null = null;
+let chaseCandIds = new Set<string>(); // the candidates on the board as last drawn
 let chimeCtx: AudioContext | null = null;
 
-function playChime() {
+// A settings change moves airports in and out of the candidate list. The
+// baseline must not then read "entered fog" for a field that was already in
+// fog when it joined (no false pings when a filter moves). Until 2026-11-25
+// this was done by throwing the whole baseline away, which also threw away
+// what the pilot was waiting for: toggle a filter during an outage and the
+// field that went into fog during it never alerted on recovery, because the
+// first healthy read only set a new baseline. So the baseline is kept, and
+// only the newcomers that are already below CAT I in the observations on hand
+// are added to it.
+function chaseRebaseline() {
+  if (!chaseFogPrev) return; // no baseline yet: the first healthy read sets it, as before
+  for (const c of chaseCandidates()) {
+    if (!chaseCandIds.has(c.a.icao) && chaseLive?.get(c.a.icao)?.sub) chaseFogPrev.add(c.a.icao);
+  }
+}
+
+type Chime = readonly (readonly [freq: number, at: number, dur: number])[];
+const CHIME_FOG: Chime = [[880, 0, 0.14], [659, 0.16, 0.22]];
+// the feed going down must not sound like fog arriving: three low, even notes
+const CHIME_FEED_DOWN: Chime = [[330, 0, 0.18], [330, 0.26, 0.18], [330, 0.52, 0.18]];
+const CHIME_FEED_BACK: Chime = [[523, 0, 0.12]];
+
+function playChime(notes: Chime = CHIME_FOG) {
   if (!chimeCtx) return;
   const t0 = chimeCtx.currentTime;
-  for (const [freq, at, dur] of [[880, 0, 0.14], [659, 0.16, 0.22]] as const) {
+  for (const [freq, at, dur] of notes) {
     const o = chimeCtx.createOscillator();
     const g = chimeCtx.createGain();
     o.frequency.value = freq;
@@ -1176,6 +1276,22 @@ function playChime() {
   }
 }
 
+// A notification that cannot be shown must not take anything else down with
+// it. Chrome for Android has no Notification constructor ("Illegal
+// constructor. Use ServiceWorkerRegistration.showNotification() instead"), and
+// when it threw here it threw out of refreshChaseLive before the next read was
+// scheduled: the board stopped polling for good under a banner that said
+// "Retrying every 60 seconds". The chime is separate, so it still sounds.
+function chaseNotify(title: string, options: NotificationOptions, onclick?: () => void): boolean {
+  try {
+    const n = new Notification(title, options);
+    if (onclick) n.onclick = onclick;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function chaseAlertCheck(freshFog: ChaseCand[]) {
   const current = new Set(freshFog.map((c) => c.a.icao));
   const prev = chaseFogPrev;
@@ -1184,36 +1300,138 @@ function chaseAlertCheck(freshFog: ChaseCand[]) {
   for (const c of freshFog) {
     if (prev.has(c.a.icao)) continue;
     const ob = chaseLive?.get(c.a.icao);
-    const n = new Notification(`${c.a.icao} below CAT I`, {
+    chaseNotify(`${c.a.icao} below CAT I`, {
       body: `${ob?.vis != null ? `${ob.vis < 1 ? +ob.vis.toFixed(2) : Math.round(ob.vis)} SM` : ""}${ob?.rvr ? ` · R${ob.rvr} FT` : ""}${ob?.wx ? ` · ${ob.wx}` : ""} — ${eteStr(c.ete)} from ${chasePrefs.base}`,
       tag: `fa-chase-${c.a.icao}`,
-    });
-    n.onclick = () => { window.focus(); openAirport(c.a.icao); };
+    }, () => { window.focus(); openAirport(c.a.icao); });
     playChime();
   }
+}
+
+// With alerts armed the pilot is listening, not watching, and a dead feed is
+// silent: no fog alert can fire and silence reads as "no fog". So the outage
+// itself alerts, once (feedDownAlertDue: only after 6 minutes of failed reads),
+// and once more when the feed is back. Never per tick.
+function chaseFeedNotify(kind: "down" | "back") {
+  if (!chasePrefs.alerts || !("Notification" in window) || Notification.permission !== "granted") return;
+  chaseNotify(kind === "down" ? "Fog Atlas: live feed down" : "Fog Atlas: live feed is back", {
+    body: kind === "down"
+      ? `Fog alerts are not being checked. Not current since ${clockText(chaseFeed.failedSince ?? Date.now())}.`
+      : "Fog alerts are being checked again.",
+    tag: `fa-chase-feed-${kind}`,
+  });
+  playChime(kind === "down" ? CHIME_FEED_DOWN : CHIME_FEED_BACK);
+}
+
+function chaseFeedAlertCheck(now: number) {
+  if (!feedDownAlertDue(chaseFeed, now, chasePrefs.alerts)) return;
+  chaseFeed = { ...chaseFeed, downAlerted: true };
+  chaseFeedNotify("down");
 }
 
 function maybeWarmChase() {
   if (chaseWarmed || !chasePrefs.base || !chaseData) return;
   chaseWarmed = true; // one bounded batch per session, never re-polled
-  warmChaseHist(chaseCandidates()).then(renderChase);
+  warmChaseHist(chaseCandidates()).then(renderChaseBoard);
 }
 
+// One read, then its own next one: 180 s after a healthy read, 60 s after a
+// failed one (the banner quotes that number). Until 2026-11-24 this assigned
+// whatever came back with no status check, and its catch was empty: a 502 or
+// an error page became an empty board reading "nothing below CAT I within
+// range right now", and a dropped connection froze the board as it stood.
 async function refreshChaseLive() {
+  const seq = ++chaseReadSeq;
+  clearTimeout(chaseTimer);
+  const started = Date.now();
+  let healthy = false;
   try {
-    const text = await (await fetch("/api/now")).text();
-    chaseLive = parseChaseLiveCsv(text);
-    updateChaseHist();
-    maybeWarmChase();
-    if (chasePrefs.base) {
-      chaseAlertCheck(chaseCandidates().filter((c) => {
-        const ob = chaseLive!.get(c.a.icao);
-        return ob?.sub && !obStale(ob);
-      }));
+    // the airport list failed to load when the board opened: try it again
+    // with every read, and redraw the settings (their counts) once it is in
+    if (!chaseData && await loadChaseData() && seq === chaseReadSeq && chaseOpen) renderChase();
+    const read = await readLiveFeed();
+    if (seq !== chaseReadSeq || !chaseOpen) return; // the board closed, or a newer read took over
+    healthy = read.ok;
+    const now = Date.now();
+    const step = feedTrackRead(chaseFeed, read, now);
+    chaseFeed = step.track;
+    if (step.adopt) chaseLive = step.adopt;
+    // Each part below stands alone: an exception in the alerts must not stop
+    // the board being painted, and neither may stop the next read (finally).
+    try {
+      if (step.runAlerts) {
+        updateChaseHist();
+        maybeWarmChase();
+        if (chasePrefs.base) {
+          chaseAlertCheck(chaseCandidates().filter((c) => {
+            const ob = chaseLive!.get(c.a.icao);
+            return ob?.sub && !obStale(ob);
+          }));
+        }
+        if (step.recovered) chaseFeedNotify("back");
+      }
+      // a failed read runs NO fog-alert check and leaves chaseFogPrev alone: the
+      // old code rebaselined on the empty read, so recovery fired an alert for
+      // every airport that had been in fog all along
+      chaseFeedAlertCheck(now);
+    } catch (e) {
+      console.error("chase alerts failed", e);
     }
-    renderChase();
-  } catch { /* keep previous obs */ }
+    try {
+      renderChaseBoard();
+    } catch (e) {
+      console.error("chase board failed to draw", e);
+    }
+  } finally {
+    // The next read is scheduled here, whatever happened above. It used to be
+    // the last statement of the function, so one throw anywhere before it (a
+    // Notification constructor on Chrome for Android) ended the polling for
+    // good: 0 requests after the feed came back, the banner still reading
+    // "Retrying every 60 seconds". setInterval, which this replaced, survived
+    // a throw; this must too.
+    // A failed try counts from its START: a server that accepts the request
+    // and never answers costs the 45 s timeout, and tries were 105 s apart
+    // under a banner that says 60.
+    // (a board with no airport list is on the retry cadence too: its banner
+    // says the list is asked for again every 60 seconds)
+    if (seq === chaseReadSeq && chaseOpen) {
+      chaseTimer = setTimeout(refreshChaseLive,
+        healthy && chaseData ? FEED_POLL_MS : Math.max(5_000, FEED_RETRY_MS - (Date.now() - started)));
+    }
+  }
 }
+
+// Every 30 s: ages and the banner advance where they stand (no re-render, so
+// an opened QUIET list stays open and nothing moves under the pilot's thumb).
+// The board is rebuilt only when its grouping actually changed, e.g. a report
+// just passed 75 minutes or the reports on hand stopped being current.
+function tickChase() {
+  if (!chaseOpen) return;
+  const now = Date.now();
+  const view = feedView(chaseFeed, now);
+  // the last read was healthy but the page noticed late (timers throttled, the
+  // device slept): read again now instead of waiting out the timer
+  if (view.phase === "down" && !view.retrying && !feedInFlight) refreshChaseLive();
+  // Backstop for the retry loop itself: the banner says "Retrying every 60
+  // seconds", so if no try has finished for a retry plus a full timeout and
+  // none is in flight, the loop is dead (it died once, see refreshChaseLive)
+  // and this tick starts it again.
+  else if (view.phase === "down" && view.retrying && !feedInFlight
+    && now - (view.lastTryAt ?? 0) > FEED_RETRY_MS + FEED_TIMEOUT_MS) refreshChaseLive();
+  try { chaseFeedAlertCheck(now); } catch (e) { console.error("chase alerts failed", e); }
+  const host = panelContent.querySelector<HTMLElement>("#chase-board");
+  if (!host) return;
+  if (chaseBoardModel(chaseCandidates(), now).sig !== chaseBoardSig) { renderChaseBoard(); return; }
+  host.querySelectorAll<HTMLElement>(".chase-age[data-obs]").forEach((el) => {
+    el.textContent = `${obAgeMin(+el.dataset.obs!, now)}m`;
+  });
+  const line = host.querySelector<HTMLElement>("#chase-feedline");
+  if (line) line.textContent = chaseFeedLine(view, now);
+  const banner = host.querySelector<HTMLElement>("#chase-feed-banner");
+  if (banner && view.phase === "down") banner.innerHTML = chaseBannerInner(view, now);
+}
+// the moment the pilot looks at the tab again, not up to 30 s later
+document.addEventListener("visibilitychange", () => { if (!document.hidden) tickChase(); });
 
 // port of the deep-dive nowcast feature builder, fed from the cache ob +
 // rolling history instead of a per-airport /api/metar call
@@ -1258,8 +1476,14 @@ function nowcastPFor(a: Airport, ob: LiveOb): number | null {
   return 1 / (1 + Math.exp(-z));
 }
 
-const obAge = (ob: LiveOb) => Math.max(0, Math.round((Date.now() - ob.obsMs) / 60000));
-const obStale = (ob: LiveOb) => !ob.obsMs || obAge(ob) > 75;
+const obAgeMin = (obsMs: number, now = Date.now()) => Math.max(0, Math.round((now - obsMs) / 60000));
+const obAge = (ob: LiveOb) => obAgeMin(ob.obsMs);
+const obStale = (ob: LiveOb) => !ob.obsMs || obAge(ob) > FEED_REPORT_MAX_AGE_MS / 60_000; // 75 min, the feed gate's own number
+// a "current report": recent enough to act on AND it says whether the field
+// is below CAT I. No row, a report over 75 min old, or one with no visibility
+// (and no ceiling under 200 ft) is "unknown", never "quiet".
+const obCurrent = (ob: LiveOb | undefined): boolean =>
+  !!ob && !obStale(ob) && (ob.vis != null || ob.sub);
 
 function liveLine(ob: LiveOb | undefined): string {
   if (!ob) return `<span class="chase-live dim">no current report</span>`;
@@ -1268,7 +1492,8 @@ function liveLine(ob: LiveOb | undefined): string {
     ob.rvr ? `R${ob.rvr} FT` : null,
     ob.ceil != null ? `ceil ${ob.ceil} ft` : null,
     ob.wx || null,
-    `${obAge(ob)}m`,
+    // data-obs lets tickChase advance the age in place between renders
+    ob.obsMs ? `<span class="chase-age" data-obs="${ob.obsMs}">${obAge(ob)}m</span>` : "time ?",
   ].filter(Boolean).join(" · ");
   const pill = ob.below
     ? `<span class="pill red">below 300 m</span>`
@@ -1276,6 +1501,58 @@ function liveLine(ob: LiveOb | undefined): string {
     ? `<span class="pill amber">EFVS window</span>`
     : "";
   return `<span class="chase-live${obStale(ob) ? " stale" : ""}${ob.sub && !obStale(ob) ? "" : " dim"}">${bits}</span> ${obStale(ob) ? `<span class="pill dim">stale</span>` : pill}`;
+}
+
+// ---- what the strata show: every candidate lands in exactly one group ----
+// Feed healthy:  fog (current report, below CAT I) + quiet (current report,
+//   not below) + oldFog (last report below CAT I but over 75 min old) +
+//   unknown (no row, an old report, or no visibility). "n of N" is fog of
+//   fog + quiet, so the two numbers cannot argue.
+// Feed not healthy: nothing on hand is current. fog = below CAT I in the last
+//   report on hand, quiet = every other candidate; neither is called "now".
+interface ChaseBoard {
+  view: FeedView;
+  fog: ChaseCand[]; quiet: ChaseCand[]; oldFog: ChaseCand[]; unknown: ChaseCand[];
+  sig: string; // changes exactly when the board must be rebuilt rather than patched
+}
+let chaseBoardSig = "";
+let chaseQuietOpen = false;
+
+function chaseBoardModel(cands: ChaseCand[], now: number): ChaseBoard {
+  const view = feedView(chaseFeed, now);
+  const fog: ChaseCand[] = [], quiet: ChaseCand[] = [], oldFog: ChaseCand[] = [], unknown: ChaseCand[] = [];
+  let stale = 0;
+  for (const c of cands) {
+    const ob = chaseLive?.get(c.a.icao);
+    if (ob && obStale(ob)) stale++;
+    if (view.phase !== "ok") (ob?.sub ? fog : quiet).push(c);
+    else if (obCurrent(ob)) (ob!.sub ? fog : quiet).push(c);
+    else (ob?.sub ? oldFog : unknown).push(c);
+  }
+  if (view.phase !== "ok") {
+    fog.sort((x, y) => +obStale(chaseLive!.get(x.a.icao)!) - +obStale(chaseLive!.get(y.a.icao)!) || x.ete - y.ete);
+  }
+  const ids = (l: ChaseCand[]) => l.map((c) => c.a.icao).join(",");
+  const sig = [view.phase, view.phase === "down" ? view.reason : "", chasePrefs.base, chasePrefs.alerts,
+    ids(fog), ids(oldFog), ids(unknown), quiet.length, stale].join("|");
+  return { view, fog, quiet, oldFog, unknown, sig };
+}
+
+const escHtml = (s: string) =>
+  s.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]!);
+
+// the line under IN FOG NOW: real values where "obs ≤3 min old feed" used to be a constant
+function chaseFeedLine(view: FeedView, now: number): string {
+  if (view.phase === "ok") {
+    return `newest report in the feed ${ageText(now - view.newestMs)} old · feed checked ${clockText(view.checkedAt)}`;
+  }
+  return view.phase === "waiting" ? "reading live observations…" : "";
+}
+
+function chaseBannerInner(view: Extract<FeedView, { phase: "down" }>, now: number): string {
+  const b = feedBanner(chaseFeed, view, now, { alertsArmed: chasePrefs.alerts });
+  return `<b style="display:block;color:#ff8d84;letter-spacing:0.06em;margin-bottom:3px">${escHtml(b.title)}</b>` +
+    b.lines.map((l) => `<div>${escHtml(l)}</div>`).join("");
 }
 
 function chaseCandidates(): ChaseCand[] {
@@ -1305,7 +1582,7 @@ function chaseCandidates(): ChaseCand[] {
 
 // dim the world to the chase set: dots filter to candidates+base, the fog
 // field recedes, and a still-air range ring circles the base
-function chaseApplyMap(cands: ChaseCand[], base: Airport | undefined, inFog: ChaseCand[] = []) {
+function chaseApplyMap(cands: ChaseCand[], base: Airport | undefined, inFog: ChaseCand[] = [], dim = false) {
   if (!map.getLayer("glow")) return;
   if (!map.getSource("chase-src")) {
     map.addSource("chase-src", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
@@ -1353,6 +1630,11 @@ function chaseApplyMap(cands: ChaseCand[], base: Airport | undefined, inFog: Cha
       properties: { icao: c.a.icao, sev: chaseLive?.get(c.a.icao)?.below ? "red" : "amber" },
     })),
   });
+  // Not current: the glow is last-known, so it is dimmed the way the NOW
+  // layer's is (nowGlowDim). It used to stay at full brightness through an
+  // outage, then vanish at 75 minutes while the panel still listed the fields.
+  map.setPaintProperty("chase-live-glow", "circle-opacity", dim ? 0.18 : 0.55);
+  map.setPaintProperty("chase-live-core", "circle-opacity", dim ? 0.35 : 1);
   const feats: any[] = [];
   if (base) {
     const radiusNm = chasePrefs.speed * chasePrefs.maxEteH;
@@ -1384,9 +1666,17 @@ function chaseFitMap(base: Airport) {
 function closeChaseMap() {
   if (!chaseOpen) return;
   chaseOpen = false;
-  clearInterval(chaseTimer);
-  chaseTimer = undefined;
+  clearTimeout(chaseTimer);
+  clearInterval(chaseTickTimer);
+  chaseTimer = chaseTickTimer = undefined;
+  chaseReadSeq++; // a read still in flight must not land on a closed board
   chaseFogPrev = null;
+  chaseCandIds = new Set();
+  // nothing polls while the board is closed, so nothing on hand may be shown
+  // as current when it reopens: start again from "reading live observations"
+  chaseLive = null;
+  chaseFeed = feedTrackInit();
+  chaseBoardSig = "";
   if (map.getLayer("glow")) {
     applyApproachFilters();
     map.setPaintProperty("fogheat", "heatmap-opacity", FOGHEAT_OPACITY);
@@ -1408,32 +1698,33 @@ function chaseRowBadges(end: ChaseEnd): string {
 }
 
 async function openChase() {
+  const mine = ++panelToolSeq;
   history.replaceState(null, "", "#chase");
   closeDeployMap();
   setSelected(null);
-  if (chaseData === undefined) {
-    chaseData = null; // only try once
-    try { chaseData = await (await fetch("/data/chase.json")).json(); } catch {}
-  }
+  await loadChaseData(); // a failure is shown on the board and retried with every read
   if (nowcastModel === undefined) {
     nowcastModel = null;
     try { nowcastModel = await (await fetch("/data/model_y2.json")).json(); } catch {}
   }
+  if (mine !== panelToolSeq) return; // DEPLOY was opened while this was loading: it owns the panel
   chaseOpen = true;
   renderChase();
   panel.hidden = false;
   document.body.classList.add("panel-open");
-  if (!chaseTimer) {
-    refreshChaseLive();
-    chaseTimer = setInterval(refreshChaseLive, 180_000);
+  if (!chaseTickTimer) {
+    refreshChaseLive(); // schedules its own next read
+    chaseTickTimer = setInterval(tickChase, CHASE_TICK_MS);
   }
 }
 
+// The panel is drawn in two parts. renderChase() draws the settings and runs
+// only when the pilot changes one (or opens the board). The strata live in
+// #chase-board and are redrawn by renderChaseBoard() on every data refresh,
+// so a refresh never touches a half-typed base, an open select or the focus.
 function renderChase() {
   if (!chaseOpen) return;
   const base = state.airports.find((x) => x.icao === chasePrefs.base);
-  const cands = chaseCandidates();
-  const mon = new Date().getMonth();
   const nUS = chaseData?.meta?.us ?? (chaseData ? Object.keys(chaseData.airports).length : 0);
   const nCA = chaseData?.meta?.ca ?? 0;
 
@@ -1447,19 +1738,11 @@ function renderChase() {
                  OTHER: "any other approach light system (MALS, SALS/SALSF, ODALS, RLLS…)" }[k]}"
     >${ALS_LABEL[k]}</button>`).join("");
 
-  const boardRows = (list: ChaseCand[], withLive: boolean) => list.map((c) => `
-    <tr data-icao="${c.a.icao}">
-      <td class="num" style="white-space:nowrap"><b>${eteStr(c.ete)}</b></td>
-      <td class="num">${Math.round(c.nm)}</td>
-      <td><b>${c.a.icao}</b> ${c.a.name.length > 20 ? c.a.name.slice(0, 19) + "…" : c.a.name}<br>
-        <span class="chase-badges">${chaseRowBadges(c.end)}</span>${withLive ? `<br>${liveLine(chaseLive?.get(c.a.icao))}` : ""}</td>
-      <td class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${monthClimH(c.a, mon)}h</td>
-    </tr>`).join("");
-  const boardTable = (rows: string, live: boolean) => `
-    <table class="rank-table">
-      <thead><tr><th class="num">ETE</th><th class="num">nm</th><th>airport · qualifying runway${live ? " · conditions" : ""}</th><th class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${MONTHS_S[mon]} ø</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  // a settings change redraws everything: carry QUIET's open state and the
+  // scroll position over (only when the panel already shows this board)
+  const prevQuiet = panelContent.querySelector<HTMLDetailsElement>("#chase-board details.chase-quiet");
+  if (prevQuiet) chaseQuietOpen = prevQuiet.open;
+  const prevScroll = panelContent.querySelector("#chase-board") ? panel.scrollTop : null;
 
   panelContent.innerHTML = `
     <h2>Fog chase</h2>
@@ -1499,48 +1782,13 @@ function renderChase() {
         title="only runways with RVR sensors — documented ground truth for test cards">RVR equipped</button>
     </div>
 
-    ${!base ? `<p class="note" style="margin-top:18px">Set a base airport to build the chase board — candidates are ranked by still-air flight time at your cruise speed.</p>` : (() => {
-      const inFog = cands.filter((c) => chaseLive?.get(c.a.icao)?.sub)
-        .sort((x, y) => +obStale(chaseLive!.get(x.a.icao)!) - +obStale(chaseLive!.get(y.a.icao)!) || x.ete - y.ete);
-      const quiet = cands.filter((c) => !chaseLive?.get(c.a.icao)?.sub);
-      const soon = !chaseLive ? [] : cands
-        .flatMap((c) => {
-          const ob = chaseLive!.get(c.a.icao);
-          if (!ob || ob.sub || obStale(ob)) return [];
-          const p = nowcastPFor(c.a, ob);
-          return p == null ? [] : [{ c, p }];
-        })
-        .sort((x, y) => y.p - x.p)
-        .slice(0, 5);
-      const soonRows = soon.map(({ c, p }) => `
-        <tr data-icao="${c.a.icao}">
-          <td class="num" style="white-space:nowrap"><b>${eteStr(c.ete)}</b></td>
-          <td class="num">${Math.round(c.nm)}</td>
-          <td><b>${c.a.icao}</b> ${c.a.name.length > 20 ? c.a.name.slice(0, 19) + "…" : c.a.name}<br>
-            <span class="chase-badges">${chaseRowBadges(c.end)}</span><br>${liveLine(chaseLive?.get(c.a.icao))}
-            <span class="pill ${p >= 0.2 ? "amber" : "dim"}" title="logistic nowcast trained 2016–23, validated 2024–25 (Brier −39% vs climatology, AUC 0.95). Experimental — not for operational use.">2 h: ${p < 0.01 ? "<1" : Math.round(p * 100)}%</span></td>
-          <td class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${monthClimH(c.a, mon)}h</td>
-        </tr>`).join("");
-      return `
-      <div class="stratum-h"><b style="color:#ffb347">IN FOG NOW</b><span class="n">${chaseLive ? inFog.length : "…"}</span><span>below CAT I this instant · obs ≤3 min old feed</span></div>
-      ${!chaseLive ? `<p class="note">fetching live observations…</p>`
-        : inFog.length ? boardTable(boardRows(inFog, true), true)
-        : `<p class="note">nothing below CAT I within range right now.</p>`}
-      <div class="stratum-h"><b style="color:var(--accent)">LIKELY SOON</b><span class="n">${chaseLive ? soon.length : "…"}</span><span>highest P(below CAT I within 2 h) — model nowcast, top 5</span></div>
-      ${!chaseLive ? "" : soon.length ? boardTable(soonRows, true)
-        : `<p class="note">${nowcastModel ? "no scoreable candidates (missing or stale observations)." : "nowcast model unavailable."}</p>`}
-      <details class="chase-quiet">
-        <summary class="stratum-h" style="cursor:pointer"><b>QUIET</b><span class="n">${quiet.length}</span><span>passing filters within ${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt (${Math.round(chasePrefs.speed * chasePrefs.maxEteH)} nm still-air)</span></summary>
-        ${quiet.length ? boardTable(boardRows(quiet, false), false)
-          : `<p class="note">No airports pass the filters within range — widen the ALS set, lower the runway/go-around bars, or extend max ETE.</p>`}
-      </details>`;
-    })()}
+    <div id="chase-board"></div>
     <p class="note">ETE is great-circle still-air — no winds, no climb/descent. Infrastructure: FAA NASR ${chaseData?.meta?.nasr_file?.match(/\d{4}-\d{2}-\d{2}/)?.[0] ?? ""} + CIFP LPV; minima heights are tier proxies, not chart DAs. ${chaseData?.meta?.ca ? `Canadian fields are curated from AIP Canada/CFS research (confidence-tagged) — not authoritative FAA data.` : "US airports only — curated Canadian fields arrive in a later build."}</p>
   `;
 
   // wiring — settings changes rebaseline the alert set (no false "entered fog"
   // pings when membership shifts because a filter moved)
-  const rerender = () => { saveChasePrefs(); chaseFogPrev = null; renderChase(); };
+  const rerender = () => { saveChasePrefs(); chaseRebaseline(); renderChase(); };
   panelContent.querySelector("#chase-alerts")?.addEventListener("click", async () => {
     if (!("Notification" in window)) return;
     if (!chasePrefs.alerts) {
@@ -1579,7 +1827,7 @@ function renderChase() {
         chasePrefs.base = (r as HTMLElement).dataset.icao!;
         chasePrefs.baseSetAt = Date.now();
         saveChasePrefs();
-        chaseFogPrev = null;
+        chaseRebaseline();
         maybeWarmChase();
         renderChase();
         const b = state.airports.find((x) => x.icao === chasePrefs.base);
@@ -1610,23 +1858,186 @@ function renderChase() {
         ? chasePrefs.als.filter((x) => x !== k) : [...chasePrefs.als, k];
       rerender();
     }));
-  panelContent.querySelectorAll("tr[data-icao]").forEach((tr) =>
+
+  renderChaseBoard();
+  if (prevScroll != null) panel.scrollTop = prevScroll;
+}
+
+// The strata. Called on every data refresh, and by tickChase when the grouping
+// changed. It keeps an opened QUIET list open and the panel's scroll position:
+// the old single render replaced the whole panel every 3 minutes, collapsed
+// QUIET and pulled the focus back to the base field.
+function renderChaseBoard() {
+  const host = panelContent.querySelector<HTMLElement>("#chase-board");
+  if (!chaseOpen || !host) return;
+  const base = state.airports.find((x) => x.icao === chasePrefs.base);
+  const cands = chaseCandidates();
+  const now = Date.now();
+  const m = chaseBoardModel(cands, now);
+  const { view } = m;
+  const mon = new Date(now).getMonth();
+  // keep what the pilot had open: read it off the board that is about to be replaced
+  const quietEl = host.querySelector<HTMLDetailsElement>("details.chase-quiet");
+  if (quietEl) chaseQuietOpen = quietEl.open;
+  const ok = view.phase === "ok", down = view.phase === "down";
+  const range = `within ${eteStr(chasePrefs.maxEteH)} at ${chasePrefs.speed} kt (${Math.round(chasePrefs.speed * chasePrefs.maxEteH)} nm still-air)`;
+
+  const rowHtml = (c: ChaseCand, withLive: boolean, extra = "") => `
+    <tr data-icao="${c.a.icao}">
+      <td class="num" style="white-space:nowrap"><b>${eteStr(c.ete)}</b></td>
+      <td class="num">${Math.round(c.nm)}</td>
+      <td><b>${c.a.icao}</b> ${c.a.name.length > 20 ? c.a.name.slice(0, 19) + "…" : c.a.name}<br>
+        <span class="chase-badges">${chaseRowBadges(c.end)}</span>${withLive ? `<br>${liveLine(chaseLive?.get(c.a.icao))}` : ""}${extra}</td>
+      <td class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${monthClimH(c.a, mon)}h</td>
+    </tr>`;
+  const boardRows = (list: ChaseCand[], withLive: boolean) => list.map((c) => rowHtml(c, withLive)).join("");
+  const boardTable = (rows: string, live: boolean) => `
+    <table class="rank-table">
+      <thead><tr><th class="num">ETE</th><th class="num">nm</th><th>airport · qualifying runway${live ? " · conditions" : ""}</th><th class="num" title="climatological hours below CAT I in ${MONTHS[mon]}">${MONTHS_S[mon]} ø</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  // the 2-hour nowcast is computed from CURRENT reports only: none while the feed is down
+  const soon = !ok ? [] : m.quiet
+    .flatMap((c) => {
+      const p = nowcastPFor(c.a, chaseLive!.get(c.a.icao)!);
+      return p == null ? [] : [{ c, p }];
+    })
+    .sort((x, y) => y.p - x.p)
+    .slice(0, 5);
+  const soonRows = soon.map(({ c, p }) => rowHtml(c, true, `
+        <span class="pill ${p >= 0.2 ? "amber" : "dim"}" title="logistic nowcast trained 2016–23, validated 2024–25 (Brier −39% vs climatology, AUC 0.95). Experimental — not for operational use.">2 h: ${p < 0.01 ? "<1" : Math.round(p * 100)}%</span>`)).join("");
+
+  const banner = down ? `
+    <div id="chase-feed-banner" role="status" style="margin:18px 0 0;padding:10px 12px;border:1px solid #7a352e;border-left:3px solid #ff5a4d;border-radius:6px;background:#401a16;color:#ffd9d4;font-size:11.5px;line-height:1.55">${chaseBannerInner(view, now)}</div>` : "";
+
+  const nCur = m.fog.length + m.quiet.length; // candidates with a current report (feed healthy)
+  const kOld = m.oldFog.length, uNo = m.unknown.length;
+  let strata: string;
+  if (!chaseData) {
+    // No airport list, no candidates: every count below would be "0 of 0" and
+    // the empty-range sentence, printed under a healthy feed line as if the
+    // board had looked. Say what is missing and print no count at all.
+    // refreshChaseLive asks for the list again with every read.
+    strata = `
+    <div id="chase-list-banner" role="status" style="margin:18px 0 0;padding:10px 12px;border:1px solid #7a352e;border-left:3px solid #ff5a4d;border-radius:6px;background:#401a16;color:#ffd9d4;font-size:11.5px;line-height:1.55">
+      <b style="display:block;color:#ff8d84;letter-spacing:0.06em;margin-bottom:3px">AIRPORT LIST DID NOT LOAD. THERE IS NO BOARD.</b>
+      <div>The list of chase airports did not load, so the board cannot say which fields are in fog.</div>
+      <div>Trying again every ${FEED_RETRY_MS / 1000} seconds. Reload the page if this stays.</div>
+    </div>`;
+  } else if (!base) {
+    strata = `<p class="note" style="margin-top:18px">Set a base airport to build the chase board — candidates are ranked by still-air flight time at your cruise speed.</p>`;
+  } else if (ok) {
+    strata = `
+      <div class="stratum-h"><b style="color:#ffb347">IN FOG NOW</b><span class="n">${m.fog.length}</span><span>of ${nCur} candidates with a current report · below CAT I</span></div>
+      <div class="chase-badges" id="chase-feedline" style="white-space:normal">${chaseFeedLine(view, now)}</div>
+      ${m.fog.length ? boardTable(boardRows(m.fog, true), true)
+        : `<p class="note">${nCur
+          ? `none of the ${nCur} candidates with a current report is below CAT I.`
+          : cands.length ? `no candidate has a current report, so the board cannot say which fields are in fog.`
+          : `no airports pass the filters within range.`}</p>`}
+      ${kOld ? `
+      <p class="note" style="margin-top:12px"><b style="color:#ffb347">${kOld} more</b> last reported below CAT I, but ${kOld === 1 ? "that report is" : "those reports are"} over 75 min old. Not counted above.</p>
+      ${boardTable(boardRows(m.oldFog, true), true)}` : ""}
+      <div class="stratum-h"><b style="color:var(--accent)">LIKELY SOON</b><span class="n">${soon.length}</span><span>highest P(below CAT I within 2 h) — model nowcast, top 5</span></div>
+      ${soon.length ? boardTable(soonRows, true)
+        : `<p class="note">${nowcastModel ? "no scoreable candidates (missing or stale observations)." : "nowcast model unavailable."}</p>`}
+      <details class="chase-quiet"${chaseQuietOpen ? " open" : ""}>
+        <summary class="stratum-h" style="cursor:pointer"><b>QUIET</b><span class="n">${m.quiet.length}</span><span>current report, not below CAT I${uNo ? ` · <span id="chase-unknown-n" style="color:#ffb347">${uNo} more with no current report</span>` : ""} · ${range}</span></summary>
+        ${m.quiet.length ? boardTable(boardRows(m.quiet, true), true)
+          : cands.length ? "" : `<p class="note">No airports pass the filters within range — widen the ALS set, lower the runway/go-around bars, or extend max ETE.</p>`}
+        ${uNo ? `
+        <div class="stratum-h"><b style="color:#ffb347">NO CURRENT REPORT</b><span class="n">${uNo}</span><span>unknown, not quiet · not reporting, report over 75 min old, or no visibility in it</span></div>
+        ${boardTable(boardRows(m.unknown, true), true)}` : ""}
+      </details>`;
+  } else {
+    // Feed down, or the first read still in flight. Nothing here may read as
+    // current: no "NOW", no all-clear sentence, no zero that looks like one.
+    const w = view.phase === "down" ? feedDownWords(view) : { tag: "", when: "" };
+    strata = `
+      <div class="stratum-h"><b style="color:#ffb347">${down ? "IN FOG, LAST KNOWN" : "IN FOG NOW"}</b><span class="n">${down ? (m.fog.length || "?") : "…"}</span><span>${down ? `not current · ${w.tag}` : ""}</span></div>
+      ${down ? "" : `<div class="chase-badges" id="chase-feedline" style="white-space:normal">${chaseFeedLine(view, now)}</div>`}
+      ${m.fog.length ? boardTable(boardRows(m.fog, true), true)
+        : down ? `<p class="note">Unknown ${w.when}. The board cannot say which fields are in fog.</p>` : ""}
+      <div class="stratum-h"><b style="color:var(--accent)">LIKELY SOON</b><span class="n">${down ? "?" : "…"}</span><span>${down ? `not calculated ${w.when}` : "highest P(below CAT I within 2 h) — model nowcast, top 5"}</span></div>
+      <details class="chase-quiet"${chaseQuietOpen ? " open" : ""}>
+        <summary class="stratum-h" style="cursor:pointer"><b>${down ? "OTHER CANDIDATES" : "CANDIDATES"}</b><span class="n">${m.quiet.length}</span><span>${down ? `conditions unknown ${w.when}` : "conditions not read yet"} · ${range}</span></summary>
+        ${m.quiet.length ? boardTable(boardRows(m.quiet, down), down)
+          : cands.length ? "" : `<p class="note">No airports pass the filters within range — widen the ALS set, lower the runway/go-around bars, or extend max ETE.</p>`}
+      </details>`;
+  }
+
+  // keep where the pilot was looking (#panel is the scroller)
+  const scroll = panel.scrollTop;
+  host.innerHTML = banner + strata;
+  panel.scrollTop = scroll;
+  chaseBoardSig = m.sig;
+
+  host.querySelectorAll("tr[data-icao]").forEach((tr) =>
     tr.addEventListener("click", () => {
       const a = state.airports.find((x) => x.icao === (tr as HTMLElement).dataset.icao)!;
       map.flyTo({ center: [a.lon, a.lat], zoom: 7, duration: 1600 });
       openAirport(a.icao);
     }));
 
-  chaseApplyMap(cands, base, cands.filter((c) => {
-    const ob = chaseLive?.get(c.a.icao);
-    return ob?.sub && !obStale(ob); // stale fog obs stay off the map glow
-  }));
+  // The map shows what the panel lists. Healthy: fields in fog on a current
+  // report (stale fog reports stay off the glow). Not current: every
+  // last-known fog field the panel lists, dimmed.
+  chaseCandIds = new Set(cands.map((c) => c.a.icao));
+  chaseApplyMap(cands, base, ok ? m.fog : down ? m.fog : [], !ok);
 }
 
 $("#chase-btn").addEventListener("click", openChase);
 
 // ---------- DEPLOY: where to base for the next two weeks ----------
-let deployData: any | null | undefined;
+// The /api/deploy payload (forecast/build_deploy.py -> KV `deploy`). Two shapes
+// reach this code and both must render. Until 2026-11 there was no `pk` and no
+// `meta.daycal`, and p on a "cal" day was the hourly curve's any-hour product,
+// which ran about 1.7x high and still set the GO word. That shape stays in KV
+// until the first bake after a deploy, so every field added since is optional.
+// One group of published chances and what happened on those days. `dates` is
+// the number of forecast dates behind the airport-days; `ok` (areas only) is
+// the build's own verdict on the group: within 10 points, or null when it has
+// under 50 airport-days.
+interface DeployBand { n: number; shown: number | null; obs: number | null; dates?: number; ok?: boolean | null; sample?: string }
+// A group of fields with its own record of the day map (forecast/fit_daycal.py).
+// ok false: the pooled map misses there by more than 10 points, so the day is
+// not shown as calibrated for these fields. Until 2026-11-25 the panel printed
+// the pooled record ("58% of the time") beside Central Valley fields whose own
+// record was 35%.
+interface DeployArea {
+  name: string; ok: boolean | null; high: boolean | null; years?: string; icaos?: string[];
+  ge50?: DeployBand | null; b25_50?: DeployBand | null; ge75?: DeployBand | null;
+}
+interface DeployDayReceipt {
+  cover_end_utc?: number | null; // day 2 only: p and pk use the hours up to this UTC hour
+  cycle_hour?: number; checked_from?: number | null; sample?: string;
+  n?: number; skill_pct?: number | null;
+  ge50?: DeployBand | null; b25_50?: DeployBand | null; ge75?: DeployBand | null;
+  areas?: DeployArea[];
+}
+interface DeployAirport {
+  eh: number[]; tiers: string[];
+  p?: (number | null)[];  // chance of at least one below-CAT-I hour that day
+  win?: number[]; ws?: (number | null)[];
+  pk?: (number | null)[]; // peak hourly P(below CAT I), integer percent, "cal" days only
+}
+interface DeployData {
+  meta?: {
+    generated?: string; cycle?: string; dayscale_skill?: number | null;
+    daycal?: {
+      fit?: string; test?: string;
+      applied?: Record<string, boolean>;        // "1" / "2": the day map was applied to that day
+      // why a day has no mapped chance: "hour" (built from a cycle hour the
+      // map is not checked on), "held", "season", "hours"
+      why?: Record<string, string | null>;
+      cycle_hour?: number;
+      days?: Record<string, DeployDayReceipt>;  // the check behind the map each day used
+    };
+  };
+  airports: Record<string, DeployAirport>;
+}
+let deployData: DeployData | null | undefined;
 let deployOpen = false;
 let deployWindow: 1 | 7 | 14 = 14;
 
@@ -1639,10 +2050,12 @@ function usableFrac(win: number | undefined, eteH: number): number {
 }
 function winEH(icao: string, eteH = 0): number {
   const d = deployData?.airports?.[icao];
-  if (!d) return 0;
+  // one entry without its hours (never seen from build_deploy.py, but one was
+  // enough to keep the whole panel from opening) counts as no fog there
+  if (!d || !Array.isArray(d.eh)) return 0;
   let s = 0;
   for (let i = 0; i < Math.min(deployWindow, d.eh.length); i++)
-    s += d.eh[i] * usableFrac(d.win?.[i], eteH);
+    s += (d.eh[i] ?? 0) * usableFrac(d.win?.[i], eteH);
   return s;
 }
 
@@ -1794,46 +2207,344 @@ function closeDeployMap() {
 }
 
 async function openDeploy() {
+  const mine = ++panelToolSeq;
   history.replaceState(null, "", "#deploy");
   closeChaseMap();
   setSelected(null);
   // the planner talks about the NEXT two weeks — scrub the underlying
   // climatology field/dots to the current month, not the January default
   setMonths([new Date().getMonth()]);
-  if (chaseData === undefined) {
-    chaseData = null;
-    try { chaseData = await (await fetch("/data/chase.json")).json(); } catch {}
-  }
-  if (deployData === undefined) {
+  await loadChaseData(); // a failure is said on the panel and tried again on the next open
+  if (!deployData) {
+    // Only a real payload counts. /api/deploy answers 503 with a JSON body
+    // ({"error":"no deploy data yet"}) when KV is empty; that parsed, was kept
+    // for the session, and the panel printed "No expected fog within range of
+    // any base" under "data —" as if it had looked. A failure is not kept:
+    // the next open asks again.
     deployData = null;
-    try { deployData = await (await fetch("/api/deploy")).json(); } catch {}
+    try {
+      const r = await fetch("/api/deploy");
+      const j = r.ok ? await r.json() : null;
+      if (j?.airports && typeof j.airports === "object" && Object.keys(j.airports).length) deployData = j;
+    } catch { /* stays null: "deploy data unavailable" */ }
   }
+  if (mine !== panelToolSeq) return; // CHASE was opened while this was loading: it owns the panel
   deployOpen = true;
   renderDeploy();
   panel.hidden = false;
   document.body.classList.add("panel-open");
 }
 
-// first day in the window with a REACHABLE field >=50% likely chaseable —
-// the operator's "when could we actually go" number
-function firstLikely(c: DeployBase): { label: string; p: number; icao: string; d: number } | null {
-  if (!deployData) return null;
-  for (let d = 0; d < deployWindow; d++) {
-    let best = 0, bi = "";
-    for (const x of c.contrib) {
-      const da = deployData.airports[x.a.icao];
-      const p = da?.p?.[d];
-      const win = da?.win?.[d];
-      if (win != null && win > 0 && win <= x.nm / chasePrefs.speed + 0.75) continue;
-      if (p != null && p > best) { best = p; bi = x.a.icao; }
+// ---- what a day's number rests on ----
+// Every day-level number on this panel (the verdict, the day cells, "fog likely
+// <day>") is the payload's p[d]: the chance of at least one hour below CAT I
+// that day at one field. What stands behind p differs by tier and by payload
+// age. Until 2026-11 the panel printed them all as one bare "% likely
+// chaseable": the tier reached the screen only as "(cal)" in a hover title, and
+// a 93% that verified near 40% set the GO word with nothing on screen to say so.
+//   cal    "cal" tier and meta.daycal.applied for that day: the hourly curve's
+//          any-hour product pushed through the hindcast-fitted day map
+//   area   the same number at a field whose own area missed the map's check
+//          at this level (Central Valley fields shown at 50% or more fogged
+//          35% of the time): a forecast, but not a calibrated one there
+//   bound  "cal" tier without that: the bare any-hour product. It treats
+//          consecutive fog hours as independent draws, so it is a ceiling on
+//          the chance, not the chance. Old payloads carry it on days 1-2.
+//   fit    days 3-8, the fitted day-scale model
+//   nbe, cpc, climo   climatology times a rule-of-thumb factor, or climatology
+//          alone: no forecast model stands behind the number
+//   other  a tier name this build of the page does not know
+type DeployBasis = "cal" | "area" | "bound" | "fit" | "nbe" | "cpc" | "climo" | "other";
+
+// with a field and its chance, a "cal" day is also held against that field's
+// own area record (daycalCheck)
+function deployBasis(tier: string | undefined, d: number, icao?: string, p?: number | null): DeployBasis {
+  if (tier === "cal") {
+    if (!deployData?.meta?.daycal?.applied?.[String(d + 1)]) return "bound";
+    return icao != null && p != null && !daycalCheck(d, icao, p).calibrated ? "area" : "cal";
+  }
+  return tier === "fit" || tier === "nbe" || tier === "cpc" || tier === "climo" ? tier : "other";
+}
+// only these two were scored against outcomes they were not fitted on
+const deployChecked = (b: DeployBasis | null) => b === "cal" || b === "fit";
+
+// one wording per basis, used by the verdict, the cells, the legend and the
+// "?" tooltip, so the same day is never described two ways
+function basisWords(b: DeployBasis): string {
+  switch (b) {
+    case "cal": return "calibrated forecast";
+    case "area": return "forecast not calibrated for that field's area";
+    case "bound": return deployData?.meta?.daycal
+      ? "upper bound (this build did not correct it)"
+      : "upper bound from an older build (not calibrated)";
+    case "fit": return "fitted day-scale model";
+    case "nbe": return "climatology × NBM-extended ingredients (not fitted)";
+    case "cpc": return "climatology × CPC moisture outlook (no forecast)";
+    case "climo": return "climatology only (no forecast)";
+    default: return "source not known to this page";
+  }
+}
+
+// The percent printed for a chance. Plain rounding prints "25%" for 0.248
+// beside the word SCRAP and "50%" for 0.497 beside MARGINAL, and the day map
+// has a flat stretch at 0.24-0.27 where that happens most days (2026-11-24:
+// KRDD 0.250 MARGINAL, KGPI 0.248 SCRAP). A chance under a bar is never
+// printed as the bar.
+function deployPct(p: number): number {
+  const r = Math.round(100 * p);
+  return p < 0.25 ? Math.min(r, 24) : p < 0.5 ? Math.min(r, 49) : r;
+}
+
+const signedPct = (x: number) => `${x > 0 ? "+" : ""}${x.toFixed(1)}%`;
+
+// The best in-reach field of one day. The verdict, the day cells and "fog
+// likely <day>" all read this one function, so they cannot print different
+// numbers for the same day.
+interface DeployPick {
+  p: number; icao: string;
+  basis: DeployBasis | null;  // null: no in-reach field carries a chance for this day
+  pk: number | null;          // peak hourly %, "cal" days of new payloads only
+  eh: number | null;
+  noP: number;                // in-reach fields whose chance is missing from the payload
+  // the highest peak hour among those, for a day the build published no chance for
+  hourly: { icao: string; pk: number; eh: number | null } | null;
+}
+function deployPick(c: DeployBase, d: number): DeployPick {
+  const out: DeployPick = { p: 0, icao: "", basis: null, pk: null, eh: null, noP: 0, hourly: null };
+  if (!deployData) return out;
+  for (const x of c.contrib) {
+    const da = deployData.airports[x.a.icao];
+    if (!da) continue;
+    // reachability: the field's fog window must outlast transit + 45 min
+    const win = da.win?.[d];
+    if (win != null && win > 0 && win <= x.nm / chasePrefs.speed + 0.75) continue;
+    const p = da.p?.[d];
+    const pk = da.pk?.[d] ?? null;
+    if (p == null) {
+      // a "cal" day can carry no chance (an issuance without the 26-48 h
+      // bulletin, or a held day map). Missing is not zero: counting it as 0%
+      // would print SCRAP from a number that was never made.
+      out.noP++;
+      if (pk != null && (!out.hourly || pk > out.hourly.pk)) out.hourly = { icao: x.a.icao, pk, eh: da.eh?.[d] ?? null };
+      continue;
     }
-    if (best >= 0.5) {
+    if (!out.basis || p > out.p) {
+      out.p = p; out.icao = x.a.icao; out.basis = deployBasis(da.tiers?.[d], d, x.a.icao, p);
+      out.pk = pk; out.eh = da.eh?.[d] ?? null;
+    }
+  }
+  return out;
+}
+
+const deployPicks = (c: DeployBase) => Array.from({ length: deployWindow }, (_, d) => deployPick(c, d));
+
+// first day in the window with a REACHABLE field at 50% or more —
+// the operator's "when could we actually go" number
+function firstLikely(picks: DeployPick[]): { label: string; p: number; icao: string; d: number; basis: DeployBasis } | null {
+  for (let d = 0; d < picks.length; d++) {
+    const k = picks[d];
+    if (k.basis && k.p >= 0.5) {
       const label = d === 0 ? "tomorrow"
         : new Date(Date.now() + (d + 1) * 864e5).toLocaleDateString("en-US", { weekday: "short" });
-      return { label, p: best, icao: bi, d };
+      return { label, p: k.p, icao: k.icao, d, basis: k.basis };
     }
   }
   return null;
+}
+
+// What stands behind a mapped day-level chance p at one field, from the checks
+// the payload carries for the map that day used (meta.daycal.days). It prints
+// nothing the payload does not hold: a refit changes these numbers without a
+// deploy.
+//
+// The line on screen says how far off the number ran, never a second
+// percentage of fog. The first version printed "days shown at 50% or more (64%
+// on average) had an hour below CAT I 58% of the time (427 airport-days)"
+// under "50% chance": four percentages in three lines, the last one reading as
+// a second chance for the same day. The counts are in the hover text.
+//
+// A field in a judged area is held against that area's own record, not the
+// pooled one. calibrated false: the area missed at this level (more than 10
+// points off, 50 airport-days or more), so the caller prints the word grey.
+interface DaycalCheck { calibrated: boolean; text: string; title: string; area: DeployArea | null; gap: number | null }
+type UsableBand = DeployBand & { shown: number; obs: number };
+const usableBand = (b: DeployBand | null | undefined): b is UsableBand =>
+  !!b && b.n >= 50 && typeof b.shown === "number" && typeof b.obs === "number"
+  && Number.isFinite(b.shown) && Number.isFinite(b.obs);
+const gapPoints = (b: UsableBand) => Math.round(100 * (b.shown - b.obs));
+function gapWords(b: UsableBand): string {
+  const g = gapPoints(b);
+  return Math.abs(g) <= 2 ? "about right" : `about ${Math.abs(g)} points ${g > 0 ? "high" : "low"}`;
+}
+function daycalCheck(d: number, icao: string, p: number): DaycalCheck {
+  const dc = deployData?.meta?.daycal;
+  const r = dc?.days?.[String(d + 1)];
+  const year = /\b(20\d\d)\b/.exec(dc?.test ?? "")?.[1];
+  const checked = year ? `Checked on ${year}` : "Checked on a year it was not tuned on";
+  const out: DaycalCheck = { calibrated: true, text: `Calibrated forecast${year ? `, checked on ${year}` : ""}.`, title: "", area: null, gap: null };
+  if (!r) return out;
+  const pc = (x: number) => Math.round(100 * x);
+  const key = p >= 0.75 ? "ge75" : p >= 0.5 ? "ge50" : "b25_50";
+  // the group the number falls in; a thin top group falls back to 50% or more
+  const pick = (o: DeployDayReceipt | DeployArea): { b: UsableBand; level: string } | null => {
+    const b = o[key];
+    if (usableBand(b)) return { b, level: key === "ge75" ? "75% or more" : key === "ge50" ? "50% or more" : "25% to 49%" };
+    return key === "ge75" && usableBand(o.ge50) ? { b: o.ge50, level: "50% or more" } : null;
+  };
+  const detail = (who: string, x: { b: UsableBand; level: string }, sample?: string) =>
+    `${who} shown at ${x.level} averaged ${pc(x.b.shown)}% and had an hour below CAT I ${pc(x.b.obs)}% of the time ` +
+    `(${x.b.n.toLocaleString("en-US")} airport-days${x.b.dates ? ` from ${x.b.dates} forecast dates` : ""}${sample ? `; ${sample}` : ""}).`;
+  const about = [dc?.fit ? `The day-level chance was fitted on: ${dc.fit}.` : "",
+    r.skill_pct != null && Number.isFinite(r.skill_pct)
+      ? `Against climatology on its check: ${signedPct(r.skill_pct)} (Brier skill${r.n ? `, ${r.n.toLocaleString("en-US")} airport-days` : ""}).` : ""]
+    .filter(Boolean).join(" ");
+  const area = r.areas?.find((a) => Array.isArray(a.icaos) && a.icaos.includes(icao)) ?? null;
+  out.area = area;
+  const inBand = p >= 0.25;
+  const ownLevel = key === "ge75" ? "75% or more" : key === "ge50" ? "50% or more" : "25% to 49%";
+  // "days like this" is only said of a number inside the group that is quoted
+  const likeWords = (level: string) => (inBand && level === ownLevel ? "on days like this" : `on days shown at ${level}`);
+  const ranWords = (b: UsableBand) => (Math.abs(gapPoints(b)) <= 2 ? "was about right" : `ran ${gapWords(b)}`);
+  if (area) {
+    const x = pick(area);
+    const yrs = area.years ? ` (${area.years})` : "";
+    if (x) {
+      // for the 50%-or-more group the fitter's own verdict on the area stands
+      // (it looked at two samples); any other group speaks for itself
+      const ok = x.level === "50% or more" ? area.ok !== false : x.b.ok !== false;
+      const g = gapPoints(x.b);
+      out.gap = g;
+      if (ok) {
+        if (inBand) out.text = `Calibrated forecast. At ${area.name} fields${yrs} it ${ranWords(x.b)} ${likeWords(x.level)}.`;
+      } else {
+        out.calibrated = false;
+        out.text = `Not calibrated for ${area.name} fields: there it ${ranWords(x.b)} ${likeWords(x.level)}${yrs}. Expect the real chance to be ${g > 0 ? "lower" : "higher"}.`;
+      }
+      out.title = `${detail(`Days at ${area.name} fields`, x, area.years ? `${area.years}, weekly 12Z forecasts` : "")} ${about}`.trim();
+      return out;
+    }
+    if (area.ok === false && usableBand(area.ge50)) {
+      // the area missed where it could be judged, and this number sits where it could not
+      const g = gapPoints(area.ge50);
+      out.calibrated = false; out.gap = g;
+      out.text = `Not calibrated for ${area.name} fields: there, days shown at 50% or more ran ${gapWords(area.ge50)}${yrs}.`;
+      out.title = `${detail(`Days at ${area.name} fields`, { b: area.ge50, level: "50% or more" }, area.years ? `${area.years}, weekly 12Z forecasts` : "")} ${about}`.trim();
+      return out;
+    }
+  }
+  const x = inBand ? pick(r) : null;
+  if (x) {
+    out.gap = gapPoints(x.b);
+    out.text = `Calibrated forecast. ${checked}: it ${ranWords(x.b)} ${likeWords(x.level)}.`;
+    out.title = `${detail("Days", x, x.b.sample ?? r.sample)} ${about}`.trim();
+  } else {
+    out.title = [r.sample ? `Checked on: ${r.sample}.` : dc?.test ? `Checked on: ${dc.test}.` : "", about].filter(Boolean).join(" ");
+  }
+  return out;
+}
+
+// "days 3–8", "day 2", "days 1–2, 5"
+function daySpans(days: number[]): string {
+  const runs: string[] = [];
+  for (let i = 0; i < days.length; i++) {
+    let j = i;
+    while (j + 1 < days.length && days[j + 1] === days[j] + 1) j++;
+    runs.push(j > i ? `${days[i]}–${days[j]}` : `${days[i]}`);
+    i = j;
+  }
+  return `${days.length > 1 ? "days" : "day"} ${runs.join(", ")}`;
+}
+
+// Which basis the payload carries on each day, over every airport in it, as
+// runs of days. The "?" tooltip and the note under NEXT 48 H are both written
+// from this. They used to be fixed strings, and by 2026-11 one said days 3-8
+// were "advisory, unfitted", the note under the cells said "fitted", and a
+// third said the fitted tier had not landed, while 836 of 937 airports were on it.
+interface DeployTierSpan { from: number; to: number; parts: { words: string; share: number }[] }
+function deployTierSpans(): DeployTierSpan[] {
+  // an entry that is not an airport record (one null was enough to keep the
+  // whole panel from opening) is left out
+  const all = Object.entries(deployData?.airports ?? {}).filter(([, a]) => a && Array.isArray(a.tiers));
+  const nDays = all.reduce((m, [, a]) => Math.max(m, a.tiers.length), 0);
+  const days: { key: string; kinds: string[]; n: Map<string, number>; total: number }[] = [];
+  for (let d = 0; d < nDays; d++) {
+    const n = new Map<string, number>(); // keyed by the words shown, one wording per basis
+    let total = 0;
+    for (const [icao, a] of all) {
+      if (a.tiers[d] == null) continue;
+      const p = a.p?.[d];
+      // A day the build published no chance for rests on nothing, whatever its
+      // tier is called: a "cal" day without one is not an upper bound and not
+      // a calibrated chance, and the Alaska and Hawaii fields on the
+      // NBM-extended tier (90 of 100 on 2026-11-24) carry no number at all.
+      const w = p == null
+        ? (a.tiers[d] === "cal" ? "hourly forecast only (no day-level chance in this build)" : "no day-level chance in this plan")
+        : basisWords(deployBasis(a.tiers[d], d, icao, p));
+      n.set(w, (n.get(w) ?? 0) + 1); total++;
+    }
+    // a basis on under half a percent of airports is left out, so one stray
+    // airport does not split a run of otherwise identical days
+    const kinds = [...n].filter(([, c]) => c / total >= 0.005).sort((x, y) => y[1] - x[1]).map(([w]) => w);
+    // a run never crosses from day 2 to day 3: that is the 48 h line the note
+    // under NEXT 48 H speaks from
+    days.push({ key: `${d < 2}|${kinds.join("|")}`, kinds, n, total });
+  }
+  const spans: DeployTierSpan[] = [];
+  for (let d = 0; d < days.length; d++) {
+    let e = d;
+    while (e + 1 < days.length && days[e + 1].key === days[d].key) e++;
+    const run = days.slice(d, e + 1);
+    const total = run.reduce((s, x) => s + x.total, 0);
+    const parts = days[d].kinds.map((words) => ({
+      words, share: run.reduce((s, x) => s + (x.n.get(words) ?? 0), 0) / total,
+    })).sort((x, y) => y.share - x.share);
+    if (parts.length) spans.push({ from: d + 1, to: e + 1, parts });
+    d = e;
+  }
+  return spans;
+}
+function deployTierText(spans: DeployTierSpan[], mainOnly = false): string {
+  return spans.map((s) => {
+    const days = s.from === s.to ? `Day ${s.from}` : `Days ${s.from}–${s.to}`;
+    const parts = (mainOnly ? s.parts.slice(0, 1) : s.parts).map((p, i) =>
+      `${p.words} at ${Math.round(100 * p.share)}%${i === 0 ? " of airports" : ""}`);
+    return `${days}: ${parts.join(", ")}.`;
+  }).join(" ");
+}
+
+// One day cell. Days that rest on a checked forecast are solid blue. Every
+// other basis gets a dashed outline and no blue, so a run of climatology days
+// cannot pass for a run of forecast days on this dark panel without hovering.
+function deployCellStyle(basis: DeployBasis | null, p: number): string {
+  const a = (lo: number, hi: number) => (lo + (hi - lo) * Math.min(Math.max(p, 0), 1)).toFixed(2);
+  if (!basis) return "border:1px dotted #4a5a6a";
+  if (deployChecked(basis)) return `background:${p >= 0.5 ? "#7fc0e8" : "#3f76a3"};opacity:${a(0.18, 1)}`;
+  // a forecast that is not calibrated for its field's area: the forecast blue,
+  // inside the amber dashed outline of a number not to be taken at face value
+  if (basis === "area") return `border:1px dashed rgb(255,179,71);background:rgba(63,118,163,${a(0.12, 0.85)})`;
+  const rgb = basis === "bound" ? "255,179,71" : "141,160,178";
+  return `border:1px dashed rgb(${rgb});background:rgba(${rgb},${a(0.04, 0.6)})`;
+}
+// "ran about 30 points high at Central Valley fields"
+function areaMissWords(icao: string, d: number, p: number): string {
+  const c = daycalCheck(d, icao, p);
+  if (!c.area) return basisWords("area");
+  return `forecast not calibrated for ${c.area.name} fields` +
+    (c.gap != null && Math.abs(c.gap) > 2 ? ` (ran about ${Math.abs(c.gap)} points ${c.gap > 0 ? "high" : "low"} there)` : "");
+}
+function deployCellTitle(k: DeployPick, d: number): string {
+  const day = `day +${d + 1}`;
+  if (!k.basis) return k.noP
+    ? `${day}: no day-level chance in this plan for the fields in reach`
+    : `${day}: no field in reach has a fog window long enough to reach`;
+  let t = `${day}: ${k.icao} ${k.basis === "bound" ? "up to " : ""}${deployPct(k.p)}% chance of at least one hour below CAT I · ${k.basis === "area" ? areaMissWords(k.icao, d, k.p) : basisWords(k.basis)}`;
+  if (k.basis === "cal" || k.basis === "area") {
+    // day 2 reaches only as far as the forecast does: say which hours it saw
+    const cover = deployData?.meta?.daycal?.days?.[String(d + 1)]?.cover_end_utc;
+    if (cover != null) t += `, built from the hours up to ${String(cover).padStart(2, "0")}Z`;
+    if (k.pk != null) t += ` · peak hourly chance ${k.pk}%${cover != null ? " in those hours" : ""}`;
+  }
+  return t;
 }
 
 // "deploy by HH:MM": latest home-base departure that still makes the chain
@@ -1912,10 +2623,30 @@ function renderDeploy(ringBase?: Airport) {
   if (!deployOpen) return;
   const radius = Math.round(chasePrefs.speed * chasePrefs.maxEteH);
   const { targets, top } = deployData ? deployRank() : { targets: [], top: [] };
+  // a selected base that a settings change dropped from the list is no longer
+  // selected: the verdict fell back to the top base while the plan section
+  // stayed keyed to the old one, and stayed empty
+  if (ringBase && !top.some((c) => c.b.icao === ringBase!.icao)) ringBase = undefined;
   const gen = deployData?.meta?.generated?.slice(0, 10) ?? "—";
   const home = state.airports.find((x) => x.icao === chasePrefs.base);
+  const tierSpans = deployTierSpans();
+  const beyond48 = deployTierText(tierSpans.filter((s) => s.from >= 3), true);
   const rows = top.map((c, i) => {
-    const fl = firstLikely(c);
+    const picks = deployPicks(c);
+    const fl = firstLikely(picks);
+    // days the payload carries no chance for: "no strong fog day" must not be
+    // said about a day nobody put a number on
+    const blank = picks.filter((k) => !k.basis && k.noP).length;
+    // the row says "likely" only on a number that was checked; any other basis
+    // is named beside it, and the hover text gives the number and what it is
+    const flText = fl
+      ? `fog likely ${fl.label}${deployChecked(fl.basis) ? "" : fl.basis === "bound" ? " (upper bound)" : fl.basis === "area" ? " (not calibrated there)" : fl.basis === "other" ? " (unknown source)" : " (climatology)"}`
+      : blank === picks.length ? "no day-level chance in this plan" : "no strong fog day in window";
+    const flTitle = fl
+      ? `${fl.icao}: ${fl.basis === "bound" ? "up to " : ""}${deployPct(fl.p)}% chance of at least one hour below CAT I that day. Basis: ${fl.basis === "area" ? areaMissWords(fl.icao, fl.d, fl.p) : basisWords(fl.basis)}. It is the first day in the window when a field in reach of ${c.b.icao} is at 50% or more.`
+      : blank === picks.length
+      ? `This plan carries no day-level chance for the fields in reach of ${c.b.icao} in this window.`
+      : `No field in reach of ${c.b.icao} has a 50% or higher chance of at least one hour below CAT I on any day in the window.${blank ? ` ${blank} of ${picks.length} days have no day-level chance in this plan.` : ""}`;
     const dep = home
       ? (home.icao === c.b.icao
         ? `<span class="chase-badges">you're here</span>`
@@ -1926,51 +2657,187 @@ function renderDeploy(ringBase?: Airport) {
       <td class="num">${i + 1}</td>
       <td><b>${c.b.icao}</b> ${c.b.name.length > 18 ? c.b.name.slice(0, 17) + "…" : c.b.name}${placeTxt(c.b) ? ` <span class="chase-badges">· ${placeTxt(c.b)}</span>` : ""}<br>
         <span class="chase-badges" title="destination fields with flight time from ${c.b.icao} (still-air at ${chasePrefs.speed} kt)">go to: ${c.contrib.slice(0, 3).map((x) => `${x.a.icao} in ${eteStr(x.nm / chasePrefs.speed)}`).join(" · ")}</span><br>
-        <span class="chase-badges" title="the first day in the window when a reachable field is at least 50% likely to go below CAT I">${fl ? `fog likely ${fl.label}` : "no strong fog day in window"}</span></td>
+        <span class="chase-badges" title="${escHtml(flTitle)}">${flText}</span></td>
       <td class="num" title="expected chaseable fog hours at fields within ${radius} nm over the next ${deployWindow} days, counting only hours reachable before the fog lifts"><b>${c.s.toFixed(0)}h</b><br>${dep}</td>
     </tr>`;
   }).join("");
 
-  // GO / MARGINAL / SCRAP verdict for the selected (or top) base: per day,
-  // the best in-reach field's P(chaseable); a day counts when that P >= 50%
-  const vb = (ringBase && top.find((c) => c.b.icao === ringBase.icao)) || top[0];
+  // GO / MARGINAL / SCRAP verdict for the selected (or top) base: per day, the
+  // best in-reach field's chance of at least one hour below CAT I; a day
+  // counts when that chance is 50% or more
+  const vb = (ringBase && top.find((c) => c.b.icao === ringBase!.icao)) || top[0];
   let verdictHtml = "";
+  let launchNoteFor: { icao: string; word: string } | null = null; // one-day verdict only
   const hasP = !!vb && vb.contrib.some((x) => Array.isArray(deployData?.airports?.[x.a.icao]?.p));
   if (vb && deployData && hasP) {
-    const cells: { best: number; bi: string; bt: string }[] = [];
-    let likely = 0;
-    for (let d = 0; d < deployWindow; d++) {
-      let best = 0, bi = "", bt = "";
-      for (const x of vb.contrib) {
-        const da = deployData.airports[x.a.icao];
-        const p = da?.p?.[d];
-        // reachability: the field's fog window must outlast transit + 45 min
-        const win = da?.win?.[d];
-        if (win != null && win > 0 && win <= x.nm / chasePrefs.speed + 0.75) continue;
-        if (p != null && p > best) { best = p; bi = x.a.icao; bt = da.tiers[d]; }
-      }
-      if (best >= 0.5) likely++;
-      cells.push({ best, bi, bt });
-    }
+    const picks = deployPicks(vb);
     const sk = deployData.meta?.dayscale_skill;
+    const dc = deployData.meta?.daycal;
+    const baseTxt = icaoPlace(vb.b.icao);
+    // The fitted tier (days 3-8) carries one number: its Brier skill against
+    // climatology over the whole test year. That is not the check days 1-2
+    // got, and the words say so: its days at 50% or more were never checked
+    // as a group in this payload (a review found them verifying at 32-38% on
+    // days 6-8). "+2.2%" reads as "2.2 points more likely", so the number
+    // stays in the hover text.
+    const fitWords = "checked as a whole, not at the 50% level";
+    const fitTitle = sk != null
+      ? `Over its test year this tier scored ${signedPct(sk)} against climatology (Brier skill). Its days at 50% or more were not checked as a group.`
+      : "Its days at 50% or more were not checked as a group.";
+    const BOX = "background:#111823;border:1px solid #233240;border-radius:10px;padding:12px 14px;margin:12px 0";
+    const WORD = "font-size:1.05rem;letter-spacing:.04em";
+    const AMBER = "#ffb347", GREY = "#8da0b2";
     if (deployWindow === 1) {
-      // night-before board: one day, one sentence — WHEELS UP below carries the rest
-      const c0 = cells[0] ?? { best: 0, bi: "" };
-      const [word, color] = c0.best >= 0.5 ? ["GO", "#7fd49a"] : c0.best >= 0.25 ? ["MARGINAL", "#ffb347"] : ["SCRAP", "#ff5a4d"];
-      verdictHtml = `<div style="background:#111823;border:1px solid #233240;border-radius:10px;padding:12px 14px;margin:12px 0">
-        <b style="color:${color};font-size:1.05rem;letter-spacing:.04em">${word}</b>
-        <span style="color:var(--ink)"> — ${c0.bi ? `${icaoPlace(c0.bi)} is ${Math.round(100 * c0.best)}% likely chaseable tomorrow from ${icaoPlace(vb.b.icao)}` : `no reachable field likely tomorrow from ${icaoPlace(vb.b.icao)}`}</span>
-        <div class="note" style="margin-top:5px">launch plan below</div>
+      // night-before board: one day, one sentence — WHEELS UP below carries the rest.
+      // Under the sentence go the two numbers that were each checked against
+      // observations on their own (the peak hour and the expected hours), then
+      // one line saying what the chance rests on.
+      const k = picks[0];
+      let [word, color] = k.p >= 0.5 ? ["GO", "#7fd49a"] : k.p >= 0.25 ? ["MARGINAL", "#ffb347"] : ["SCRAP", "#ff5a4d"];
+      let head = "", facts = "", factsTitle = "", why = "", whyTitle = "", whyColor = "";
+      const hourlyFacts = (icao: string, pk: number | null, eh: number | null) => {
+        const bits: string[] = [];
+        if (pk != null) bits.push(`peak hourly chance <b>${pk}%</b>`);
+        if (eh != null) bits.push(`expected hours <b>${eh.toFixed(1)}</b>`);
+        return bits.length ? `Below CAT I at ${icao} tomorrow: ${bits.join(" · ")}` : "";
+      };
+      const hourlyTitle = (pk: number | null) => `From the calibrated hourly forecast: ${pk != null ? "the highest chance in any single hour of the day, and " : ""}the hourly chances added up over the day.`;
+      if (!k.basis && k.noP) {
+        // nothing to put on the bars: say so instead of printing SCRAP from a blank
+        word = "NO VERDICT"; color = GREY;
+        head = `this plan has no day-level chance for tomorrow at the fields in reach of ${baseTxt}`;
+        if (k.hourly) {
+          facts = hourlyFacts(k.hourly.icao, k.hourly.pk, k.hourly.eh) + ". It has the highest peak hour in reach.";
+          factsTitle = hourlyTitle(k.hourly.pk);
+        }
+        // the build says why (meta.daycal.why). "hour": it ran on a forecast
+        // cycle the day-level chance has not passed its check on (it is
+        // checked for 09Z to 21Z cycles; a redeploy on a US evening is not one)
+        const hh = dc?.cycle_hour;
+        why = (dc?.why?.["1"] === "hour" && Number.isInteger(hh)
+          ? `This plan was built from the ${String(hh).padStart(2, "0")}Z forecast. The day-level chance is not checked for a plan built at that hour, so there is no GO, MARGINAL or SCRAP until the next build.`
+          : "This build did not publish a day-level chance for tomorrow, so there is no GO, MARGINAL or SCRAP.") +
+          (k.hourly ? " The numbers above are from the calibrated hourly forecast." : "");
+        whyColor = AMBER;
+      } else if (!k.basis) {
+        head = `no field in reach of ${baseTxt} has a fog window long enough to reach tomorrow`;
+      } else {
+        const pct = deployPct(k.p);
+        // the color belongs to a checked forecast; on any other basis the
+        // word stays (same bars) but grey, so green alone never reads as a call
+        if (!deployChecked(k.basis)) color = GREY;
+        head = `${icaoPlace(k.icao)}: ${k.basis === "bound" ? "up to " : ""}${pct}% chance of at least one hour below CAT I tomorrow. Best field in reach of ${baseTxt}.`;
+        if (k.basis === "cal" || k.basis === "area" || k.basis === "bound") {
+          facts = hourlyFacts(k.icao, k.pk, k.eh);
+          factsTitle = hourlyTitle(k.pk);
+        }
+        switch (k.basis) {
+          case "cal":
+          case "area": {
+            // the same line for both: what the check behind this number found
+            // for this field. "area" is the case where it found a miss.
+            const c = daycalCheck(0, k.icao, k.p);
+            why = c.text;
+            whyTitle = c.title;
+            if (k.basis === "area") whyColor = AMBER;
+            break;
+          }
+          case "bound":
+            why = (dc ? "Upper bound, not a calibrated chance: this build did not correct tomorrow's number."
+              : "Upper bound from an older build of the planner, not a calibrated chance.") + " Expect the real chance to be lower.";
+            whyTitle = "This number multiplies the hourly chances as if each hour were independent. Fog hours come in runs, so it overstates the chance of a fog day.";
+            whyColor = AMBER;
+            break;
+          case "fit":
+            why = `Fitted day-scale model (${fitWords}).`;
+            whyTitle = fitTitle;
+            break;
+          case "nbe":
+            why = `From climatology × NBM-extended ingredients, not fitted. There is no forecast model behind this number for ${k.icao}.`;
+            whyColor = AMBER;
+            break;
+          case "cpc":
+            why = `From climatology × the CPC moisture outlook. There is no forecast behind this number for ${k.icao}.`;
+            whyColor = AMBER;
+            break;
+          case "climo":
+            why = `From climatology. There is no forecast behind this number for ${k.icao}.`;
+            whyColor = AMBER;
+            break;
+          default:
+            why = "This page does not know what this number rests on. Do not plan on it.";
+            whyColor = AMBER;
+        }
+      }
+      verdictHtml = `<div id="deploy-verdict" data-word="${word}" data-basis="${k.basis ?? "none"}" style="${BOX}">
+        <b style="color:${color};${WORD}">${word}</b>
+        <span style="color:var(--ink)" title="GO at a 50% or higher chance, MARGINAL at 25% or higher, SCRAP below that. The chance is for at least one hour below CAT I that day at the best field in reach."> — ${head}</span>
+        ${facts ? `<div style="margin-top:6px;font-size:11.5px;color:var(--ink)" title="${factsTitle}">${facts}</div>` : ""}
+        ${why ? `<div class="note" style="margin-top:5px${whyColor ? `;color:${whyColor}` : ""}"${whyTitle ? ` title="${escHtml(whyTitle)}"` : ""}>${escHtml(why)}</div>` : ""}
+        <div class="note" id="deploy-launch-note" style="margin-top:5px">reading the hourly forecast for a launch time…</div>
       </div>`;
+      // filled in below once the hourly forecast is in: this line used to be a
+      // fixed "launch plan below", printed over "no launch window" and over
+      // an empty section alike
+      launchNoteFor = { icao: k.icao || k.hourly?.icao || "", word };
     } else {
       const need = deployWindow >= 14 ? 3 : 2;
-      const [word, color] = likely >= need ? ["GO", "#7fd49a"] : likely >= 1 ? ["MARGINAL", "#ffb347"] : ["SCRAP", "#ff5a4d"];
-      verdictHtml = `<div style="background:#111823;border:1px solid #233240;border-radius:10px;padding:12px 14px;margin:12px 0">
-        <b style="color:${color};font-size:1.05rem;letter-spacing:.04em">${word}</b>
-        <span style="color:var(--ink)"> — ${likely} of ${deployWindow} days have a field ≥50% likely chaseable from ${icaoPlace(vb.b.icao)}</span>
-        <div style="display:flex;gap:2px;margin-top:9px">${cells.map((c, i) =>
-          `<div title="day +${i + 1}: ${c.bi || "no field"} ${(100 * c.best).toFixed(0)}% (${c.bt || "—"})" style="flex:1;height:15px;border-radius:3px;background:${c.best >= 0.5 ? "#7fc0e8" : "#3f76a3"};opacity:${(0.18 + 0.82 * c.best).toFixed(2)}"></div>`).join("")}</div>
-        <div class="note" style="margin-top:6px">day cells = best in-reach field's P(chaseable) · ${sk != null ? `days 3–8 <b>fitted</b> (2025 holdout ${sk > 0 ? "+" : ""}${sk.toFixed(1)}% vs climatology)` : "days 3–8 advisory until the fitted tier ships"}</div>
+      const counted = picks.filter((k) => k.basis && k.p >= 0.5);
+      const likely = counted.length;
+      const wordOf = (n: number) => (n >= need ? "GO" : n >= 1 ? "MARGINAL" : "SCRAP");
+      const word = wordOf(likely);
+      // same rule as the one-day word: it keeps its color only when the days
+      // that are checked forecasts would earn it on their own
+      const unchecked = counted.filter((k) => !deployChecked(k.basis));
+      const leans = wordOf(likely - unchecked.length) !== word;
+      const color = leans ? GREY : word === "GO" ? "#7fd49a" : word === "MARGINAL" ? "#ffb347" : "#ff5a4d";
+      const leansLine = leans
+        ? `<div class="note" style="margin-top:5px;color:${AMBER}">${unchecked.length} of the ${likely} ${likely === 1 ? "day" : "days"} counted ${unchecked.length === 1 ? "is" : "are"} not a checked forecast: ${[...new Set(unchecked.map((k) => basisWords(k.basis!)))].join(", ")}.</div>`
+        : "";
+      const CELL = "flex:1;height:15px;border-radius:3px;box-sizing:border-box";
+      const swatch = (b: DeployBasis | null) =>
+        `<span style="display:inline-block;width:11px;height:9px;border-radius:2px;box-sizing:border-box;vertical-align:-1px;margin-right:5px;${deployCellStyle(b, 0.75)}"></span>`;
+      // one legend line per basis among the cells drawn, with the days it
+      // covers, so the note cannot claim a tier this base's cells do not show
+      const order: DeployBasis[] = ["cal", "area", "bound", "fit", "nbe", "cpc", "climo", "other"];
+      const testYear = /\b(20\d\d)\b/.exec(dc?.test ?? "")?.[1];
+      const legend = order.map((b) => {
+        const days = picks.flatMap((k, i) => (k.basis === b ? [i + 1] : []));
+        if (!days.length) return { first: 99, html: "" };
+        // plain words on the line; the skill numbers ("+9.7%" reads as "9.7
+        // points more likely", and "holdout" is not a pilot's word) in the hover
+        let words = basisWords(b), title = "";
+        if (b === "fit") { words += ` (${fitWords})`; title = fitTitle; }
+        if (b === "cal") {
+          if (testYear) words += ` (checked on ${testYear}, a year it was not tuned on)`;
+          title = days.map((d) => {
+            const r = dc?.days?.[String(d)];
+            return r?.skill_pct != null ? `Day ${d}: ${signedPct(r.skill_pct)} against climatology on its check (Brier skill${r.sample ? `; ${r.sample}` : ""}).` : "";
+          }).filter(Boolean).join(" ");
+        }
+        if (b === "area") {
+          // name the areas the cells stand on, with how far off each ran
+          words = [...new Set(picks.flatMap((k, i) => (k.basis === "area" ? [areaMissWords(k.icao, i, k.p)] : [])))].join("; ");
+        }
+        return { first: days[0], html: `<div class="note" style="margin-top:2px${b === "bound" || b === "other" || b === "area" ? `;color:${AMBER}` : ""}"${title ? ` title="${escHtml(title)}"` : ""}>${swatch(b)}${daySpans(days)}: ${escHtml(words)}</div>` };
+      });
+      for (const missing of [true, false]) {
+        const days = picks.flatMap((k, i) => (!k.basis && !!k.noP === missing ? [i + 1] : []));
+        if (days.length) legend.push({ first: days[0], html: `<div class="note" style="margin-top:2px">${swatch(null)}${daySpans(days)}: ${missing
+          ? "no day-level chance in this plan for the fields in reach" : "no field in reach has a fog window long enough to reach"}</div>` });
+      }
+      // in day order, the way the cells read left to right
+      legend.sort((x, y) => x.first - y.first);
+      verdictHtml = `<div id="deploy-verdict" data-word="${word}" style="${BOX}">
+        <b style="color:${color};${WORD}">${word}</b>
+        <span style="color:var(--ink)"> — ${likely} of ${deployWindow} days ${likely === 1 ? "has" : "have"} a field with a 50% or higher chance of at least one hour below CAT I, in reach of ${baseTxt}</span>
+        ${leansLine}
+        <div style="display:flex;gap:2px;margin-top:9px">${picks.map((k, i) =>
+          `<div data-kind="${k.basis ?? "none"}" title="${escHtml(deployCellTitle(k, i))}" style="${CELL};${deployCellStyle(k.basis, k.p)}"></div>`).join("")}</div>
+        <div id="deploy-daynums" style="display:flex;gap:2px;margin-top:2px">${picks.map((_, i) =>
+          `<div style="flex:1;text-align:center;font-size:8.5px;line-height:1;color:var(--ink-dim)">${i + 1}</div>`).join("")}</div>
+        <div class="note" style="margin-top:6px">Each cell is one day, numbered as in the lines below: the chance of at least one hour below CAT I at the best field in reach. Brighter = higher chance.</div>
+        ${legend.map((l) => l.html).join("")}
       </div>`;
     }
   }
@@ -1986,15 +2853,20 @@ function renderDeploy(ringBase?: Airport) {
         ${[1, 1.5, 2, 2.5, 3, 4].map((h) => `<option value="${h}"${h === chasePrefs.maxEteH ? " selected" : ""}>${eteStr(h)}</option>`).join("")}
       </select></label>
       <span style="color:var(--ink-dim)">= ${radius} nm reach · shared with <a href="#chase" id="deploy-tochase">CHASE</a></span>
-      <span class="qtip" title="Airports must pass your saved CHASE filters. Chaseable = below CAT I. Tier honesty: days 1–2 calibrated; days 3–8 climatology × NBM-extended fog ingredients (advisory, unfitted); days 9–14 climatology × CPC moisture outlook (advisory, US only — Canadian airports stay pure climatology there).">?</span>
+      <span class="qtip" id="deploy-tiers-tip" title="${escHtml(`Airports must pass your saved CHASE filters. Chaseable = below CAT I.${tierSpans.length ? ` What each day's number rests on in this plan: ${deployTierText(tierSpans)} The CPC outlook covers the US only.` : ""}`)}">?</span>
     </div>
     ${(() => {
       const age = baseAge();
       if (!home) return `<p class="note" style="margin-top:6px;color:#ffb347">no CHASE base set — deploy-by departure times need one. <a href="#chase" id="deploy-basechange">set base</a></p>`;
       return `<p class="note" style="margin-top:6px" title="every deploy-by time in the table is the latest departure from this base">deploy-by times from your base <b>${home.icao}</b> · <span${age?.stale ? ' style="color:#ffb347"' : ""}>${age?.label ?? ""}${age?.stale ? " — still current?" : ""}</span> <a href="#chase" id="deploy-basechange">change</a>${age?.stale ? ` · <a href="#" id="deploy-baseok">✓ still ${home.icao}</a>` : ""}</p>`;
     })()}
-    <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span><span class="qtip" title="Click a base row (or its orange dot on the map) to ring its reach and expand the launch plan; click a blue dot for that airport's deep-dive. Dot size = expected chaseable hours. The daily build logs every advisory prediction — the extended tiers earn verification the same way the 48 h model did.">?</span></div>
+    <div class="stratum-h"><b style="color:#e8b96a">BEST BASES</b><span class="n">${top.length}</span><span>ranked by expected chaseable hours within reach</span><span class="qtip" title="Click a base row (or its orange dot on the map) to ring its reach and expand the launch plan; click a blue dot for that airport's deep-dive. Dot size = expected chaseable hours. The daily build logs every day's numbers so each tier can be scored against what happened.">?</span></div>
     ${rows ? `<table class="rank-table"><thead><tr><th>#</th><th>base · top nearby fog</th><th class="num" title="expected chaseable fog hours summed across ALL reachable fields over the window — an inventory of opportunities, not one aircraft's itinerary. Each field counts only the fog-window hours remaining after still-air transit (launch-at-onset + 30 min margin), so a distant field whose fog lifts before arrival counts near zero. Contributor times are ETE from the base.">chaseable hrs</th></tr></thead><tbody>${rows}</tbody></table>`
+      // "no expected fog" is only said when the planner looked. Without its
+      // data, or without the airport list the bases are ranked from, it did
+      // not look, and the same sentence used to be printed for both.
+      : !deployData ? `<p class="note" id="deploy-nodata" style="color:#ffb347">The planner's data did not load, so no base can be ranked. Open DEPLOY again to retry, or reload the page.</p>`
+      : !chaseData ? `<p class="note" id="deploy-nodata" style="color:#ffb347">The airport list did not load, so no base can be ranked. Open DEPLOY again to retry, or reload the page.</p>`
       : `<p class="note">No expected fog within range of any base under the current filters — widen the CHASE filters or the window.</p>`}
     <div id="deploy-48"></div>`;
 
@@ -2040,7 +2912,17 @@ function renderDeploy(ringBase?: Airport) {
         }
         const fc = await getForecast();
         const el = panelContent.querySelector("#deploy-48");
-        if (!el || !fc) return;
+        const noteEl = panelContent.querySelector<HTMLElement>("#deploy-launch-note");
+        if (!el) return;
+        if (!fc) {
+          // said, not skipped: the section used to stay empty under a verdict
+          // that pointed at it
+          const msg = "Hourly forecast unavailable. No wheels-up time can be computed.";
+          if (noteEl) { noteEl.textContent = msg; noteEl.style.color = "#ffb347"; }
+          el.innerHTML = `<div class="stratum-h"><b style="color:#9fd8ff">NEXT 48 H FROM ${sel.b.icao}</b><span></span><span>calibrated live forecast at the top fields in reach</span></div>
+            <p class="note" style="color:#ffb347">${msg} Open DEPLOY again to retry.</p>`;
+          return;
+        }
         // the night-before answer: pick tomorrow's best reachable window and
         // back the wheels-up time off its opening minus the flight out
         let launch = "";
@@ -2079,6 +2961,22 @@ function renderDeploy(ringBase?: Airport) {
           } else {
             launch = `<p class="note">no launch window in the next ~30 h from ${sel.b.icao} — no reachable field's <b>hourly</b> curve clears 40% at a catchable time (the verdict above is day-scale). Forecast refreshes hourly; recheck before committing.</p>`;
           }
+          // The verdict box says which of the two the pilot will find below.
+          // A day-level GO at KVIS sat over "no launch window" at every base
+          // on 2026-11-24: its best hour for fog under 1 mile was 36%, and
+          // the launch plan needs 40%.
+          if (noteEl && launchNoteFor) {
+            if (best) {
+              noteEl.textContent = "launch plan below";
+            } else {
+              const f = launchNoteFor.icao ? fc.airports?.[launchNoteFor.icao] : null;
+              const peak = f ? Math.max(...f.p.map((r: number[]) => r[0])) : null;
+              noteEl.textContent = "No launch time yet: " + (peak != null && Number.isFinite(peak) && peak < 40
+                ? `the best hour at ${launchNoteFor.icao} is ${peak}% for fog under 1 mile, and the launch plan needs 40%.`
+                : "no field in reach clears the launch plan's 40% bar (fog under 1 mile) at an hour that can still be reached.");
+              if (launchNoteFor.word === "GO" || launchNoteFor.word === "MARGINAL") noteEl.style.color = "#ffb347";
+            }
+          }
         }
         const lines = sel.contrib.slice(0, 5).map((x) => {
           const ch = fogCharacter(x.a, fc);
@@ -2090,7 +2988,7 @@ function renderDeploy(ringBase?: Airport) {
           <div class="stratum-h"><b style="color:#9fd8ff">NEXT 48 H FROM ${sel.b.icao}</b><span></span><span>calibrated live forecast at the top fields in reach</span></div>
           ${launch}
           ${lines ? `<table class="rank-table"><tbody>${lines}</tbody></table>` : `<p class="note">no live forecast coverage at this base's top fields.</p>`}
-          <p class="note">Window = hours with fog probability ≥40% of its peak; severity pills show the strongest threshold with ≥25% chance. Beyond 48 h the planner is climatology-guided until the fitted extended tier (V3.2) lands.</p>`;
+          <p class="note">Window = hours with fog probability ≥40% of its peak; severity pills show the strongest threshold with ≥25% chance.${beyond48 ? ` Beyond 48 h in this plan: ${escHtml(beyond48)}` : ""}</p>`;
         // row click = expand the peek in place (no navigation, planner state kept)
         el.querySelectorAll("tr.fpeek").forEach((tr) =>
           tr.addEventListener("click", () => {

@@ -37,7 +37,7 @@ jobs:
           UA='Mozilla/5.0 (compatible; fogatlas-watchdog; +https://fogatlas.org/about/)'
           set +e
           python3 - "$UA" > report.txt <<'PY'
-          import json, sys, urllib.request, urllib.error
+          import csv, json, sys, time, urllib.request, urllib.error
           from datetime import datetime, timezone, timedelta, date
           UA = sys.argv[1]
           now = datetime.now(timezone.utc)
@@ -136,13 +136,29 @@ jobs:
           #    for day 1 and 936 on a fitted/NBE tier for day 5. Broken
           #    (2026-11-04..24): 0 and 0 — every day was "climo"/"cpc" and the
           #    payload still looked fresh. Floor: half the airports on each.
+          #    A "cal" day 1 can also carry no day-level chance at all (p null),
+          #    with the tier count above still perfect: the day map is only
+          #    published from the cycle hours it was checked on (09Z-21Z).
+          #    build_deploy.py refuses to write such a payload over the live one
+          #    (bake_decision), so this is the backstop for the ways around
+          #    that: a held day-1 map, or a payload uploaded by hand. The panel
+          #    then says NO VERDICT for tomorrow. Same floor: half the airports.
           try:
-              dp = get("https://fogatlas.org/api/deploy")["airports"]
+              dpl = get("https://fogatlas.org/api/deploy")
+              dp = dpl["airports"]
               n = len(dp)
               d1 = sum(1 for v in dp.values() if v["tiers"][0] == "cal")
               d5 = sum(1 for v in dp.values() if v["tiers"][4] in ("fit", "nbe"))
               bad = n < 400 or d1 < n / 2 or d5 < n / 2
               (fails if bad else notes).append(f"deploy planner: {n} airports, {d1} calibrated on day 1, {d5} on a forecast tier on day 5 (floor: half of each)")
+              d1p = sum(1 for v in dp.values() if v["tiers"][0] == "cal" and (v.get("p") or [None])[0] is not None)
+              dc = (dpl.get("meta") or {}).get("daycal") or {}
+              why = (dc.get("why") or {}).get("1")
+              line = f"deploy day 1: {d1p} of {d1} calibrated airports carry a day-level chance for tomorrow"
+              if d1 and d1p < n / 2:
+                  line += (f" — built from the {dc.get('cycle_hour'):02d}Z cycle, which the day map is not checked on; redeploy between 10Z and 22Z"
+                           if why == "hour" and isinstance(dc.get("cycle_hour"), int) else f" — reason given by the build: {why}")
+              (fails if d1 and d1p < n / 2 else notes).append(line)
           except Exception as e:
               fails.append(f"deploy planner: /api/deploy unreadable — {e}")
           # 8. the baked pages carry calibrated answers: at least one of the
@@ -155,6 +171,119 @@ jobs:
                   (notes if got else fails).append(f"public pages: {len(got)} of {len(sample)} sampled public airports ({' '.join(sample)}) carry a calibrated forecast")
           except Exception as e:
               fails.append(f"public pages: sample data.json unreadable — {e}")
+          # 9. the live observation feed that the CHASE board and the map's NOW
+          #    layer read. Until 2026-11-24 nothing here looked at /api/now, and
+          #    the board turned a dead feed into "nothing below CAT I within
+          #    range right now". The app now refuses a bad feed itself
+          #    (app/src/feed.ts); this is the backstop for the hours nobody has
+          #    the board open, and it applies the same gates: HTTP 200, every
+          #    column the app reads named in the header row, at least 3,000
+          #    stations, 85% of the chase.json airports among them (a body cut
+          #    to 70% kept 3,621 stations but only 334 of 937 chase airports),
+          #    70% of stations with a visibility, newest report under 20 min
+          #    old. Healthy on 2026-11-24: 5,146 stations, 905 of 937, 93%,
+          #    3 min. One retry after 75 s before failing: this runs hourly and
+          #    a one-minute blip must not open an issue.
+          #    FEED_COLS must match FEED_REQUIRED_COLUMNS in app/src/feed.ts
+          #    (app/test/test_feed.mjs compares the two lists).
+          FEED_COLS = ["raw_text", "station_id", "observation_time", "temp_c", "dewpoint_c",
+                       "wind_speed_kt", "visibility_statute_mi", "wx_string", "sky_cover", "cloud_base_ft_agl"]
+          # FEED_REPORT_MAX_AGE_MS and FEED_MIN_CURRENT_SHARE in app/src/feed.ts
+          # (the same test compares them). Healthy on 2026-11-24: 896 to 912
+          # of 937 chase airports had a report under 75 min old.
+          CUR_MAX_MIN, CUR_SHARE = 75, 0.70
+          def fields(line):
+              try:
+                  return next(csv.reader([line.rstrip("\r")]), [])
+              except csv.Error:
+                  return []
+          def feed_check():
+              """-> (failed gate or None, what was seen). The gate name goes ahead of
+              the colon so the issue key changes when a different gate fails."""
+              try:
+                  text = get("https://fogatlas.org/api/now", js=False).decode("latin-1", "replace")
+              except urllib.error.HTTPError as e:
+                  return "status", f"/api/now answered HTTP {e.code}"
+              except Exception as e:
+                  return "status", f"/api/now unreadable — {e}"
+              lines = [l for l in text.split("\n") if l.strip()]
+              head = [h.strip() for h in fields(lines[0])] if lines else []
+              missing = [c for c in FEED_COLS if c not in head]
+              if missing:
+                  return "header", f"/api/now header row has no column named {', '.join(missing)} (first line starts {(lines[0] if lines else '')[:50]!r})"
+              i_id, i_time, i_vis = (head.index(c) for c in ("station_id", "observation_time", "visibility_statute_mi"))
+              seen, times, filled, newest, bad = set(), {}, 0, None, 0
+              t_now = datetime.now(timezone.utc)
+              for l in lines[1:]:
+                  f = fields(l)
+                  if len(f) != len(head) or not f[i_id]:
+                      bad += 1
+                      continue
+                  if f[i_id] in seen:
+                      continue
+                  seen.add(f[i_id])
+                  try:
+                      float(f[i_vis].replace("+", "")); filled += 1
+                  except ValueError:
+                      pass
+                  try:
+                      t = datetime.fromisoformat(f[i_time].replace("Z", "+00:00"))
+                      times[f[i_id]] = t
+                      # a station with a wrong clock must not make a stuck file look fresh
+                      if t <= t_now + timedelta(minutes=5) and (newest is None or t > newest):
+                          newest = t
+                  except ValueError:
+                      pass
+              if bad > len(seen):
+                  return "header", f"/api/now has {bad} rows that do not match its {len(head)}-column header row"
+              fill = filled / len(seen) if seen else 0.0
+              age = (t_now - newest).total_seconds() / 60 if newest else None
+              saw = f"{len(seen)} stations, {fill:.0%} with a visibility, newest report {'unreadable' if age is None else f'{age:.0f} min old'}, {len(head)} columns"
+              if len(seen) < 3000:
+                  return "stations", f"/api/now has {saw} (floor 3,000 stations)"
+              chase, current = None, 0
+              try:
+                  chase = list(get("https://fogatlas.org/data/chase.json")["airports"])
+                  have = sum(1 for i in chase if i in seen)
+                  current = sum(1 for i in chase if i in times and (t_now - times[i]).total_seconds() <= CUR_MAX_MIN * 60)
+                  saw += f", {have} of {len(chase)} chase airports ({current} with a report under {CUR_MAX_MIN} min old)"
+                  if have < 0.85 * len(chase):
+                      return "coverage", f"/api/now has {saw} (floor 85% of the chase airports)"
+              except Exception as e:
+                  saw += f", chase coverage not checked (/data/chase.json unreadable — {e})"
+              if fill < 0.70:
+                  return "visibility", f"/api/now has {saw} (floor 70% with a visibility)"
+              if age is None or age > 20:
+                  return "age", f"/api/now has {saw} (limit 20 min)"
+              # the newest report of ~5,000 stations stays fresh on the small
+              # 20-minute AWOS stations alone (60 of the 994 reports under
+              # 20 min old were chase airports at 00:21Z on 2026-11-25), so
+              # the chase airports' own reports get the app's own gate
+              if chase and current < CUR_SHARE * len(chase):
+                  return "age", f"/api/now has {saw} (floor {CUR_SHARE:.0%} of the chase airports under {CUR_MAX_MIN} min old)"
+              return None, saw
+          gate, saw = feed_check()
+          if gate:
+              first = f"{gate}: {saw}"
+              time.sleep(75)
+              gate, saw = feed_check()
+              if gate:
+                  fails.append(f"live feed {gate}: {saw} — second try, 75 s after the first also failed ({first})")
+              else:
+                  notes.append(f"live feed: {saw} — on the second try; 75 s earlier it failed ({first})")
+          else:
+              notes.append(f"live feed: {saw}")
+          # 10. the METAR proxy answers the several-airport form. The CHASE board
+          #     sends its candidates in one comma list to warm-start the nowcast;
+          #     from 2026-07-10 to 2026-11-24 the function accepted a single id
+          #     and answered 400 "bad id" to every such request, the board
+          #     swallowed the error, and a one-id probe would have stayed green.
+          try:
+              arr = get("https://fogatlas.org/api/metar?ids=KSFO,KDEN&hours=3")
+              got = sorted({o.get("icaoId") for o in arr if isinstance(o, dict)} - {None}) if isinstance(arr, list) else []
+              (notes if got else fails).append(f"metar proxy: /api/metar?ids=KSFO,KDEN returned {len(arr) if isinstance(arr, list) else 'no'} reports for {' '.join(got) or 'no station'} (want a non-empty JSON array)")
+          except Exception as e:
+              fails.append(f"metar proxy: /api/metar?ids=KSFO,KDEN unreadable — {e}")
           for n in notes: print("ok  ", n)
           for f in fails: print("FAIL", f)
           sys.exit(1 if fails else 0)

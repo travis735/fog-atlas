@@ -12,6 +12,7 @@
 Runs identically on a laptop and in the GitHub Action. No unbounded polling:
 exactly one NBM probe walk, one AWC fetch per run.
 """
+import csv
 import gzip
 import io
 import json
@@ -81,43 +82,123 @@ def score(calib, feats: dict) -> float:
 
 
 AWC = "https://aviationweather.gov/data/cache/metars.cache.csv.gz"
+# The columns the truth record is built from, by header NAME (a subset of
+# FEED_REQUIRED_COLUMNS in app/src/feed.ts; app/test/test_feed.mjs checks that).
+# sky_cover / cloud_base_ft_agl repeat once per cloud layer.
+AWC_TRUTH_COLS = ("station_id", "observation_time", "visibility_statute_mi", "sky_cover", "cloud_base_ft_agl")
 
-def awc_truth(stations: set[str]) -> dict:
-    raw = fetch(AWC, timeout=120)
-    if not raw:
-        return {}
-    text = gzip.decompress(raw).decode("latin-1", "replace")
-    out = {}
-    for line in text.split("\n"):
-        if not line.startswith('"'):
+
+def _awc_refuse(why: str) -> dict:
+    """No observations from this file, said loudly. The run stays green on
+    purpose (the forecast was already written and must still publish); the
+    annotation is what makes the gap in the verification record visible."""
+    print(f"::error title=AWC observations not recorded::{why} No truth observations were recorded from this file; "
+          f"the forecast itself is unaffected. See parse_awc_truth in forecast/engine.py.")
+    return {}
+
+
+def parse_awc_truth(text: str, stations: set[str]) -> dict:
+    """Truth flags per station from the text of AWC's metars.cache.csv.
+
+    Columns are found by NAME in the header row. Until 2026-11-24 this read
+    fixed positions (visibility = 10th field, sky cover = 22nd/24th/...), the
+    same pattern as the FAA fixed-width and NBM header incidents: one column
+    inserted upstream and every station would have been logged with visibility
+    taken from the wrong field. Those rows are the TRUTH the calibrated forecast
+    is scored against, so a wrong one is worse than a missing one. If a column
+    this needs is missing or ambiguous, or the rows do not line up with the
+    header, it records NOTHING from the file and says why.
+    """
+    lines = text.split("\n")
+    # leading blank lines are skipped, as app/src/feed.ts and the watchdog do:
+    # the three readers must agree on what a readable file is
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if not lines:
+        return _awc_refuse("metars.cache.csv came back empty.")
+    header = [h.strip() for h in _csv_fields(lines[0].lstrip("\ufeff"))]
+    where = {c: [i for i, h in enumerate(header) if h == c] for c in AWC_TRUTH_COLS}
+    missing = [c for c in AWC_TRUTH_COLS if not where[c]]
+    if missing:
+        return _awc_refuse(f"metars.cache.csv has no column named {', '.join(missing)} "
+                           f"(its first line starts {lines[0][:60]!r}).")
+    twice = [c for c in AWC_TRUTH_COLS[:3] if len(where[c]) > 1]
+    if twice:
+        return _awc_refuse(f"metars.cache.csv has more than one column named {', '.join(twice)}.")
+    covers, bases = where["sky_cover"], where["cloud_base_ft_agl"]
+    if len(covers) != len(bases) or any(
+            not (c < b and (k + 1 == len(covers) or b < covers[k + 1]))
+            for k, (c, b) in enumerate(zip(covers, bases))):
+        return _awc_refuse("the sky_cover / cloud_base_ft_agl columns of metars.cache.csv no longer pair up.")
+    i_id, i_time, i_vis = (where[c][0] for c in AWC_TRUTH_COLS[:3])
+
+    out, good, bad, bad_width = {}, 0, 0, 0
+    for line in lines[1:]:
+        if not line.strip():
             continue
-        close = line.find('",')
-        if close < 0:
+        cols = _csv_fields(line)
+        # a row that does not line up with the header (a field inserted in the
+        # data but not named) cannot be read by name
+        if len(cols) != len(header):
+            bad += 1
+            bad_width = bad_width or len(cols)
             continue
-        cols = line[close + 2:].split(",")
-        icao = cols[0]
+        good += 1
+        icao = cols[i_id]
         if icao not in stations or icao in out:
             continue
+        v = cols[i_vis]
         try:
-            vis = float(cols[9]) if cols[9] and "+" not in cols[9] else (10.0 if cols[9] else None)
+            vis = float(v) if v and "+" not in v else (10.0 if v else None)
         except ValueError:
             vis = None
         ceil = None
-        for k in (21, 23, 25, 27):
-            if k < len(cols) and cols[k] in ("BKN", "OVC", "OVX"):
+        for c, b in zip(covers, bases):
+            if cols[c] in ("BKN", "OVC", "OVX"):
                 try:
-                    b = float(cols[k + 1])
-                    ceil = b if ceil is None else min(ceil, b)
+                    base = float(cols[b])
+                    ceil = base if ceil is None else min(ceil, base)
                 except ValueError:
                     pass
         if vis is None:
             continue
         out[icao] = {
-            "obs": cols[1],
+            "obs": cols[i_time],
             "v10": int(vis < 1.0), "v05": int(vis < 0.5), "v025": int(vis < 0.25),
             "sub": int(vis < 0.5 or (ceil is not None and ceil < 200)),
         }
+    if bad > good:
+        return _awc_refuse(f"metars.cache.csv rows have {bad_width} fields but its header names {len(header)}.")
+    if not good:
+        # a header row and nothing under it: green and silent until 2026-11-25
+        return _awc_refuse("metars.cache.csv has a header row and no reports under it.")
     return out
+
+
+def _csv_fields(line: str) -> list[str]:
+    """One CSV line into fields; raw_text is quoted and can contain commas."""
+    try:
+        return next(csv.reader([line.rstrip("\r")]), [])
+    except csv.Error:
+        return []
+
+
+def awc_truth(stations: set[str]) -> dict:
+    raw = fetch(AWC, timeout=120)
+    if not raw:
+        # fetch() swallows every error and returns None. This used to return
+        # {} without a word: an AWC block of the runner would have left the
+        # verification record empty hour after hour on green runs, the only
+        # trace being "obs recorded: 0" in the step log.
+        return _awc_refuse("metars.cache.csv.gz could not be downloaded (no response, or an empty one).")
+    try:
+        text = gzip.decompress(raw).decode("latin-1", "replace")
+    except Exception as e:  # noqa: BLE001 (BadGzipFile, EOFError, zlib.error)
+        # an error page served in place of the .gz used to raise here, AFTER
+        # current.json was written and BEFORE the next step uploaded it: one
+        # bad AWC response would have cost that hour's forecast
+        return _awc_refuse(f"metars.cache.csv.gz did not decompress ({e!r}).")
+    return parse_awc_truth(text, stations)
 
 
 def main() -> None:

@@ -1,0 +1,58 @@
+[
+ {
+  "icaoId": "KSMP",
+  "receiptTime": "2026-11-24T22:18:13.039Z",
+  "obsTime": 1795558620,
+  "reportTime": "2026-11-24T22:17:00.000Z",
+  "temp": -1.1,
+  "dewp": -1.1,
+  "visib": 0.25,
+  "altim": 1014.3,
+  "qcField": 6,
+  "wxString": "FZFG",
+  "vertVis": 1,
+  "metarType": "SPECI",
+  "rawOb": "SPECI KSMP 242217Z AUTO 1/4SM FZFG VV001 M01/M01 A2995 RMK AO2 T10111011 ",
+  "lat": 47.2764,
+  "lon": -121.3383,
+  "elev": 1206,
+  "name": "Stampede Pass, WA, US",
+  "cover": "OVX",
+  "clouds": [
+   {
+    "cover": "OVX",
+    "base": 100
+   }
+  ],
+  "fltCat": "LIFR"
+ },
+ {
+  "icaoId": "MMIO",
+  "receiptTime": "2026-11-24T22:00:17.634Z",
+  "obsTime": 1795556400,
+  "reportTime": "2026-11-24T21:40:00.000Z",
+  "temp": 8,
+  "dewp": 8,
+  "wdir": 360,
+  "wspd": 6,
+  "visib": 0.5,
+  "altim": 1024.5,
+  "qcField": 0,
+  "wxString": "-DZ FG",
+  "vertVis": 1,
+  "metarType": "METAR",
+  "rawOb": "METAR MMIO 242140Z 36006KT 1/2SM -DZ FG VV001 08/08 A3025 RMK 8//// VSBY LWR S",
+  "lat": 25.544,
+  "lon": -100.928,
+  "elev": 1430,
+  "name": "Saltillo/Guadalupe Intl, CO, MX",
+  "cover": "OVX",
+  "clouds": [
+   {
+    "cover": "OVX",
+    "base": 100
+   }
+  ],
+  "fltCat": "LIFR"
+ }
+]
