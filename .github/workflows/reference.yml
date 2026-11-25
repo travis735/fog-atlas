@@ -2,7 +2,11 @@
 #
 # Downloads the current-cycle FAA NASR subscriber file + CIFP + ILS Master
 # report and the ESSP EGNOS LPV dataset, rebuilds the derived reference CSVs
-# and chase.json; when the minima/category CSVs changed, re-exports the atlas
+# and chase.json (runway ends from the NASR CSV tables, and the list of LED
+# approach lights from the FAA's airport remarks: each change is a line in
+# the job summary and in the commit message; a collapsed list fails the job
+# before anything is committed); when the minima/category CSVs changed,
+# re-exports the atlas
 # aggregates against the archived METAR classification (291 MB parquet hosted
 # in R2 at fogatlas-forecast/reference/classified.parquet — re-upload it after
 # any METAR refresh). Commits whatever changed and redeploys the site.
@@ -19,6 +23,14 @@ on:
         description: "deploy the site even when nothing changed (proves the Pages leg / manual redeploy)"
         type: boolean
         default: false
+      allow_led_removals:
+        # build_chase.py stops when more than two runway ends leave the LED
+        # list in one cycle (a dropped end reads "not flagged" on the board).
+        # After reading those airports' remarks in the failed run's log, a
+        # person re-runs with the number it named.
+        description: "LED list: let this many runway ends leave it (only after reading their remarks; blank = up to 2)"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -49,11 +61,18 @@ jobs:
       - uses: actions/setup-node@v7
         with: { node-version: "24.22.1" }
       - name: refresh reference data
+        env:
+          ALLOW_LED_REMOVALS: ${{ inputs.allow_led_removals }}
         run: |
           pip install --quiet -c .github/pip-constraints.txt xlrd openpyxl duckdb timezonefinder
           python pipeline/fetch_nasr.py
           python pipeline/refresh_reference.py
-          python pipeline/build_chase.py
+          # the typed value reaches the builder only when it is digits and
+          # nothing else; a scheduled run has none and keeps the default
+          case "$ALLOW_LED_REMOVALS" in
+            ''|*[!0-9]*) python pipeline/build_chase.py ;;
+            *) python pipeline/build_chase.py --allow-led-removals "$ALLOW_LED_REMOVALS" ;;
+          esac
       - name: re-export atlas aggregates (only when minima/category inputs changed)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -81,7 +100,19 @@ jobs:
           else
             git config user.name "fogatlas-ci"
             git config user.email "actions@users.noreply.github.com"
-            git commit -m "reference: AIRAC cycle refresh ($(date -u +%F))"
+            # chase.json is one minified line, so its diff shows nothing a
+            # person can read. build_chase.py writes one line per LED
+            # approach-light change against the committed file ("LED ALS:
+            # +KXXX RWY 09"); the commit body carries them. The same lines are
+            # in the job summary, written by build_chase.py itself.
+            {
+              echo "reference: AIRAC cycle refresh ($(date -u +%F))"
+              if [ -s pipeline/out/led_changes.txt ]; then
+                echo
+                cat pipeline/out/led_changes.txt
+              fi
+            } > "$RUNNER_TEMP/reference-commit-message.txt"
+            git commit -F "$RUNNER_TEMP/reference-commit-message.txt"
             git pull --rebase origin main
             git push
             echo "changed=true" >> "$GITHUB_OUTPUT"

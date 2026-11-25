@@ -16,14 +16,21 @@ forecast/out/truth.parquet are gitignored and exist only there):
      integer rounding). The scoring primitives are imported from engine.py;
      the merge and feature block are a copy of engine.main()'s, and --parity
      proves the copy against a real engine run.
-  2. Aggregates each airport-cycle with build_deploy.cal_day_stats — the same
-     function the live build calls — into the any-hour product for day 1 and
-     for day 2 at each coverage end hour (build_deploy.DAY2_COVER).
-  3. Joins truth: did the UTC day contain at least one hourly below-CAT-I
-     flag (>= 18 hourly obs required).
-  4. Fits one monotone map per statistic on 2023-2024, tests it on 2025, and
-     writes forecast/out/daycal.json: the breakpoints build_deploy.py reads
-     in CI with the standard library, plus the receipts below.
+  2. Aggregates each airport-cycle with build_deploy.day_stats — the same
+     function the live build calls — into the any-hour product of each date
+     the cycle forecasts (its own date under way, the next, the one after).
+  3. Joins truth: did the UTC date contain at least one hourly below-CAT-I
+     flag (>= 18 hourly obs required; for a date under way, after the cycle).
+  4. Fits one monotone map per statistic on 2023-2024, tests it on real 2025
+     cycles at every bucket of cycle hours, fits and tests each area's own
+     map, and writes forecast/out/daycal.json: the breakpoints
+     build_deploy.py reads in CI with the standard library, plus the receipts.
+
+What follows is the record in the order it happened: version 1's
+pre-registration and result, version 2's amendments (day counted from the UTC
+date, maps named by planner day: d1, d2hNN), then VERSION 3, which is what
+the code below does. build_deploy.cal_day_stats and DAY2_COVER in the older
+text are now day_stats and the slot table.
 
 PRE-REGISTERED on 2026-11-24, before this fitter had scored a 2025 row:
   Rows       every engine station, weekly 12Z cycles. Fit on valid days in
@@ -120,6 +127,264 @@ RESULT after the amendments (every number is in daycal.json):
   per region are the real fix and need their own pre-registration.
   Still true: values published at 0.75+ verified at 0.67 (n 108).
 
+=============================================================================
+VERSION 3 — every build hour, day 2, regions.
+PRE-REGISTERED on 2026-11-25 (03:30Z), after the 03Z/06Z/15Z/18Z bulletins
+below were downloaded and BEFORE any of them, any own-date target, any
+natural-coverage day 2 or any regional map had been scored.
+
+Why: the planner is about to be rebuilt on every hourly forecast tick (a tick
+at h:25Z runs cycle h-1), and the pilot reads it on a US evening (22Z-08Z).
+Version 2 had a day-level chance only from 09Z-21Z cycles, day 2 on
+climatology, and every GO in the West flagged "ran about 30 points high" with
+the number left alone.
+
+THE SERVICE DAY (build_deploy.service_day). Days are counted from the UTC
+  date of (build time - 10 h); day k = service day + k. Day 1 flips at 10:00Z,
+  as the daily 10:25Z bake always did. So what a cycle forecasts for a day
+  depends on two things only: the cycle hour h, and j = target date - cycle
+  date in days. Every statistic, map and check below is keyed by (h, j); the
+  day number only picks which date is asked for.
+      cycles 09Z-23Z of D   day 1 = D+1 (j=1)   day 2 = D+2 (j=2)
+      cycles 00Z-08Z of D+1 day 1 = D+1 (j=0)   day 2 = D+2 (j=1)
+
+STATISTIC, every slot: 1 - prod(1 - p_hour)^step over the forecast hours of
+  the target date that the cycle covers (leads 1-25 hourly, step 1; NBS
+  three-hourly valid times beyond, step 3), exactly as build_deploy.day_stats
+  builds it. Hours before the cycle are not forecast and are not in it.
+TRUTH  j >= 1: at least one hourly below-CAT-I flag in the UTC date (>= 18
+         hourly obs), as before — also when the cycle covers only part of the
+         date (the claim on screen is about the whole day).
+       j = 0 (the day under way): at least one hourly below-CAT-I flag at an
+         hour AFTER the cycle hour, through 23Z of that date, with at least
+         three quarters of those hours observed. Never an hour already past.
+BASELINE for rule (a): j >= 1, dayscale.json climo_day as before. j = 0: the
+  per-airport monthly frequency of the same event (an hour below CAT I
+  between that cycle hour and 23Z) over every truth year except the row's own.
+
+SLOTS — which map a (cycle hour, j) uses and where it was fitted. Maps are
+  fitted on 2023-24 only, same method as version 2 (isotonic, blocks under
+  200 station-days pooled downward, one breakpoint per block, published as
+  max(map, peak hourly chance)).
+    ahead       j=1, h 09-23  all of the date            map d1   (the committed
+                              map, 12Z cycles of 2023-24; not refitted)
+    under way   j=0, h 00-08  hours after the cycle      map d1u  (new: 104
+                              weekly 03Z cycles of 2023-24, their own date)
+    evening     j=1, h 00-08  all of the date, 16-47 h   map d2f  (new: the same
+                              ahead                      03Z cycles, the next date)
+    after next  j=2, h 15-23  the date through 15Z, 18Z  map d2f  (no fit sample
+                              or 21Z, 3-hourly only      of its own)
+    partial     j=2, h 09-11  the date through 09Z       map d2h09 (committed)
+                j=2, h 12-14  the date through 12Z       map d2h12 (committed)
+    anything else (a cycle from an earlier date than the table expects, a day
+    the 48 h do not reach): no map, no day-level chance.
+  One fallback, named now: the h00 under-way bucket tries d1u first and, only
+  if d1u fails there, d1 (a 00Z cycle's own date is one hour short of the full
+  day a 23Z cycle sees). Both results are recorded; two candidates is two
+  looks, said so in the receipt. No other slot has a second candidate.
+
+BUCKETS — eight, three cycle hours each, named by their first hour, which is
+  the representative hour: h00 (00-02), h03, h06, h09, h12, h15, h18, h21
+  (21-23). No cycle hour is more than 2 h from a checked one, and all three
+  hours of a bucket cover day 2 through the same UTC hour.
+  Check sample of a bucket: real cycles of 2025 at its representative hour on
+  the 30 check dates (TRANSFER_DATES) — except h12, which keeps the 52 weekly
+  12Z cycles of 2025. On disk before this: 00Z, 09Z, 12Z, 21Z. Fetched for
+  this: 03Z, 06Z, 15Z, 18Z (2025) and 03Z on the 104 weekly dates of 2023-24
+  (12.2 GB, 344 s). Every 2025 cycle is replayed with the pre-2025 climatology.
+
+MINIMUM HOURS: a day's statistic is published only when at most 3
+  hour-equivalents are missing from what a complete NBH+NBS issuance of that
+  cycle covers (build_deploy.expected_used; for the ahead slot at 09Z-21Z
+  that is the old "20 of 23"). Fits and checks use every row that has the
+  statistic, as version 2 did; rows short of hours are counted in the receipt.
+
+SHIP RULE, per (slot, bucket) — the rule already in force, unchanged:
+  on the bucket's 2025 sample the published chance (a) has Brier skill > 0
+  against the baseline on the same rows, and (b) its >= 0.5 group, when it
+  has n >= 50, verifies within 10 points. A bucket whose map passes publishes
+  from its three cycle hours; one that fails publishes no day-level chance
+  (p is null and the receipt says why). The season rule stands too: where a
+  passing sample's Nov-Feb >= 0.5 group (n >= 50) misses by more than 10
+  points, the slot is not published for November-February target days.
+  This replaces version 2's "nearest sampled hour either side" rule: every
+  bucket now has its own sample.
+
+REGIONS. The ten areas are version 2's (AREAS), unchanged. 2025 has been
+  looked at by region, so it is not a clean holdout for a regional map:
+  LEAVE ONE YEAR OUT. For each family (d1 at 12Z, d1u and d2f at 03Z) and
+    each area: fit the area's own map on the area's rows of two of the years
+    2023, 2024, 2025 (same method, same 200 station-day minimum block, so a
+    thin area cannot print 100%), publish it on the third, rotate, pool the
+    three out-of-fold sets. The comparison is the pooled map put through the
+    same three folds, on the same rows.
+  FORM. Tried in this order; the first that passes is used:
+    floored    max(area map, peak hourly chance), the pooled map's own form;
+    unfloored  the area map alone. The floor assumes the peak hourly chance
+               is itself reliable there; item HOURLY below measures that. An
+               unfloored area can show a day chance below the peak hourly
+               chance, so the payload marks it and the screen must not print
+               the two as if they agreed.
+  REGIONAL RULE on the pooled out-of-fold rows — the ship rule plus three
+    conditions that only withhold:
+    (a) Brier skill > 0 against the baseline;
+    (b) the >= 0.5 group within 10 points when it has n >= 50;
+    (c) Brier lower than the pooled map's on the same rows (else no reason
+        to replace it);
+    (d) the 0.25-0.5 group within 10 points when it has n >= 50 (a map that
+        tops out under 0.5 publishes nothing else above SCRAP);
+    (e) the >= 0.5 group is empty or has n >= 50: an area map never
+        publishes a GO-level value that nothing could judge.
+    The season rule is read off the same rows.
+  Asymmetry, stated: calibration.json was fitted on 2023-24, so 2023-24
+    products are in-sample for the hourly model and 2025 products are not;
+    2025 rows also use the pre-2025 climatology. Results are reported per
+    held-out year so that shows. 2025 at 03Z is 30 cycle dates, not 52.
+  WHAT SHIPS: the area map fitted on 2023-24 (the 2025 fold's map), so the
+    2025 cycle-hour samples below are out of sample for it. The other two
+    folds are evidence about the procedure, not about that map.
+  BY BUCKET: an area map is used in a (slot, bucket) only when the slot's
+    pooled map is published there AND the area map, in the form chosen above,
+    passes (a), (b) and (d) on the area's own rows of that bucket's 2025
+    sample. Where it does not, the area keeps the pooled number there with
+    version 2's "not calibrated for these fields" flag. Thin areas will be
+    patchy by bucket; that is the rule's answer, not a defect to smooth.
+
+HOURLY (reported, gates nothing; the hourly calibration is not refitted):
+  by area on the 2025 rows of each family's fit hour — summed expected hours
+  against summed observed hours over the same days, and the peak hour's own
+  reliability (did the hour shown as the day's peak fall below CAT I) at
+  25-49%, 50% and over, 75% and over. An area's expected hours "run high"
+  ("run low") when they exceed (fall short of) the observed hours by more
+  than 25%, judged only with at least 100 observed fog hours in the sample.
+
+Known when this was written (version 2's results, all at 12Z-based or
+  "date after the cycle" targets): d1 passes at 09Z, 12Z and 21Z; d1 scored on
+  00Z cycles against the NEXT date — the evening slot here — failed (0.62
+  shown / 0.46 observed), which is why that slot gets its own map; d2h09 on
+  real 09Z cycles failed (0.59 / 0.46); d2h12 passed at 12Z and missed in
+  Nov-Feb (0.61 / 0.46); the pooled d1 by area (Central Valley 0.65 / 0.35,
+  West Coast 0.65 / 0.54, Northeast 0.64 / 0.51, Great Lakes 0.62 / 0.78,
+  Southeast 0.62 / 0.84). Never scored before this: any own-date target, any
+  03Z/06Z/15Z/18Z cycle, d1u, d2f, day 2 at its natural coverage past 12Z,
+  any area map.
+
+RESULT of that one run, 2026-11-25 (every number is in daycal.json; nothing
+  above was changed after it, and version 2's maps and receipts for d1,
+  d2h09 and d2h12 came out identical to the committed ones):
+  DAY 1 has a day-level chance from every cycle hour.
+    ahead (d1): 09Z +9.7% skill, >= 0.5 shown 0.62 / observed 0.56 (n 252);
+      12Z +10.3%, 0.64 / 0.58 (420); 15Z +11.9%, 0.63 / 0.59 (284); 18Z
+      +12.9%, 0.64 / 0.58 (353); 21Z +14.9%, 0.65 / 0.61 (375). All pass.
+    under way: at 00Z d1u FAILED (+17.1%, 0.69 / 0.57, n 559: 11.8 points)
+      and the named fallback d1 passed (+17.3%, 0.66 / 0.57, n 535), so
+      00Z-02Z cycles use d1. d1u passes at 03Z (+19.2%, 0.70 / 0.62, n 520)
+      and 06Z (+21.5%, 0.72 / 0.65, n 578).
+    Still true, and not gated: values at 0.75 and over ran high in every
+    sample — 0.78 / 0.61 at 00Z (n 177), 0.86 / 0.68 at 03Z (176), 0.87 /
+    0.77 at 06Z (228), 0.78 / 0.65-0.73 from daytime cycles.
+  DAY 2 has no day-level chance from any cycle hour in November-February.
+    evening (d2f, what a US evening build sees): skill +7.3%, +7.9%, +9.0% at
+      00Z, 03Z, 06Z, but >= 0.5 shown 0.60 / observed 0.45, 0.46, 0.49
+      (n 176, 184, 213). FAIL at all three, by 15.5, 13.7 and 10.5 points.
+      The 0.25-0.5 group was within 4 points each time; the rule judges the
+      map, not a part of it.
+    after next (d2f): 15Z FAIL (0.59 / 0.48, n 99), 21Z FAIL (0.59 / 0.48,
+      n 126), 18Z passes (0.59 / 0.50, n 123) and misses in Nov-Feb
+      (0.60 / 0.47, n 96): published from 18Z-20Z cycles, March-October only.
+    partial: d2h09 FAIL on real 09Z cycles (0.59 / 0.46, as known); d2h12
+      passes at 12Z, March-October only (as known).
+    So day 2 carries the hourly forecast's expected hours, peak hour and
+    window over the hours it covers, and no chance.
+  AREAS (leave one year out, pooled out-of-fold rows; area map vs the pooled
+    map through the same folds):
+    Central Valley  floored fails (d1: its >= 0.5 group is 11 rows nothing
+      can judge; d1u: 0.62 shown / 0.39 observed, n 56). Unfloored PASSES:
+      skill +8.5% vs +1.2% (d1), +10.7% vs -1.0% (d1u). Per held-out year,
+      d1: +10.5 / +2.5 / +12.6% (2023 / 2024 / 2025; pooled +5.8 / +7.4 /
+      -8.4%). The map fitted on 2023-24 is two or three blocks and tops out
+      at 0.233 (d1) and 0.224 (d1u): a pooled 0.55 becomes 0.23, and no
+      Central Valley field is ever shown above 23%. Out of fold its values
+      at 0.10-0.25 verified at 0.22 (shown 0.19, n 386; d1) and 0.23 (shown
+      0.17, n 284; d1u). What it cannot do: days whose peak hourly chance
+      was 50% or more fogged 36% (n 11, 12Z cycles) and 39% (n 56, 03Z) of
+      the time, and with a 200 station-day block the map cannot tell those
+      from the rest of its top. Used in every day-1 bucket (it passed all
+      eight on 2025 rows).
+    West Coast  d1: the area map fails rule (c) only — skill +10.1% against
+      the pooled map's +10.5% — though its >= 0.5 group ran 6 points high
+      (0.55 / 0.49, n 258) where the pooled map ran 11. By held-out year the
+      pooled map's >= 0.5 group verified 0.65, 0.43, 0.60: the miss is one
+      year. d1u: the floored area map passes leave-one-year-out (+15.0% vs
+      +13.3%; 0.60 / 0.56, n 359) and then FAILS on 2025 at both of its
+      buckets (03Z 0.61 / 0.44, n 117; 06Z 0.62 / 0.48, n 128). West Coast
+      fields keep the pooled map and its flag in every bucket: 11 points
+      high from daytime cycles (2023-25), 27 points high from evening ones
+      (0.72 / 0.45, n 111, 2025).
+    Mountain West  d1 unfloored passes (top 0.386; floored fails only on a
+      >= 0.5 group of 4 rows); d1u fails (c). The same blind spot as the
+      Central Valley's, the other way: days whose peak hour showed 25-49%
+      fogged 57% of the time there (n 42).
+    Canada  d1 floored passes (top 0.588); d1u fails (c).
+    Plains, Great Lakes, Southeast, Northeast  every area map fails (c): it
+      does not beat the pooled map. Alaska, Hawaii  no skill to speak of.
+    The pooled map's own area flags are version 2's for d1, and for d1u:
+    Central Valley, West Coast high; Great Lakes, Southeast low.
+  HOURLY (2025): Central Valley expected hours 159 against 151 observed from
+    12Z cycles (x1.06) but 294 against 145 from 03Z cycles (x2.02, "runs
+    high"); there the hour shown as the peak at 50% or more fell below CAT I
+    22% of the time (n 32). Mountain West, Plains x0.75 and Alaska x0.44 run
+    low from 12Z cycles.
+  Clarification, not a change: "the old 20 of 23" in MINIMUM HOURS is exact at
+    the buckets' own hours (09Z, 12Z, 15Z, 18Z, 21Z); a whole issuance holds
+    22 to 24 hour-equivalents of tomorrow depending on the cycle hour. No row
+    in any sample was short of hours.
+
+AMENDED on 2026-11-25 after an independent review of that run (the reviewer
+replayed every bulletin with their own code and got the same numbers; the
+objections are to what the rule produced). Every result above had been seen,
+so none of this is a clean pre-registration. As with version 2's amendments,
+each one only WITHHOLDS an area map or adds a record to print; no pooled map
+is refitted, no slot's ship verdict changes, and nothing is loosened.
+  1. Regional rule (f): an unfloored area map — one that can never show more
+     than its own top — replaces the pooled map only where the pooled map's
+     >= 0.5 group in that area was judged (n >= 50) and ran high by more than
+     10 points. Why: Mountain West got an unfloored map topping out at 0.39 on
+     a Brier margin of 0.00005 (date bootstrap: better in 65% of resamples;
+     it lost the 2024 fold) while the pooled map's >= 0.5 group there had
+     verified at 0.62 shown / 0.61 observed (n 44, 24 dates). From 03Z-08Z
+     cycles the same fields kept the pooled map, so the number stepped by up
+     to 51 points when the build crossed 03Z. Result: Mountain West keeps the
+     pooled map in every bucket, as it did before version 3. The Central
+     Valley is unchanged (its pooled >= 0.5 group ran 30 points high, n 63),
+     and so is Canada (its map is floored).
+  2. A day under way is also scored from the build on. The check counts fog at
+     any hour after the cycle hour; the build of cycle h is on screen at
+     h+1:25, when the hour filed as h+1 is already over. The same published
+     chance against fog after that hour: 00Z (map d1) 0.66 shown / 0.57
+     observed, 03Z 0.70 / 0.60 (n 519), 06Z 0.72 / 0.62 (n 578) — 9, 10 and
+     11 points high where the check said 9, 9 and 7. The slot verdicts stand
+     (the rule was written on the first definition; changing it now would be
+     choosing after the result, and it is the owner's call whether an evening
+     build should then publish). The record goes into each under-way receipt
+     as `after_build`, and the screen prints the larger of the two misses.
+  3. Every area's record is also taken on each bucket's OWN 2025 sample
+     (slots[..].areas[..].own): the published chance by band, the expected
+     against the observed hours, and what days did by their peak hourly
+     chance. Version 3 printed the record of the map's fit hour from every
+     bucket, so the 00Z-02Z builds, which use map d1 by the named fallback,
+     showed West Coast fields "about 11 points high" (12Z cycles, the next
+     date) while on their own sample those fields ran 24 points high at 50%
+     and over (0.68 / 0.44, n 128) and 30 at 75% and over (0.79 / 0.49,
+     n 57), and Central Valley expected hours read x1.06 where 00Z cycles
+     ran x1.87. build_deploy.day_receipt prints the larger miss of the fit
+     hour's record and the bucket's own.
+  Not changed, and the owner's to decide: values at 75% and over still run 18
+  points high from 00Z-05Z cycles; the Central Valley map tops out at 22-23%,
+  under the MARGINAL bar, while the days it prints that on fogged about one
+  time in three (values at 0.20 and over: 0.22 shown / 0.33 observed, n 172);
+  the h18 day-2 slot publishes March-October on 27 airport-days at 50%+.
+
 Outputs: forecast/out/daycal.json (committed) and
 forecast/out/daycal_replay.parquet (gitignored cache of step 1; delete it or
 pass --rebuild after calibration.json, climo.parquet, truth.parquet or the
@@ -127,7 +392,7 @@ hindcast change).
 
     .venv/bin/python forecast/fit_daycal.py                   # fit + holdout + checks
     .venv/bin/python forecast/fit_daycal.py --parity          # after `python forecast/engine.py`
-    .venv/bin/python forecast/fit_daycal.py --fetch-transfer  # the 00Z/09Z/21Z check samples, 5 GB
+    .venv/bin/python forecast/fit_daycal.py --fetch-transfer  # every bulletin beyond the weekly 12Z set, 18 GB
 """
 import argparse
 import hashlib
@@ -150,13 +415,18 @@ HIND = HERE / "data" / "hindcast"
 # fit_calibration.py globs hindcast/nb[sh]_*.txt, and 2025 files dropped beside
 # the 12Z set would quietly change that script's holdout.
 TRANSFER = HIND / "transfer"
+# The 03Z cycles of 2023-24 the evening maps (d1u, d2f) are fitted on. Their
+# own folder for the same reason, and so a check sample can never be mistaken
+# for a fit sample by where it sits.
+FIT03 = HIND / "fit03z"
 CACHE = OUT / "daycal_replay.parquet"
 
 sys.path.insert(0, str(HERE))
 from parse_nbm import parse_collective  # noqa: E402
 from engine import clim_logit, load_climo, score  # noqa: E402  (the engine's own scoring primitives)
-from build_deploy import (BAND_MAX_GAP, BAND_MIN_N, DAY2_COVER, apply_daymap, area_of,  # noqa: E402
-                          cal_day_stats, day2_cover_hour, day_chance, daymap_key, map_cycle_hours)
+from build_deploy import (BAND_MAX_GAP, BAND_MIN_N, BUCKETS, MAX_MISSING_HOURS, SERVICE_DAY_OFFSET_H,  # noqa: E402
+                          SLOT_KEYS, SLOT_MAPS, apply_daymap, area_of, covered_hours, day_chance, day_stats,
+                          expected_used, service_day, slot_kind)
 
 THRESHOLDS = ["v10", "v05", "v025", "sub"]
 # The holdout year. Forecasts for it are replayed with a climatology that
@@ -310,7 +580,7 @@ def _replay_one(pair):
 def cycle_files() -> list[tuple[Path, Path]]:
     """Every cycle the engine could have run: an NBH bulletin, with its NBS twin when present."""
     pairs = []
-    for nbh in sorted(HIND.glob("nbh_*_12z.txt")) + sorted(TRANSFER.glob("nbh_*z.txt")):
+    for nbh in sorted(HIND.glob("nbh_*_12z.txt")) + sorted(TRANSFER.glob("nbh_*z.txt")) + sorted(FIT03.glob("nbh_*z.txt")):
         pairs.append((nbh, nbh.with_name("nbs_" + nbh.name[4:])))
     return pairs
 
@@ -338,65 +608,118 @@ def load_replay(rebuild: bool = False) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------- day table ----
-def bake_date(cyc: datetime) -> date:
-    """The UTC date build_deploy would call `today` when it runs on this cycle:
-    the forecast job at h:25 picks up cycle h-1 (run logs, Nov 2026)."""
-    return (cyc + timedelta(hours=1, minutes=25)).date()
+def build_time(cyc: datetime) -> datetime:
+    """When build_deploy runs on this cycle: the forecast job at h:25 picks up
+    cycle h-1 (run logs, Nov 2026)."""
+    return cyc + timedelta(hours=1, minutes=25)
+
+
+# The cycle hours behind a check or a fit, and the reaches (j = target date -
+# cycle date) the planner asks of each: an evening cycle's own date and the
+# next, a daytime cycle's next date and the one after.
+EVENING_HOURS = (0, 3, 6)
+DAYTIME_HOURS = (9, 12, 15, 18, 21)
 
 
 def day_table(replay: pd.DataFrame, col: str = "p") -> pd.DataFrame:
-    """One row per airport x cycle x statistic, built by build_deploy.cal_day_stats.
+    """One row per airport x cycle x reach, built by build_deploy.day_stats.
 
-    12Z cycles get day 1 and day 2 at every coverage end hour (truncation is
-    how a 12Z cycle stands in for an earlier one); other cycle hours get what
-    the live build would compute from them. col picks the replay column
-    ("p_all" only to measure what the test-year climatology leak was worth)."""
+    key "j0"/"j1"/"j2" is the statistic exactly as the live build computes it
+    from that cycle for the date j days after the cycle's own. 12Z cycles
+    also get "j2t09": the date after next cut off at 09Z, which is how a 12Z
+    cycle stands in for a 09Z one when d2h09 is fitted. col picks the replay
+    column ("p_all" only to measure what the test-year climatology leak was
+    worth). short = the row is missing more hours than the build publishes."""
     icao, cyc_ns = replay.icao.values, replay.cycle.values
     fhr, p = replay.fhr.values.tolist(), replay[col].values.tolist()
     edge = np.flatnonzero((icao[1:] != icao[:-1]) | (cyc_ns[1:] != cyc_ns[:-1])) + 1
     starts, ends = np.r_[0, edge], np.r_[edge, len(replay)]
     cycles = pd.to_datetime(replay.cycle.values[starts]).to_pydatetime()
     rows = []
+    need: dict[tuple, int] = {}
     for a, b, cyc in zip(starts.tolist(), ends.tolist(), cycles):
-        today = bake_date(cyc)
-        covers = DAY2_COVER if cyc.hour == 12 else (day2_cover_hour(cyc.hour),)
-        first = True
-        for c in covers:
-            st = cal_day_stats(fhr[a:b], p[a:b], cyc, today, c)
-            for dd, s in st.items():
-                if dd == 1 and not first:
-                    continue
-                if s["pk"] is None:
-                    continue
-                rows.append((icao[a], cyc, daymap_key(dd, c), today + timedelta(days=dd),
-                             1.0 - s["noev"], s["pk"], s["used"], s["eh"]))
-            first = False
-    df = pd.DataFrame(rows, columns=["icao", "cycle", "key", "vday", "raw", "pk", "used", "eh"])
+        js = (0, 1) if cyc.hour in EVENING_HOURS else (1, 2)
+        targets = {cyc.date() + timedelta(days=j): j for j in js}
+        for d, s in day_stats(fhr[a:b], p[a:b], cyc, targets).items():
+            if s["pk"] is None:
+                continue
+            if (cyc, d) not in need:
+                need[(cyc, d)] = expected_used(cyc, d) - MAX_MISSING_HOURS
+            rows.append((icao[a], cyc, f"j{targets[d]}", d, 1.0 - s["noev"], s["pk"], s["used"], s["eh"],
+                         s["used"] < need[(cyc, d)]))
+        if cyc.hour == 12:
+            d = cyc.date() + timedelta(days=2)
+            s = day_stats(fhr[a:b], p[a:b], cyc, {d: 2}, through={d: 9}).get(d)
+            if s and s["pk"] is not None:
+                rows.append((icao[a], cyc, "j2t09", d, 1.0 - s["noev"], s["pk"], s["used"], s["eh"], s["used"] < 12))
+    df = pd.DataFrame(rows, columns=["icao", "cycle", "key", "vday", "raw", "pk", "used", "eh", "short"])
     df["hour"] = pd.to_datetime(df.cycle).dt.hour
     return df
 
 
 def load_truth() -> pd.DataFrame:
     """icao, d, any_sub, hrs, nobs per UTC day: the hourly truth of
-    fit_calibration.py (obs rounded to the nearest hour), rolled up by day."""
+    fit_calibration.py (obs rounded to the nearest hour), rolled up by day.
+    any_h/hrs_h/nobs_h are the same three over the hours AFTER hour h only,
+    for a day seen under way from an h-Z cycle."""
     con = duckdb.connect()
+    win = ", ".join(f"(max(sub) FILTER (WHERE hour(hr_ts) > {h}))::INT AS any_{h}, "
+                    f"coalesce(sum(sub) FILTER (WHERE hour(hr_ts) > {h}), 0)::INT AS hrs_{h}, "
+                    f"(count(*) FILTER (WHERE hour(hr_ts) > {h}))::INT AS nobs_{h}, "
+                    # the same day counted from the BUILD on (version 3, amendment 2): the hour filed
+                    # as h+1 is the METARs of h:30 to h+1:29, and the build of cycle h is on screen at h+1:25
+                    f"(max(sub) FILTER (WHERE hour(hr_ts) > {h + 1}))::INT AS anyb_{h}, "
+                    f"(count(*) FILTER (WHERE hour(hr_ts) > {h + 1}))::INT AS nobsb_{h}" for h in EVENING_HOURS)
     df = con.execute(f"""
         WITH th AS (
           SELECT icao, date_trunc('hour', ts + INTERVAL 30 MINUTE) AS hr_ts, max(sub) AS sub
           FROM '{OUT / "truth.parquet"}'
           WHERE ts >= '2022-12-31' AND ts < '2026-01-10' GROUP BY 1, 2)
-        SELECT icao, hr_ts::DATE AS d, max(sub)::INT AS any_sub, sum(sub)::INT AS hrs, count(*)::INT AS nobs
+        SELECT icao, hr_ts::DATE AS d, max(sub)::INT AS any_sub, sum(sub)::INT AS hrs, count(*)::INT AS nobs, {win}
         FROM th GROUP BY 1, 2
     """).fetchdf()
     df["d"] = pd.to_datetime(df.d).dt.date
     return df
 
 
-def assemble(days: pd.DataFrame) -> pd.DataFrame:
-    """Day table + truth (>= 18 hourly obs) + the climatology baseline."""
-    truth = load_truth()
-    m = days.merge(truth, left_on=["icao", "vday"], right_on=["icao", "d"], how="inner")
-    m = m[m.nobs >= 18].drop(columns="d").copy()
+def window_min_obs(h: int) -> int:
+    """Hourly obs a day under way needs after an h-Z cycle: three quarters of the hours left (18 of 24 for a whole day)."""
+    return math.ceil(0.75 * (23 - h))
+
+
+def window_climo() -> dict:
+    """{(icao, month, h): {year: (days, fog days)}} for the event a day under
+    way is judged on: an hour below CAT I after hour h, through 23Z. Every
+    truth year, so a row can be given the frequency over all years but its
+    own (the day climatology in dayscale.json is whole-day only, and held
+    against a part-day event it would be an easy baseline to beat)."""
+    con = duckdb.connect()
+    cols = ", ".join(f"count(*) FILTER (WHERE n_{h} >= {window_min_obs(h)}) AS days_{h}, "
+                     f"coalesce(sum(a_{h}) FILTER (WHERE n_{h} >= {window_min_obs(h)}), 0) AS fog_{h}"
+                     for h in EVENING_HOURS)
+    per = ", ".join(f"max(sub) FILTER (WHERE hour(hr_ts) > {h}) AS a_{h}, "
+                    f"count(*) FILTER (WHERE hour(hr_ts) > {h}) AS n_{h}" for h in EVENING_HOURS)
+    rows = con.execute(f"""
+        WITH th AS (
+          SELECT icao, date_trunc('hour', ts + INTERVAL 30 MINUTE) AS hr_ts, max(sub) AS sub
+          FROM '{OUT / "truth.parquet"}' GROUP BY 1, 2),
+        dy AS (SELECT icao, hr_ts::DATE AS d, {per} FROM th GROUP BY 1, 2)
+        SELECT icao, year(d) AS y, month(d) AS mon, {cols} FROM dy GROUP BY 1, 2, 3
+    """).fetchall()
+    out: dict[tuple, dict] = {}
+    for r in rows:
+        for k, h in enumerate(EVENING_HOURS):
+            out.setdefault((r[0], int(r[2]), h), {})[int(r[1])] = (int(r[3 + 2 * k]), int(r[4 + 2 * k]))
+    return out
+
+
+def assemble(days: pd.DataFrame, truth: pd.DataFrame, wclim: dict) -> pd.DataFrame:
+    """Day table + truth + the climatology baseline, one row per airport x cycle x reach.
+
+    j >= 1: the whole UTC date (>= 18 hourly obs) against dayscale.json's day
+    climatology, as version 2. j = 0: the hours after the cycle against the
+    frequency of that same event in every year but the row's own."""
+    m = days.merge(truth, left_on=["icao", "vday"], right_on=["icao", "d"], how="inner").drop(columns="d")
     vd = pd.to_datetime(m.vday.astype(str))
     m["year"], m["mon"] = vd.dt.year, vd.dt.month
     cl = json.load(open(OUT / "dayscale.json"))["climo_day"]
@@ -404,6 +727,31 @@ def assemble(days: pd.DataFrame) -> pd.DataFrame:
     m["p_clim"] = [c[0] if c else np.nan for c in pc]
     # climatological fog hours per fog day: how long fog lasts here once it is in
     m["hpd"] = [c[1] / c[0] if c and c[0] > 0.02 else np.nan for c in pc]
+    under = (m.key == "j0").values
+    keep = (m.nobs >= 18).values & ~under
+    m["any_sub"], m["hrs"] = m.any_sub.astype(float), m.hrs.astype(float)
+    # ab_any: for a day under way, was there an hour below CAT I after the
+    # BUILD (hours after cycle hour + 1); NaN for every other row and where
+    # under three quarters of those hours were observed. Reported, never fitted on.
+    m["ab_any"] = np.nan
+    for h in EVENING_HOURS:
+        s = under & (m.hour == h).values
+        if not s.any():
+            continue
+        keep |= s & (m[f"nobs_{h}"].astype(float) >= window_min_obs(h)).values
+        m.loc[s, "any_sub"] = m.loc[s, f"any_{h}"].astype(float).values
+        m.loc[s, "hrs"] = m.loc[s, f"hrs_{h}"].astype(float).values
+        sb = s & (m[f"nobsb_{h}"].astype(float) >= window_min_obs(h + 1)).values
+        m.loc[sb, "ab_any"] = m.loc[sb, f"anyb_{h}"].astype(float).values
+        base = []
+        for i, mo, y in zip(m.icao.values[s], m.mon.values[s], m.year.values[s]):
+            yrs = wclim.get((i, int(mo), h), {})
+            nd = sum(v[0] for k, v in yrs.items() if k != y)
+            base.append(sum(v[1] for k, v in yrs.items() if k != y) / nd if nd >= 30 else np.nan)
+        m.loc[s, "p_clim"] = base
+    m = m[keep].drop(columns=[c for c in m.columns if c[:4] in ("any_", "hrs_") and c != "any_sub" or c[:5] == "nobs_"
+                              or c[:5] == "anyb_" or c[:6] == "nobsb_"]).copy()
+    m["any_sub"], m["hrs"] = m.any_sub.astype(int), m.hrs.astype(int)
     atlas = {a["icao"]: a for a in json.load(open(HERE.parent / "app" / "public" / "data" / "airports.json"))["airports"]}
     m["area"] = [area_of(i, atlas.get(i), AREAS) for i in m.icao]
     return m
@@ -459,9 +807,10 @@ def fit_map(raw: np.ndarray, y: np.ndarray, min_block: int = MIN_BLOCK, ends: bo
             "min_block_n": int(min(b[4] for b in blocks))}
 
 
-def published(m: dict, raw: np.ndarray, pk: np.ndarray) -> np.ndarray:
+def published(m: dict, raw: np.ndarray, pk: np.ndarray, floor: bool = True) -> np.ndarray:
     """build_deploy.day_chance + cal_tier's rounding, vectorised (asserted equal in main)."""
-    return np.round(np.maximum(np.interp(raw, m["x"], m["y"]), pk / 100.0), 3)
+    v = np.interp(raw, m["x"], m["y"])
+    return np.round(np.maximum(v, pk / 100.0) if floor else v, 3)
 
 
 def brier(p, y) -> float:
@@ -554,11 +903,20 @@ def score_rows(df: pd.DataFrame, p: np.ndarray) -> dict:
     cyc = df.cycle.values
     has = df.p_clim.notna().values
     fog = df.mon.isin(FOG_SEASON).values
-    b_p, b_c, b_raw = brier(p[has], y[has]), brier(df.p_clim.values[has], y[has]), brier(raw[has], y[has])
+    if not has.any():
+        b_p = b_c = b_raw = float("nan")
+    else:
+        b_p, b_c, b_raw = brier(p[has], y[has]), brier(df.p_clim.values[has], y[has]), brier(raw[has], y[has])
+
+    def skill(b: float) -> float | None:
+        # an area with no fog day and a climatology of zero has no skill to speak of (Hawaii)
+        return round(100 * (1 - b / b_c), 1) if b_c > 0 else None
     return {"n": int(len(df)), "n_clim": int(has.sum()), "cycles": int(len(np.unique(cyc))),
-            "base": round(float(y.mean()), 4),
-            "brier": round(b_p, 5), "brier_climo": round(b_c, 5), "skill_pct": round(100 * (1 - b_p / b_c), 1),
-            "raw_brier": round(b_raw, 5), "raw_skill_pct": round(100 * (1 - b_raw / b_c), 1),
+            "short": int(df.short.sum()),
+            "base": round(float(y.mean()), 4) if len(df) else None,
+            "brier": round(b_p, 5) if has.any() else None, "brier_climo": round(b_c, 5) if has.any() else None,
+            "skill_pct": skill(b_p),
+            "raw_brier": round(b_raw, 5) if has.any() else None, "raw_skill_pct": skill(b_raw),
             "ge50": group(p, y, 0.5, 1.01, cyc), "b25_50": group(p, y, 0.25, 0.5, cyc),
             # the ship rule judges the whole >= 0.5 group, which hid this one:
             # values published at 0.75 and up verified at 0.62-0.68 in every sample
@@ -582,51 +940,260 @@ def season_held(samples: list[dict]) -> list[int]:
     return []
 
 
+def within(g: dict) -> bool | None:
+    """Did a group of published values verify within the rule's 10 points? None under 50 airport-days."""
+    return None if g["n"] < BAND_MIN_N else bool(abs(g["shown"] - g["obs"]) <= BAND_MAX_GAP)
+
+
 def verdict(h: dict) -> tuple[bool, bool | None]:
-    a = h["skill_pct"] > 0
-    g = h["ge50"]
-    b = None if g["n"] < BAND_MIN_N else abs(g["shown"] - g["obs"]) <= BAND_MAX_GAP
-    return a, b
+    """The ship rule's two results on one sample's numbers (h from score_rows)."""
+    return bool(h["skill_pct"] is not None and h["skill_pct"] > 0), within(h["ge50"])
 
 
 def passes(h: dict) -> bool:
-    """The ship rule on one sample's numbers (h from score_rows)."""
     a, b = verdict(h)
     return bool(a and b is not False)
 
 
-def publish_hours(key: str, passed: dict[int, bool]) -> list[int]:
-    """Cycle hours a map may be published from (amendment 2 in the docstring).
+def with_verdict(h: dict, sample: str, key: str, fm: dict) -> dict:
+    """A receipt: the numbers, the two rule results, and which breakpoints it is a receipt for."""
+    a, b = verdict(h)
+    return {**h, "rule_a_skill_over_0": a, "rule_b_ge50_within_10": b, "pass": bool(a and b is not False),
+            "sample": sample, "map": key, "map_top": fm["y"][-1], "map_050": round(apply_daymap(fm, 0.5), 3)}
 
-    passed = {sampled cycle hour: did the rule pass there}, only hours that
-    use this map. Hour h is published when the nearest sampled hour at or
-    below it and the nearest at or above it both exist and both passed: a
-    cycle hour between two checked ones sees leads between theirs, a cycle
-    hour beyond the last check sees leads nobody scored."""
-    out = []
-    for h in map_cycle_hours(key):
-        lo = max((s for s in passed if s <= h), default=None)
-        hi = min((s for s in passed if s >= h), default=None)
-        if lo is not None and hi is not None and passed[lo] and passed[hi]:
-            out.append(h)
+
+RULE = ("A (slot, bucket) publishes a day-level chance only if, on real 2025 cycles issued at the bucket's "
+        "representative hour, the published chance (a) has Brier skill > 0 against climatology on the same rows "
+        "and (b) the group published >= 0.5, when it has n >= 50, verifies within 10 points of its mean. Maps are "
+        "fitted on 2023-2024 only; the map tested is the map shipped.")
+RULE_SEASON = ("Rule (b) is also read off the Nov-Feb >= 0.5 group of the passing sample (50 airport-days or more). "
+               "Where it misses by more than 10 points the slot is not published for target days in November to "
+               "February.")
+RULE_AREAS = ("Version 2's flag, kept for every field that stays on the pooled map: rule (b) is read off each "
+              "area's own >= 0.5 group at the map's fit hour, on the test year and on all years, wherever that "
+              "group has 50 airport-days. Where either misses by more than 10 points the day is not shown as "
+              "calibrated for that area's fields; the number itself is unchanged.")
+RULE_REGIONAL = ("An area gets its own map (same method, fitted on the area's rows) when, leaving each of 2023, "
+                 "2024 and 2025 out in turn and pooling the three out-of-fold sets, the published chance (a) has "
+                 "Brier skill > 0, (b) is within 10 points at >= 0.5 when n >= 50, (c) has a lower Brier than the "
+                 "pooled map put through the same folds, (d) is within 10 points at 0.25-0.5 when n >= 50 and "
+                 "(e) has a >= 0.5 group that is empty or n >= 50. Tried floored at the peak hourly chance first, "
+                 "then unfloored. The map shipped is the one fitted on 2023-24; it is used in a bucket only where "
+                 "it also passes (a), (b) and (d) on the area's rows of that bucket's 2025 sample. 2025 had been "
+                 "looked at by region before this rule was written. Added after the result (it only withholds): "
+                 "(f) an unfloored area map replaces the pooled map only where the pooled map's >= 0.5 group in "
+                 "that area was judged (n >= 50) and ran high by more than 10 points.")
+RULE_AFTER_BUILD = ("Reported, gates nothing: a day under way is also scored against fog after the build is on screen "
+                    "(the hours after cycle hour + 1), not only after the cycle hour. Each under-way receipt carries "
+                    "it as after_build.")
+RULE_AREA_OWN = ("Reported, gates nothing: each area's record is also taken on every bucket's own 2025 sample "
+                 "(slots[..].areas[..].own). The screen prints the larger miss of that and the fit hour's record.")
+RULE_HOURLY = ("Reported, gates nothing: by area on the 2025 rows of each map's fit hour, summed expected hours "
+               "against summed observed hours, and whether the hour shown as the day's peak fell below CAT I. "
+               "Expected hours 'run high' ('low') when they exceed (fall short of) observed by more than 25%, "
+               "judged only with at least 100 observed fog hours.")
+
+
+# ---------------------------------------------------------------- regions ----
+FAMILY = {  # the maps an area can have its own version of: fit hour and reach
+    "d1": (12, "j1"), "d1u": (3, "j0"), "d2f": (3, "j1")}
+YEARS = (2023, 2024, 2025)
+FORMS = ("floored", "unfloored")
+
+
+def compact(h: dict) -> dict:
+    return {k: h[k] for k in ("n", "n_clim", "cycles", "base", "brier", "brier_climo", "skill_pct",
+                              "ge50", "b25_50", "ge75", "nov_feb") if k in h}
+
+
+def brief(h: dict) -> dict:
+    """One held-out year of one area: enough to see the year-to-year swing, no more."""
+    return {k: h[k] for k in ("n", "cycles", "base", "skill_pct", "ge50", "b25_50", "ge75")}
+
+
+def regional(rows: pd.DataFrame, pooled_fm: dict) -> dict:
+    """Leave-one-year-out verdict for every area, for one family (rows = all
+    three years at its fit hour). Returns {area: record}; the record of an
+    area that passed carries the map fitted on 2023-24 under "map"."""
+    rows = rows[rows.year.isin(YEARS)]
+    flags = {a["name"]: a for a in area_receipts(rows, published(pooled_fm, rows.raw.values, rows.pk.values))}
+    # the comparison: the pooled map through the same folds
+    pooled_oof = np.full(len(rows), np.nan)
+    yr = rows.year.values
+    for y in YEARS:
+        tr = yr != y
+        fm = fit_map(rows.raw.values[tr], rows.any_sub.values[tr])
+        pooled_oof[~tr] = published(fm, rows.raw.values[~tr], rows.pk.values[~tr])
+    out = {}
+    for name, _ in AREAS:
+        s = (rows.area == name).values
+        a = rows[s]
+        ay = a.year.values
+        day = a.any_sub.values.astype(float)
+        rec = {"stations": int(a.icao.nunique()), "rows": int(len(a)), "form": None, "pass": False,
+               "years": f"{YEARS[0]}-{str(YEARS[-1])[2:]}", "flag": flags[name], "forms": {},
+               "pooled_same_rows": compact(score_rows(a, pooled_oof[s])) if len(a) else None,
+               # Days grouped by their peak hourly chance, and how often they held a fog hour: what the
+               # screen can say where an unfloored area map puts the day chance below the peak hour
+               # (Central Valley days whose peak hour showed 50% or more fogged about 4 times in 10).
+               "by_peak_hour": {b: group(a.pk.values / 100.0, day, lo, hi, a.cycle.values)
+                                for b, lo, hi in (("b25_50", 0.25, 0.5), ("ge50", 0.5, 1.01), ("ge75", 0.75, 1.01))}}
+        if len(a) and all((ay == y).any() for y in YEARS):
+            oof = {f: np.full(len(a), np.nan) for f in FORMS}
+            for y in YEARS:
+                tr = ay != y
+                fm = fit_map(a.raw.values[tr], a.any_sub.values[tr])
+                for f in FORMS:
+                    oof[f][~tr] = published(fm, a.raw.values[~tr], a.pk.values[~tr], floor=f == "floored")
+            for f in FORMS:
+                h = score_rows(a, oof[f])
+                ra, rb = verdict(h)
+                rules = {"a_skill_over_0": ra, "b_ge50_within_10": rb,
+                         "c_beats_pooled": bool(h["brier"] is not None and rec["pooled_same_rows"]["brier"] is not None
+                                                and h["brier"] < rec["pooled_same_rows"]["brier"]),
+                         "d_b25_50_within_10": within(h["b25_50"]),
+                         "e_ge50_empty_or_50": bool(h["ge50"]["n"] == 0 or h["ge50"]["n"] >= BAND_MIN_N),
+                         # (f), added after the result (amendment 1 of version 3): an unfloored map can
+                         # never show more than its own top, so it takes the pooled map's 50%-and-over
+                         # values away. That is only earned where those values were judged and ran high.
+                         # Mountain West got one on a Brier margin of 0.00005 while the pooled map's
+                         # >= 0.5 group there had verified at 0.62 shown / 0.61 observed (n 44).
+                         "f_unfloored_only_where_pooled_ran_high": None if f == "floored" else bool(
+                             flags[name]["ok"] is False and flags[name]["high"] is True)}
+                rec["forms"][f] = {
+                    "pass": all(v is not False for v in rules.values()), "rules": rules, "oof": compact(h),
+                    # a map that tops out under 0.25 has no group the rules judge:
+                    # this is where its own top values can be read off
+                    "reliability": reliability(oof[f], day),
+                    "hold_months": season_held([h]),
+                    "by_year": {str(y): {"area_map": brief(score_rows(a[ay == y], oof[f][ay == y])),
+                                         "pooled_map": brief(score_rows(a[ay == y], pooled_oof[s][ay == y]))}
+                                for y in YEARS}}
+            rec["form"] = next((f for f in FORMS if rec["forms"][f]["pass"]), None)
+            rec["pass"] = rec["form"] is not None
+            # the map that would ship: fitted on the two years before the test year
+            tr = ay < TEST_YEAR
+            fm = fit_map(a.raw.values[tr], a.any_sub.values[tr])
+            r55 = raw_for(pooled_fm, 0.55)
+            rec["map_2023_24"] = {"top": fm["y"][-1], "blocks": fm["blocks"], "n_fit": fm["n_fit"],
+                                  "min_block_n": fm["min_block_n"],
+                                  "pooled_055_becomes": None if r55 is None else round(apply_daymap(fm, r55), 3),
+                                  "pooled_top_becomes": round(apply_daymap(fm, 1.0), 3)}
+            if rec["pass"]:
+                rec["map"] = fm
+        out[name] = rec
     return out
 
 
-RULE = ("A day's map ships only if, on the 2025 holdout, the published chance (a) has Brier skill > 0 against the "
-        "per-airport monthly day climatology (dayscale.json climo_day, same rows) and (b) the group published "
-        ">= 0.5, when it has n >= 50, verifies within 10 points of its mean. Each day-2 coverage hour is judged "
-        "alone. The map tested (fitted on 2023-2024) is the map shipped; no refit on all three years.")
-RULE_HOURS = ("Added after review, 2026-11-24: the same rule is scored on real cycles of the test year at each sampled "
-              "cycle hour. A map is published from cycle hour h only when the nearest sampled hours at or below h "
-              "and at or above h, among the hours that use that map, both pass (the 12Z holdout is the sample at "
-              "hour 12), and only when the cycle is from the build's own UTC date.")
-RULE_SEASON = ("Added after review, 2026-11-24: rule (b) is also read off the Nov-Feb >= 0.5 group of every sample "
-               "behind a published hour (50 airport-days or more). Where it misses by more than 10 points the "
-               "map is not published for target days in November to February.")
-RULE_AREAS = ("Added after review, 2026-11-24: rule (b) is read off each area's own >= 0.5 group, on the test year "
-              "and on all years, wherever that group has 50 airport-days. Where either misses by more than 10 "
-              "points the day is not shown as calibrated for that area's fields; the number itself is unchanged. "
-              "An area with neither sample at 50 is not judged.")
+PEAK_BANDS = (("b25_50", 0.25, 0.5), ("ge50", 0.5, 1.01), ("ge75", 0.75, 1.01))
+
+
+def after_build(rows: pd.DataFrame, p: np.ndarray) -> dict:
+    """A day under way, counted only from when its number can be read (version 3, amendment 2).
+
+    The check counts an hour below CAT I at any hour after the cycle hour. The
+    build of cycle h is on screen at h+1:25, by which time the hour filed as
+    h+1 is over. This is the same published chance against fog after that
+    hour. Reported beside the check, never gating: it is the record the
+    screen prints for a day under way when it is the larger miss."""
+    s = rows.ab_any.notna().values
+    y, cyc = rows.ab_any.values[s].astype(float), rows.cycle.values[s]
+    g = {b: group(p[s], y, lo, hi, cyc) for b, lo, hi in PEAK_BANDS}
+    return {"counts": "an hour below CAT I after the build is on screen (cycle hour + 1), through 23Z",
+            "n": int(s.sum()), **g, "ge50_within_10": within(g["ge50"])}
+
+
+def area_own(rows: pd.DataFrame, p: np.ndarray, kind: str, sample: str) -> dict | None:
+    """One area's record on one bucket's OWN check sample (version 3, amendment 3).
+
+    Until this was added every area record on screen came from the map's fit
+    hour. Bucket h00 (builds 01:25Z-03:25Z, the owner's evening) uses map d1,
+    so a West Coast GO printed "about 11 points high" from 12Z cycles of the
+    next date while this bucket's own West Coast rows ran 24 points high at
+    50% and over (0.68 shown / 0.44 observed, n 128) and 30 at 75% and over.
+    rows = the area's rows of the bucket's 2025 sample, p = what was published
+    on them (the area's own map where it has one). eh is left out for a day 2
+    seen in part: its expected hours stop where the forecast does and the
+    observed hours do not."""
+    if not len(rows):
+        return None
+    y, cyc = rows.any_sub.values.astype(float), rows.cycle.values
+    out = {"sample": sample, "n": int(len(rows)), **{b: group(p, y, lo, hi, cyc) for b, lo, hi in PEAK_BANDS},
+           # days by their peak hourly chance, and how often they held a fog hour
+           "by_peak_hour": {b: group(rows.pk.values / 100.0, y, lo, hi, cyc) for b, lo, hi in PEAK_BANDS},
+           "eh": None}
+    if kind in ("under_way", "ahead", "evening"):
+        eh, oh = float(rows.eh.sum()), int(rows.hrs.sum())
+        judged = oh >= 100
+        out["eh"] = {"days": int(len(rows)), "dates": int(rows.cycle.nunique()), "expected_hours": round(eh, 1),
+                     "observed_hours": oh, "ratio": round(eh / oh, 2) if oh > 0 else None, "judged": bool(judged),
+                     "runs": None if not judged else "high" if eh > 1.25 * oh else "low" if eh < 0.75 * oh else None}
+    return out
+
+
+def area_bucket_check(rows: pd.DataFrame, fm: dict, floor: bool, key: str, sample: str) -> dict:
+    """One area map on the area's own rows of one bucket's 2025 sample: rules (a), (b) and (d)."""
+    h = score_rows(rows, published(fm, rows.raw.values, rows.pk.values, floor=floor))
+    out = with_verdict(compact(h), sample, key, fm)
+    out["rule_d_b25_50_within_10"] = within(h["b25_50"])
+    out["pass"] = bool(out["pass"] and out["rule_d_b25_50_within_10"] is not False)
+    return out
+
+
+# ----------------------------------------------------------------- hourly ----
+def peak_rows(replay: pd.DataFrame, hour: int, j: int) -> pd.DataFrame:
+    """icao, cycle, vday, pk, peak_ts: the hour each test-year day's peak hourly chance sits at (the first, on ties)."""
+    r = replay[(replay.cycle.dt.hour == hour) & (replay.cycle.dt.year == TEST_YEAR)]
+    valid = r.cycle + pd.to_timedelta(r.fhr.astype(int), unit="h")
+    r = r.assign(valid=valid, vday=valid.dt.normalize())
+    r = r[r.vday == r.cycle.dt.normalize() + pd.Timedelta(days=j)]
+    top = r.loc[r.groupby(["icao", "cycle"], sort=False).p.idxmax(), ["icao", "cycle", "vday", "p", "valid"]]
+    return top.rename(columns={"p": "pk_at", "valid": "peak_ts"})
+
+
+def hourly_by_area(m: pd.DataFrame, replay: pd.DataFrame, fam: str) -> dict:
+    """How the hourly forecast itself verified by area (RULE_HOURLY), on the
+    test-year rows of one family's fit hour. The readiness review found KVIS
+    expected hours at 0.51 a day against 0.24 observed over three years; the
+    day map cannot fix that, but the screen can say where it holds."""
+    hour, key = FAMILY[fam]
+    a = m[(m.hour == hour) & (m.key == key) & (m.year == TEST_YEAR)]
+    pr = peak_rows(replay, hour, int(key[1]))
+    con = duckdb.connect()
+    con.register("pr", pr[["icao", "peak_ts"]].drop_duplicates())
+    obs = con.execute(f"""
+        WITH th AS (
+          SELECT icao, date_trunc('hour', ts + INTERVAL 30 MINUTE) AS hr_ts, max(sub) AS sub
+          FROM '{OUT / "truth.parquet"}'
+          WHERE ts >= '{TEST_YEAR - 1}-12-31' AND ts < '{TEST_YEAR + 1}-01-10' GROUP BY 1, 2)
+        SELECT pr.icao, pr.peak_ts, th.sub FROM pr JOIN th ON th.icao = pr.icao AND th.hr_ts = pr.peak_ts
+    """).fetchdf()
+    pr = pr.merge(obs, on=["icao", "peak_ts"], how="left")
+    a = a.merge(pr[["icao", "cycle", "sub"]], on=["icao", "cycle"], how="left")
+    out = []
+    for name, _ in AREAS:
+        s = a[a.area == name]
+        if not len(s):
+            continue
+        eh, oh = float(s.eh.sum()), int(s.hrs.sum())
+        ratio = round(eh / oh, 2) if oh > 0 else None
+        judged = oh >= 100
+        runs = None if not judged else "high" if eh > 1.25 * oh else "low" if eh < 0.75 * oh else None
+        k = s[s["sub"].notna()]
+        pk, hit, day = k.pk.values / 100.0, k["sub"].values.astype(float), k.any_sub.values.astype(float)
+        bands = {}
+        for label, lo, hi in (("b25_50", 0.25, 0.5), ("ge50", 0.5, 1.01), ("ge75", 0.75, 1.01)):
+            g = group(pk, hit, lo, hi, k.cycle.values)
+            sel = (pk >= lo) & (pk < hi)
+            # obs = the peak hour itself fell below CAT I; day = some hour of the day did
+            bands[label] = dict(g, day=round(float(day[sel].mean()), 3) if sel.any() else None)
+        out.append({"name": name, "runs": runs, "judged": bool(judged),
+                    "eh": {"days": int(len(s)), "dates": int(s.cycle.nunique()), "expected_hours": round(eh, 1),
+                           "observed_hours": oh, "ratio": ratio,
+                           "per_day": [round(eh / len(s), 3), round(oh / len(s), 3)]},
+                    "peak": bands})
+    return {"sample": f"{a.cycle.nunique()} {'weekly ' if hour == 12 else 'real '}{hour:02d}Z cycles of {TEST_YEAR}",
+            "areas": out}
 
 
 def residuals(te: pd.DataFrame, p: np.ndarray, chase: set) -> dict:
@@ -673,9 +1240,10 @@ def parity(ctx: Ctx) -> dict:
         for a, b in zip(mine[icao][1], eng[icao]["p"]):
             hours += 1
             bad_hours += a != b
-    # aggregation: cal_day_stats against the pre-daycal build_deploy loop
-    # (fb899ce5 lines 242-253, kept verbatim as the reference)
-    today = bake_date(cycle)
+    # aggregation: day_stats against the pre-daycal build_deploy loop
+    # (fb899ce5 lines 242-253, kept verbatim as the reference; `today` there
+    # was the UTC date of the build, so dd is counted from that here too)
+    today = build_time(cycle).date()
     cal_day, cal_noev = {}, {}
     for icao, f in eng.items():
         for fhr, p in zip(f["fhrs"], f["p"]):
@@ -686,8 +1254,9 @@ def parity(ctx: Ctx) -> dict:
                 cal_day[(icao, dd)] = cal_day.get((icao, dd), 0.0) + step * p[3] / 100.0
                 cal_noev[(icao, dd)] = cal_noev.get((icao, dd), 1.0) * (1.0 - p[3] / 100.0) ** step
     days = bad_days = 0
+    targets = {today + timedelta(days=dd): dd for dd in (1, 2)}
     for icao, f in eng.items():
-        st = cal_day_stats(f["fhrs"], [r[3] for r in f["p"]], cycle, today, 23)   # 23 = every day-2 hour
+        st = {targets[d]: s for d, s in day_stats(f["fhrs"], [r[3] for r in f["p"]], cycle, targets).items()}
         for dd in (1, 2):
             if ((icao, dd) in cal_day) != (dd in st):
                 bad_days += 1
@@ -714,58 +1283,106 @@ def parity(ctx: Ctx) -> dict:
 # never fitted on. 09Z was the first run's "reported, not gating" check; the
 # review added 00Z (a redeploy on a US evening: day 1 is leads 24-47 h, almost
 # all three-hourly) and 21Z (every lead hourly), and made all three gate.
-TRANSFER_CYCLES = ("00", "09", "21")
+#
+# Version 3 (2026-11-25) checks every bucket of three cycle hours at its first
+# hour, so 03Z, 06Z, 15Z and 18Z joined them (12Z keeps the weekly hindcast),
+# and the evening maps needed a fit sample of their own: 03Z on the 104 weekly
+# dates of 2023-24, in FIT03.
+TRANSFER_CYCLES = ("00", "03", "06", "09", "15", "18", "21")
 TRANSFER_DATES = ("20250102 20250109 20250116 20250123 20250130 20250206 20250213 20250220 20250227 "
                   "20250306 20250320 20250403 20250417 20250501 20250605 20250703 20250807 20250904 20250918 "
                   "20251002 20251016 20251030 20251106 20251113 20251120 20251127 20251204 20251211 20251218 "
                   "20251225").split()
+FIT03_CYCLE = "03"
+
+
+def fit03_dates() -> list[str]:
+    """The weekly 12Z hindcast's own dates in the two fit years."""
+    return sorted(p.name[4:12] for p in HIND.glob("nbh_*_12z.txt") if int(p.name[4:8]) < TEST_YEAR)
+
+
+# What a run must find on disk: {(cycle hour, year): cycles}. A sample that is
+# short would silently turn its bucket's numbers off, or fit a map on half a
+# sample, so main() refuses to write daycal.json without all of them.
+NEEDED = {(12, 2023): 52, (12, 2024): 52, (12, TEST_YEAR): 52, (3, 2023): 52, (3, 2024): 52,
+          **{(int(h), TEST_YEAR): len(TRANSFER_DATES) for h in TRANSFER_CYCLES}}
 
 
 def fetch_transfer() -> None:
+    """Everything beyond the weekly 12Z set (fetch_hindcast.py): 420 bulletins
+    of the 2025 check dates and 208 of the 2023-24 fit dates, 18 GB in all.
+    Eight at a time: one at a time took 40 minutes for what the mirror serves
+    in six."""
+    import concurrent.futures as cf
     import urllib.request
     TRANSFER.mkdir(parents=True, exist_ok=True)
-    got = skip = miss = 0
-    for hh in TRANSFER_CYCLES:
-        for d in TRANSFER_DATES:
-            for prod in ("nbh", "nbs"):
-                dest = TRANSFER / f"{prod}_{d}_{hh}z.txt"
-                if dest.exists() and dest.stat().st_size > 1_000_000:
-                    skip += 1
-                    continue
-                url = f"https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.{d}/{hh}/text/blend_{prod}tx.t{hh}z"
-                try:
-                    with urllib.request.urlopen(url, timeout=180) as r:
-                        body = r.read()
-                    if len(body) < 1_000_000:
-                        raise RuntimeError(f"only {len(body)} bytes")
-                    dest.write_bytes(body)
-                    got += 1
-                except Exception as e:  # noqa: BLE001
-                    print(f"  miss {prod} {d} {hh}Z: {e}")
-                    miss += 1
-    print(f"transfer samples: fetched {got}, already had {skip}, missing {miss} "
-          f"of {2 * len(TRANSFER_DATES) * len(TRANSFER_CYCLES)}")
+    FIT03.mkdir(parents=True, exist_ok=True)
+    jobs = [(TRANSFER, d, hh) for hh in TRANSFER_CYCLES for d in TRANSFER_DATES]
+    jobs += [(FIT03, d, FIT03_CYCLE) for d in fit03_dates()]
+    todo, skip = [], 0
+    for folder, d, hh in jobs:
+        for prod in ("nbh", "nbs"):
+            dest = folder / f"{prod}_{d}_{hh}z.txt"
+            if dest.exists() and dest.stat().st_size > 1_000_000:
+                skip += 1
+            else:
+                todo.append((dest, f"https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.{d}/{hh}/text/blend_{prod}tx.t{hh}z"))
+
+    def one(job) -> str | None:
+        dest, url = job
+        try:
+            with urllib.request.urlopen(url, timeout=300) as r:
+                body = r.read()
+            if len(body) < 1_000_000:
+                raise RuntimeError(f"only {len(body)} bytes")
+            part = dest.with_suffix(".part")      # never leave half a bulletin under the real name
+            part.write_bytes(body)
+            part.rename(dest)
+            return None
+        except Exception as e:  # noqa: BLE001
+            return f"  miss {dest.name}: {e}"
+
+    with cf.ThreadPoolExecutor(max_workers=8) as ex:
+        misses = [r for r in ex.map(one, todo) if r]
+    print("\n".join(misses))
+    print(f"check and fit samples: fetched {len(todo) - len(misses)}, already had {skip}, missing {len(misses)} "
+          f"of {2 * len(jobs)}")
 
 
-def hour_check(m: pd.DataFrame, fm: dict, key: str, hour: int) -> dict | None:
-    """One map scored on real cycles of TEST_YEAR issued at `hour` (None when
-    that sample is not on disk — the hour then counts as unchecked)."""
-    a = m[(m.hour == hour) & (m.year == TEST_YEAR) & (m.key == key)]
-    if not len(a):
-        return None
-    p = published(fm, a.raw.values, a.pk.values)
-    h = score_rows(a, p)
-    ra, rb = verdict(h)
-    res = {**h, "rule_a_skill_over_0": bool(ra), "rule_b_ge50_within_10": rb, "pass": passes(h),
-           "sample": f"{h['cycles']} real {hour:02d}Z cycles of {TEST_YEAR}, never fitted on",
-           "reliability": reliability(p, a.any_sub.values.astype(float))}
-    # the same station-days as seen from the 12Z cycle of the same date
-    b = m[(m.hour == 12) & (m.key == key)].merge(a[["icao", "vday"]], on=["icao", "vday"])
-    if len(b):
-        pb = published(fm, b.raw.values, b.pk.values)
-        res["same_days_from_12z"] = {k: v for k, v in score_rows(b, pb).items()
-                                     if k in ("n", "brier", "brier_climo", "skill_pct", "ge50", "b25_50", "ge75")}
-    return res
+# --------------------------------------------------------- slots and checks ----
+def slot_plan() -> list[dict]:
+    """Every (bucket, j) the planner can ask for, with the maps it may use in
+    the order they are tried (the docstring's SLOTS table)."""
+    plan = []
+    for sk in SLOT_KEYS:
+        rep, j = int(sk[1:3]), int(sk[-1])
+        kind = slot_kind(rep, j)
+        if kind == "partial":
+            cands = (f"d2h{rep:02d}",)
+        elif kind == "under_way":
+            cands = ("d1u", "d1") if rep == 0 else ("d1u",)     # the one named fallback
+        else:
+            cands = SLOT_MAPS[kind]
+        plan.append({"slot": sk, "rep": rep, "j": j, "kind": kind, "candidates": cands})
+    return plan
+
+
+def sample_words(rows: pd.DataFrame, rep: int) -> str:
+    n = rows.cycle.nunique()
+    return (f"{n} weekly 12Z cycles of {TEST_YEAR}, never fitted on" if rep == 12
+            else f"{n} real {rep:02d}Z cycles of {TEST_YEAR}, never fitted on")
+
+
+# The rows each pooled map is fitted on: (cycle hour, statistic key), target days before the test year.
+MAP_FIT = {"d1": (12, "j1"), "d1u": (3, "j0"), "d2f": (3, "j1"), "d2h09": (12, "j2t09"), "d2h12": (12, "j2")}
+# ...and the slot whose check is on the map's own fit hour (the largest look at its top band)
+MAP_HOME = {"d1": "h12/j1", "d1u": "h03/j0", "d2f": "h03/j1", "d2h09": "h09/j2", "d2h12": "h12/j2"}
+MAP_WORDS = {
+    "d1": "the whole date, seen 1-39 h ahead",
+    "d1u": "the date under way: the hours after the cycle, through 23Z",
+    "d2f": "the whole date, seen 16-48 h ahead (after next: through 15Z, 18Z or 21Z)",
+    "d2h09": "the date after next, through 09Z only",
+    "d2h12": "the date after next, through 12Z only"}
 
 
 # ------------------------------------------------------------------ main ----
@@ -775,11 +1392,13 @@ def main() -> None:
     ap.add_argument("--parity", action="store_true",
                     help="check the replay against the engine's latest run and record it in daycal.json")
     ap.add_argument("--allow-missing-samples", action="store_true",
-                    help="write daycal.json even when a cycle-hour sample is not on disk (those hours go unpublished)")
+                    help="write daycal.json even when a sample is short or absent (inspection only: do not commit it)")
     ap.add_argument("--fetch-transfer", action="store_true",
-                    help=f"download the {'/'.join(TRANSFER_CYCLES)}Z transfer samples (5 GB) and stop")
+                    help=f"download the {'/'.join(TRANSFER_CYCLES)}Z check samples of {TEST_YEAR} and the "
+                         f"{FIT03_CYCLE}Z fit sample of 2023-24 (18 GB) and stop")
+    ap.add_argument("--out", default=str(OUT / "daycal.json"), help="where to write (default: the committed file)")
     args = ap.parse_args()
-    dest = OUT / "daycal.json"
+    dest = Path(args.out)
 
     if args.fetch_transfer:
         fetch_transfer()
@@ -795,7 +1414,33 @@ def main() -> None:
         sys.exit(0 if res["ok"] else 1)
 
     replay = load_replay(args.rebuild)
-    m = assemble(day_table(replay))
+    # every sample the pre-registration names must be whole, before anything is fitted
+    on_disk = replay.groupby([replay.cycle.dt.hour, replay.cycle.dt.year]).cycle.nunique().to_dict()
+    lacking = [f"{h:02d}Z {y}: {on_disk.get((h, y), 0)} of {n} cycles" for (h, y), n in NEEDED.items()
+               if on_disk.get((h, y), 0) < n]
+    if lacking:
+        # Run on a machine without the 18 GB of bulletins this would rewrite
+        # the committed file with whole buckets switched off, and the planner
+        # would go quiet at those hours with nothing in CI to say why.
+        msg = f"samples short or absent ({'; '.join(lacking)}) — fetch them with fit_daycal.py --fetch-transfer"
+        if not args.allow_missing_samples:
+            sys.exit(f"{msg}. daycal.json was NOT rewritten (--allow-missing-samples writes one for inspection).")
+        print(f"::warning:: {msg}")
+    # build_deploy.covered_hours is what the build believes a cycle forecasts;
+    # the bulletins must agree, for every sampled cycle hour and reach
+    for hour in sorted({h for h, _ in NEEDED}):
+        one = replay[replay.cycle.dt.hour == hour]
+        if not len(one):
+            continue
+        cyc = one.cycle.iloc[0].to_pydatetime()
+        seen = one[one.cycle == one.cycle.iloc[0]].groupby("icao").fhr.apply(tuple).mode().iloc[0]
+        for j in (0, 1, 2):
+            d = cyc.date() + timedelta(days=j)
+            got = sorted({(cyc + timedelta(hours=int(f))).hour for f in seen if (cyc + timedelta(hours=int(f))).date() == d})
+            assert got == covered_hours(cyc, d), (hour, j, got, covered_hours(cyc, d))
+
+    truth, wclim = load_truth(), window_climo()
+    m = assemble(day_table(replay), truth, wclim)
     # the leak-free split must hold row by row: every test-year day comes from
     # a cycle replayed with the pre-test climatology, every fit day from one
     # replayed as the engine runs live
@@ -803,115 +1448,185 @@ def main() -> None:
     assert (cyc_year[m.year == TEST_YEAR] == TEST_YEAR).all() and (cyc_year[m.year < TEST_YEAR] < TEST_YEAR).all()
     # the same test-year days as the first run scored them (climatology that
     # had seen the test year), only to say what the leak was worth
-    leaky = assemble(day_table(replay[replay.cycle.dt.year == TEST_YEAR], col="p_all"))
-    leaky = leaky[(leaky.hour == 12) & (leaky.year == TEST_YEAR)]
+    leaky = assemble(day_table(replay[(replay.cycle.dt.year == TEST_YEAR) & (replay.cycle.dt.hour == 12)], col="p_all"),
+                     truth, wclim)
+    leaky = leaky[leaky.year == TEST_YEAR]
     chase = set(json.load(open(HERE.parent / "app" / "public" / "data" / "chase.json"))["airports"])
     fit12 = m[m.hour == 12]
     n_cycles = {y: int(fit12[fit12.year == y].cycle.nunique()) for y in (2023, 2024, 2025)}
-    print(f"12Z station-days with truth: {len(fit12[fit12.key == 'd1']):,} (day 1); cycles by year {n_cycles}")
-    sampled = [int(h) for h in TRANSFER_CYCLES]
+    print(f"12Z station-days with truth: {len(fit12[fit12.key == 'j1']):,} (next date); cycles by year {n_cycles}")
+    by_sample = m.groupby(["hour", "key"]).agg(rows=("raw", "size"), short=("short", "sum"))
+    print("rows by cycle hour and reach (short = missing more hours than the build publishes):")
+    print(by_sample.to_string())
 
-    maps, checks = {}, {"residuals": {}, "climatology_leak": {}}
-    reference = {}
-    for key in ["d1"] + [daymap_key(2, c) for c in DAY2_COVER]:
-        a = fit12[fit12.key == key]
-        tr, te = a[a.year < TEST_YEAR], a[a.year == TEST_YEAR]
+    # ---- the pooled maps: fitted on 2023-24, as pre-registered ----
+    fitted, maps, reference = {}, {}, {}
+    for key, (hour, stat) in MAP_FIT.items():
+        a = m[(m.hour == hour) & (m.key == stat)]
+        tr = a[a.year < TEST_YEAR]
         fm = fit_map(tr.raw.values, tr.any_sub.values)
-        p = published(fm, te.raw.values, te.pk.values)
-        # the vectorised path must be the function the live build calls
-        for raw, pk, pv in list(zip(te.raw.values, te.pk.values, p))[:: max(1, len(te) // 3000)]:
-            live = day_chance(fm, {"noev": 1.0 - raw, "pk": int(pk)})
-            assert abs(live - pv) < 0.00051, (key, raw, pk, pv, live)   # pv is rounded to 3 decimals
-        h = score_rows(te, p)
-        ra, rb = verdict(h)
-        ship = bool(ra and rb is not False)
-        y = te.any_sub.values.astype(float)
-        # amendment 2: the same rule at the cycle hours that are really used
-        hours = {f"{hh:02d}": hc for hh in sampled if hh in map_cycle_hours(key)
-                 for hc in [hour_check(m, fm, key, hh)] if hc is not None}
-        passed = {int(hh): hc["pass"] for hh, hc in hours.items()}
-        if 12 in map_cycle_hours(key):
-            passed[12] = ship                 # the 12Z holdout is the live sample at hour 12
-        pub = publish_hours(key, passed) if ship else []
-        # the receipts a build at cycle hour h prints: the sample nearest below it
-        receipt_for = {str(hh): f"{max(s for s in passed if s <= hh):02d}" for hh in pub}
-        # the samples that stand behind a published hour, and the season they must also hold in
-        behind = [h if s == 12 else hours[f"{s:02d}"] for s in sorted(passed) if passed[s]] if pub else []
-        hold_months = season_held(behind)
-        lk = leaky[leaky.key == key]
-        hl = score_rows(lk, published(fm, lk.raw.values, lk.pk.values))
-        checks["climatology_leak"][key] = {
-            "with_test_year_in_climatology": {k: hl[k] for k in ("skill_pct", "ge50", "ge75")}, "ships": passes(hl),
-            "without": {k: h[k] for k in ("skill_pct", "ge50", "ge75")}}
-        maps[key] = {"day": 1 if key == "d1" else 2, "cover_end_utc": None if key == "d1" else int(key[-2:]),
-                     "ship": ship, "publish_hours": pub, "receipt_for_hour": receipt_for, "hold_months": hold_months,
-                     "x": fm["x"], "y": fm["y"],
-                     "n_fit": fm["n_fit"], "blocks": fm["blocks"], "min_block_n": fm["min_block_n"],
-                     "holdout": {**h, "rule_a_skill_over_0": bool(ra), "rule_b_ge50_within_10": rb, "pass": ship,
-                                 "sample": f"{h['cycles']} weekly 12Z cycles of {TEST_YEAR}, never fitted on",
-                                 "top": fm["y"][-1], "raw_for_50": raw_for(fm, 0.5), "raw_050_maps_to": round(apply_daymap(fm, 0.5), 3)},
-                     "hours": hours,
-                     "areas": area_receipts(a, published(fm, a.raw.values, a.pk.values)),
-                     "reliability": reliability(p, y), "raw_reliability": reliability(te.raw.values, y)}
-        print(f"\n== {key}: fit n={fm['n_fit']:,} ({fm['blocks']} blocks, smallest {fm['min_block_n']}); "
-              f"2025 n={h['n']:,} base {h['base']}")
-        print(f"   Brier published {h['brier']} vs climatology {h['brier_climo']} -> skill {h['skill_pct']:+.1f}%   "
-              f"(bare product {h['raw_brier']}, {h['raw_skill_pct']:+.1f}%)")
-        print(f"   >=0.5 group: published n={h['ge50']['n']} shown {h['ge50']['shown']} observed {h['ge50']['obs']}   "
-              f"(bare product n={h['raw_ge50']['n']} shown {h['raw_ge50']['shown']} observed {h['raw_ge50']['obs']})")
-        print(f"   >=0.75 group: {h['ge75']}")
-        print(f"   rule (a) skill>0: {ra}   rule (b) >=0.5 within 10 pts: {rb}   -> {'SHIP' if ship else 'HOLD'}")
-        print(f"   with {TEST_YEAR} inside the climatology (the first run): skill {hl['skill_pct']:+.1f}%, "
-              f">=0.5 {hl['ge50']} -> {'SHIP' if passes(hl) else 'HOLD'}")
-        print(f"   Nov-Feb >=0.5: {h['nov_feb']['ge50']}")
-        for hh, hc in hours.items():
-            print(f"   {hh}Z cycles ({hc['cycles']}): skill {hc['skill_pct']:+.1f}%  >=0.5 {hc['ge50']}  "
-                  f">=0.75 {hc['ge75']}  Nov-Feb >=0.5 {hc['nov_feb']['ge50']}  "
-                  f"-> {'pass' if hc['pass'] else 'FAIL'}")
-        print(f"   published from cycle hours: {pub or 'none'}"
-              + (f"   NOT for target days in months {hold_months}" if hold_months else ""))
-        for r in maps[key]["reliability"]:
-            print(f"     {r['lo']:.2f}-{r['hi']:.2f}  n={r['n']:6d}  shown {r['shown']:.3f}  observed {r['obs']:.3f}")
-        for ar in maps[key]["areas"]:
-            for label in ar["judged"]:
-                g = ar["samples"][label]["ge50"]
-                print(f"     area {ar['name']:15s} {label:8s} >=0.5 n={g['n']:4d} ({g['dates']:2d} dates) shown {g['shown']} "
-                      f"observed {g['obs']}" + ("" if label != ar["show"] else
-                                                f"  -> {'ok' if ar['ok'] else 'NOT CALIBRATED HERE'}"))
-        # reproduction of the review's figure only: a bare isotonic map, no
-        # minimum block, no floor. Never shipped, never used to choose.
-        bare = fit_map(tr.raw.values, tr.any_sub.values, min_block=1, ends=True)
-        pb = np.interp(te.raw.values, bare["x"], bare["y"])
-        hb = score_rows(te, pb)
-        reference[key] = {"brier": hb["brier"], "brier_climo": hb["brier_climo"], "skill_pct": hb["skill_pct"],
-                          "ge50": hb["ge50"], "blocks": bare["blocks"], "top": bare["y"][-1]}
-        print(f"   (review's bare isotonic, for reproduction: Brier {hb['brier']} skill {hb['skill_pct']:+.1f}% "
-              f">=0.5 n={hb['ge50']['n']} shown {hb['ge50']['shown']} observed {hb['ge50']['obs']})")
-        if key in ("d1", "d2h09", "d2h12"):
-            checks["residuals"][key] = residuals(te, p, chase)
+        fitted[key] = fm
+        maps[key] = {"floor": True, "x": fm["x"], "y": fm["y"], "n_fit": fm["n_fit"], "blocks": fm["blocks"],
+                     "min_block_n": fm["min_block_n"], "top": fm["y"][-1], "raw_for_50": raw_for(fm, 0.5),
+                     "raw_050_maps_to": round(apply_daymap(fm, 0.5), 3), "home": MAP_HOME[key],
+                     "statistic": MAP_WORDS[key],
+                     "fit": f"{tr.cycle.nunique()} weekly {hour:02d}Z cycles of 2023-24"}
+        print(f"\nmap {key}: fit n={fm['n_fit']:,} from {tr.cycle.nunique()} {hour:02d}Z cycles ({fm['blocks']} blocks, "
+              f"smallest {fm['min_block_n']}); top {fm['y'][-1]}; a bare 0.50 -> {maps[key]['raw_050_maps_to']}; "
+              f"0.50 needs a bare {maps[key]['raw_for_50']}")
 
-    # Central Valley, day 1, year by year. The 2025 holdout has too few
-    # station-days there at >= 0.5 for rule (b) to say anything, so the two
-    # fitted years sit beside it: in-sample for the map, but the map is pooled
-    # over 1,200 stations and a regional bias shows either way.
-    a = fit12[(fit12.key == "d1") & fit12.icao.isin(CENTRAL_VALLEY)]
-    pv, yv = published(maps["d1"], a.raw.values, a.pk.values), a.any_sub.values.astype(float)
+    # ---- every (bucket, j): the ship rule on real cycles at the bucket's own hour ----
+    slots, checks = {}, {"residuals": {}, "climatology_leak": {}}
+    for sp in slot_plan():
+        rows = m[(m.hour == sp["rep"]) & (m.key == f"j{sp['j']}") & (m.year == TEST_YEAR)]
+        cyc0 = datetime(TEST_YEAR, 6, 1, sp["rep"])
+        hrs = covered_hours(cyc0, cyc0.date() + timedelta(days=sp["j"]))
+        slot = {"kind": sp["kind"], "rep": sp["rep"], "j": sp["j"], "hours": [sp["rep"] + i for i in range(3)],
+                "cover": {"from": hrs[0], "through": hrs[-1]}, "map": None, "check": None, "tried": [],
+                "why": None, "hold_months": [], "areas": {}}
+        y = rows.any_sub.values.astype(float)
+        for key in sp["candidates"]:
+            if not len(rows):
+                slot["tried"].append({"map": key, "pass": False, "rule_a_skill_over_0": False,
+                                      "rule_b_ge50_within_10": None, "sample": "no sample on disk"})
+                continue
+            p = published(fitted[key], rows.raw.values, rows.pk.values)
+            # the vectorised path must be the function the live build calls
+            for raw, pk, pv in list(zip(rows.raw.values, rows.pk.values, p))[:: max(1, len(rows) // 2000)]:
+                live = day_chance(fitted[key], {"noev": 1.0 - raw, "pk": int(pk)})
+                assert abs(live - pv) < 0.00051, (sp["slot"], key, raw, pk, pv, live)   # pv is rounded to 3 decimals
+            c = with_verdict(score_rows(rows, p), sample_words(rows, sp["rep"]), key, fitted[key])
+            c["reliability"] = reliability(p, y)
+            if sp["kind"] == "under_way":
+                c["after_build"] = after_build(rows, p)     # reported, gates nothing
+            slot["tried"].append(c)
+            if c["pass"]:
+                slot["map"], slot["check"] = key, c
+                slot["hold_months"] = season_held([c])
+                break
+        if slot["map"] is None:
+            slot["why"] = "no sample" if not len(rows) else "failed"
+        slots[sp["slot"]] = slot
+        for c in slot["tried"]:
+            if "n" not in c:
+                continue
+            print(f"\n== {sp['slot']} ({sp['kind']}, forecast {hrs[0]:02d}Z-{hrs[-1]:02d}Z) map {c['map']}: "
+                  f"{c['sample']}; n={c['n']:,} ({c['short']} short) base {c['base']}")
+            print(f"   Brier {c['brier']} vs climatology {c['brier_climo']} -> skill {c['skill_pct']:+.1f}%   "
+                  f"(bare product {c['raw_skill_pct']:+.1f}%)")
+            print(f"   >=0.5 {c['ge50']}   0.25-0.5 {c['b25_50']}   >=0.75 {c['ge75']}")
+            if "after_build" in c:
+                ab = c["after_build"]
+                print(f"   counted from the build on (reported): >=0.5 {ab['ge50']}   >=0.75 {ab['ge75']}")
+            print(f"   Nov-Feb >=0.5 {c['nov_feb']['ge50']}")
+            print(f"   rule (a) {c['rule_a_skill_over_0']}  rule (b) {c['rule_b_ge50_within_10']}  -> "
+                  f"{'PASS' if c['pass'] else 'FAIL'}")
+        print(f"   {sp['slot']}: " + (f"publishes map {slot['map']}" + (f", not for months {slot['hold_months']}"
+                                                                       if slot["hold_months"] else "")
+                                     if slot["map"] else "publishes NO day-level chance"))
+
+    # ---- areas: leave one year out, then each bucket ----
+    regional_out, hourly = {}, {}
+    for fam, (hour, stat) in FAMILY.items():
+        rows = m[(m.hour == hour) & (m.key == stat)]
+        rec = regional(rows, fitted[fam])
+        hourly[fam] = hourly_by_area(m, replay, fam)
+        print(f"\n#### areas, family {fam} ({hour:02d}Z cycles, {stat}); leave one year out, pooled out-of-fold rows")
+        for name, r in rec.items():
+            fm = r.pop("map", None)
+            for f in FORMS:
+                o = (r["forms"].get(f) or {})
+                if not o:
+                    continue
+                h = o["oof"]
+                print(f"  {name:15s} {f:9s} n={h['n']:6d} skill {h['skill_pct']}  (pooled map {r['pooled_same_rows']['skill_pct']})  "
+                      f">=0.5 {h['ge50']['n']}/{h['ge50']['shown']}/{h['ge50']['obs']}  "
+                      f"0.25-0.5 {h['b25_50']['n']}/{h['b25_50']['shown']}/{h['b25_50']['obs']}  "
+                      f">=0.75 {h['ge75']['n']}/{h['ge75']['shown']}/{h['ge75']['obs']}  rules {o['rules']} -> "
+                      f"{'PASS' if o['pass'] else 'fail'}")
+            if "map_2023_24" in r:
+                print(f"  {name:15s} map fitted on 2023-24: top {r['map_2023_24']['top']}, a pooled 0.55 becomes "
+                      f"{r['map_2023_24']['pooled_055_becomes']}, {r['map_2023_24']['blocks']} blocks -> "
+                      f"{('area map, ' + r['form']) if r['pass'] else 'keeps the pooled map'}")
+            if fm is not None:
+                maps[f"{fam}@{name}"] = {
+                    "family": fam, "area": name, "floor": r["form"] == "floored", "x": fm["x"], "y": fm["y"],
+                    "n_fit": fm["n_fit"], "blocks": fm["blocks"], "min_block_n": fm["min_block_n"],
+                    "top": fm["y"][-1], "raw_for_50": raw_for(fm, 0.5),
+                    "raw_050_maps_to": round(apply_daymap(fm, 0.5), 3),
+                    "pooled_055_becomes": r["map_2023_24"]["pooled_055_becomes"],
+                    "fit": f"{name} fields, weekly {hour:02d}Z cycles of 2023-24"}
+        regional_out[fam] = rec
+    for sp in slot_plan():
+        slot = slots[sp["slot"]]
+        fam = slot["map"]
+        rows = m[(m.hour == sp["rep"]) & (m.key == f"j{sp['j']}") & (m.year == TEST_YEAR)]
+        for name, _ in AREAS:
+            r = (regional_out.get(fam) or {}).get(name)
+            if slot["map"] is None:
+                slot["areas"][name] = {"use": "pooled", "map": None, "why": "slot not published", "hold_months": [],
+                                       "check": None}
+                continue
+            ra = rows[rows.area == name]
+            if r is None or not r["pass"]:
+                slot["areas"][name] = {"use": "pooled", "map": None, "hold_months": [], "check": None,
+                                       "why": "no area map for this reach" if r is None
+                                       else "leave-one-year-out failed"}
+            else:
+                rk = f"{fam}@{name}"
+                c = area_bucket_check(ra, maps[rk], maps[rk]["floor"], rk, sample_words(rows, sp["rep"]))
+                slot["areas"][name] = {"use": "regional" if c["pass"] else "pooled", "map": rk if c["pass"] else None,
+                                       "why": None if c["pass"] else "failed at this bucket",
+                                       "hold_months": r["forms"][r["form"]]["hold_months"] if c["pass"] else [],
+                                       "check": c}
+            # the area's record on THIS bucket's sample, with the map its fields get here
+            used_map = maps[slot["areas"][name]["map"]] if slot["areas"][name]["use"] == "regional" else fitted[fam]
+            slot["areas"][name]["own"] = area_own(
+                ra, published(used_map, ra.raw.values, ra.pk.values,
+                              floor=used_map.get("floor", True) if slot["areas"][name]["use"] == "regional" else True),
+                sp["kind"], sample_words(rows, sp["rep"]))
+        used = [n for n, a in slot["areas"].items() if a["use"] == "regional"]
+        failed = [n for n, a in slot["areas"].items() if a["why"] == "failed at this bucket"]
+        if slot["map"]:
+            print(f"  {sp['slot']} ({fam}): area maps used for {used or 'none'}"
+                  + (f"; failed at this bucket: {failed}" if failed else ""))
+    # an area map nothing uses does not ship
+    in_use = {a["map"] for s in slots.values() for a in s["areas"].values() if a["use"] == "regional"}
+    maps = {k: v for k, v in maps.items() if "@" not in k or k in in_use}
+
+    print("\n#### the hourly forecast by area (reported, gates nothing)")
+    for fam, hrec in hourly.items():
+        for a in hrec["areas"]:
+            print(f"  {fam:4s} {a['name']:15s} expected {a['eh']['expected_hours']:8.1f} h vs observed "
+                  f"{a['eh']['observed_hours']:5d} h (x{a['eh']['ratio']})  runs {a['runs'] or ('-' if a['judged'] else 'not judged')}"
+                  f"   peak hour >=50%: {a['peak']['ge50']}")
+
+    # ---- version 2's side checks on the committed day-1 map, kept so its numbers can still be traced ----
+    a = fit12[fit12.key == "j1"]
+    tr, te = a[a.year < TEST_YEAR], a[a.year == TEST_YEAR]
+    p = published(fitted["d1"], te.raw.values, te.pk.values)
+    lk = leaky[leaky.key == "j1"]
+    hl = score_rows(lk, published(fitted["d1"], lk.raw.values, lk.pk.values))
+    h12 = slots["h12/j1"]["tried"][0]
+    checks["climatology_leak"]["d1"] = {
+        "with_test_year_in_climatology": {k: hl[k] for k in ("skill_pct", "ge50", "ge75")}, "ships": passes(hl),
+        "without": {k: h12[k] for k in ("skill_pct", "ge50", "ge75")}}
+    checks["residuals"]["d1"] = residuals(te, p, chase)
+    # reproduction of the first review's figure only: a bare isotonic map, no
+    # minimum block, no floor. Never shipped, never used to choose.
+    bare = fit_map(tr.raw.values, tr.any_sub.values, min_block=1, ends=True)
+    hb = score_rows(te, np.interp(te.raw.values, bare["x"], bare["y"]))
+    reference["d1"] = {"brier": hb["brier"], "brier_climo": hb["brier_climo"], "skill_pct": hb["skill_pct"],
+                       "ge50": hb["ge50"], "blocks": bare["blocks"], "top": bare["y"][-1]}
+    # Central Valley, day 1 from 12Z cycles, year by year, with the pooled map
+    # (2023-24 in-sample for it, but it is pooled over 1,200 stations and a
+    # regional bias shows either way).
+    a = a[a.icao.isin(CENTRAL_VALLEY)]
+    pv, yv = published(fitted["d1"], a.raw.values, a.pk.values), a.any_sub.values.astype(float)
     checks["central_valley_day1_by_year"] = {
         label: {"n": int(s.sum()), "ge50": group(pv[s], yv[s], 0.5, 1.01), "b25_50": group(pv[s], yv[s], 0.25, 0.5),
                 "eh": round(float(a.eh.values[s].mean()), 3), "obs_hours": round(float(a.hrs.values[s].mean()), 3)}
         for label, s in [(str(y), (a.year == y).values) for y in (2023, 2024, 2025)] + [("all", np.ones(len(a), bool))]}
-    have = sorted({int(hh) for mp_ in maps.values() for hh in mp_["hours"]})
-    missing = [hh for hh in sampled if hh not in have]
-    if missing:
-        # Without a sample its cycle hours count as unchecked and are not
-        # published. Run on a machine without the 5 GB of transfer bulletins,
-        # this would rewrite the committed file so that the 09Z bake publishes
-        # no day-level chance at all. Refuse unless that is asked for.
-        msg = (f"no {', '.join(f'{hh:02d}Z' for hh in missing)} sample on disk (fit_daycal.py --fetch-transfer): "
-               f"cycle hours that need it would be left unpublished")
-        if not args.allow_missing_samples:
-            sys.exit(f"{msg}. daycal.json was NOT rewritten (pass --allow-missing-samples to write it anyway).")
-        print(f"\n::warning:: {msg}")
 
     for key, res in checks["residuals"].items():
         print(f"\nresiduals, {key}, 2025 holdout (>= 0.5 group; flagged when n >= 50 and off by more than 15 points):")
@@ -927,33 +1642,66 @@ def main() -> None:
     if par.get("fingerprint") and par["fingerprint"] != fingerprint():
         par = dict(par, stale=True)
     out = {
-        # 2: maps carry publish_hours, receipt_for_hour, hours and areas, and
-        # build_deploy.load_daycal requires them
-        "version": 2,
+        # 3: keyed by (bucket of cycle hours, j) instead of by planner day;
+        # area maps; build_deploy.load_daycal requires every slot and checks
+        # each published one against its own receipt
+        "version": 3,
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
-        "fit": f"2023-2024 weekly 12Z hindcast ({n_cycles[2023] + n_cycles[2024]} cycles)",
-        "test": f"{TEST_YEAR} weekly 12Z hindcast ({n_cycles[TEST_YEAR]} cycles), never fitted on",
+        "service_day_offset_h": SERVICE_DAY_OFFSET_H,
+        "fit": f"2023-2024 weekly hindcast: {n_cycles[2023] + n_cycles[2024]} cycles at 12Z, "
+               f"{on_disk.get((3, 2023), 0) + on_disk.get((3, 2024), 0)} at 03Z",
+        "test": f"{TEST_YEAR}, never fitted on: {n_cycles[TEST_YEAR]} weekly 12Z cycles and {len(TRANSFER_DATES)} "
+                f"cycles at each of {', '.join(h + 'Z' for h in TRANSFER_CYCLES)}",
         "test_climatology": f"test-year forecasts replayed with a climatology from truth before {TEST_YEAR}-01-01",
-        "statistic": "1 - prod(1 - p_hour)^step over the day's forecast hours (day 1: all of them; day 2: hours "
-                     "up to cover_end_utc), exactly as build_deploy.cal_day_stats builds it",
-        "target": "at least one hourly below-CAT-I flag in the UTC day (>= 18 hourly obs)",
-        "published": "max(map(statistic), peak hourly chance), 3 decimals",
+        "statistic": "1 - prod(1 - p_hour)^step over the forecast hours of the target date that the cycle covers "
+                     "(hours after the cycle when the date is under way), exactly as build_deploy.day_stats "
+                     "builds it",
+        "target": "at least one hourly below-CAT-I flag in the UTC date (>= 18 hourly obs); for a date under way, "
+                  "at an hour after the cycle (three quarters of those hours observed)",
+        "baseline": "dayscale.json climo_day; for a date under way, the per-airport monthly frequency of the same "
+                    "part-day event over every truth year but the row's own",
+        "published": "max(map(statistic), peak hourly chance), 3 decimals; an area map marked floor=false is "
+                     "published without the max",
         "method": f"isotonic regression (pool-adjacent-violators), blocks under {MIN_BLOCK} station-days pooled "
                   f"into the block below, one breakpoint per block, linear interpolation between",
+        "min_hours": f"published only when at most {MAX_MISSING_HOURS} hour-equivalents of what the cycle covers "
+                     f"are missing",
         "rule": RULE,
-        "rule_by_cycle_hour": RULE_HOURS,
         "rule_by_season": RULE_SEASON,
         "rule_by_area": RULE_AREAS,
-        "sampled_cycle_hours": sorted(set(sampled) | {12}),
+        "rule_regional": RULE_REGIONAL,
+        "rule_hourly": RULE_HOURLY,
+        "rule_after_build": RULE_AFTER_BUILD,
+        "rule_area_own": RULE_AREA_OWN,
+        "buckets": {b: {"hours": [int(b[1:]) + i for i in range(3)], "rep": int(b[1:])} for b in BUCKETS},
+        "areas": [{"name": name, **d} for name, d in AREAS],
         "maps": maps,
+        "slots": slots,
+        "regional": regional_out,
+        "hourly": hourly,
         "reference_bare_isotonic": reference,
         "checks": checks,
         "parity": par,
     }
-    dest.write_text(json.dumps(out, separators=(",", ":")))
-    print(f"\nwrote {dest.name} ({dest.stat().st_size // 1024} KB): "
-          + ", ".join(f"{k} {'SHIP' if v['ship'] else 'HOLD'} from {v['publish_hours'] or 'no cycle hour'}"
-                      for k, v in maps.items()))
+    text = json.dumps(out, separators=(",", ":"))
+    # what is written must be what the build will accept: load it back through
+    # the build's own validator before it replaces the committed file
+    tmp = dest.with_suffix(".json.tmp")
+    tmp.write_text(text)
+    try:
+        from build_deploy import load_daycal
+        load_daycal(tmp)
+    except Exception:
+        tmp.unlink()
+        raise
+    tmp.replace(dest)
+    print(f"\nwrote {dest.name} ({dest.stat().st_size // 1024} KB)")
+    for sk in SLOT_KEYS:
+        s = slots[sk]
+        used = [n for n, a in s["areas"].items() if a["use"] == "regional"]
+        print(f"  {sk} {s['kind']:10s} " + (f"map {s['map']}" + (f" (not months {s['hold_months']})" if s["hold_months"] else "")
+                                           + (f"; area maps: {', '.join(used)}" if used else "")
+                                           if s["map"] else "NO day-level chance"))
 
 
 def raw_for(m: dict, target: float) -> float | None:

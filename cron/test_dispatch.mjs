@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import worker, { dispatch, JOBS } from "./src/index.js";
+import { FOG_CRON } from "./src/fog.js";
 
 const ENV = { GH_PAT: "test-token-not-real", GH_REPO: "travis735/fog-atlas", GH_REF: "main" };
 const HOURLY = "25 * * * *";
@@ -51,7 +52,10 @@ const tests = {
     const cfg = readFileSync(new URL("./wrangler.jsonc", import.meta.url), "utf8");
     const block = cfg.slice(cfg.indexOf('"crons"'), cfg.indexOf("]", cfg.indexOf('"crons"')));
     const crons = [...block.matchAll(/^\s*"([^"]+)"/gm)].map((m) => m[1]).filter((c) => c !== "crons");
-    assert.deepEqual([...crons].sort(), Object.keys(JOBS).sort());
+    // the fog-alert trigger (2026-11-25) starts no workflow: it is the one
+    // trigger without a JOBS entry, and it must never gain one by accident
+    assert.equal(JOBS[FOG_CRON], undefined);
+    assert.deepEqual([...crons].sort(), [...Object.keys(JOBS), FOG_CRON].sort());
   },
   async "an unmapped cron trigger fails loudly and sends nothing"() {
     const calls = script([]);

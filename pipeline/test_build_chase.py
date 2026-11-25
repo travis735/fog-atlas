@@ -9,6 +9,10 @@ build_chase.py read the new file at the old columns, and the 2026-11-03 CI
 refresh committed and deployed runway ends named "HIG" with ALS "TMRN" for
 every US airport. Fixtures: the real layout lines and the real KSFO 01L/19R
 runway record from the 2026-08-06 and 2026-10-29 cycles.
+
+Since 2026-11-25 the builder reads the NASR CSV tables (test_nasr_csv.py) and
+this fixed-width reader is the fallback for a zip without them; the LED
+approach-light parse has its own file (test_led.py).
 """
 import sys
 import tempfile
@@ -77,19 +81,86 @@ def test_old_columns_on_the_new_file_is_the_november_failure():
     assert ends[0]["e"] == "HIG" and ends[0]["als"] == "TMRN", ends   # what was live 2026-11-03..24
 
 
-def _end(e, tier=400, ils=None):
-    return {"e": e, "len": 7000, "als": None, "rvr": None, "ils": ils, "lpv": 0, "tier": tier}
+def test_led_fields_never_cost_the_runway_slices():
+    # The LED parse added seven fields to the layout (facility name, position,
+    # remark text). RF_AUG / RF_OCT above have none of them. Had they joined
+    # the all-or-nothing lookup, every layout without a REMARK line would fall
+    # back wholesale to the built-in 2026-10 offsets — on an older file that
+    # is the "HIG" failure again.
+    aug = _layout(RF_AUG)
+    assert aug["base"] == (65, 68), aug["base"]                      # still read from the file
+    assert all(aug[k] == bc.APT_DEFAULT[k] for k, _ in bc.APT_OPTIONAL), aug
+    # and when the layout does describe them, the file wins over the default
+    real = ['L AN 0004 00028  E7      LOCATION IDENTIFIER', 'L AN 0050 00134  A2      OFFICIAL FACILITY NAME',
+            'L AN 0012 00539  A19S    AIRPORT REFERENCE POINT LATITUDE (SECONDS)',
+            'L AN 0012 00566  A20S    AIRPORT REFERENCE POINT LONGITUDE (SECONDS)']      # 2026-10-29 apt_rf.txt
+    octl = _layout(real + RF_OCT + ['L AN 0015 00017  N/A     REMARK ELEMENT NAME', 'L AN 1500 00032  N/A     REMARK TEXT'])
+    assert octl == bc.APT_DEFAULT, octl
+    moved = _layout(RF_OCT + ['L AN 1490 00042  N/A     REMARK TEXT'])    # made up: the FAA widens the element name
+    assert moved["rmk_text"] == (41, 1531) and moved["base"] == bc.APT_DEFAULT["base"], moved
+
+
+def test_arp_seconds():
+    assert round(bc._arp_seconds("122192.9870N"), 4) == 33.9425       # KLAX, 2026-11-26 APT.txt
+    assert round(bc._arp_seconds("426268.9750W"), 4) == -118.408
+    assert bc._arp_seconds("") is None and bc._arp_seconds("N") is None
+
+
+def _end(e, tier=400, ils=None, als=None, rvr=None):
+    return {"e": e, "len": 7000, "als": als, "rvr": rvr, "ils": ils, "lpv": 0, "tier": tier}
+
+
+def _good(als=("MALSR", "ALSF2"), rvr=("TMR", "T")):
+    """600 airports shaped like a healthy cycle: half the ends with an ILS, approach lights and RVR."""
+    return {f"K{i:03d}": [_end("09", 200, "I", als[0], rvr[0]), _end("27", 250), _end("18"),
+                          _end("36L", 50, "IIIB", als[1], rvr[1])] for i in range(600)}
 
 
 def test_sanity_gate():
-    good = {f"K{i:03d}": [_end("09", 200, "I"), _end("27", 250), _end("18"), _end("36L", 50, "IIIB")] for i in range(600)}
+    good = _good()
     assert bc.sanity_problems(good) == []
     bad = {f"K{i:03d}": [_end("HIG"), _end("0R"), _end("HIG"), _end("00R")] for i in range(600)}
-    assert len(bc.sanity_problems(bad)) == 3, bc.sanity_problems(bad)
+    said = bc.sanity_problems(bad)
+    assert len(said) == 5 and all(any(w in x for x in said) for w in ("plausible identifier", "no-approach tier",
+                                                                      "ILS category")), said
     assert bc.sanity_problems({"KAAA": [_end("09")]}), "a near-empty build must not pass"
     # curated Canadian ends are not FAA-derived and must not mask a bad FAA parse
     mixed = dict(bad, **{f"C{i:03d}": [dict(_end("09", 200, "I"), cur=1)] * 4 for i in range(2000)})
     assert bc.sanity_problems(mixed)
+
+
+def test_sanity_gate_has_a_volume_check_on_approach_lights_and_rvr():
+    """2026-11-25 review, on doctored copies of the real 2026-10-29 runway-end
+    table: a blank APCH_LGT_SYSTEM_CODE column, and one extra cell ahead of it,
+    were both written with exit 0. The default CHASE board (ALSF2 / ALSF1 /
+    MALSR) then held 0 US airports, and nothing here or in the watchdog saw it:
+    the runway identifiers, the tier split and the ILS share were all fine."""
+    def one(p):
+        assert len(p) == 1, p
+        return p[0]
+    # the column came back empty
+    said = one(bc.sanity_problems(_good(als=(None, None))))
+    assert "0% of runway ends carry an approach-light system" in said and "empty or has moved" in said, said
+    # one extra cell ahead of it: the next columns' Y / N flags read as light systems
+    said = one(bc.sanity_problems(_good(als=("N", "Y"))))
+    assert "approach-light codes are not approach-light systems (N, Y)" in said, said
+    # ... and the approach-slope code read as RVR equipment: "P4L", the value that was live for three weeks
+    p = bc.sanity_problems(_good(rvr=("P4L", "P2L")))
+    assert len(p) == 1 and "not made of T, M and R (P2L, P4L)" in p[0], p
+    said = one(bc.sanity_problems(_good(rvr=(None, None))))
+    assert "0% of runway ends carry RVR equipment" in said, said
+    # every code the FAA uses passes, and a single odd one is a typo, not a moved column
+    for code in sorted(bc.ALS_CODES):
+        assert bc.sanity_problems(_good(als=(code, "MALSR"))) == [], code
+    for code in ("T", "M", "R", "TM", "TR", "MR", "TMR"):
+        assert bc.sanity_problems(_good(rvr=(code, "T"))) == [], code
+    typo = _good()
+    typo["K000"][0]["als"] = "MALSRR"
+    assert bc.sanity_problems(typo) == []
+    # the floors sit well under a healthy cycle (33% of ends with lights, 27% with RVR): a quarter and an eighth pass
+    thin = {f"K{i:03d}": [_end("09", 200, "I", "MALSR", "T" if i % 2 == 0 else None), _end("27", 250), _end("18"),
+                          _end("36", 50, "II")] for i in range(600)}
+    assert bc.sanity_problems(thin) == [], bc.sanity_problems(thin)
 
 
 if __name__ == "__main__":

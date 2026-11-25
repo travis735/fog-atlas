@@ -9,6 +9,55 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href="https://fogatlas.org/" />
     <link rel="describedby" href="/llms.txt" />
+    <style>
+      /* DEPLOY planner: text with more behind it. A hover shows it; a tap opens
+         it in a line underneath, because a phone has no hover. */
+      .dtip { border-bottom: 1px dotted currentColor; cursor: help; }
+      .dtip-line {
+        display: block; margin: 3px 0 4px; padding: 5px 8px; white-space: normal;
+        border-left: 2px solid #3a5670; background: #0e1620; color: #d7e3ee;
+        font-size: 10.5px; line-height: 1.5; letter-spacing: 0;
+      }
+      /* LED approach lights: the tick beside ILS, LPV and NOW, its chip, the
+         tag on a runway end and the popup on a ring. Violet is used for
+         nothing else on the page (blue is fog, amber and red are live fog). */
+      #led-toggle {
+        display: flex; align-items: center; gap: 6px; padding: 9px 12px;
+        background: var(--panel); border: 1px solid var(--hairline); border-radius: 9px;
+        color: var(--ink-dim); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+        cursor: pointer; backdrop-filter: blur(12px); user-select: none;
+      }
+      #led-toggle:hover { color: var(--ink); }
+      #led-toggle input { accent-color: #c79bff; }
+      /* an older chase.json has no LED data: the tick is off and its title says why */
+      #led-toggle.off { opacity: 0.45; cursor: not-allowed; }
+      #led-toggle.off:hover { color: var(--ink-dim); }
+      #led-chip {
+        padding: 9px 12px; background: var(--panel); border: 1px solid #5b4480;
+        border-radius: 9px; color: #d9bcff; font-size: 11px; letter-spacing: 0.06em;
+        backdrop-filter: blur(12px); max-width: 100%;
+      }
+      #led-chip.old { border-color: #7a5a2e; color: #ffb347; }
+      #led-chip .led-dot {
+        display: inline-block; width: 9px; height: 9px; margin-right: 7px; vertical-align: -1px;
+        border: 1.6px solid #c79bff; border-radius: 50%; box-sizing: border-box;
+      }
+      /* fog alerts are still being checked while the CHASE board is not on screen */
+      #chase-btn.watching::after { content: " \25CF"; color: #7fd49a; }
+      .pill.led { background: #2a1f3d; color: #d9bcff; border: 1px solid #5b4480; white-space: nowrap; }
+      /* LED by an old FAA list or at an airport whose runway is not named: amber, a tag to read before trusting */
+      .pill.led.soft { background: #3a2c12; color: #ffcf8a; border-color: #8a6a2a; }
+      .led-other { color: #c79bff; }
+      /* three classes: style.css's .tip rule (same popup, loaded after this block) must not take the padding back,
+         or the airport's name runs under the close button */
+      .maplibregl-popup.tip.led-pop .maplibregl-popup-content { padding: 9px 28px 9px 12px; }
+      .led-pop .maplibregl-popup-close-button { color: var(--ink-dim); font-size: 17px; padding: 2px 7px; }
+      .led-pop .maplibregl-popup-close-button:hover { color: var(--ink); background: transparent; }
+      .led-pop .led-pop-h { margin-top: 5px; color: #d9bcff; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+      .led-pop .led-pop-end { color: var(--accent-hot); }
+      .led-pop .led-pop-note { margin-top: 4px; color: var(--ink-dim); font-size: 10.5px; line-height: 1.45; }
+      .led-pop a { color: var(--accent); }
+    </style>
     <meta property="og:type" content="website" /><meta property="og:url" content="https://fogatlas.org/" />
     <meta property="og:title" content="Fog Atlas — live world fog map and fog forecasts" />
     <meta property="og:description" content="Will it be foggy tomorrow? Daily fog forecasts and ten-year fog climatology for 3,497 airports, every forecast logged and publicly verified." />
@@ -57,7 +106,7 @@
     <div id="topbar">
       <button id="rankings-btn">rankings</button>
       <button id="chase-btn" title="Fog chasing for EFVS testing — filter airports by approach lighting, runway length, minima and RVR equipment; distance and still-air flight time from your base. Live fog lands on the board in real time.">chase</button>
-      <button id="deploy-btn" title="Where to base for the next two weeks: expected chaseable fog hours by candidate base — a forecast for tomorrow, labeled advisory tiers after that — against your saved chase filters.">deploy</button>
+      <button id="deploy-btn" title="Where to base for the next two weeks: expected chaseable fog hours by candidate base — a checked forecast for the plan's first day, labeled advisory tiers after that — against your saved chase filters. Rebuilt every hour; the panel says how old the plan is.">deploy</button>
       <label id="ils-toggle" title="Hide airports with no ILS on record (US, per FAA NASR — RNAV-only fields have higher minima than CAT I). International airports with unknown ILS status stay visible.">
         <input id="ils-only" type="checkbox" /> ILS
       </label>
@@ -67,7 +116,11 @@
       <label id="now-toggle" title="Show airports below CAT I minima RIGHT NOW, worldwide — from NOAA's live METAR feed, refreshed every ~3 minutes. Amber = EFVS-recoverable, red = below 300 m.">
         <input id="now-mode" type="checkbox" /> NOW
       </label>
+      <label id="led-toggle" title="Ring the airports where an FAA airport remark says a runway end has LED approach lights. An infrared EFVS may not see LED lights. Limits: FAA-owned systems in the US only, and a remark can follow the installation by months. No ring is not proof of incandescent lamps.">
+        <input id="led-show" type="checkbox" /> LED
+      </label>
       <span id="now-chip" hidden></span>
+      <span id="led-chip" hidden></span>
     </div>
     </div><!-- /topleft -->
 

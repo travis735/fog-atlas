@@ -224,7 +224,7 @@ export function readFeed(status: number, text: string, expectIds: readonly strin
   const cols = res.cols;
 
   const obs = new Map<string, LiveOb>();
-  let rows = 0, badRows = 0, badWidth = 0;
+  let rows = 0, badRows = 0, badWidth = 0, anyTime = false;
   for (let k = first + 1; k < lines.length; k++) {
     let line = lines[k];
     if (line.endsWith("\r")) line = line.slice(0, -1);
@@ -250,8 +250,14 @@ export function readFeed(status: number, text: string, expectIds: readonly strin
       const ft = m[2] === "P" ? 6001 : parseInt(m[3], 10);
       if (rvrFt == null || ft < rvrFt) { rvrFt = ft; rvr = `${m[1]}/${m[2]}${m[3]}`; }
     }
+    // A report stamped ahead of the clock has a time that cannot be believed:
+    // its age clamped to "0m" and it counted as current, in IN FOG NOW, for as
+    // long as the stamp ran ahead plus 75 minutes. It is kept as a report with
+    // no usable time (obsMs 0), which every reader already treats as not current.
+    const stamp = Date.parse(f[cols.time]) || 0;
+    if (stamp) anyTime = true;
     obs.set(icao, {
-      obsMs: Date.parse(f[cols.time]) || 0,
+      obsMs: stamp > now + FUTURE_SLACK_MS ? 0 : stamp,
       vis, ceil, rvr, rvrFt,
       // upstream text goes into the panel as HTML: keep only what a METAR weather group can contain
       wx: f[cols.wx].replace(/[^A-Za-z0-9+\- ]/g, "").slice(0, 40) || null,
@@ -261,15 +267,15 @@ export function readFeed(status: number, text: string, expectIds: readonly strin
     });
   }
 
-  let visFilled = 0, newestMs = 0, anyTime = false;
+  let visFilled = 0, newestMs = 0;
+  const visSeen = new Set<number>();
   for (const ob of obs.values()) {
-    if (ob.vis != null) visFilled++;
-    if (ob.obsMs) anyTime = true;
+    if (ob.vis != null) { visFilled++; if (visSeen.size < 2) visSeen.add(ob.vis); }
     if (ob.obsMs <= now + FUTURE_SLACK_MS && ob.obsMs > newestMs) newestMs = ob.obsMs;
   }
   const expectHave = expectIds ? expectIds.reduce((n, id) => n + (obs.has(id) ? 1 : 0), 0) : null;
   const expectCurrent = expectIds ? expectIds.reduce((n, id) => {
-    const t = obs.get(id)?.obsMs;
+    const t = obs.get(id)?.obsMs;   // 0 for a time that cannot be read, or one stamped ahead of the clock
     return n + (t && now - t <= FEED_REPORT_MAX_AGE_MS ? 1 : 0);
   }, 0) : null;
   const stats: FeedStats = {
@@ -298,6 +304,13 @@ export function readFeed(status: number, text: string, expectIds: readonly strin
   if (stats.visFill < FEED_MIN_VIS_FILL) {
     return fail("visibility", `The feed is missing visibility: ${Math.round(stats.visFill * 100)}% of reports carry one (at least ${Math.round(FEED_MIN_VIS_FILL * 100)}% needed).`, stats);
   }
+  // Thousands of stations never report one and the same visibility. A column
+  // that holds a single value is a constant, not weather: all "10+" read as an
+  // all-clear, and all "0" as every station in the world below CAT I, and both
+  // passed every gate above.
+  if (visSeen.size < 2) {
+    return fail("visibility", `The feed's visibility column holds one value for all ${fmtN(obs.size)} stations. That is not weather, and the board will not read it as such.`, stats);
+  }
   if (!newestMs) {
     return fail("stale", anyTime
       ? "The feed's report times are ahead of this device's clock. Check the device clock."
@@ -309,6 +322,27 @@ export function readFeed(status: number, text: string, expectIds: readonly strin
     return fail("stale", `The feed has stopped updating for most chase airports: ${fmtN(expectCurrent!)} of ${fmtN(expectIds.length)} have a report under ${FEED_REPORT_MAX_AGE_MS / 60_000} minutes old (at least ${fmtN(Math.ceil(FEED_MIN_CURRENT_SHARE * expectIds.length))} needed). Other stations are still reporting.`, stats, obs);
   }
   return { ok: true, obs, stats };
+}
+
+/**
+ * This device's clock against the feed server's (the response's Date header).
+ * Every age on the board is this clock minus a report's time. A clock 40
+ * minutes slow showed a 23-minute-old report as "0m" on a healthy-looking
+ * board; one 30 minutes fast said "LIVE FEED DOWN ... The feed has stopped
+ * updating" about a fresh feed. Past 5 minutes either way the read is a failed
+ * one that says where the fault is. Null when the clocks agree or the server
+ * gave no time.
+ */
+export const FEED_MAX_CLOCK_SKEW_MS = 5 * 60_000;
+export function feedClockSkew(serverDate: string | null | undefined, now: number): FeedRead | null {
+  const server = serverDate ? Date.parse(serverDate) : NaN;
+  if (!Number.isFinite(server) || Math.abs(now - server) <= FEED_MAX_CLOCK_SKEW_MS) return null;
+  const min = Math.round(Math.abs(now - server) / 60_000);
+  return {
+    ok: false, reason: "stale", obs: null, stats: null,
+    detail: `This device's clock is ${min} minutes ${now > server ? "ahead of" : "behind"} the feed server's. ` +
+      "Every age on this board would be wrong by that much. Check the device clock.",
+  };
 }
 
 /** A fetch that threw (no connection, timeout, a body that broke off mid-stream) is a failed read with its own reason. */

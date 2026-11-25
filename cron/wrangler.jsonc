@@ -1,8 +1,11 @@
 // fogatlas-cron: dispatches the forecast and watchdog workflows on a reliable
 // clock (see src/index.js for why). Deploy from this directory:
 //   npx wrangler@4.167.0 deploy
-// The one secret is set separately and never lives in this file:
+// Secrets are set separately and never live in this file:
 //   npx wrangler@4.167.0 secret put GH_PAT
+// and, to switch on the phone (README.md; everything is off without them):
+//   npx wrangler@4.167.0 secret put PUSHOVER_TOKEN
+//   npx wrangler@4.167.0 secret put PUSHOVER_USER
 {
   "$schema": "https://unpkg.com/wrangler@4.167.0/config-schema.json",
   "name": "fogatlas-cron",
@@ -14,20 +17,39 @@
   "workers_dev": false,
   "preview_urls": false,
   "triggers": {
-    // every entry here needs a matching key in JOBS (src/index.js);
-    // test_dispatch.mjs fails if the two lists differ
+    // every entry here needs a matching key in JOBS (src/index.js), or to be
+    // FOG_CRON (src/fog.js); test_dispatch.mjs fails if the lists differ.
+    // Workers Free allows 5 Cron Triggers per account; these are 4.
     "crons": [
       "25 * * * *", // forecast.yml, hourly — the same minute its own cron asks for
       "40 10 * * *", // forecast.yml again: a second chance for the daily bake
-      "50 * * * *" // watchdog.yml, hourly, 25 min after the forecast tick
+      "50 * * * *", // watchdog.yml, hourly, 25 min after the forecast tick; also carries the daily heartbeat
+      "*/5 * * * *" // fog alerts for the private board (does nothing until the secrets and a board exist)
     ]
   },
   "vars": {
     "GH_REPO": "travis735/fog-atlas",
-    "GH_REF": "main"
+    "GH_REF": "main",
+    // the daily heartbeat goes out on the first :50 tick at or after this UTC hour
+    "HEARTBEAT_UTC_HOUR": "14"
   },
+  // The forecast store the site already uses (same id as KV_NAMESPACE in
+  // .github/workflows/forecast.yml). This Worker reads and writes only keys
+  // that start with "alerts:". No Pages Function can serve them: each of the
+  // three in app/functions/api/ reads one fixed key ("current", "deploy",
+  // "scorecard"), which test_alerts.mjs checks.
+  "kv_namespaces": [
+    { "binding": "FOGCAST", "id": "72edf0ce3b1944bca59e4aa47cb67cc4" }
+  ],
   "observability": {
     "enabled": true,
-    "head_sampling_rate": 1
+    "head_sampling_rate": 1,
+    // Pinned off. Logs here carry counts only, but a trace records every
+    // outbound request's full URL, and the request to aviationweather.gov
+    // names the board's stations in its query string. Cloudflare's traces page
+    // (read 2026-11-25) says tracing is opt-in today and is planned to follow
+    // "enabled": true by default: this line keeps the board out of stored
+    // traces whenever that default changes.
+    "traces": { "enabled": false }
   }
 }

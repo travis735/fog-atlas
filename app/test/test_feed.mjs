@@ -22,7 +22,7 @@ const {
   splitCsvLine, jsonCeil, jsonVis, subCat1, chunkIds, ageText,
   FEED_REQUIRED_COLUMNS, FEED_POLL_MS, FEED_RETRY_MS, FEED_OVERDUE_MS, FEED_DOWN_ALERT_MS,
   FEED_MAX_NEWEST_AGE_MS, FEED_REASON_LABEL, METAR_CHUNK, AWC_ROW_CAP,
-  FEED_REPORT_MAX_AGE_MS, FEED_MIN_CURRENT_SHARE,
+  FEED_REPORT_MAX_AGE_MS, FEED_MIN_CURRENT_SHARE, feedClockSkew, FEED_MAX_CLOCK_SKEW_MS,
 } = feed;
 
 const fx = (name) => new URL(`./fixtures/${name}`, import.meta.url);
@@ -221,6 +221,62 @@ const tests = {
     const skew = CSV.replace("KSFO,2026-11-24T21:56:00.000Z", "KSFO,2026-11-25T02:30:00.000Z");
     assert.notEqual(skew, CSV);
     assert.equal(readFeed(200, skew, CHASE, later).reason, "stale");
+  },
+
+  "a time ahead of the clock, a constant visibility column and a wrong device clock are not read as weather"() {
+    // Review, 2026-11-25. (1) A candidate row stamped 2 h ahead read "0.12 SM
+    // ... 0m BELOW 300 M" and was counted in IN FOG NOW for the next 2 hours.
+    const ahead = CSV.replace("KSFO,2026-11-24T21:56:00.000Z", "KSFO,2026-11-25T00:24:17.000Z");
+    assert.notEqual(ahead, CSV);
+    const r1 = readFeed(200, ahead, CHASE, NOW);
+    assert.equal(r1.ok, true, "one bad stamp does not cost the file");
+    assert.equal(r1.obs.get("KSFO").obsMs, 0, "its time cannot be believed, so it has none: never current, never '0m'");
+    assert.equal(readFeed(200, CSV, CHASE, NOW).obs.get("KSFO").obsMs, Date.parse("2026-11-24T21:56:00Z"));
+    assert.equal(r1.stats.expectCurrent, readFeed(200, CSV, CHASE, NOW).stats.expectCurrent - 1, "and it is not counted as a current chase airport");
+    // every chase airport stamped 2 h ahead: the gate that holds them to 75 minutes sees none of them as current
+    const chase = new Set(CHASE);
+    const ID_AT = HEADER.split(",").indexOf("station_id"), T_AT = HEADER.split(",").indexOf("observation_time");
+    const allAhead = [HEADER, ...LINES.slice(1).map((l) => {
+      if (!l) return l;
+      const f = splitCsvLine(l);
+      if (!chase.has(f[ID_AT])) return l;
+      return l.replace(`,${f[ID_AT]},${f[T_AT]},`, `,${f[ID_AT]},${new Date(Date.parse(f[T_AT]) + 120 * MIN).toISOString()},`);
+    })].join("\n");
+    const r2 = readFeed(200, allAhead, CHASE, NOW);
+    assert.deepEqual([r2.ok, r2.reason, r2.stats.expectCurrent], [false, "stale", 0]);
+    // (2) A visibility column that holds one value for every station passed
+    // every gate: all "10+" was an all-clear, all "0" was 5,146 stations below CAT I.
+    for (const value of ["10+", "0"]) {
+      const constant = [HEADER, ...LINES.slice(1).map((l) => {
+        if (!l) return l;
+        const f = splitCsvLine(l);
+        f[VIS_AT] = value;
+        return [l.startsWith('"') ? `"${f[0].replace(/"/g, '""')}"` : f[0], ...f.slice(1)].join(",");
+      })].join("\n");
+      const r = readFeed(200, constant, CHASE, NOW);
+      assert.deepEqual([r.ok, r.reason], [false, "visibility"], value);
+      assert.equal(r.detail, "The feed's visibility column holds one value for all 5,146 stations. That is not weather, and the board will not read it as such.");
+      assert.equal(r.obs, null, "nothing from such a file is handed over, not even as last-known");
+    }
+    // (3) The device's clock against the server's. 40 minutes slow showed a
+    // 23-minute-old report as "0m"; 30 minutes fast blamed a fresh feed.
+    const server = "Tue, 24 Nov 2026 22:24:17 GMT";
+    assert.equal(feedClockSkew(server, NOW), null);
+    assert.equal(feedClockSkew(server, NOW + 4 * MIN), null);
+    assert.equal(feedClockSkew(server, NOW - 5 * MIN), null);
+    const fast = feedClockSkew(server, NOW + 30 * MIN), slow = feedClockSkew(server, NOW - 40 * MIN);
+    assert.deepEqual([fast.ok, fast.reason, fast.obs], [false, "stale", null]);
+    assert.equal(fast.detail, "This device's clock is 30 minutes ahead of the feed server's. Every age on this board would be wrong by that much. Check the device clock.");
+    assert.equal(slow.detail, "This device's clock is 40 minutes behind the feed server's. Every age on this board would be wrong by that much. Check the device clock.");
+    // no Date header (or one that cannot be read) is no verdict, never a failure
+    assert.equal(feedClockSkew(null, NOW), null);
+    assert.equal(feedClockSkew("not a date", NOW), null);
+    assert.equal(FEED_MAX_CLOCK_SKEW_MS, 5 * MIN);
+    // the banner prints the sentence as it is, and the read runs no fog-alert check
+    const healthy = readFeed(200, CSV, CHASE, NOW);
+    const step = feedTrackRead(feedTrackRead(feedTrackInit(), healthy, NOW).track, fast, NOW + 3 * MIN);
+    assert.deepEqual([step.runAlerts, step.track.ok], [false, false]);
+    assert.equal(feedBanner(step.track, feedView(step.track, NOW + 4 * MIN), NOW + 4 * MIN, { alertsArmed: false, timeZone: "UTC" }).lines[0], fast.detail);
   },
 
   "a stall of the chase airports' own reports is a failed read although the file looks fresh"() {

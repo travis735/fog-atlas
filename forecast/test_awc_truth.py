@@ -28,7 +28,7 @@ HERE = Path(__file__).parent
 SRC = (HERE / "engine.py").read_text()
 NS = {"csv": csv, "gzip": gzip, "fetch": lambda url, timeout=0: None}
 WANT_FUNCS = ("_awc_refuse", "parse_awc_truth", "_csv_fields", "awc_truth")
-WANT_NAMES = ("AWC", "AWC_TRUTH_COLS")
+WANT_NAMES = ("AWC", "AWC_TRUTH_COLS", "AWC_TRUTH_MIN_SHARE")
 for node in ast.parse(SRC).body:
     is_const = isinstance(node, ast.Assign) and any(getattr(t, "id", "") in WANT_NAMES for t in node.targets)
     is_func = isinstance(node, ast.FunctionDef) and node.name in WANT_FUNCS
@@ -185,6 +185,38 @@ def test_no_download_an_empty_one_and_a_header_with_no_rows_all_say_so():
             assert awc_truth(STATIONS) == {}, label
         assert buf.getvalue().startswith("::error title=AWC observations not recorded::"), (label, buf.getvalue())
         assert buf.getvalue().count("\n") == 1, (label, "one annotation, not one per line")
+
+
+def test_a_file_that_gives_about_nothing_is_refused_however_well_formed():
+    """The freshness and the header were checked; nothing checked how much came
+    out. Six doctored copies of the live file recorded 0 to 326 of the usual
+    1,112 observations on a green run with no annotation (review, 2026-11-25).
+    Under half the forecast stations is now a refusal, with the count."""
+    def edit(fn):
+        return "\n".join([HEADER] + [fn(r) for r in ROWS]) + "\n"
+
+    def with_vis(value):
+        def one(row):
+            f = next(csv.reader([row]))
+            f[VIS_AT] = value(f[VIS_AT])
+            return ",".join([f'"{f[0]}"'] + f[1:])
+        return one
+    cases = {
+        "every visibility empty": edit(with_vis(lambda v: "")),
+        "visibility written as text": edit(with_vis(lambda v: "M1/4" if v else v)),
+        "station ids in lower case": edit(lambda r: r.replace(",KSFO,", ",ksfo,").replace(",KSMP,", ",ksmp,").replace(",MMIO,", ",mmio,")
+                                          .replace(",ETHC,", ",ethc,").replace(",RPVK,", ",rpvk,").replace(",PAKU,", ",paku,")),
+        "cut after two rows": "\n".join([HEADER] + ROWS[:2]) + "\n",
+    }
+    for label, text in cases.items():
+        out, said = _run(text)
+        assert out == {}, (label, out)
+        assert said.startswith("::error title=AWC observations not recorded::metars.cache.csv gave an observation for only "), (label, said)
+        assert "of 7 forecast stations" in said and said.count("\n") == 1, (label, said)
+    # half is the floor, not most: 4 of 7 stations is recorded as it always was
+    out, said = _run("\n".join([HEADER] + ROWS[:4]) + "\n")
+    assert sorted(out) == ["ETHC", "KSFO", "KSMP", "MMIO"] and said == "", (out, said)
+    assert NS["AWC_TRUTH_MIN_SHARE"] == 0.5
 
 
 def test_leading_blank_lines_do_not_cost_the_file():

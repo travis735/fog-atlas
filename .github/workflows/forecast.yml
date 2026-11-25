@@ -18,6 +18,17 @@ on:
         type: boolean
         default: true
 
+# One run at a time. The planner step reads the live payload from KV, carries
+# day-level chances forward from it and writes the result back, so two
+# overlapping runs (the Worker's tick and GitHub's own schedule firing
+# together, or a person's dispatch during a tick) could each build on the
+# payload the other is about to replace. Queued, not cancelled: a run in
+# progress always finishes. It also keeps the two triggers from both seeing
+# yesterday's pages at the 10z tick and baking twice.
+concurrency:
+  group: forecast
+  cancel-in-progress: false
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -66,15 +77,95 @@ jobs:
             "fogatlas-forecast/logs/$(basename "$LOG")" --file "$LOG" --remote \
           || npx --yes wrangler@4.167.0 kv key put "log:$(basename "$LOG" .json.gz)" \
             --path "$LOG" --namespace-id "$KV_NAMESPACE" --remote
+      # ---- the DEPLOY planner, rebuilt on EVERY run (since 2026-11-25) ----
+      # It was built once a day with the page bake, so the pilot read a plan 14
+      # to 20 hours old above an hourly curve that was fresh. Three steps:
+      # fetch what is live (to carry from), build, upload + read back. None of
+      # them can stop the page bake below, and the hourly issuance is already
+      # in KV by now; a failure in any of them fails the run in the last step.
+      # Each of the three has its own time limit. Their socket timeouts add up
+      # to more than the job's 40 minutes (five NBE cycles at 180 s, 90 GEFS
+      # member fetches at up to 180 s over ten threads), so one hung NOAA
+      # mirror could have run the job out before the bake, and a cancelled job
+      # skips the bake and both "surface" steps. A build takes 35 to 55 s.
+      - name: deploy planner — fetch the live payload (what this build may carry a day-level chance from)
+        if: steps.gate.outputs.enabled == 'true'
+        timeout-minutes: 4
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # Never a failure. Absent, unreadable or old-format only means this
+          # build carries nothing; build_deploy.py records which in meta.carry.
+          PREV="$RUNNER_TEMP/deploy_prev.json"
+          if npx --yes wrangler@4.167.0 kv key get deploy \
+               --namespace-id "$KV_NAMESPACE" --remote > "$PREV" 2> "$RUNNER_TEMP/deploy_prev.err"; then
+            echo "live planner payload: $(wc -c < "$PREV") bytes"
+          else
+            echo "::warning::deploy planner: could not read the live payload from KV — this build carries nothing forward"
+            tail -n 5 "$RUNNER_TEMP/deploy_prev.err" || true
+            rm -f "$PREV"
+          fi
+      - name: deploy planner — build from this issuance
+        id: planner
+        if: steps.gate.outputs.enabled == 'true'
+        timeout-minutes: 8
+        continue-on-error: true   # the real outcome fails the run at the end, after the bake
+        run: python forecast/build_deploy.py --previous "$RUNNER_TEMP/deploy_prev.json"
+      - name: deploy planner — upload to KV, log the build to R2, read the payload back
+        id: planner_up
+        if: steps.gate.outputs.enabled == 'true' && steps.planner.outcome == 'success'
+        timeout-minutes: 4
+        continue-on-error: true   # the real outcome fails the run at the end, after the bake
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4.167.0 kv key put deploy \
+            --path forecast/out/deploy.json --namespace-id "$KV_NAMESPACE" --remote
+          # One log per build (the name carries the cycle and the build time),
+          # so the day-level chance of every cycle hour can be re-scored later.
+          # A fresh runner holds exactly one. Not best-effort: a build that
+          # is live and cannot be scored is a failure to see.
+          # BEFORE the read-back, since 2026-11-25: the log describes the build
+          # whether or not the read-back confirms the put, and a read-back
+          # that failed on the read side (KV slow to show the write) used to
+          # skip this and leave a live payload with no log on any runner.
+          DLOG=$(ls forecast/out/deploylog/deploy_*.json.gz | tail -1)
+          logged=true
+          if ! npx --yes wrangler@4.167.0 r2 object put \
+               "fogatlas-forecast/deploylogs/$(basename "$DLOG")" --file "$DLOG" --remote; then
+            echo "::error::deploy planner: the payload was put to KV, but its log $(basename "$DLOG") did not reach R2"
+            logged=false
+          fi
+          # A KV put has reported success and not landed for this project
+          # before, and nothing downstream would notice for hours. Read the
+          # key back and compare meta.generated with the file just built.
+          # Three reads at most (KV takes a moment to show a write): never a
+          # loop without an end against a metered API.
+          BACK="$RUNNER_TEMP/deploy_back.json"
+          landed=false
+          for pause in 0 10 20; do
+            sleep "$pause"
+            npx --yes wrangler@4.167.0 kv key get deploy \
+              --namespace-id "$KV_NAMESPACE" --remote > "$BACK" 2>/dev/null || true
+            if python forecast/build_deploy.py --same-build forecast/out/deploy.json "$BACK"; then
+              landed=true; break
+            fi
+          done
+          if [ "$landed" != "true" ]; then
+            # not "the put did not land": three reads in 30 s cannot tell a
+            # lost write from a slow one. /api/deploy's meta.generated can.
+            echo "::error::deploy planner: KV did not return the payload this run built within 30 s of the put (three reads) — either the put did not land or KV is slow to show it; meta.generated on /api/deploy says which"
+            exit 1
+          fi
+          [ "$logged" = "true" ] || exit 1
       - name: bake gate — does the live site still need today's bake?
         id: bake
         if: steps.gate.outputs.enabled == 'true'
         run: |
           # A clock gate (HOUR == 10) silently lost whole days: GitHub's cron
           # drifts and sheds runs, so no run may ever START inside 10z. Ask the
-          # live site what day it last baked instead — the first run at/after
-          # 10z that finds it stale bakes. Fail-open: an unreadable probe costs
-          # one idempotent rebuild, never a stale day.
+          # live site when it last baked instead — the first run at/after
+          # 10z that finds a bake from before today's 10:00Z bakes.
           # A dispatch from a person means "redeploy now" (force_bake defaults
           # to true). The cron Worker dispatches every hour with
           # force_bake=false and must fall through to the state gate below:
@@ -90,30 +181,47 @@ jobs:
             echo "before 10z — today's bake not owed yet"
             echo "needed=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
-          LIVE=$(curl -sf --max-time 30 https://fogatlas.org/fog/ksfo/data.json \
-            | python3 -c 'import json,sys; print(json.load(sys.stdin)["updated"][:10])' \
-            || echo unreadable)
-          echo "live bake: $LIVE / today: $TODAY"
-          if [ "$LIVE" != "$TODAY" ]; then
-            echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0
-          fi
-          # The pages are today's. The planner payload can still be
-          # yesterday's: a manual redeploy before 10z bakes the pages, but
-          # build_deploy.py leaves the live planner payload alone at an hour
-          # the day map is not checked on ("keep"). Without this second probe
-          # the 10z bake was then skipped and the planner showed yesterday's
-          # "tomorrow" for a whole day. After 10z the payload's day 1 must be
-          # tomorrow's UTC date. An unreadable probe does NOT bake: the pages
-          # are current, and the watchdog reports an unreadable planner.
-          TOMORROW=$(python3 -c 'from datetime import datetime, timedelta, timezone; print((datetime.now(timezone.utc) + timedelta(days=1)).date())')
-          PLAN=$(curl -sf --max-time 30 https://fogatlas.org/api/deploy \
-            | python3 -c 'import json,sys; print(json.load(sys.stdin)["meta"]["day1"])' \
-            || echo unreadable)
-          echo "live planner day 1: $PLAN / owed: $TOMORROW"
-          if [ "$PLAN" = "$TOMORROW" ] || [ "$PLAN" = "unreadable" ]; then
-            echo "needed=false" >> "$GITHUB_OUTPUT"
-          else
+          # The page's own bake time ("2026-11-25T02:59Z") against today's
+          # 10:00Z: "stale" when it was baked before that, "fresh" otherwise.
+          # It was the bake DATE against today's date, so a redeploy by hand
+          # between 00Z and 10Z (2026-11-25, 02:58Z) made the page "today's"
+          # and every tick of the day skipped the bake: the next one came
+          # 31 hours later, with the watchdog's bake check green throughout.
+          probe() {
+            curl -sf --max-time 30 https://fogatlas.org/fog/ksfo/data.json | python3 -c '
+          import json, sys
+          from datetime import datetime, timezone
+          u = json.load(sys.stdin)["updated"]
+          t = datetime.strptime(u, "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
+          owed = datetime.now(timezone.utc).replace(hour=10, minute=0, second=0, microsecond=0)
+          print(u, "stale" if t < owed else "fresh")' 2>/dev/null
+          }
+          # one more try after a pause before calling it unreadable
+          READ=$(probe) || { sleep 20; READ=$(probe) || READ="unreadable unreadable"; }
+          LIVE=${READ% *}; STATE=${READ##* }
+          echo "live bake: $LIVE / owed since: ${TODAY}T10:00Z / $STATE"
+          # The page's bake time is the whole gate again. For one day
+          # (2026-11-25) a second probe also baked when the planner payload's
+          # day 1 was not tomorrow, because the planner was built by the bake
+          # and a bake before 10z could leave it a day behind. The planner is
+          # now built by every run, above, whether or not the pages bake. Kept,
+          # that probe would turn one failed planner build after 10z into a
+          # full bake + Pages deploy + IndexNow ping on every tick until the
+          # planner recovered, and a bake no longer rebuilds the planner.
+          if [ "$STATE" = "stale" ]; then
             echo "needed=true" >> "$GITHUB_OUTPUT"
+          elif [ "$STATE" = "fresh" ]; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          elif [ "$HOUR" -le 11 ]; then
+            # Fail open, on the day's first two ticks only: an unreadable probe
+            # then costs one idempotent rebuild, never a stale day. It used to
+            # fail open on every tick, which under the hourly clock is up to
+            # 14 bakes, Pages deploys and IndexNow pings a day, each one green.
+            echo "::warning::bake gate: the live page's bake time could not be read (two tries) — baking, as the gate does on the day's first two ticks"
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::bake gate: the live page's bake time could not be read (two tries) — not baking on this tick; the watchdog's bake check reports a page that is a day old"
+            echo "needed=false" >> "$GITHUB_OUTPUT"
           fi
       - name: restore the last-good AWC TAF/METAR snapshot (reused only while <30 h old)
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
@@ -133,9 +241,6 @@ jobs:
           path: forecast/out/nws_cache.json
           key: nws-${{ github.run_id }}
           restore-keys: nws-
-      - name: deploy planner data (daily, with the bake)
-        if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
-        run: python forecast/build_deploy.py
       - name: rebuild fog pages + deploy site (daily, with the bake)
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
         env:
@@ -164,22 +269,21 @@ jobs:
       - name: ping IndexNow with today's changed URLs
         id: indexnow
         if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
-        continue-on-error: true   # the real outcome fails the run at the end, after the KV upload
+        continue-on-error: true   # the real outcome fails the run at the end
         run: python forecast/ping_indexnow.py
-      - name: upload the deploy-planner data to KV + R2 (daily, with the bake)
-        if: steps.gate.outputs.enabled == 'true' && steps.bake.outputs.needed == 'true'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # ---- failures that were not allowed to stop the steps above ----
+      # !cancelled() so each still reports when a later step (the bake) failed
+      # the job outright; both may fire, and either one fails the run.
+      - name: surface a DEPLOY planner failure (the issuance, and the pages if they baked, are already live)
+        # "not success", not "failure": a step ended by its timeout-minutes must
+        # be surfaced whatever outcome the runner gives it. planner_up is
+        # skipped only when the build did not succeed, which the first test covers.
+        if: ${{ !cancelled() && steps.gate.outputs.enabled == 'true' && (steps.planner.outcome != 'success' || steps.planner_up.outcome != 'success') }}
         run: |
-          if [ -f forecast/out/deploy.json ]; then
-            npx --yes wrangler@4.167.0 kv key put deploy \
-              --path forecast/out/deploy.json --namespace-id "$KV_NAMESPACE" --remote
-            DLOG=$(ls forecast/out/deploylog/deploy_*.json.gz | tail -1)
-            npx --yes wrangler@4.167.0 r2 object put \
-              "fogatlas-forecast/deploylogs/$(basename "$DLOG")" --file "$DLOG" --remote || true
-          fi
+          echo "::error::DEPLOY planner: build ${{ steps.planner.outcome }}, upload ${{ steps.planner_up.outcome }} — /api/deploy still serves the previous build (or this build is live without its log); see those two steps"
+          exit 1
       - name: surface an IndexNow failure (issuance already safe in KV)
-        if: steps.indexnow.outcome == 'failure'
+        if: ${{ !cancelled() && steps.indexnow.outcome == 'failure' }}
         run: |
           echo "::error::IndexNow ping failed — see the 'ping IndexNow' step log"
           exit 1

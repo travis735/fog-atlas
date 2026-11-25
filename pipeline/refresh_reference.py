@@ -35,7 +35,7 @@ from pathlib import Path
 import openpyxl
 import xlrd
 
-from build_chase import parse_apt, parse_lpv
+from build_chase import apt_layout, parse_apt, parse_lpv
 
 HERE = Path(__file__).parent
 DATA = HERE / "data"
@@ -181,7 +181,14 @@ def refresh_egnos() -> str:
 # ---- NASR ILS categories -> cat_curated.csv faa-nasr rows ------------------
 
 def refresh_cat_nasr() -> str:
-    site_icao, _ = parse_apt(NASR / "APT.txt")
+    # With this cycle's own layout file, as build_chase.py reads it: without
+    # it parse_apt falls back to the offsets of the 2026-10-29 APT.txt, and
+    # the next time the FAA widens a field every site would lose its ICAO id
+    # here while this function reported "unchanged". (This whole function has
+    # to move to the CSV tables before the 2027-02-18 cycle: the FAA stops the
+    # .txt files then, and fetch_nasr.py removes stale copies, so it will fail
+    # loudly rather than read last month's.)
+    site_icao, _ = parse_apt(NASR / "APT.txt", apt_layout(NASR / "Layout_Data" / "apt_rf.txt"))
     us = full_list_us_icaos()
 
     # unlike build_chase's tier parse (glideslope ILS only), the category

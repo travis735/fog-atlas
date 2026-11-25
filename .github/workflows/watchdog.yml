@@ -2,7 +2,10 @@
 # once silently broken: the daily bake stalled for two days (Aug 2026), the
 # scorecard went 28 days stale when the monthly ritual froze on a sandbox
 # prompt, the reference refresh was cancelled by its own timeout, a 403
-# IndexNow run showed as a green step.
+# IndexNow run showed as a green step, the forecast was empty and the runway
+# data garbage for three weeks (Nov 2026) with every workflow green.
+# A failure opens an issue, and since 2026-11-25 the last step also sends it
+# to the owner's phone: an issue alone reached nobody.
 #
 # Limits it cannot cover, on purpose:
 #   - GitHub disables scheduled workflows in public repos after 60 days without
@@ -37,11 +40,27 @@ jobs:
           UA='Mozilla/5.0 (compatible; fogatlas-watchdog; +https://fogatlas.org/about/)'
           set +e
           python3 - "$UA" > report.txt <<'PY'
-          import csv, json, sys, time, urllib.request, urllib.error
+          import atexit, csv, json, re, sys, time, traceback, urllib.request, urllib.error
           from datetime import datetime, timezone, timedelta, date
           UA = sys.argv[1]
           now = datetime.now(timezone.utc)
           fails, notes = [], []
+          # The report is printed when the script ends, however it ends. It was
+          # two print loops on the last lines, so one uncaught exception (a
+          # payload with meta.gaps = 5, a feed whose times had no zone) lost
+          # every line already gathered: the issue opened with an empty body
+          # and the phone said only "could not finish". Now the lines gathered
+          # so far go out, with one more FAIL naming where the script stopped.
+          # (forecast/test_watchdog.py runs this script against fixtures.)
+          def _report():
+              for n in notes: print("ok  ", n)
+              for f in fails: print("FAIL", f)
+          atexit.register(_report)
+          def _stopped(kind, err, tb):
+              where = traceback.extract_tb(tb)[-1].lineno if tb else "?"
+              text = str(err).replace("<", "(").replace(">", ")")
+              fails.append(f"watchdog: the probe stopped at its line {where} ({kind.__name__}: {text}) — the checks after that line were not made")
+          sys.excepthook = _stopped
           def get(url, js=True):
               req = urllib.request.Request(url, headers={"User-Agent": UA})
               with urllib.request.urlopen(req, timeout=30) as r:
@@ -67,10 +86,10 @@ jobs:
           #    cycle, so the newest cycle is 1.4 h old right after a run and 2.4 h
           #    old just before the next. 4 h tolerates one missed tick and alarms
           #    on two. (It was 12 h while GitHub's own cron was the only clock.)
-          public = set()
+          public, fc_cycle = set(), None
           try:
               fc = get("https://fogatlas.org/api/forecast")
-              cyc = datetime.fromisoformat(fc["meta"]["cycle"].replace("Z", "+00:00"))
+              cyc = fc_cycle = datetime.fromisoformat(fc["meta"]["cycle"].replace("Z", "+00:00"))
               age = (now - cyc).total_seconds() / 3600
               (fails if age > 4 else notes).append(f"forecast: newest cycle {fc['meta']['cycle']} ({age:.1f} h old, limit 4)")
               public = set(fc["meta"].get("publicAirports", []))
@@ -80,11 +99,26 @@ jobs:
               # ~1,100 airports; 600 is the floor.
               n_air = len(fc.get("airports") or {})
               (fails if n_air < 600 else notes).append(f"forecast: {n_air} airports in the issuance (floor 600)")
+              # ...and the run that issued it logged the observations it will be
+              # scored against (meta.obs_recorded, since 2026-11-25). A file
+              # from aviationweather.gov that parsed to nothing left "obs
+              # recorded: 0" in a step log of a green run and nowhere else.
+              # Healthy: about 91% of the forecast stations (engine.py refuses
+              # under half and then records 0). No line for an issuance from
+              # before the field existed.
+              ob, ost = fc["meta"].get("obs_recorded"), fc["meta"].get("obs_stations")
+              if isinstance(ob, int) and isinstance(ost, int) and ost > 0:
+                  (fails if ob < 0.5 * ost else notes).append(
+                      f"forecast truth: {ob} observations logged for {ost} forecast stations by the run that issued it (floor half)")
           except Exception as e:
               fails.append(f"forecast: /api/forecast unreadable — {e}")
           # 3. the receipts are fresh and every public airport has one (holds live in 'fail' by design)
+          sc_stamp = None   # check 7 compares the planner's copy of the scorecard with this one
+          sc_pass = None    # check 8: a scorecard with passes and no public airport is a broken issuance
           try:
               sc = get("https://fogatlas.org/api/scorecard")
+              sc_stamp = sc["generated"]
+              sc_pass = len(sc["bar"].get("pass", []))
               gen = sc["generated"][:10]
               gage = (now.date() - date.fromisoformat(gen)).days
               scored = {r["icao"] for r in sc["bar"].get("pass", [])} | {r["icao"] for r in sc["bar"].get("fail", [])}
@@ -115,7 +149,12 @@ jobs:
               ok = b"cloudflareinsights" in b
               (notes if ok else fails).append("analytics beacon on baked pages: " + ("present" if ok else "MISSING"))
           except Exception as e:
-              fails.append(f"baked page unreadable — {e}")
+              # "label: text", like every other line: the issue key is the text
+              # before the first colon. This one had no colon, so the whole
+              # line was the key, and urllib's "<urlopen error timed out>" put
+              # a ">" into the HTML comment the key rides in: the step could
+              # not find its own marker and commented again every hour.
+              fails.append(f"baked page: /fog/ksfo/ unreadable — {e}")
           # 6. the NWS point-forecast layer is on the baked US pages: a 0-of-901
           #    fetch is a green run, and once the 30 h last-good cache expires the
           #    layer vanishes from ~900 pages with no signal. Assert on our own
@@ -131,36 +170,232 @@ jobs:
                   (fails if fage > 40 else notes).append(f"nws layer: KPDX NWS {nws.get('office')} forecast fetched {nws['fetched']} ({fage:.1f} h old, limit 40), verdict {nws.get('verdict')}")
           except Exception as e:
               fails.append(f"nws layer: /fog/kpdx/data.json unreadable — {e}")
-          # 7. the DEPLOY planner is running on forecasts, not on climatology.
+          # 7. the DEPLOY planner (/api/deploy). Five lines, each its own issue key.
+          #
+          #    "deploy planner": it is running on forecasts, not on climatology.
           #    Healthy (2026-11-02): 926 of 937 airports on the calibrated tier
           #    for day 1 and 936 on a fitted/NBE tier for day 5. Broken
           #    (2026-11-04..24): 0 and 0 — every day was "climo"/"cpc" and the
           #    payload still looked fresh. Floor: half the airports on each.
-          #    A "cal" day 1 can also carry no day-level chance at all (p null),
-          #    with the tier count above still perfect: the day map is only
-          #    published from the cycle hours it was checked on (09Z-21Z).
-          #    build_deploy.py refuses to write such a payload over the live one
-          #    (bake_decision), so this is the backstop for the ways around
-          #    that: a held day-1 map, or a payload uploaded by hand. The panel
-          #    then says NO VERDICT for tomorrow. Same floor: half the airports.
+          #    Since 2026-11-25 a build that cannot read NBE, GEFS or a CPC
+          #    outlook keeps the last build's days 3-14 for up to 24 h
+          #    (meta.advisory), so this floor hears of a dead source a day
+          #    late; the line names what could not be read from the first hour.
+          #
+          #    "deploy age": until 2026-11-25 the planner was built once a day
+          #    with the page bake, the pilot read a plan 14 to 20 h old above
+          #    an hourly curve, and nothing here read its age: a planner that
+          #    had stopped being built passed on its tier counts. It is now
+          #    rebuilt on every hourly forecast run. meta.generated is the
+          #    build's start, 0.4 h old at this workflow's :50 tick, so three
+          #    missed builds pass and the fourth alarms. (Check 2's 4 h is on
+          #    the cycle, 1.4 h older than the run that publishes it, and
+          #    alarms one run sooner.)
+          #
+          #    "deploy dates": the panel prints a date on every day cell. Day 1
+          #    is the date after the service day, and the service day is the
+          #    UTC date of (now - 10 h): it flips at 10:00Z
+          #    (build_deploy.service_day). Until 2026-11-25 nothing here read
+          #    the date and yesterday's file passed. The build made before the
+          #    flip stays live until the next one lands, so the old date is
+          #    allowed for 2 h after 10:00Z: at the :50 tick the 10:25Z and
+          #    11:25Z builds can be missed and the third alarms, as check 2
+          #    does. The payload's other statements of that date (service_day,
+          #    days, next_flip) must agree with day1: the panel reads them all.
+          #
+          #    "deploy shape": what the hourly build added and the panel reads
+          #    is there: the per-day status (meta.days), the cycle a carried
+          #    chance came from (pfrom) and the per-airport verification status
+          #    (bar: pass / fail / few). Healthy (rehearsals on 2026-11-24
+          #    cycles): 937 of 937 airports with a status, 334 / 302 / 301.
+          #    The status is copied from the scorecard committed in the repo,
+          #    which barcheck.yml uploads to KV first and commits second: if
+          #    the commit fails, /api/scorecard is new and the panel's status
+          #    is last month's. So the two stamps must agree, with 3 h for the
+          #    next build to pick the commit up (and /api/scorecard is cached
+          #    at the edge for 1 h, so either side can be the one behind).
+          #
+          #    "deploy day 1": does day 1 carry a day-level chance? Three
+          #    states, counted on the airports themselves (p, pfrom):
+          #    - this build's own cycle published it. Normal at every hour.
+          #    - carried: this cycle published none (its 26-48 h bulletin did
+          #      not arrive: 2 of 350 issuances in Jul-Aug 2026) and the
+          #      fields show the last one published for the same date, with
+          #      the cycle it came from. Legitimate, never an alarm by itself.
+          #      The build drops a carried chance once its cycle is 24 h old,
+          #      so an older one in a payload means that rule broke.
+          #    - none. Legitimate too, for an hour or two. A payload cannot
+          #      say how long day 1 has had none, with one exception: a chance
+          #      published since the 10:00Z flip would have been carried, so
+          #      "none" means no build since the flip had one. Day 1's date
+          #      changes every 24 h, so that is all one payload can prove,
+          #      and this job keeps no memory between runs. The alarm is
+          #      "none, more than 4 h after the flip": five builds in a row.
+          #      That is what the 26-48 h bulletin gone for good looks like:
+          #      no chance from the 10:25Z build to the 17:25Z one (09Z to 16Z
+          #      cycles; from 17Z the hourly bulletin alone reaches enough of
+          #      the date), and the panel says NO VERDICT for day 1 until then.
+          #    Half the airports is the line between the states, as above.
+          DEPLOY_MAX_AGE_H = 4    # "deploy age"
+          FLIP_H = 10             # build_deploy.SERVICE_DAY_OFFSET_H
+          FLIP_GRACE_H = 2        # "deploy dates"
+          D1_NONE_MAX_H = 4       # "deploy day 1"
+          CARRY_MAX_AGE_H = 24    # build_deploy.CARRY_MAX_AGE_H
+          BAR_GRACE_H = 3         # "deploy shape"
+          # build_deploy.WHY_WORDS: why a cycle published no day-level chance
+          WHY = {"hour": "the day map for this cycle hour failed its check, or the forecast reaches too little of that day",
+                 "reach": "no check covers that day from a cycle this old",
+                 "season": "its map missed its check in this season",
+                 "hours": "this cycle has too few of that day's forecast hours"}
+          def utc(s):
+              """A payload time ("2026-11-24T09:00:00Z") as an aware datetime; None when it is not one."""
+              try:
+                  t = datetime.fromisoformat(s.replace("Z", "+00:00"))
+                  return t if t.tzinfo else t.replace(tzinfo=timezone.utc)
+              except (AttributeError, ValueError):
+                  return None
+          def day(s, plus=0):
+              """A payload date ("2026-11-25") moved by `plus` days; None when it is not one."""
+              try:
+                  return date.fromisoformat(s) + timedelta(days=plus)
+              except (TypeError, ValueError):
+                  return None
+          dpl = None
           try:
               dpl = get("https://fogatlas.org/api/deploy")
-              dp = dpl["airports"]
+              dp, dm = dpl["airports"], dpl.get("meta") or {}
               n = len(dp)
               d1 = sum(1 for v in dp.values() if v["tiers"][0] == "cal")
               d5 = sum(1 for v in dp.values() if v["tiers"][4] in ("fit", "nbe"))
               bad = n < 400 or d1 < n / 2 or d5 < n / 2
-              (fails if bad else notes).append(f"deploy planner: {n} airports, {d1} calibrated on day 1, {d5} on a forecast tier on day 5 (floor: half of each)")
-              d1p = sum(1 for v in dp.values() if v["tiers"][0] == "cal" and (v.get("p") or [None])[0] is not None)
-              dc = (dpl.get("meta") or {}).get("daycal") or {}
-              why = (dc.get("why") or {}).get("1")
-              line = f"deploy day 1: {d1p} of {d1} calibrated airports carry a day-level chance for tomorrow"
-              if d1 and d1p < n / 2:
-                  line += (f" — built from the {dc.get('cycle_hour'):02d}Z cycle, which the day map is not checked on; redeploy between 10Z and 22Z"
-                           if why == "hour" and isinstance(dc.get("cycle_hour"), int) else f" — reason given by the build: {why}")
-              (fails if d1 and d1p < n / 2 else notes).append(line)
+              line = f"deploy planner: {n} airports, {d1} calibrated on day 1, {d5} on a forecast tier on day 5 (floor: half of each)"
+              adv = dm.get("advisory") if isinstance(dm.get("advisory"), dict) else {}
+              if adv.get("status") in ("reused", "degraded"):
+                  line += f"; this build could not read {', '.join(map(str, adv.get('missing') or [])) or 'one of its sources'} for days 3-14"
+                  line += f" and kept the values built {adv.get('built')}" if adv["status"] == "reused" else " and had nothing newer than 24 h to keep"
+              (fails if bad else notes).append(line)
           except Exception as e:
+              dpl = None
               fails.append(f"deploy planner: /api/deploy unreadable — {e}")
+          if dpl is not None:
+              gen, pcyc = utc(dm.get("generated")), utc(dm.get("cycle"))
+              pc = f"{pcyc:%H}Z" if pcyc else "unnamed"
+              day1 = day(dm.get("day1"))
+              days = dm.get("days") if isinstance(dm.get("days"), dict) else {}
+              # a list in every payload the build writes; anything else is not iterated (meta.gaps = 5 ended the script here)
+              gaps = [str(g.get("text") or g.get("code")) for g in (dm.get("gaps") if isinstance(dm.get("gaps"), list) else []) if isinstance(g, dict)]
+              # -- deploy age
+              if gen is None:
+                  fails.append(f"deploy age: meta.generated is {dm.get('generated')!r}, not a time — the planner's age cannot be told")
+              else:
+                  age = (now - gen).total_seconds() / 3600
+                  line = f"deploy age: planner built {dm['generated']} ({age:.1f} h old, limit {DEPLOY_MAX_AGE_H}) from the {pc} cycle"
+                  if fc_cycle and pcyc and fc_cycle > pcyc:
+                      line += f"; the hourly forecast is on the {fc_cycle:%H}Z cycle, {(fc_cycle - pcyc).total_seconds() / 3600:.0f} h newer"
+                  if age < -0.25:
+                      line += " — that time is in the future"
+                  (fails if age > DEPLOY_MAX_AGE_H or age < -0.25 else notes).append(line)
+              # -- deploy dates
+              sd_now = (now - timedelta(hours=FLIP_H)).date()
+              want = sd_now + timedelta(days=1)
+              flipped = (now - datetime(sd_now.year, sd_now.month, sd_now.day, FLIP_H, tzinfo=timezone.utc)).total_seconds() / 3600
+              if day1 is None:
+                  fails.append(f"deploy dates: meta.day1 is {dm.get('day1')!r}, not a date")
+              else:
+                  # the payload's other statements of the same date; one that is absent is "deploy shape"'s business
+                  said = [("meta.service_day plus one", day(dm["service_day"], 1))] if "service_day" in dm else []
+                  said += [(f"meta.days[{k}].date" + (" minus one" if back else ""), day(days[k].get("date"), back))
+                           for k, back in (("1", 0), ("2", -1)) if isinstance(days.get(k), dict)]
+                  off = [f"{what} is {'unreadable' if d is None else d}" for what, d in said if d != day1]
+                  if "next_flip" in dm and utc(dm["next_flip"]) != datetime(day1.year, day1.month, day1.day, FLIP_H, tzinfo=timezone.utc):
+                      off.append(f"meta.next_flip is {dm['next_flip']!r}, not {FLIP_H}:00Z on day 1")
+                  if off:
+                      fails.append(f"deploy dates: meta.day1 is {day1} but {'; '.join(off)} — the payload's own dates disagree")
+                  elif day1 == want:
+                      notes.append(f"deploy dates: day 1 is {day1}, the date after the service day (the UTC date of now minus {FLIP_H} h)")
+                  elif day1 == want - timedelta(days=1) and flipped <= FLIP_GRACE_H:
+                      notes.append(f"deploy dates: day 1 is still {day1}; it became {want} at {FLIP_H}:00Z, {flipped * 60:.0f} min ago, and the next hourly build moves it (allowed for {FLIP_GRACE_H} h)")
+                  else:
+                      fails.append(f"deploy dates: day 1 is {day1} but should be {want}, the date after the service day (the UTC date of now minus {FLIP_H} h; it last changed at {FLIP_H}:00Z, {flipped:.1f} h ago) — the panel is counting its days from the wrong date")
+              # -- deploy shape
+              try:
+                  bars = {b: sum(1 for v in dp.values() if v.get("bar") == b) for b in ("pass", "fail", "few")}
+                  nb = sum(bars.values())
+                  mb = dm.get("bar") if isinstance(dm.get("bar"), dict) else {}
+                  probs, said_days = [], []
+                  if "format" not in dm and "days" not in dm:
+                      probs.append(f"this is a payload from before the hourly build of 2026-11-25: no meta.format, no meta.days, a verification status at {nb} of {n} airports")
+                  else:
+                      if not isinstance(dm.get("format"), int) or dm["format"] < 2:
+                          probs.append(f"meta.format is {dm.get('format')!r} (2 since the hourly build)")
+                      for k in ("1", "2"):
+                          d = days.get(k)
+                          ch = d.get("chance") if isinstance(d, dict) else None
+                          if not isinstance(ch, dict):
+                              probs.append(f"meta.days[{k}] has no chance block" if isinstance(d, dict) else f"meta.days[{k}] is absent")
+                              continue
+                          cn = ch.get("n") if isinstance(ch.get("n"), dict) else {}
+                          lacks = [f for f in ("date", "under_way", "cover") if f not in d]
+                          lacks += [f"chance.{f}" for f in ("status", "why", "carried") if f not in ch]
+                          lacks += [f"chance.n.{f}" for f in ("cal", "fresh", "carried", "none") if not isinstance(cn.get(f), int)]
+                          if lacks:
+                              probs.append(f"meta.days[{k}] lacks {', '.join(lacks)}")
+                          elif ch["status"] not in ("fresh", "carried", "none"):
+                              probs.append(f"meta.days[{k}].chance.status is {ch['status']!r}, not fresh, carried or none")
+                          else:
+                              said_days.append(f"day {k} {d['date']} {ch['status']}" + (f" ({ch['why']})" if ch["why"] else ""))
+                      npf = sum(1 for v in dp.values() if isinstance(v.get("pfrom"), list) and len(v["pfrom"]) == 2)
+                      if npf < n:
+                          probs.append(f"{npf} of {n} airports say which cycle their day-level chance is from (pfrom)")
+                      if nb < n:
+                          probs.append(f"{nb} of {n} airports carry a verification status (pass, fail or few)"
+                                       + (f", and the build says why: {mb['why']}" if mb.get("available") is False and mb.get("why") else ""))
+                      elif day(mb.get("scored")) is None:
+                          probs.append(f"meta.bar.scored is {mb.get('scored')!r}, not a date: the age of the verification status cannot be told")
+                      elif sc_stamp and mb.get("generated") != sc_stamp:
+                          newer = max([t for t in (utc(mb.get("generated")), utc(sc_stamp)) if t] or [now])
+                          if (now - newer).total_seconds() / 3600 > BAR_GRACE_H:
+                              probs.append(f"the verification status is from the scorecard generated {mb.get('generated')} and /api/scorecard serves the one generated {sc_stamp}")
+                  if probs:
+                      fails.append("deploy shape: " + "; ".join(probs))
+                  else:
+                      notes.append(f"deploy shape: format {dm['format']}; {', '.join(said_days)}; verification status at {nb} of {n} airports "
+                                   f"({bars['pass']} pass, {bars['fail']} fail, {bars['few']} few; scorecard of {mb['scored']}, {(now.date() - day(mb['scored'])).days} d old)")
+              except Exception as e:
+                  fails.append(f"deploy shape: the payload could not be read for it — {e!r}")
+              # -- deploy day 1
+              try:
+                  cal = [v for v in dp.values() if v["tiers"][0] == "cal"]
+                  have = [v for v in cal if (v.get("p") or [None])[0] is not None]
+                  carried = sorted(t for t in (utc((v.get("pfrom") or [None])[0]) for v in have) if t)   # the cycles carried from
+                  own, none = len(have) - len(carried), len(cal) - len(have)
+                  d1c = (days.get("1") or {}).get("chance") if isinstance(days.get("1"), dict) else None
+                  d1c = d1c if isinstance(d1c, dict) else {}
+                  why = d1c.get("why") or ((dm.get("daycal") or {}).get("why") or {}).get("1")
+                  tail = (f" — reason given by the build: {WHY.get(why, why)}" if why else "") + (f"; it also reports: {' '.join(gaps)}" if gaps else "")
+                  told = [d1c["n"].get(f) for f in ("cal", "fresh", "carried", "none")] if isinstance(d1c.get("n"), dict) else None
+                  if not cal:
+                      pass   # "deploy planner" has already said that day 1 is not on the calibrated tier
+                  elif told is not None and told != [len(cal), own, len(carried), none]:
+                      fails.append(f"deploy day 1: the payload counts {told[0]} calibrated airports, {told[1]} with this cycle's chance, {told[2]} carried and {told[3]} none, "
+                                   f"but its airports show {len(cal)}, {own}, {len(carried)} and {none} — the panel's sentence and its cells disagree")
+                  elif own >= n / 2:
+                      notes.append(f"deploy day 1: {len(have)} of {len(cal)} calibrated airports carry a day-level chance for {day1}: {own} from this build's own {pc} cycle"
+                                   + (f", {len(carried)} carried from an earlier cycle" if carried else "") + (f", {none} none" if none else ""))
+                  elif len(have) >= n / 2:
+                      held = ((gen or now) - carried[0]).total_seconds() / 3600 if carried else 0.0
+                      line = (f"deploy day 1: {len(have)} of {len(cal)} calibrated airports carry a day-level chance for {day1}: {len(carried)} carried from the "
+                              + (f"{carried[0]:%H}Z to {carried[-1]:%H}Z cycles" if carried[0] != carried[-1] else f"{carried[0]:%H}Z cycle")
+                              + f" (the oldest was {held:.1f} h old when this payload was built; the build drops one at {CARRY_MAX_AGE_H} h), {own} from this build's own {pc} cycle")
+                      (fails if held >= CARRY_MAX_AGE_H else notes).append(line + tail)
+                  else:
+                      since = (now - datetime(day1.year, day1.month, day1.day, FLIP_H, tzinfo=timezone.utc) + timedelta(days=1)).total_seconds() / 3600 if day1 else None
+                      line = f"deploy day 1: {none} of {len(cal)} calibrated airports have no day-level chance for {day1}"
+                      line += (f", {since:.1f} h after it became day 1 at {FLIP_H}:00Z (allowed for {D1_NONE_MAX_H} h)" if since is not None
+                               else " (for how long cannot be told: see deploy dates)")
+                      (fails if since is not None and since > D1_NONE_MAX_H else notes).append(line + tail)
+              except Exception as e:
+                  fails.append(f"deploy day 1: the payload could not be read for it — {e!r}")
           # 8. the baked pages carry calibrated answers: at least one of the
           #    first three public airports has a public forecast in its data.json
           #    (the Nov 2026 bakes wrote "0 public forecasts" and stayed green)
@@ -169,6 +404,10 @@ jobs:
               got = [i for i in sample if get(f"https://fogatlas.org/fog/{i.lower()}/data.json")["forecast"].get("public")]
               if public:
                   (notes if got else fails).append(f"public pages: {len(got)} of {len(sample)} sampled public airports ({' '.join(sample)}) carry a calibrated forecast")
+              elif sc_pass:
+                  # an issuance with publicAirports [] printed no line here at
+                  # all, beside "414 pass, 0 public" on the scorecard line
+                  fails.append(f"public pages: /api/forecast lists no public airport while the scorecard has {sc_pass} that pass — no page carries a calibrated forecast")
           except Exception as e:
               fails.append(f"public pages: sample data.json unreadable — {e}")
           # 9. the live observation feed that the CHASE board and the map's NOW
@@ -206,6 +445,14 @@ jobs:
                   return "status", f"/api/now answered HTTP {e.code}"
               except Exception as e:
                   return "status", f"/api/now unreadable — {e}"
+              # A byte-order mark ahead of the header: the app and the engine both
+              # read such a file (neither uses the first column), and this check
+              # failed it on "no column named raw_text". The three readers must
+              # agree (forecast/engine.py). Decoded as latin-1 a UTF-8 mark is
+              # the three characters below.
+              text = text.lstrip("﻿")
+              if text.startswith("ï»¿"):
+                  text = text[3:]
               lines = [l for l in text.split("\n") if l.strip()]
               head = [h.strip() for h in fields(lines[0])] if lines else []
               missing = [c for c in FEED_COLS if c not in head]
@@ -228,11 +475,15 @@ jobs:
                       pass
                   try:
                       t = datetime.fromisoformat(f[i_time].replace("Z", "+00:00"))
+                      # a time with no zone is UTC, as the feed's all are; left
+                      # naive it could not be compared with the clock and the
+                      # TypeError ended the whole script with an empty report
+                      t = t if t.tzinfo else t.replace(tzinfo=timezone.utc)
                       times[f[i_id]] = t
                       # a station with a wrong clock must not make a stuck file look fresh
                       if t <= t_now + timedelta(minutes=5) and (newest is None or t > newest):
                           newest = t
-                  except ValueError:
+                  except (ValueError, TypeError):
                       pass
               if bad > len(seen):
                   return "header", f"/api/now has {bad} rows that do not match its {len(head)}-column header row"
@@ -278,15 +529,112 @@ jobs:
           #     from 2026-07-10 to 2026-11-24 the function accepted a single id
           #     and answered 400 "bad id" to every such request, the board
           #     swallowed the error, and a one-id probe would have stayed green.
-          try:
-              arr = get("https://fogatlas.org/api/metar?ids=KSFO,KDEN&hours=3")
+          #     Both stations must answer: a proxy that returned one of the two
+          #     passed here. One retry after 20 s, as check 9 has: this depends
+          #     on aviationweather.gov's API at that second, hourly.
+          def metar_check():
+              try:
+                  arr = get("https://fogatlas.org/api/metar?ids=KSFO,KDEN&hours=3")
+              except Exception as e:
+                  return False, f"metar proxy: /api/metar?ids=KSFO,KDEN unreadable — {e}"
               got = sorted({o.get("icaoId") for o in arr if isinstance(o, dict)} - {None}) if isinstance(arr, list) else []
-              (notes if got else fails).append(f"metar proxy: /api/metar?ids=KSFO,KDEN returned {len(arr) if isinstance(arr, list) else 'no'} reports for {' '.join(got) or 'no station'} (want a non-empty JSON array)")
+              return {"KSFO", "KDEN"} <= set(got), (
+                  f"metar proxy: /api/metar?ids=KSFO,KDEN returned {len(arr) if isinstance(arr, list) else 'no'} reports for "
+                  f"{' '.join(got) or 'no station'} (want reports for both)")
+          ok, line = metar_check()
+          if not ok:
+              time.sleep(20)
+              ok, again = metar_check()
+              line = again + (" — on the second try" if ok else f" — second try, 20 s after the first also failed ({line})")
+          (notes if ok else fails).append(line)
+          # 11. the runway data the CHASE board filters on and the DEPLOY
+          #     planner ranks with: /data/chase.json. From 2026-11-03 to 11-24
+          #     the monthly refresh had committed and deployed a file read at
+          #     the wrong columns (the FAA widened a field in the 10-29 cycle):
+          #     runway ends named "HIG" and "0R", 99.8% of the FAA ends in the
+          #     no-approach tier, and nothing here opened the file. The builder
+          #     now refuses to write one like it (build_chase.sanity_problems);
+          #     this is the same gate from the consumer's side, on the file
+          #     that is being served. Counted on FAA-derived ends only, as the
+          #     builder does (the 37 Canadian airports are curated by hand).
+          #     Healthy (2026-10-29 cycle): 900 US airports, 3,578 ends, 46.6%
+          #     with no approach.
+          #     Age ("runway data age"): the FAA issues a cycle every 28 days
+          #     and reference.yml takes the current one on the 3rd of each
+          #     month, so the cycle on the site is at most 58 days old while
+          #     that job works. 70 days means a monthly refresh did not land.
+          NASR_MAX_AGE_D = 70
+          chz = None
+          try:
+              chz = get("https://fogatlas.org/data/chase.json")
+              rw, cm = chz["airports"], chz.get("meta") or {}
+              usa = [[e for e in v if not e.get("cur")] for v in rw.values()]
+              usa = [v for v in usa if v]
+              ends = [e for v in usa for e in v]
+              noapp = sum(1 for e in ends if e.get("tier") == 400) / len(ends) if ends else 1.0
+              # The approach-light column has its own floor (2026-11-25): a file
+              # whose APCH_LGT_SYSTEM_CODE came back blank, or shifted by a cell
+              # ("N" and "Y" as light systems), kept 900 airports and 46.6%
+              # with no approach, passed here, and left the default CHASE board
+              # with 0 US airports. Healthy: 32.8% of FAA ends carry a light
+              # system, every code one of ALS_CODES (build_chase.ALS_CODES).
+              ALS_CODES = {"ALSF1", "ALSF2", "MALS", "MALSF", "MALSR", "SSALR", "SSALF", "SSALS", "SALS", "SALSF",
+                           "ODALS", "RLLS", "NSTD", "ALSAF"}
+              lit = [e for e in ends if e.get("als")]
+              als = len(lit) / len(ends) if ends else 0.0
+              odd = sum(1 for e in lit if e["als"] not in ALS_CODES)
+              (fails if len(usa) < 800 or noapp >= 0.70 or als < 0.20 or odd > 0.05 * len(lit) else notes).append(
+                  f"runway data: {len(usa)} US airports (floor 800), {len(ends):,} FAA runway ends, {noapp:.1%} of them with no approach (limit under 70%), "
+                  f"{als:.1%} with approach lights (floor 20%)" + (f", {odd} of those with a code that is no light system" if odd else ""))
           except Exception as e:
-              fails.append(f"metar proxy: /api/metar?ids=KSFO,KDEN unreadable — {e}")
-          for n in notes: print("ok  ", n)
-          for f in fails: print("FAIL", f)
-          sys.exit(1 if fails else 0)
+              chz = None
+              fails.append(f"runway data: /data/chase.json unreadable — {e!r}")
+          if chz is not None:
+              # meta.nasr_cycle since 2026-11-25; a file built before that names the cycle only in the zip's file name
+              cyc_s = cm.get("nasr_cycle") or (re.findall(r"Effective_(\d{4}-\d{2}-\d{2})", str(cm.get("nasr_file"))) or [None])[0]
+              if day(cyc_s) is None:
+                  fails.append(f"runway data age: /data/chase.json does not say which FAA cycle it is from (meta.nasr_cycle {cm.get('nasr_cycle')!r}, meta.nasr_file {cm.get('nasr_file')!r})")
+              else:
+                  nage = (now.date() - day(cyc_s)).days
+                  (fails if nage > NASR_MAX_AGE_D or nage < -1 else notes).append(f"runway data age: FAA NASR cycle {cyc_s} ({nage} d old, limit {NASR_MAX_AGE_D})")
+              # 12. the LED approach-light list in the same file (the led block,
+              #     since 2026-11-25): the runway ends the FAA's airport remarks
+              #     flag as LED, which is what an EFVS flight test has to know
+              #     about a field before it goes there. It is read out of
+              #     free-text remarks, so it can thin out or vanish while the
+              #     file stays valid JSON and check 11 stays green; the builder
+              #     refuses under 30 airports or a fall of a fifth, and this is
+              #     the same question asked of the file being served. The ends
+              #     are counted where the board reads them (led: 1 on a runway
+              #     end), and the block's own totals must match what is in the
+              #     file, because the page may print either. Healthy (2026-10-29
+              #     cycle): 47 airports, 42 LED ends on the board at 35 airports.
+              try:
+                  led = chz.get("led")
+                  if not isinstance(led, dict) or not isinstance(led.get("airports"), list):
+                      fails.append("led list: /data/chase.json has no led block — no LED approach light is marked on the CHASE board or the map")
+                  else:
+                      la = [a for a in led["airports"] if isinstance(a, dict) and a.get("id")]
+                      on = [i for i, v in rw.items() for e in v if e.get("led") == 1]
+                      # an airport whose LED remark names no runway the build could
+                      # place has led_unk on its approach-light ends, no named end,
+                      # and counts as an LED airport on the board (build_chase.led_block)
+                      on_air = set(on) | {i for i, v in rw.items() for e in v if e.get("led_unk") == 1}
+                      line = (f"led list: {len(la)} airports with LED approach lights (floor 40), {len(on)} LED runway ends on the board "
+                              f"at {len(on_air)} airports (floor 1 end), FAA NASR cycle {led.get('cycle')}")
+                      bad = len(la) < 40 or len(on) < 1
+                      lage = (now.date() - day(led.get("cycle"))).days if day(led.get("cycle")) else None
+                      if lage is None or lage > NASR_MAX_AGE_D or lage < -1:
+                          line += " (not a date)" if lage is None else f" ({lage} d old, limit {NASR_MAX_AGE_D})"
+                          bad = True
+                      for name, real in (("n_airports", len(la)), ("n_ends_board", len(on)), ("n_airports_board", len(on_air))):
+                          if led.get(name) != real:
+                              line += f" — but led.{name} says {led.get(name)}"
+                              bad = True
+                      (fails if bad else notes).append(line)
+              except Exception as e:
+                  fails.append(f"led list: the led block of /data/chase.json could not be read — {e!r}")
+          sys.exit(1 if fails else 0)   # the lines are printed by _report, on every way out
           PY
           rc=$?
           cat report.txt
@@ -298,16 +646,27 @@ jobs:
         run: |
           for n in $(gh issue list --label watchdog --state open --json number -q '.[].number'); do
             gh issue close "$n" --comment "$(printf 'All checks passing again on %s:\n\n```\n%s\n```' "$(date -u +%FT%H:%MZ)" "$(cat report.txt)")"
+            # for the phone step: said once, when an issue is really closed, not on every passing run
+            printf 'clear\n%s\n' "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/issues/$n" > phone.txt
           done
       - name: open or update the watchdog issue
         if: steps.probe.outputs.failed == 'true'
         run: |
+          # For the phone step. Written before the first GitHub call: if GitHub
+          # refuses the issue, the phone still hears that checks fail, with a
+          # link to this run. Taken back below when this run only repeats what
+          # the issue already says.
+          printf 'fail\n%s\n' "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > phone.txt
           gh label create watchdog --color d73a4a --description "live-site health failure" --force >/dev/null 2>&1 || true
           # The cron Worker runs this hourly. Comment again only when the SET of
           # failing checks changes, or once a day while it stays the same —
           # the numbers inside a line ("6.4 h old") change every run and must
           # not turn one outage into 24 emails. The key rides in the comment.
-          key="$(grep '^FAIL' report.txt | sed -E 's/^FAIL ([^:]+):.*/\1/' | sort -u | paste -sd'|' -) @ $(date -u +%F)"
+          # "<" and ">" never reach the key: it rides in an HTML comment, and the
+          # grep below reads up to the first ">" (a FAIL line that quoted
+          # urllib's "<urlopen error ...>" broke the match and this step
+          # commented every hour on one outage).
+          key="$(grep '^FAIL' report.txt | sed -E 's/^FAIL ([^:]+):.*/\1/' | tr -d '<>' | sort -u | paste -sd'|' -) @ $(date -u +%F)"
           marker="<!-- watchdog-key: $key -->"
           { echo "Checked $(date -u +%FT%H:%MZ):"; echo; echo '```'; cat report.txt; echo '```'; echo; echo "$marker"; } > body.md
           existing=$(gh issue list --label watchdog --state open --json number -q '.[0].number')
@@ -316,10 +675,113 @@ jobs:
               | grep -o '<!-- watchdog-key: [^>]* -->' | tail -1)
             if [ "$last" = "$marker" ]; then
               echo "same failing checks as the last report today — not commenting on #$existing again"
+              rm -f phone.txt
             else
+              printf 'fail\n%s\n' "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/issues/$existing" > phone.txt
               gh issue comment "$existing" --body-file body.md
             fi
           else
-            gh issue create --label watchdog --title "watchdog: live-site check failed $(date -u +%F)" --body-file body.md
+            made=$(gh issue create --label watchdog --title "watchdog: live-site check failed $(date -u +%F)" --body-file body.md)
+            echo "$made"
+            case "$made" in https://*/issues/*) printf 'fail\n%s\n' "$made" > phone.txt ;; esac
           fi
           exit 1
+      # The issue above reaches nobody's phone: GitHub Mobile pushes mentions,
+      # assignments, review requests and deployment approvals, and a new issue
+      # from github-actions[bot] is none of them (readiness review,
+      # 2026-11-24). So the same two moments are also sent through Pushover,
+      # the channel the cron Worker uses for a refused workflow start, the
+      # daily heartbeat and the fog alerts (cron/src/notify.js): when the set
+      # of failing checks changes (a new issue, or a comment on it, which is
+      # also once a day while it stays the same), and when it clears.
+      # Off until the repository has the two secrets the Worker has:
+      # PUSHOVER_TOKEN (the Pushover application's API token) and
+      # PUSHOVER_USER (the user key). Without them this step says so and passes.
+      # It can never fail the run, and it runs after a failed step: a red
+      # watchdog run is exactly when it has something to say.
+      - name: tell the phone when the failing checks change, and when they clear
+        if: ${{ !cancelled() }}
+        env:
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
+        run: |
+          set +e   # nothing in here may turn the run red, or hide why it already is
+          due=$(sed -n 1p phone.txt 2>/dev/null)
+          link=$(sed -n 2p phone.txt 2>/dev/null)
+          case "$due" in
+            fail)
+              # Short on purpose: how many checks fail, the first three by the
+              # name the issue keys them on, and the link. The lines themselves
+              # are in the issue. A failed probe with no FAIL line means the
+              # probe itself died. Plain ASCII only: cut counts bytes, and half
+              # a character would make Pushover refuse the whole message.
+              keys=$(grep '^FAIL' report.txt 2>/dev/null | sed -E 's/^FAIL ([^:]+):.*/\1/; s/^FAIL //' \
+                | LC_ALL=C sed 's/[^ -~]//g' | tr -s ' ' | awk '!seen[$0]++' | cut -c1-40)
+              count=$(printf '%s\n' "$keys" | grep -c .)
+              first=$(printf '%s\n' "$keys" | head -n 3 | paste -sd',' - | sed 's/,/, /g')
+              if [ "$count" -eq 0 ]; then message="The watchdog could not finish its checks."
+              elif [ "$count" -eq 1 ]; then message="1 check fails: $first."
+              elif [ "$count" -le 3 ]; then message="$count checks fail: $first."
+              else message="$count checks fail: $first and $((count - 3)) more."
+              fi
+              title="Fog Atlas watchdog: site check failed"
+              priority=1   # gets through Pushover's quiet hours, as the Worker's own failure messages do
+              link_title="Open the watchdog issue"
+              case "$link" in */actions/runs/*) link_title="Open the watchdog run" ;; esac
+              ;;
+            clear)
+              title="Fog Atlas watchdog: all checks pass again"
+              message="Every site check passes again. The watchdog issue is closed."
+              priority=0
+              link_title="Open the watchdog issue"
+              ;;
+            *)
+              due=""
+              ;;
+          esac
+          if [ -z "$PUSHOVER_TOKEN" ] || [ -z "$PUSHOVER_USER" ]; then
+            if [ -n "$due" ]; then
+              echo "::notice::phone notification is off: PUSHOVER_TOKEN / PUSHOVER_USER not set. Not sent: \"$title\" ($message)"
+            else
+              echo "phone notification is off: PUSHOVER_TOKEN / PUSHOVER_USER not set (nothing was due this run)"
+            fi
+            exit 0
+          fi
+          if [ -z "$due" ]; then
+            echo "nothing to tell the phone: the failing checks are the ones it was last told about, or there are none"
+            exit 0
+          fi
+          # --form-string for every value: -F would read a value that starts
+          # with @ or < as a file name. Only the HTTP status is printed; this
+          # log is public and Pushover's answer is not needed in it.
+          send() {
+            curl -sS -o pushover.json -w '%{http_code}' --max-time 20 \
+              --form-string "token=$PUSHOVER_TOKEN" \
+              --form-string "user=$PUSHOVER_USER" \
+              --form-string "title=$title" \
+              --form-string "message=$message" \
+              --form-string "priority=$priority" \
+              --form-string "url=$link" \
+              --form-string "url_title=$link_title" \
+              https://api.pushover.net/1/messages.json 2>/dev/null
+          }
+          code=$(send)
+          # Pushover's rule (pushover.net/api, "Being Friendly to our API"): a
+          # 4xx will be refused again however often it is sent, and repeating
+          # it gets the sender blocked; anything else may be tried again, no
+          # sooner than 5 seconds later. Once.
+          case "$code" in
+            200|4??) ;;
+            *) echo "phone: no usable answer from Pushover (HTTP $code), trying once more"; sleep 6; code=$(send) ;;
+          esac
+          if [ "$code" = "000" ]; then
+            echo "::warning::phone: \"$title\" was NOT sent — Pushover could not be reached"
+          elif [ "$code" != "200" ]; then
+            echo "::warning::phone: \"$title\" was NOT sent — Pushover answered HTTP $code"
+          elif grep -Eq '"status"[[:space:]]*:[[:space:]]*1([^0-9]|$)' pushover.json 2>/dev/null; then
+            echo "phone: \"$title\" accepted by Pushover (HTTP 200)"
+          else
+            echo "::warning::phone: \"$title\" may not have been sent — Pushover answered HTTP 200 without its status 1"
+          fi
+          rm -f pushover.json
+          exit 0

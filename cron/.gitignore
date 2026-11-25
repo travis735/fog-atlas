@@ -1,0 +1,6 @@
+# The board names the owner's base and the fields he watches; this repository is
+# public. make_board.mjs writes to stdout only. These patterns are a second
+# guard for a file redirected into this folder by mistake.
+*board*.json
+# local secrets for `wrangler dev`, if anyone ever uses it here
+.dev.vars

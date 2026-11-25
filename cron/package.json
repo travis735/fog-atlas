@@ -2,8 +2,8 @@
   "name": "fogatlas-cron",
   "private": true,
   "type": "module",
-  "description": "Cloudflare Worker that dispatches the forecast workflow on a reliable clock. No dependencies; deploy with `npx wrangler@4.167.0 deploy`.",
+  "description": "Cloudflare Worker that dispatches the forecast and watchdog workflows on a reliable clock and, once two secrets exist, pushes clock failures and fog alerts to a phone (README.md). No dependencies; deploy with `npx wrangler@4.167.0 deploy`.",
   "scripts": {
-    "test": "node test_dispatch.mjs"
+    "test": "node test_dispatch.mjs && node test_alerts.mjs"
   }
 }

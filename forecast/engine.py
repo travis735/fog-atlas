@@ -86,6 +86,13 @@ AWC = "https://aviationweather.gov/data/cache/metars.cache.csv.gz"
 # FEED_REQUIRED_COLUMNS in app/src/feed.ts; app/test/test_feed.mjs checks that).
 # sky_cover / cloud_base_ft_agl repeat once per cloud layer.
 AWC_TRUTH_COLS = ("station_id", "observation_time", "visibility_statute_mi", "sky_cover", "cloud_base_ft_agl")
+# A healthy file gives an observation for 91% of the forecast stations (1,112
+# of 1,215 on 2026-11-25). Under half is a file that is cut short or whose
+# values changed form: the freshness and the header were checked, and nothing
+# checked how much came out (review 2026-11-25: every visibility empty, or
+# written as text, or the station ids in lower case, recorded 0 observations
+# on a green run with no annotation; the first 40% of the bytes recorded 326).
+AWC_TRUTH_MIN_SHARE = 0.5
 
 
 def _awc_refuse(why: str) -> dict:
@@ -172,6 +179,14 @@ def parse_awc_truth(text: str, stations: set[str]) -> dict:
     if not good:
         # a header row and nothing under it: green and silent until 2026-11-25
         return _awc_refuse("metars.cache.csv has a header row and no reports under it.")
+    if len(out) < AWC_TRUTH_MIN_SHARE * len(stations):
+        # Rows that parse are not the whole question. A cut file, or a
+        # visibility column that changed form for most rows, leaves a few rows
+        # readable, and what is left is not a fair sample of the sky (if only
+        # the "10+" rows still parse, every recorded truth says clear).
+        return _awc_refuse(f"metars.cache.csv gave an observation for only {len(out)} of {len(stations)} forecast stations "
+                           f"(floor {AWC_TRUTH_MIN_SHARE:.0%}; a healthy file gives about 91%) from {good} rows: it is "
+                           f"cut short, or its visibility or station columns changed form.")
     return out
 
 
@@ -294,18 +309,29 @@ def main() -> None:
         public_airports = sorted(bar.get("public", []))
     except FileNotFoundError:
         public_airports = []
+    # The truth observations are read BEFORE the issuance is written, so the
+    # issuance can say how many there were (meta.obs_recorded): until
+    # 2026-11-25 the only trace of a run that recorded none was "obs recorded:
+    # 0" in a step log, and the watchdog reads the site, not the logs.
+    # Nothing here may cost the forecast: awc_truth() refuses in words and
+    # returns {}, and anything it does not foresee is caught the same way.
+    try:
+        obs = awc_truth(stations)
+    except Exception as e:  # noqa: BLE001
+        obs = _awc_refuse(f"reading metars.cache.csv.gz raised {e!r}.")
     current = {
         "meta": {"cycle": cycle_iso, "generated": generated,
                  "public": bool(public_airports),  # legacy master flag
                  "publicAirports": public_airports,
                  "calib_version": raw_calib.get("version", 1),
-                 "thresholds": THRESHOLDS, "n_airports": len(airports)},
+                 "thresholds": THRESHOLDS, "n_airports": len(airports),
+                 # truth observations logged with this run, of how many forecast stations
+                 "obs_recorded": len(obs), "obs_stations": len(stations)},
         "airports": airports,
     }
     OUT.mkdir(exist_ok=True)
     (OUT / "current.json").write_text(json.dumps(current, separators=(",", ":")))
 
-    obs = awc_truth(stations)
     logdir = OUT / "log"
     logdir.mkdir(exist_ok=True)
     run_id = generated.replace(":", "").replace("-", "")[:13]
