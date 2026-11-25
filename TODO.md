@@ -1,5 +1,47 @@
 # Roadmap / TODO
 
+## ★ Chase readiness for 2026-12-08 — the five-item plan (status 2026-11-25 03Z)
+From the readiness review of 2026-11-24 (notes/chase-readiness-2026-11-24.md).
+
+1. **DEPLOY day-level chance recalibrated — LIVE (ae4df0b4).** Day 1 goes
+   through a hindcast-fitted map (`forecast/fit_daycal.py` →
+   `forecast/out/daycal.json`): 2025 holdout +10.3% Brier skill over
+   climatology where the bare product scored −4.1%; days shown at 50%+
+   verified 58% (n=420). Peak hourly chance and expected hours sit beside the
+   verdict. Known limits, all printed on screen:
+   - **Wrong by region.** At 50%+ the pooled map ran 30 points high in the
+     Central Valley, 11 high on the rest of the West Coast, 14 high in the
+     Northeast, 16–22 low in the Great Lakes and Southeast. Those fields show
+     "Not calibrated for <area> fields: ran about N points high/low". Regional
+     maps are in the item-3 build.
+   - Day 1 is published only from 09Z–21Z cycles (00Z failed its check).
+   - Day 2 failed on real 09Z cycles and is on the climatology tier until the
+     item-3 build gives it forecast numbers back.
+   - Values shown at 75%+ verified about 67%.
+2. **CHASE refuses a bad live feed — LIVE (ae4df0b4).** `app/src/feed.ts`
+   reads the feed by column name and refuses an HTTP error, a layout change, a
+   short or stale file, missing visibilities, or a stall of the chase
+   airports' own reports. Banner "LIVE FEED DOWN. THIS BOARD IS NOT CURRENT."
+   with the real observation age; retry every 60 s. Watchdog checks 9 and 10
+   read `/api/now` and `/api/metar` the way the app does.
+3. **Hourly planner, dated days, plan age, verification status — IN BUILD.**
+   Also: day-level chance by region and by cycle hour, day 2 on the forecast
+   again.
+4. **Replay Nov 3–24 and fix the bar check before Dec 1 — NOT STARTED** (not
+   yet asked for). Barcheck needs R2 pagination and a memory fix first.
+5. **LED approach lights on the FAA CSV tables, then phone alerts — IN
+   BUILD.** Phone alerts ship switched off until a Pushover account exists.
+
+Deferred from the item 1–2 review, still open: the app loads no airports if
+the basemap host does not answer (boot sits inside the map `load` handler);
+fitted-tier days 6–8 at 50%+ verified 32–38% and still count toward the
+multi-day GO; whether the edge holds an upstream `/api/now` error for the full
+cache time; no workflow runs the test scripts.
+
+Owner decisions open: where the GO and MARGINAL bars sit now the number is
+honest (still 50% / 25%); Pushover account or wait for the iPhone app; whether
+the public bar should count distinct fog hours instead of forecast pairs.
+
 ## ★ 2026-11-24 audit — three silent outages found and fixed; what is still open
 Travis plans live chase use from ~2026-12-08. An audit that day found three
 things broken for three weeks with every workflow green:
@@ -79,6 +121,32 @@ with `cd cron && npx wrangler@4.167.0 secret put GH_PAT`.
   unmerged; #3's parser fixtures predate the header change.
 - bar_status.json still lists 235 public airports; 414 pass (ritual not run
   since 2026-08-16).
+
+## ★ ROADMAP: iPhone app for fog chase + deployment (Travis, 2026-11-24)
+Not started; queued behind the December chase-readiness work on the website.
+A native iPhone app carrying the two tools Travis flies with:
+- **CHASE** — the live board (in fog now / likely soon / quiet) around a base,
+  with the same feed-health banner and real observation age as the site.
+- **DEPLOY** — the tomorrow / 7-day / 14-day verdict, peak hourly chance,
+  expected fog hours and wheels-up time, plus the LED approach-light marking.
+
+Why native rather than the website on a phone: alerts that arrive with the app
+closed and the phone locked (a browser tab cannot do that), the last good
+board kept on the phone with its age shown when there is no signal on the
+ramp, and a home-screen / Lock Screen view of tomorrow's verdict.
+
+Ground rules to carry into the build:
+- The app shows the SAME numbers as the site. It reads the site's endpoints
+  (`/api/now`, `/api/deploy`, `/api/forecast`, `data/chase.json`) and never
+  re-derives a probability on the phone.
+- The same refusals apply: a dead, changed or stale observation feed is shown
+  as such, never as "nothing in fog".
+- The server-side fog check built for phone alerts (cron Worker) is the piece
+  the app's own push notifications would take over.
+
+Decisions for Travis before it starts: personal tool on TestFlight only, or a
+public App Store listing; iPhone only, or iPad too (EFB use); which Apple
+developer account it ships under.
 
 ## 0. CHASE Canada tier — DONE 2026-07-20 (shipped with CHASE V2)
 Shipped same day as the rest of CHASE V2: Sonnet fleet researched the CAP/CFS
