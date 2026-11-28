@@ -28,8 +28,8 @@ const {
   planDayIso, isoDateMs, dayWords, dayPart, partWords, dayShort, dayLong, dateSpans, localIso,
   planFreshness, planAgeLine, planBanner, ageWords, refetchDue, retryDelayMs, planProblem, refreshFailWords,
   chanceStatus, noChanceWords, wordOf, wordChance, departure, zoneClock, chainDeparture, launchChance, launchChanceWords,
-  fogAhead, fogAheadWords, windowWords, zoneDayHour, singleFlight,
-  PLAN_REFETCH_MS, PLAN_OLD_MS, PLAN_EXPIRED_MS, PLAN_TIMEOUT_MS, HOURLY_TIMEOUT_MS,
+  launchWindow, fogAhead, fogAheadWords, windowWords, zoneDayHour, singleFlight,
+  PLAN_REFETCH_MS, PLAN_OLD_MS, PLAN_EXPIRED_MS, PLAN_TIMEOUT_MS, HOURLY_TIMEOUT_MS, HOURLY_DEAD_MS,
 } = plan;
 
 const FX = JSON.parse(readFileSync(new URL("./fixtures/plan-payloads-2026-11-24.json", import.meta.url), "utf8"));
@@ -82,6 +82,50 @@ function realFogCharacter(persistenceTable = {}) {
   return new Function("fogAhead", "fogAheadWords", "zoneDayHour", "persistenceTable", `${src}\nreturn fogCharacter;`)(fogAhead, fogAheadWords, zoneDayHour, persistenceTable);
 }
 const FC16 = (airports) => ({ meta: { cycle: "2026-11-25T16:00:00Z" }, airports });
+// Four more fields of that 16Z forecast, chance of visibility under 1 mile only:
+// KPIR's 55% and KMWH's 81% were the 17Z hour, behind the clock from the minute
+// the forecast was issued (17:27Z); KSTS and KVIS had their fog the next morning.
+const P16 = {
+  KPIR: [55,33,12,5,1,3,1,4,3,4,6,4,4,4,5,4,4,5,4,4,5,6,6,3,1,1,0,1,2,2,4,3,3],
+  KMWH: [81,47,10,4,2,1,2,3,4,5,4,5,5,5,7,8,11,15,13,14,15,15,19,32,27,15,3,2,3,5,4,5,10],
+  KSTS: [6,1,1,0,0,0,0,0,0,1,2,3,4,24,27,41,45,43,51,43,52,55,52,41,12,1,0,0,2,10,18,28,50],
+  KVIS: [2,1,0,0,0,0,0,0,0,1,1,1,2,7,7,8,12,19,30,35,41,39,37,28,19,10,1,1,4,11,17,33,40],
+  KMFR: FOG16.KMFR.p.map((r) => r[0]),
+  KCVO: FOG16.KCVO.p.map((r) => r[0]),
+};
+const F16 = FOG16.KMFR.fhrs;
+const AIR16 = Object.fromEntries(Object.entries(P16).map(([k, ps]) => [k, field(F16, ps)]));
+// Five fields of the 00Z forecast of 2026-11-28 as the site served it at 02:18Z
+// (issued 01:59Z), again the chance of visibility under 1 mile only. CYHZ and
+// KFAT had fog windows inside the forecast's first hours; KAUG's and KBGR's 40%
+// hours were 01Z and 02Z; KALI's 45% was 36 hours out.
+const CYC00 = at("2026-11-28T00:00:00Z");
+const F00 = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,30,33,36,39,42,45,48];
+const P00 = {
+  CYHZ: [61,52,53,52,49,42,47,15,25,4,3,3,3,2,2,1,1,1,1,1,1,2,2,3,3,5,4,3,5,3,1,2,3],
+  KFAT: [0,0,1,17,25,33,53,55,63,84,83,90,92,91,89,87,67,30,6,0,0,0,0,0,0,0,6,17,31,10,1,0,0],
+  KAUG: [63,64,36,31,19,16,15,14,13,11,12,14,9,4,2,1,1,1,0,0,0,0,1,1,1,4,9,9,8,2,0,0,1],
+  KALI: [0,0,0,1,1,1,2,5,6,10,17,21,18,9,2,0,0,0,0,0,0,0,0,0,0,1,4,24,45,1,0,0,0],
+  KBGR: [46,35,24,20,15,8,9,6,10,10,8,8,5,2,1,1,0,0,0,0,1,1,1,1,1,3,4,6,4,1,0,1,1],
+};
+const FC00 = { meta: { cycle: "2026-11-28T00:00:00Z" }, airports: Object.fromEntries(Object.entries(P00).map(([k, ps]) => [k, field(F00, ps)])) };
+// main.ts deployLaunch, deployBestHour and deployDep THEMSELVES, cut out of
+// main.ts and run on the plan.ts under test, as fogCharacter is above: what
+// WHEELS UP, the verdict's note and a base row are given, not their source
+// text. `speed` is the cruise speed in knots; `dist` gives the test's own
+// distances from the CHASE base to each base ("KHHH>KBBB": nm). A main.ts from
+// before deployBestHour hands back null for it.
+function realLaunchPlan(speed = 150, dist = {}) {
+  const cut = (from, to) => { const a = MAIN.indexOf(from), b = MAIN.indexOf(to, a); assert.ok(a >= 0 && b > a, `main.ts: "${from}" was not found`); return MAIN.slice(a, b); };
+  const src = stripTypeScriptTypes([`${cut("const eteStr = (h: number) =>", "\n};")}\n};`, cut("function deployLaunch(", "\n// One line of the NEXT 48 H list")].join("\n"));
+  return new Function("chasePrefs", "distNm", "HOURLY_DEAD_MS", "launchWindow", "launchChance", "launchChanceWords", "chainDeparture", "zoneClock",
+    `${src}\nreturn { deployLaunch, deployDep, deployBestHour: typeof deployBestHour === "function" ? deployBestHour : null };`)(
+    { speed }, (a, b) => dist[`${a.icao}>${b.icao}`] ?? 0, HOURLY_DEAD_MS, launchWindow, launchChance, launchChanceWords, chainDeparture, zoneClock);
+}
+// a base and the fields in its reach, in the order the planner ranks them: [icao, nm from the base]
+const baseOf = (icao, ...fields) => ({ b: { icao, tz: LA }, contrib: fields.map(([f, nm]) => ({ a: { icao: f }, nm })) });
+// the larger of the two chances a launch line prints ("N% at ..." and, when it is there, "peak M% at ...")
+const printedTop = (words) => { const m = /^(\d+)% at [^,]*(?:, peak (\d+)% at .*)?$/.exec(words); assert.ok(m, `not a launch chance: "${words}"`); return Math.max(+m[1], +(m[2] ?? 0)); };
 // what a row reads once the tags are gone
 const rowText = (html) => html.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
 
@@ -423,7 +467,8 @@ const tests = {
     assert.deepEqual([d.kind, zoneClock(d.endMs, LA)], ["open", "Wed 07:00 PST"]);
     assert.equal(chainDeparture([], chain, now).kind, "none");
     // main.ts: every base row goes through it, and "departure time passed" is gone from the page
-    assert.match(MAIN, /const d = chainDeparture\(hours, \(repoH \+ 0\.5 \+ ete\) \* 3600e3, now\);/);
+    assert.match(MAIN, /const chainMs = \(repoH \+ 0\.5 \+ ete\) \* 3600e3;/);
+    assert.match(MAIN, /const d = chainDeparture\(win\.hours, chainMs, now\);/);
     assert.doesNotMatch(MAIN.split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n"), /departure time passed/);
     assert.match(MAIN, /const x = deployDep\(v\.home!, c, fc, now\);/);
   },
@@ -460,6 +505,305 @@ const tests = {
     assert.equal((code.match(/best\.p\b/g) ?? []).length, 1, "best.p is read once, to rank the fields");
     assert.doesNotMatch(code, /peaks at \$\{/);
     assert.doesNotMatch(code, /has the highest hourly chance of fog under 1 mile in reach/);
+  },
+
+  "a launch is named only for 40% or more at an hour it can still reach (KMFR and KPIR, 16Z of 25 Nov)"() {
+    // The live site, 2026-11-25: 3 of 113 WHEELS UP boxes named a field whose
+    // hours in reach were 20 to 26%. The launch plan took each field's highest
+    // chance in the WHOLE forecast: 40% at any of its 48 hours qualified it,
+    // set its window bar and ranked it. KMFR's 47% was 47 hours out, past the
+    // plan's 30, and the highest hour inside them was 25% (Thu 08:00 PST).
+    const now = at("2026-11-25T17:41:00Z");
+    assert.deepEqual(launchWindow(F16, P16.KMFR, CYC16, now, 10 * MIN), { peak: 25, thr: 15, lastMs: null, win: null });
+    // KPIR's 55% was the 17Z hour: behind the clock from the minute the forecast was issued, with 33% after it
+    assert.deepEqual(launchWindow(F16, P16.KPIR, CYC16, at("2026-11-25T17:31:00Z"), 15 * MIN), { peak: 33, thr: 15, lastMs: null, win: null });
+    // on a clock that hour was still ahead of, it is a launch: to the 55% hour, in a window that runs on to the 33% one
+    assert.deepEqual(launchWindow(F16, P16.KPIR, CYC16, at("2026-11-25T16:30:00Z"), 15 * MIN),
+      { peak: 55, thr: 22, lastMs: CYC16 + H, win: { openMs: CYC16 + H, top: 55, hours: [CYC16 + H], endMs: CYC16 + 2 * H } });
+    // KSTS, the next morning: the window opens at 24% (Wed 22:00 PST) and tops at 55% (Thu 06:00 PST)
+    const w = launchWindow(F16, P16.KSTS, CYC16, now, 56 * MIN);
+    assert.deepEqual([w.peak, w.thr, w.win.top, zoneClock(w.win.openMs, LA), zoneClock(w.win.endMs, LA), zoneClock(w.lastMs, LA)],
+      [55, 22, 55, "Wed 22:00 PST", "Thu 08:00 PST", "Thu 08:00 PST"]);
+    assert.equal(launchChanceWords(launchChance(F16, P16.KSTS, CYC16, w.win.openMs, w.thr), w.win.openMs, LA), "24% at Wed 22:00 PST, peak 55% at Thu 06:00 PST");
+
+    const cyc = CYC16, lw = (fhrs, ps, now, lead = 0) => launchWindow(fhrs, ps, cyc, now, lead);
+    const one = (h) => ({ openMs: cyc + h * H, top: 40, hours: [cyc + h * H], endMs: cyc + h * H });
+    // the bar is 40: 40 is a launch, 39 is not
+    assert.deepEqual(lw([1, 2, 3], [10, 40, 10], cyc), { peak: 40, thr: 16, lastMs: cyc + 2 * H, win: one(2) });
+    assert.deepEqual(lw([1, 2, 3], [10, 39, 10], cyc), { peak: 39, thr: 15.600000000000001, lastMs: null, win: null });
+    // the only 40% hour is behind the clock, by a minute: no launch, and the best hour is the best one still ahead
+    assert.deepEqual(lw([1, 2, 3, 4], [90, 26, 20, 5], cyc + H + MIN), { peak: 26, thr: 15, lastMs: null, win: null });
+    assert.equal(lw([1, 2, 3, 4], [90, 26, 20, 5], cyc + H).win.top, 90, "at its own minute the hour is not behind the clock");
+    // the only 40% hour is past the plan's 30: no launch. Hour 30 itself is inside.
+    assert.deepEqual(lw([29, 30, 33], [20, 39, 80], cyc), { peak: 39, thr: 15.600000000000001, lastMs: null, win: null });
+    assert.deepEqual(lw([29, 30, 33], [20, 40, 80], cyc).win, { openMs: cyc + 29 * H, top: 40, hours: [cyc + 29 * H, cyc + 30 * H], endMs: cyc + 30 * H });
+    // an hour the launch reaches by exactly its lead counts; a minute short it does not
+    assert.equal(lw([5, 6], [60, 10], cyc + 5 * H - 90 * MIN, 90 * MIN).win.top, 60);
+    assert.deepEqual(lw([5, 6], [60, 10], cyc + 5 * H - 90 * MIN + MIN, 90 * MIN), { peak: 10, thr: 15, lastMs: null, win: null });
+    assert.equal(lw([5, 6], [60, 10], cyc + 5 * H - 90 * MIN + MIN, 89 * MIN).win.top, 60, "the same clock with a lead one minute shorter");
+    // Two windows, the first topping under 40: the launch goes to the second.
+    // The old rule sent it to the first reachable hour over the bar, the 30% one.
+    const two = [0, 30, 35, 30, 0, 0, 0, 0, 20, 50, 45, 0], h12 = two.map((_, i) => i + 1);
+    assert.deepEqual(lw(h12, two, cyc), { peak: 50, thr: 20, lastMs: cyc + 11 * H,
+      win: { openMs: cyc + 9 * H, top: 50, hours: [9, 10, 11].map((h) => cyc + h * H), endMs: cyc + 11 * H } });
+    // ... and to the first when it does reach 40, whatever comes later; lastMs is the last such hour of any window
+    const first = lw(h12, [0, 45, 0, 0, 0, 0, 0, 0, 20, 80, 0, 0], cyc);
+    assert.deepEqual([first.thr, first.win.openMs, first.win.top, first.lastMs], [32, cyc + 2 * H, 45, cyc + 10 * H]);
+    // The window bar sits at 40% of the highest chance IN REACH: 90% is behind
+    // the clock, so the bar is 24 (40% of 60), not 36, and the window runs on
+    // to the 30% hour. The 90% hour is one of its hours (the window is open),
+    // and the hours a departure is worked out from stop at the last at 40% or more.
+    const tail = lw([1, 2, 3, 4, 5], [90, 60, 50, 30, 20], cyc + H + MIN);
+    assert.deepEqual(tail, { peak: 60, thr: 24, lastMs: cyc + 3 * H,
+      win: { openMs: cyc + 2 * H, top: 60, hours: [1, 2, 3].map((h) => cyc + h * H), endMs: cyc + 4 * H } });
+    assert.equal(chainDeparture(tail.win.hours, 0, cyc + H + MIN).kind, "open", "a window with an hour behind the clock is open, not about to open");
+    // 3-hourly hours 3 h apart are one window; hours handed over out of order change nothing
+    assert.deepEqual(lw([24, 27, 30], [30, 45, 50], cyc).win, { openMs: cyc + 24 * H, top: 50, hours: [24, 27, 30].map((h) => cyc + h * H), endMs: cyc + 30 * H });
+    assert.deepEqual(lw([...h12].reverse(), [...two].reverse(), cyc), lw(h12, two, cyc));
+    // an hour without a number is not an hour; no hour in reach, or no forecast to read, is no launch and no best hour
+    assert.deepEqual(lw([1, 2, 3], [50, null, 45], cyc).win, { openMs: cyc + H, top: 50, hours: [cyc + H, cyc + 3 * H], endMs: cyc + 3 * H });
+    const nothing = { peak: null, thr: 15, lastMs: null, win: null };
+    assert.deepEqual(lw([1, 2, 3], [50, 60, 45], cyc + 100 * H), nothing);
+    assert.deepEqual(lw([1, 2], [null, undefined], cyc), nothing, "hours without a number are not a best hour of 0%");
+    assert.deepEqual(lw([], [], cyc), nothing);
+    assert.deepEqual(lw(undefined, undefined, cyc), nothing);
+    assert.deepEqual(launchWindow([1, 2, 3], [50, 60, 45], NaN, cyc, 0), nothing, "a forecast that does not say its cycle has no hour to place");
+
+    // Six real fields, every 20 minutes for 34 hours, five lead times. Whatever
+    // is named: its chance is 40 or more and is the larger of the two numbers a
+    // launch line prints; no hour behind the clock, out of reach or past 30 h is in it.
+    let named = 0, none = 0;
+    for (const ps of Object.values(P16)) for (const lead of [0, 15, 47, 90, 200].map((m) => m * MIN)) {
+      for (let t = CYC16 - 2 * H; t <= CYC16 + 32 * H; t += 20 * MIN) {
+        const inReach = F16.map((fh, i) => ({ fh, ms: CYC16 + fh * H, p: ps[i] })).filter((h) => h.fh <= 30 && h.ms - lead >= t);
+        const a = launchWindow(F16, ps, CYC16, t, lead);
+        assert.equal(a.peak, inReach.length ? Math.max(...inReach.map((h) => h.p)) : null);
+        assert.equal(a.win !== null, a.peak !== null && a.peak >= 40);
+        assert.equal(a.lastMs, inReach.filter((h) => h.p >= 40).at(-1)?.ms ?? null);
+        if (!a.win) { none++; continue; }
+        named++;
+        const c = launchChance(F16, ps, CYC16, a.win.openMs, a.thr);
+        assert.ok(inReach.some((h) => h.ms === a.win.openMs), "the launch is sent to an hour it cannot reach");
+        assert.deepEqual([c.at !== null, c.top, a.win.top >= 40], [true, a.win.top, true]);
+        assert.equal(printedTop(launchChanceWords(c, a.win.openMs, LA)), a.win.top);
+        // the hours a departure is worked out from end at one the launch can reach, at 40% or more
+        const last = inReach.find((h) => h.ms === a.win.hours.at(-1));
+        assert.ok(last && last.p >= 40 && a.win.endMs >= last.ms && a.win.hours.includes(a.win.openMs));
+        assert.notEqual(chainDeparture(a.win.hours, lead, t).kind, "missed");
+      }
+    }
+    assert.equal(JSON.stringify({ named, none }), '{"named":784,"none":2306}');
+  },
+
+  "WHEELS UP names the field with the highest chance in reach, never one whose 40% hour is behind the clock or past 30 h"() {
+    const { deployLaunch } = realLaunchPlan(150);
+    const fc = FC16(AIR16), now = at("2026-11-25T17:41:00Z");
+    // Base KRDM at 150 kt, KMFR 135.7 nm away. The built page on this forecast
+    // at 17:31Z: "WHEELS UP ~Thu 06:50 PST (14:50Z) → KMFR (Medford, OR) (0:54
+    // out) · fog (<1 mi) 25% at Thu 08:00 PST", on the strength of a 47% hour
+    // 47 hours out. There is no launch.
+    assert.equal(deployLaunch(baseOf("KRDM", ["KMFR", 135.7]), fc, at("2026-11-25T17:31:00Z")), null);
+    assert.equal(deployLaunch(baseOf("KRDM", ["KMFR", 135.7], ["KCVO", 99]), fc, now), null);
+    // KPIR, three minutes after the forecast was issued: its 55% hour is behind the clock and 33% is next
+    assert.equal(deployLaunch(baseOf("KBBB", ["KPIR", 30]), fc, at("2026-11-25T17:31:00Z")), null);
+    // with KSTS in reach as well the launch is KSTS's, as it was, and is printed as it was
+    const sts = deployLaunch(baseOf("KBBB", ["KMFR", 25], ["KSTS", 140]), fc, now);
+    assert.deepEqual([sts.icao, sts.p, sts.fog.at, sts.fog.top, zoneClock(sts.openMs, LA), zoneClock(sts.wheelsMs, LA)],
+      ["KSTS", 55, 24, 55, "Wed 22:00 PST", "Wed 20:49 PST"]);
+    assert.equal(launchChanceWords(sts.fog, sts.openMs, LA), "24% at Wed 22:00 PST, peak 55% at Thu 06:00 PST");
+    // Ranking. KAAA peaked at 92% an hour ago and the launch can reach its 44%
+    // hour; KBBB's 60% is still ahead. The field named was KAAA, on the 92.
+    const hrs = [1, 2, 3, 4, 5, 6], t = CYC16 + H + 40 * MIN;
+    const rank = (a, b) => deployLaunch(baseOf("KXXX", ["KAAA", 112.5], ["KBBB", 112.5]), FC16({ KAAA: field(hrs, a), KBBB: field(hrs, b) }), t);
+    let l = rank([92, 83, 44, 5, 0, 0], [0, 0, 60, 50, 0, 0]);
+    assert.deepEqual([l.icao, l.p, l.fog.at, l.fog.top], ["KBBB", 60, 60, 60]);
+    // the other way round when KAAA's hour in reach is the higher one
+    l = rank([92, 83, 61, 5, 0, 0], [0, 0, 60, 50, 0, 0]);
+    assert.deepEqual([l.icao, l.p], ["KAAA", 61]);
+    // a tie goes to the field the planner lists first
+    assert.equal(rank([0, 0, 60, 5, 0, 0], [0, 0, 60, 50, 0, 0]).icao, "KAAA");
+    assert.equal(rank([0, 0, 20, 60, 0, 0], [0, 0, 60, 50, 0, 0]).icao, "KAAA");
+    // a field is ranked by the window the launch goes to, not by a higher one later the same day
+    l = rank([0, 0, 45, 0, 0, 0], [0, 0, 60, 50, 0, 0]);
+    assert.equal(l.icao, "KBBB");
+    l = deployLaunch(baseOf("KXXX", ["KAAA", 112.5], ["KBBB", 112.5]),
+      FC16({ KAAA: field([3, 4, 9, 10], [45, 0, 0, 95]), KBBB: field(hrs, [0, 0, 60, 50, 0, 0]) }), t);
+    assert.deepEqual([l.icao, l.p], ["KBBB", 60], "KAAA's launch goes to its 45% window; the 95% six hours later does not rank it");
+    // Every box on six real fields, three speeds, every 20 minutes of the
+    // forecast's first 9 hours: the larger chance printed is the one the field
+    // was ranked by and is 40 or more, and there is no launch only when no
+    // field has a 40% hour the flight can still reach inside 30 h.
+    const base = baseOf("KBBB", ["KMFR", 25], ["KPIR", 60], ["KMWH", 90], ["KVIS", 130], ["KSTS", 140], ["KCVO", 200]);
+    let boxes = 0, empty = 0;
+    for (const speed of [110, 150, 200]) {
+      const run = realLaunchPlan(speed).deployLaunch;
+      for (let now = CYC16 + 30 * MIN; now <= CYC16 + 9 * H; now += 20 * MIN) {
+        const b = run(base, fc, now);
+        const can = base.contrib.some((x) => F16.some((fh, i) => fh <= 30 && P16[x.a.icao][i] >= 40 && CYC16 + fh * H - (x.nm / speed) * H >= now));
+        assert.equal(b !== null, now - CYC16 < HOURLY_DEAD_MS && can, `${speed} kt ${new Date(now).toISOString()}`);
+        if (!b) { empty++; continue; }
+        boxes++;
+        assert.ok(b.p >= 40 && b.fog.at != null && printedTop(launchChanceWords(b.fog, b.openMs, LA)) === b.p, `${speed} kt ${new Date(now).toISOString()} ${b.icao} ${b.p}`);
+        assert.ok(b.openMs - (b.nm / speed) * H >= now && b.openMs <= CYC16 + 30 * H);
+      }
+    }
+    assert.equal(JSON.stringify({ boxes, empty }), '{"boxes":69,"empty":9}');
+    // main.ts: the rule is plan.ts launchWindow, with the flight out as the lead, and no peak of the whole forecast is left
+    const code = MAIN.split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n");
+    const fn = code.slice(code.indexOf("function deployLaunch("), code.indexOf("function deployBestHour("));
+    assert.match(fn, /const \{ thr, win \} = launchWindow\(f\.fhrs, p10, cyc, now, ete \* 3600e3\);\s*if \(!win\) continue;\s*if \(!best \|\| win\.top > best\.p\) best = \{ p: win\.top, fog: launchChance\(f\.fhrs, p10, cyc, win\.openMs, thr\), /);
+    assert.doesNotMatch(fn, /Math\.max|peak/);
+    assert.match(code, /const best = deployLaunch\(sel, fc, now\);/);
+    assert.match(/import \{([^}]*)\} from "\.\/plan\.ts";/.exec(MAIN)?.[1] ?? "", /\blaunchWindow\b/);
+  },
+
+  "a base row goes by the same rule with the whole chain as the lead, and says too late only of a 40% hour still ahead (CYHZ and KFAT, 00Z of 28 Nov)"() {
+    // From KHHH the chain is 1:00 to KBBB, the 30 min turn and 0:30 on to the field: two hours.
+    const home = { icao: "KHHH", tz: LA };
+    const dep = (now, c, fc = FC00) => realLaunchPlan(150, { "KHHH>KBBB": 150 }).deployDep(home, c, fc, at(now));
+    const chain = (icao) => `from your CHASE base KHHH (still-air, 150 kt) to KBBB, a 30 min turn there, and 0:30 on to ${icao}`;
+    const NONE = { text: "no launch time yet · reposition 1:00", until: null,
+      title: "No field in reach of KBBB clears the launch plan's 40% bar (fog under 1 mile) in the next 30 hours, so there is no departure time. Reposition: still-air flight from your CHASE base KHHH to KBBB at 150 kt." };
+    // KFAT, with the forecast three minutes old: fog from 53% at Fri 23:00 PST
+    // to 92% at Sat 05:00 and 67% at Sat 09:00, then 30%. The row is to be
+    // there as the window opens. Nothing in it changed.
+    const fat = baseOf("KBBB", ["KFAT", 75]);
+    assert.deepEqual(dep("2026-11-28T02:03:00Z", fat), { text: "deploy by Fri 20:45 PST for KFAT", until: at("2026-11-28T04:45:00Z"),
+      title: `Latest departure ${chain("KFAT")}, arriving as its fog window opens (Fri 23:00 PST) with a 15 min buffer. The time is in KHHH's zone. (Fog under 1 mile at KFAT in the first hour you can still make: 53% at Fri 23:00 PST, peak 92% at Sat 05:00 PST.) Not factored into the ranking.` });
+    // At 22:30 PST the chain cannot be there as it opens. A window that ENDS at 40% or more is printed as it was.
+    assert.deepEqual(dep("2026-11-28T06:30:00Z", fat), { text: "leave by Sat 07:00 PST for KFAT · its fog window lasts to about Sat 09:00 PST", until: at("2026-11-28T15:00:00Z"),
+      title: `KFAT's fog window is open, or opens before you could be there. The latest departure ${chain("KFAT")} that still arrives inside it is Sat 07:00 PST; leaving sooner gets more of it. Times are in KHHH's zone. (Fog under 1 mile at KFAT in the first hour you can still make: 63% at Sat 01:00 PST, peak 92% at Sat 05:00 PST.) Not factored into the ranking.` });
+    // A forecast 8 hours old is not planned from, and the hover says so. It
+    // said "No field in reach of KBBB clears the launch plan's 40% bar" with
+    // KFAT at 84% two hours ahead: no field had been held against the bar.
+    assert.equal(dep("2026-11-28T07:59:00Z", fat).text, "leave by Sat 07:00 PST for KFAT · its fog window lasts to about Sat 09:00 PST");
+    assert.deepEqual(dep("2026-11-28T08:00:00Z", fat), { text: "no launch time yet · reposition 1:00", until: null,
+      title: "No departure time: the hourly forecast on hand is too old to plan a departure from. Reposition: still-air flight from your CHASE base KHHH to KBBB at 150 kt." });
+    // CYHZ at 02:03Z: 49%, 42% and 47% to Fri 23:00 PST, then 15% and 25% (Sat
+    // 01:00 PST). The latest departure is for the LAST HOUR AT 40% OR MORE, not
+    // for the window's last hour: the row read "leave by Fri 23:00 PST", a
+    // departure that reached only the 25%.
+    const yhz = baseOf("KBBB", ["CYHZ", 75]);
+    const open = { text: "leave by Fri 21:00 PST for CYHZ · its fog window lasts to about Sat 01:00 PST", until: at("2026-11-28T05:00:00Z"),
+      title: `CYHZ's fog window is open, or opens before you could be there. The latest departure ${chain("CYHZ")} that still arrives by its last hour at 40% or more, Fri 23:00 PST, is Fri 21:00 PST; leaving sooner gets more of it. Times are in KHHH's zone. (Fog under 1 mile at CYHZ in the first hour you can still make: 49% at Fri 21:00 PST.) Not factored into the ranking.` };
+    assert.deepEqual(dep("2026-11-28T02:03:00Z", yhz), open);
+    assert.equal(dep("2026-11-28T05:00:00Z", yhz).text, open.text, "to the minute it names");
+    // One minute later the chain reaches 25% at best. The row went on reading
+    // "leave by Fri 23:00 PST for CYHZ" for two hours, with 25% in its hover.
+    // It is too late, and the last departure is the time the row gave.
+    const late = { text: "too late for CYHZ from KHHH (last departure Fri 21:00 PST)", until: null,
+      title: `The last departure ${chain("CYHZ")} that reached CYHZ at an hour of 40% or more for fog under 1 mile was Fri 21:00 PST. It has passed, and no other field in reach of KBBB has such an hour this chain can still make.` };
+    assert.deepEqual(dep("2026-11-28T05:01:00Z", yhz), late);
+    assert.deepEqual(dep("2026-11-28T07:00:00Z", yhz), late, "while the 47% hour is not behind the clock");
+    // once it is, the field is not mentioned: no hour at 40% or more is ahead
+    // ("too late for CYHZ from KHHH (last departure Fri 23:00 PST)" was for the 25% hour)
+    assert.deepEqual(dep("2026-11-28T07:01:00Z", yhz), NONE);
+    // KAUG's 63% and 64% were 01Z and 02Z. At 02:00Z the 64% hour is not behind
+    // the clock and the chain cannot make it; three minutes later nothing at
+    // 40% is ahead, and the row read "too late for KAUG from KHHH (last
+    // departure Fri 18:00 PST)" for its 31% hour.
+    const aug = baseOf("KBBB", ["KAUG", 75]);
+    assert.equal(dep("2026-11-28T02:00:00Z", aug).text, "too late for KAUG from KHHH (last departure Fri 16:00 PST)");
+    assert.deepEqual(dep("2026-11-28T02:03:00Z", aug), NONE);
+    // KALI's 45% was 36 hours out, and the row was "deploy by Sat 01:45 PST for KALI", for 21%.
+    // KMFR on 25 Nov, the same: "deploy by Wed 21:45 PST for KMFR", for 25%.
+    assert.deepEqual(dep("2026-11-28T02:03:00Z", baseOf("KBBB", ["KALI", 75])), NONE);
+    assert.deepEqual(dep("2026-11-25T17:41:00Z", baseOf("KBBB", ["KMFR", 75]), FC16(AIR16)), NONE);
+    // Ranking, as WHEELS UP: by the highest chance the chain can still reach in the window, the first listed on a tie
+    assert.equal(dep("2026-11-28T02:03:00Z", baseOf("KBBB", ["CYHZ", 75], ["KFAT", 75])).text, "deploy by Fri 20:45 PST for KFAT");
+    assert.equal(dep("2026-11-28T02:03:00Z", baseOf("KBBB", ["KAUG", 75], ["KALI", 75], ["CYHZ", 75])).text, open.text);
+    assert.equal(dep("2026-11-25T17:41:00Z", baseOf("KBBB", ["KMFR", 75], ["KVIS", 75], ["KSTS", 75]), FC16(AIR16)).text, "deploy by Wed 19:45 PST for KSTS");
+    const hrs = [1, 2, 3, 4, 5, 6, 7, 8];
+    const rank = (a, b, now) => realLaunchPlan(150, { "KHHH>KXXX": 150 }).deployDep(home, baseOf("KXXX", ["KAAA", 75], ["KBBB", 75]),
+      FC16({ KAAA: field(hrs, a), KBBB: field(hrs, b) }), now).text;
+    // KAAA's 92% is out of the chain's reach and 44% is what it can make; KBBB's 60% is ahead
+    assert.equal(rank([0, 92, 83, 44, 5, 0, 0, 0], [0, 0, 0, 60, 50, 0, 0, 0], CYC16 + H + 40 * MIN), "deploy by Wed 09:45 PST for KBBB");
+    assert.equal(rank([0, 0, 0, 60, 5, 0, 0, 0], [0, 0, 0, 60, 50, 0, 0, 0], CYC16 + H + 40 * MIN), "deploy by Wed 09:45 PST for KAAA");
+    // a field that can still be made comes before one that is too late, whatever its chance
+    assert.equal(rank([0, 95, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 41, 0], CYC16 + H), "deploy by Wed 12:45 PST for KBBB");
+    assert.equal(rank([0, 95, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 39, 0], CYC16 + H), "too late for KAAA from KHHH (last departure Wed 08:00 PST)");
+    // Every row on eleven real fields of two forecasts, three speeds, every 20
+    // minutes of each forecast's first 9 hours. A row that names a departure:
+    // the chance in its hover is 40 or more, and a launch that leaves at the
+    // very time the row gives still reaches an hour at 40 or more. A row that
+    // says too late: such an hour is still ahead of the clock and the chain
+    // cannot make it. A row that says neither: no such hour is ahead at all.
+    const count = { by: 0, open: 0, lower: 0, late: 0, none: 0 };
+    const sweep = (fc, cyc, fhrs, P, all) => {
+      for (const speed of [110, 150, 200]) {
+        const run = realLaunchPlan(speed, { "KHHH>KBBB": 150 }).deployDep;
+        const chainOf = (icao) => (150 / speed + 0.5 + all.contrib.find((x) => x.a.icao === icao).nm / speed) * H;
+        // chainDeparture's own test of what a departure can make
+        const hour40 = (icao, leaving, lead) => fhrs.some((fh, i) => fh <= 30 && P[icao][i] >= 40 && cyc + fh * H - lead >= leaving);
+        for (let now = cyc + 30 * MIN; now <= cyc + 9 * H; now += 20 * MIN) {
+          const x = run(home, all, fc, now), where = `${speed} kt ${new Date(now).toISOString()}: ${x.text}`;
+          const m = /^(deploy|leave) by ([A-Z][a-z]{2} \d\d:\d\d P[SD]T) for ([A-Z]{4})/.exec(x.text);
+          const alive = now - cyc < HOURLY_DEAD_MS;
+          assert.equal(!!m, alive && all.contrib.some((c) => hour40(c.a.icao, now, chainOf(c.a.icao))), where);
+          if (m) {
+            count[m[1] === "deploy" ? "by" : "open"]++;
+            if (/by its last hour at 40% or more, /.test(x.title)) count.lower++;
+            assert.ok(printedTop(/you can still make: ([^)]*)\.\)/.exec(x.title)[1]) >= 40, where);
+            assert.ok(x.until >= now && zoneClock(x.until, LA) === m[2] && hour40(m[3], x.until, chainOf(m[3])), where);
+          } else if (/^too late for /.test(x.text)) {
+            count.late++;
+            const icao = /^too late for ([A-Z]{4}) from KHHH \(last departure /.exec(x.text)[1];
+            assert.ok(alive && hour40(icao, now, 0) && !hour40(icao, now, chainOf(icao)), where);
+          } else {
+            count.none++;
+            assert.equal(x.text, `no launch time yet · reposition ${speed === 110 ? "1:22" : speed === 150 ? "1:00" : "0:45"}`);
+            assert.ok(!alive || !all.contrib.some((c) => hour40(c.a.icao, now, 0)), where);
+          }
+        }
+      }
+    };
+    sweep(FC16(AIR16), CYC16, F16, P16, baseOf("KBBB", ["KMFR", 25], ["KPIR", 60], ["KMWH", 90], ["KVIS", 130], ["KSTS", 140], ["KCVO", 200]));
+    sweep(FC00, CYC00, F00, P00, baseOf("KBBB", ["KALI", 25], ["KBGR", 60], ["KAUG", 90], ["CYHZ", 130], ["KFAT", 140]));
+    sweep(FC00, CYC00, F00, P00, baseOf("KBBB", ["KALI", 25], ["KBGR", 60], ["KAUG", 90], ["CYHZ", 130]));   // without KFAT's long window
+    assert.equal(JSON.stringify(count), '{"by":104,"open":72,"lower":38,"late":22,"none":36}');
+    // main.ts: launchWindow with the chain as the lead, chainDeparture over that window's hours, and the too-late test on the field's own clock
+    const code = MAIN.split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n");
+    const fn = code.slice(code.indexOf("function deployDep("), code.indexOf("function fogCharacter("));
+    assert.match(fn, /const chainMs = \(repoH \+ 0\.5 \+ ete\) \* 3600e3;\s*const \{ thr, win \} = launchWindow\(f\.fhrs, p10, cyc, now, chainMs\);/);
+    assert.match(fn, /const ahead = launchWindow\(f\.fhrs, p10, cyc, now, 0\);/);
+    assert.match(fn, /const d = chainDeparture\(win\.hours, chainMs, now\);/);
+    assert.doesNotMatch(fn, /Math\.max|peak/);
+    assert.equal((code.match(/launchWindow\(/g) ?? []).length, 4, "deployLaunch, deployBestHour, and deployDep twice");
+  },
+
+  "the verdict's no-launch note gives the field's best hour still in reach, not one behind the clock or past 30 h"() {
+    const { deployBestHour } = realLaunchPlan(150);
+    assert.ok(deployBestHour, "main.ts has no deployBestHour: the note's number is not from the launch plan's rule");
+    const fc = FC16(AIR16), base = baseOf("KBBB", ["KMFR", 25], ["KPIR", 30], ["KSTS", 140]);
+    // "No launch time yet: the best hour at KMFR is 47% ..." had no number to give
+    // (47 is not under 40) and fell through to the general sentence; for KPIR
+    // it was the 55% of an hour already gone. The best hours in reach are 25% and 33%.
+    assert.equal(deployBestHour(base, "KMFR", fc, at("2026-11-25T17:41:00Z")), 25);
+    assert.equal(deployBestHour(base, "KPIR", fc, at("2026-11-25T17:31:00Z")), 33);
+    assert.equal(deployBestHour(base, "KPIR", fc, at("2026-11-25T18:01:00Z")), 12, "the 18Z hour has gone too");
+    // the flight time is the launch plan's own: at 16:49Z KPIR's 55% hour (17Z) is 11 minutes off and KPIR is 12 minutes out
+    assert.equal(deployBestHour(base, "KPIR", fc, at("2026-11-25T16:48:00Z")), 55);
+    assert.equal(deployBestHour(base, "KPIR", fc, at("2026-11-25T16:49:00Z")), 33);
+    // the same number the launch plan goes by, for every field and clock: under 40 exactly when the field has no launch
+    const { deployLaunch } = realLaunchPlan(150);
+    for (const [icao, nm] of [["KMFR", 25], ["KPIR", 30], ["KSTS", 140]]) {
+      for (let now = CYC16 + 30 * MIN; now < CYC16 + 8 * H; now += 20 * MIN) {
+        const n = deployBestHour(base, icao, fc, now), l = deployLaunch(baseOf("KBBB", [icao, nm]), fc, now);
+        assert.equal(n >= 40, l !== null, `${icao} ${new Date(now).toISOString()}: best hour ${n}%, launch ${l?.p}`);
+        assert.equal(n, launchWindow(F16, P16[icao], CYC16, now, (nm / 150) * H).peak);
+      }
+    }
+    // a field that is not in reach of the base, or has no forecast, or no hour left in reach: no number
+    assert.equal(deployBestHour(base, "KVIS", fc, at("2026-11-25T17:41:00Z")), null);
+    assert.equal(deployBestHour(base, "KMFR", FC16({}), at("2026-11-25T17:41:00Z")), null);
+    assert.equal(deployBestHour(base, "KMFR", fc, CYC16 + 31 * H), null);
+    // main.ts: the note prints that number, says which hours it is the best of, and reads no other
+    const code = MAIN.split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n");
+    const fill = code.slice(code.indexOf("async function fillDeployLaunch("), code.indexOf('$("#deploy-btn").addEventListener'));
+    assert.match(fill, /const peak = v\.noteFor\.icao \? deployBestHour\(sel, v\.noteFor\.icao, fc, now\) : null;\s*noteEl\.textContent = "No launch time yet: " \+ \(peak != null && peak < 40\s*\? `the best hour at \$\{v\.noteFor\.icao\} that can still be reached in the next 30 h is \$\{peak\}% for fog under 1 mile, and the launch plan needs 40%\.`\s*: "no field in reach clears the launch plan's 40% bar \(fog under 1 mile\) at an hour that can still be reached\."\);/);
+    assert.doesNotMatch(fill, /Math\.max/);
+    assert.match(fill, /noteEl\.textContent = `Launch plan below: \$\{best\.icao\}, be there \$\{zoneClock\(best\.openMs, sel\.b\.tz\)\}\.\$\{differs\}\$\{other\}`;/);
+    assert.match(fill, /no reachable field's <b>hourly<\/b> chance of fog under 1 mile clears 40% at an hour that can still be reached\./);
   },
 
   "a NEXT 48 H line prints its own window's chance and names its day (KMFR and KCVO, 16Z of 25 Nov)"() {

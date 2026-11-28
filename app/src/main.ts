@@ -14,7 +14,7 @@ import {
   planFreshness, planAgeLine, planBanner, ageWords, clockWords, cycleWords, zClock,
   refetchDue, retryDelayMs, singleFlight, planProblem, refreshFailWords,
   chanceStatus, noChanceWords, wordOf, wordChance, departure, zoneClock, chainDeparture, launchChance, launchChanceWords,
-  fogAhead, fogAheadWords, zoneDayHour,
+  launchWindow, fogAhead, fogAheadWords, zoneDayHour,
   PLAN_REFETCH_MS, PLAN_TICK_MS, PLAN_TIMEOUT_MS, HOURLY_TIMEOUT_MS, HOURLY_OLD_MS, HOURLY_DEAD_MS,
   type DayPart, type DayWords, type ChanceStatus,
 } from "./plan.ts";
@@ -3564,17 +3564,21 @@ function deployCellTitle(k: DeployPick, d: number): string {
   return t;
 }
 
-// The launch the hourly forecast supports from one base: the field in reach
-// whose fog (under 1 mile) peaks highest among those with a window that can
-// still be reached, and the wheels-up time that arrives as that window opens
+// The launch the hourly forecast supports from one base: of the fields in
+// reach, the one whose fog (under 1 mile) is highest in a window the launch
+// can still reach, and the wheels-up time that arrives as that window opens
 // (15 min buffer). WHEELS UP, the verdict's launch line and every base row's
-// "deploy by" read this one function. They used to be two calculations (the
-// row's from the plan's fog-window lead, the box's from the hourly forecast),
-// and on 2026-11-24 every row printed "deploy by Wed 03:54" under a verdict
-// that said there was no launch time.
-// `p` is the field's peak in the whole forecast: fields are ranked by it and it
-// is never printed, because that hour can be behind the clock. What is printed
-// is `fog`: the chance of the hour the launch reaches (plan.ts launchChance).
+// "deploy by" go by one rule, plan.ts launchWindow. They used to be two
+// calculations (the row's from the plan's fog-window lead, the box's from the
+// hourly forecast), and on 2026-11-24 every row printed "deploy by Wed 03:54"
+// under a verdict that said there was no launch time.
+// `p` is the highest chance among the hours of that window the launch can
+// still reach: fields are ranked by it, and a field is named only when it is
+// 40% or more. It was the field's peak in the whole forecast, which can be an
+// hour behind the clock or past the plan's 30: 3 of 113 boxes on 2026-11-25
+// named a field whose hours in reach were 20 to 26%. What is printed is `fog`:
+// the chance of the hour the launch reaches and the highest after it in the
+// same window (plan.ts launchChance). The larger of the two is `p`.
 interface DeployLaunch { p: number; fog: ReturnType<typeof launchChance>; icao: string; nm: number; ete: number; openMs: number; wheelsMs: number }
 function deployLaunch(c: DeployBase, fc: any, now: number): DeployLaunch | null {
   const cyc = new Date(fc.meta.cycle).getTime();
@@ -3585,35 +3589,43 @@ function deployLaunch(c: DeployBase, fc: any, now: number): DeployLaunch | null 
     const f = fc.airports?.[x.a.icao];
     if (!f) continue;
     const p10: number[] = f.p.map((r: number[]) => r[0]);
-    const peak = Math.max(...p10);
-    if (peak < 40) continue;
-    const thr = Math.max(15, peak * 0.4);
     const ete = x.nm / chasePrefs.speed;
-    // first REACHABLE qualifying window: a window that already opened
-    // (or opens before we could be airborne) must not disqualify the
-    // field when the curve shows another one tonight/tomorrow —
+    // the first window that can still be REACHED at 40% or more: a window
+    // that already opened (or opens before we could be airborne) must not
+    // disqualify the field when the curve shows another one tonight/tomorrow —
     // otherwise the verdict says GO while the plan says no-launch
-    let openMs = 0;
-    for (let i = 0; i < f.fhrs.length; i++) {
-      if (f.fhrs[i] > 30 || p10[i] < thr) continue;
-      const o = cyc + f.fhrs[i] * 3600e3;
-      if (o - now >= ete * 3600e3) { openMs = o; break; }
-    }
-    if (!openMs) continue;
-    if (!best || peak > best.p) best = { p: peak, fog: launchChance(f.fhrs, p10, cyc, openMs, thr), icao: x.a.icao, nm: x.nm, ete, openMs, wheelsMs: openMs - (ete + 0.25) * 3600e3 };
+    const { thr, win } = launchWindow(f.fhrs, p10, cyc, now, ete * 3600e3);
+    if (!win) continue;
+    if (!best || win.top > best.p) best = { p: win.top, fog: launchChance(f.fhrs, p10, cyc, win.openMs, thr), icao: x.a.icao, nm: x.nm, ete, openMs: win.openMs, wheelsMs: win.openMs - (ete + 0.25) * 3600e3 };
   }
   return best;
 }
 
+// The best hour for fog under 1 mile at one field in reach of a base that a
+// launch from that base can still reach in the plan's 30 hours: the number in
+// the verdict's "No launch time yet" note. It is launchWindow's own `peak`,
+// for the flight time deployLaunch gives that field, so the note cannot name
+// a number the launch plan did not go by. It was the field's highest hour in
+// the whole forecast, and that hour can be behind the clock or 40 hours out.
+// null: the field is not in reach, has no forecast, or has no such hour.
+function deployBestHour(c: DeployBase, icao: string, fc: any, now: number): number | null {
+  const x = c.contrib.find((y) => y.a.icao === icao);
+  const f = x ? fc.airports?.[icao] : null;
+  if (!x || !f) return null;
+  return launchWindow(f.fhrs, f.p.map((r: number[]) => r[0]), new Date(fc.meta.cycle).getTime(), now, (x.nm / chasePrefs.speed) * 3600e3).peak;
+}
+
 // A base row's departure line: from the CHASE base, through that base (30 min
-// turn), to the field in its reach whose fog under 1 mile peaks highest among
-// those the whole chain can still make. plan.ts chainDeparture works it out
-// over every hour of that field's window: until 2026-11-25 it was WHEELS UP's
+// turn), to the field in its reach whose fog under 1 mile is highest in a
+// window the whole chain can still make (plan.ts launchWindow, with the chain
+// as the lead: the same rule as WHEELS UP). plan.ts chainDeparture works the
+// time out over the hours of that window: until 2026-11-25 it was WHEELS UP's
 // first reachable hour less the reposition leg, which with a window open was
 // behind the clock for almost every base (26 of 28 rows said "departure time
 // passed" while hours of the same window could still be reached).
 // `fc` undefined: the hourly forecast is not on hand. A time that has passed
-// is said as passed, in the past tense, and only when no hour can be made.
+// is said as passed, in the past tense, and only when no hour at 40% or more
+// can be made while one is still ahead of the clock.
 function deployDep(home: Airport, c: DeployBase, fc: any | null | undefined, now: number): { text: string; title: string; until: number | null } {
   const repoH = distNm(home, c.b) / chasePrefs.speed;
   const repo = `reposition ${eteStr(repoH)}`;
@@ -3622,38 +3634,54 @@ function deployDep(home: Airport, c: DeployBase, fc: any | null | undefined, now
   const cyc = new Date(fc.meta.cycle).getTime();
   const none = { text: `no launch time yet · ${repo}`, until: null,
     title: `No field in reach of ${c.b.icao} clears the launch plan's 40% bar (fog under 1 mile) in the next 30 hours, so there is no departure time. ${repoTitle}` };
-  // an hourly forecast this old is not a plan (build_deploy.py refuses the same age)
-  if (!(now - cyc < HOURLY_DEAD_MS)) return none;
-  type Row = { icao: string; peak: number; ete: number; d: ReturnType<typeof chainDeparture>; fog: string };
+  // an hourly forecast this old is not a plan (build_deploy.py refuses the same
+  // age). The hover says that: no field was held against the bar.
+  if (!(now - cyc < HOURLY_DEAD_MS)) return { ...none, title: `No departure time: the hourly forecast on hand is too old to plan a departure from. ${repoTitle}` };
+  // `top`: the highest chance the chain can still reach in the window (the rows
+  // are ranked by it, as WHEELS UP is). `endMs`: the window's last hour.
+  type Row = { icao: string; top: number; ete: number; d: ReturnType<typeof chainDeparture>; endMs: number; fog: string };
   let best: Row | null = null, missed: Row | null = null;
   for (const x of c.contrib.slice(0, 12)) {
     const f = fc.airports?.[x.a.icao];
     if (!f) continue;
     const p10: number[] = f.p.map((r: number[]) => r[0]);
-    const peak = Math.max(...p10);
-    if (peak < 40) continue;
-    const thr = Math.max(15, peak * 0.4); // the launch plan's own bar (deployLaunch)
-    const hours: number[] = [];
-    for (let i = 0; i < f.fhrs.length; i++) if (f.fhrs[i] <= 30 && p10[i] >= thr) hours.push(cyc + f.fhrs[i] * 3600e3);
     const ete = x.nm / chasePrefs.speed;
-    const d = chainDeparture(hours, (repoH + 0.5 + ete) * 3600e3, now);
-    if (d.kind === "none") continue;
+    const chainMs = (repoH + 0.5 + ete) * 3600e3;
+    // the launch plan's own rule and bar (deployLaunch), with the whole chain as the lead
+    const { thr, win } = launchWindow(f.fhrs, p10, cyc, now, chainMs);
+    if (!win) {
+      // "too late" is said only of a field with an hour at 40% or more still
+      // ahead of the clock that this chain cannot make any more. The last
+      // departure was for the last such hour. A field whose 40% hours are all
+      // behind the clock, or past the plan's 30, is not mentioned.
+      const ahead = launchWindow(f.fhrs, p10, cyc, now, 0);
+      if (ahead.win && ahead.lastMs != null && (!missed || ahead.win.top > missed.top)) {
+        missed = { icao: x.a.icao, top: ahead.win.top, ete, d: chainDeparture([ahead.lastMs], chainMs, now), endMs: ahead.lastMs, fog: "" };
+      }
+      continue;
+    }
+    // by or open, never missed: the window's last hour here is one the chain can make
+    const d = chainDeparture(win.hours, chainMs, now);
     // the hover gives the chance of the first hour this chain can still make, never the forecast's peak (deployLaunch)
     const w = d.openMs == null ? "" : launchChanceWords(launchChance(f.fhrs, p10, cyc, d.openMs, thr), d.openMs, home.tz);
-    const row = { icao: x.a.icao, peak, ete, d, fog: w ? ` (Fog under 1 mile at ${x.a.icao} in the first hour you can still make: ${w}.)` : "" };
-    if (d.kind === "missed") { if (!missed || peak > missed.peak) missed = row; continue; }
-    if (!best || peak > best.peak) best = row;
+    const row = { icao: x.a.icao, top: win.top, ete, d, endMs: win.endMs, fog: w ? ` (Fog under 1 mile at ${x.a.icao} in the first hour you can still make: ${w}.)` : "" };
+    if (!best || win.top > best.top) best = row;
   }
   if (!best && !missed) return none;
   const r = (best ?? missed)!;
   const chain = `from your CHASE base ${home.icao} (still-air, ${chasePrefs.speed} kt) to ${c.b.icao}, a 30 min turn there, and ${eteStr(r.ete)} on to ${r.icao}`;
   if (r.d.kind === "missed") {
     return { text: `too late for ${r.icao} from ${home.icao} (last departure ${zoneClock(r.d.byMs!, home.tz)})`, until: null,
-      title: `The last departure ${chain} that reached ${r.icao} inside its fog window was ${zoneClock(r.d.byMs!, home.tz)}. It has passed, and no other field in reach of ${c.b.icao} has a window this chain can still make.` };
+      title: `The last departure ${chain} that reached ${r.icao} at an hour of 40% or more for fog under 1 mile was ${zoneClock(r.d.byMs!, home.tz)}. It has passed, and no other field in reach of ${c.b.icao} has such an hour this chain can still make.` };
   }
   if (r.d.kind === "open") {
-    return { text: `leave by ${zoneClock(r.d.byMs!, home.tz)} for ${r.icao} · its fog window lasts to about ${zoneClock(r.d.endMs!, home.tz)}`, until: r.d.byMs,
-      title: `${r.icao}'s fog window is open, or opens before you could be there. The latest departure ${chain} that still arrives inside it is ${zoneClock(r.d.byMs!, home.tz)}; leaving sooner gets more of it. Times are in ${home.icao}'s zone.${r.fog} Not factored into the ranking.` };
+    // The window can run on past its last hour at 40% or more. A departure
+    // that only reaches those later hours is not a launch by the plan's rule
+    // (the row would stop naming it), so the time is for that hour and the
+    // hover says so. Where the window ends at 40% or more nothing changed.
+    const lower = r.endMs > r.d.endMs!;
+    return { text: `leave by ${zoneClock(r.d.byMs!, home.tz)} for ${r.icao} · its fog window lasts to about ${zoneClock(r.endMs, home.tz)}`, until: r.d.byMs,
+      title: `${r.icao}'s fog window is open, or opens before you could be there. The latest departure ${chain} that still arrives ${lower ? `by its last hour at 40% or more, ${zoneClock(r.d.endMs!, home.tz)},` : "inside it"} is ${zoneClock(r.d.byMs!, home.tz)}; leaving sooner gets more of it. Times are in ${home.icao}'s zone.${r.fog} Not factored into the ranking.` };
   }
   return { text: `deploy by ${zoneClock(r.d.byMs!, home.tz)} for ${r.icao}`, until: r.d.byMs,
     title: `Latest departure ${chain}, arriving as its fog window opens (${zoneClock(r.d.openMs!, home.tz)}) with a 15 min buffer. The time is in ${home.icao}'s zone.${r.fog} Not factored into the ranking.` };
@@ -4327,10 +4355,12 @@ async function fillDeployLaunch() {
       noteEl.textContent = "No launch time: the hourly forecast on hand is too old.";
       noteEl.style.color = "#ffb347";
     } else {
-      const f = v.noteFor.icao ? fc.airports?.[v.noteFor.icao] : null;
-      const peak = f ? Math.max(...f.p.map((r: number[]) => r[0])) : null;
-      noteEl.textContent = "No launch time yet: " + (peak != null && Number.isFinite(peak) && peak < 40
-        ? `the best hour at ${v.noteFor.icao} is ${peak}% for fog under 1 mile, and the launch plan needs 40%.`
+      // the verdict's own field by the launch plan's rule: its best hour among
+      // those a launch from this base can still reach, not one behind the
+      // clock or past the plan's 30 hours (deployBestHour)
+      const peak = v.noteFor.icao ? deployBestHour(sel, v.noteFor.icao, fc, now) : null;
+      noteEl.textContent = "No launch time yet: " + (peak != null && peak < 40
+        ? `the best hour at ${v.noteFor.icao} that can still be reached in the next 30 h is ${peak}% for fog under 1 mile, and the launch plan needs 40%.`
         : "no field in reach clears the launch plan's 40% bar (fog under 1 mile) at an hour that can still be reached.");
       if (v.noteFor.word === "GO" || v.noteFor.word === "MARGINAL") noteEl.style.color = "#ffb347";
     }

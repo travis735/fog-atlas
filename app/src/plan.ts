@@ -471,6 +471,98 @@ export function launchChanceWords(c: ReturnType<typeof launchChance>, openMs: nu
     + (c.top != null && c.topMs != null && c.top > c.at ? `, peak ${c.top}% at ${zoneClock(c.topMs, timeZone)}` : "");
 }
 
+/** The launch plan's bar: the chance of fog under 1 mile a launch must still be able to reach. */
+export const LAUNCH_BAR = 40;
+
+export interface LaunchWindow {
+  /** the highest chance among the hours that count (see launchWindow); null when none does */
+  peak: number | null;
+  /** the bar a fog window's hours clear: max(15, 40% of `peak`) */
+  thr: number;
+  /** the last hour that counts, in any window, at 40% or more; null when `peak` is under 40 */
+  lastMs: number | null;
+  /** the window the launch goes to; null: no launch is named */
+  win: {
+    /** its first hour the launch can still reach */
+    openMs: number;
+    /** the highest chance from that hour to its end: 40 or more */
+    top: number;
+    /** its hours, from the first (which can be out of reach already: chainDeparture
+     *  reads from it whether the window has opened) to the last at 40% or more */
+    hours: number[];
+    /** its last hour at `thr` or more */
+    endMs: number;
+  } | null;
+}
+
+/**
+ * The launch plan's rule for one field and one lead time: whether a launch is
+ * named, and to which fog window. WHEELS UP, the verdict's launch note and
+ * every base row's departure line all read it (main.ts deployLaunch,
+ * deployBestHour, deployDep).
+ *
+ * Before, each of them took the field's highest chance in the WHOLE forecast:
+ * 40% at any of its 48 hours qualified the field, set its window bar and ranked
+ * it. On the live site on 2026-11-25, 3 of 113 WHEELS UP boxes named a field
+ * whose hours in reach were 20 to 26%: KMFR's 47% was 47 hours out, past the
+ * plan's 30, and its launch read "25% at Thu 08:00 PST". A field whose 40% hour
+ * was behind the clock could be named the same way.
+ *
+ * `leadMs`: how long before an hour the launch must leave to be there for it.
+ * The flight out for WHEELS UP, the whole chain (home to base, the turn, base
+ * to field) for a base row, 0 for the field's own clock.
+ *   - an hour counts when it has a number, is inside the plan's `maxFhr` hours
+ *     and can still be reached: its time less `leadMs` is not behind `nowMs`
+ *     (chainDeparture's test). No other hour decides anything below
+ *   - `peak` is the highest chance among the hours that count; under 40 no
+ *     launch is named
+ *   - a window is a run of hours at max(15, 40% of `peak`) or more, no more
+ *     than `gapMs` apart (chainDeparture's rule and launchChance's)
+ *   - the launch goes to the first window whose hours that count reach 40%:
+ *     one that tops out lower is passed over for the next
+ *   - `win.top` is what fields are ranked by, and it is the larger of the two
+ *     chances launchChanceWords prints for `win.openMs`
+ *   - `win.hours` stops at the window's last hour at 40% or more. A departure
+ *     that only reaches the hours after it is not a launch by this rule, so
+ *     "leave by" (chainDeparture's `open`) is for that hour
+ */
+export function launchWindow(fhrs: readonly number[], p: readonly number[], cycMs: number, nowMs: number, leadMs: number,
+  maxFhr = 30, gapMs = 3 * 3600e3): LaunchWindow {
+  const hs: { ms: number; p: number; can: boolean }[] = [];
+  let peak: number | null = null;
+  if (Array.isArray(fhrs) && Array.isArray(p)) {
+    for (let i = 0; i < fhrs.length; i++) {
+      if (!isNum(fhrs[i]) || !isNum(p[i]) || fhrs[i] > maxFhr) continue;   // an hour without a number is not an hour
+      const ms = cycMs + fhrs[i] * 3600e3, can = ms - leadMs >= nowMs;
+      hs.push({ ms, p: p[i], can });
+      if (can && (peak == null || p[i] > peak)) peak = p[i];
+    }
+  }
+  const out: LaunchWindow = { peak, thr: Math.max(15, (peak ?? 0) * 0.4), lastMs: null, win: null };
+  if (peak == null || peak < LAUNCH_BAR) return out;
+  hs.sort((x, y) => x.ms - y.ms);
+  const runs: (typeof hs)[] = [];
+  for (const h of hs) {
+    if (h.can && h.p >= LAUNCH_BAR) out.lastMs = h.ms;
+    if (h.p < out.thr) continue;
+    const run = runs[runs.length - 1];
+    if (run && h.ms - run[run.length - 1].ms <= gapMs) run.push(h); else runs.push([h]);
+  }
+  for (const run of runs) {
+    let openMs: number | null = null, top = 0, barMs = 0;
+    for (const h of run) {
+      if (!h.can) continue;
+      openMs ??= h.ms;
+      if (h.p > top) top = h.p;
+      if (h.p >= LAUNCH_BAR) barMs = h.ms;
+    }
+    if (openMs == null || top < LAUNCH_BAR) continue;
+    out.win = { openMs, top, hours: run.filter((h) => h.ms <= barMs).map((h) => h.ms), endMs: run[run.length - 1].ms };
+    break;
+  }
+  return out;
+}
+
 // ---- the NEXT 48 H list ----
 
 const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
