@@ -12,9 +12,10 @@ import {
 import {
   planDayIso, dayWords, dayPart, dayShort, dayLong, dateSpans, zHour, localIso, localHour,
   planFreshness, planAgeLine, planBanner, ageWords, clockWords, cycleWords, zClock,
-  refetchDue, retryDelayMs, planProblem, refreshFailWords,
+  refetchDue, retryDelayMs, singleFlight, planProblem, refreshFailWords,
   chanceStatus, noChanceWords, wordOf, wordChance, departure, zoneClock, chainDeparture, launchChance, launchChanceWords,
-  PLAN_REFETCH_MS, PLAN_TICK_MS, PLAN_TIMEOUT_MS, HOURLY_OLD_MS, HOURLY_DEAD_MS,
+  fogAhead, fogAheadWords, zoneDayHour,
+  PLAN_REFETCH_MS, PLAN_TICK_MS, PLAN_TIMEOUT_MS, HOURLY_TIMEOUT_MS, HOURLY_OLD_MS, HOURLY_DEAD_MS,
   type DayPart, type DayWords, type ChanceStatus,
 } from "./plan.ts";
 import {
@@ -969,16 +970,27 @@ let fcCache: { at: number; data: any } | null = null;
 // JSON body ({"error": ...}) when KV has nothing: that parsed fine, was cached
 // for 10 minutes and threw "Cannot read properties of undefined (reading
 // 'cycle')" in the DEPLOY launch plan, leaving an empty section under a GO.
-async function getForecast(): Promise<any | null> {
-  if (fcCache && Date.now() - fcCache.at < 600_000) return fcCache.data;
+// One request at a time, shared by whoever asks, and it ends. While a time on
+// the DEPLOY panel has passed, its 30 s tick asks again, and every tick began
+// another request while the first was still pending: with the route hung for
+// 30 minutes, 44 requests where the live build made 2. With no time limit, a
+// request that was never answered never ended.
+const fetchForecast = singleFlight(async (): Promise<any | null> => {
+  const ctl = new AbortController();
+  // a request that has not delivered its whole body by then is a failed one
+  const timer = setTimeout(() => ctl.abort(), HOURLY_TIMEOUT_MS);
   try {
-    const r = await fetch("/api/forecast");
+    const r = await fetch("/api/forecast", { signal: ctl.signal });
     if (!r.ok) return null;
     const data = await r.json();
     if (!data?.meta?.cycle || !data.airports || typeof data.airports !== "object") return null;
     fcCache = { at: Date.now(), data };
     return data;
-  } catch { return null; }
+  } catch { return null; } finally { clearTimeout(timer); }
+});
+async function getForecast(): Promise<any | null> {
+  if (fcCache && Date.now() - fcCache.at < 600_000) return fcCache.data;
+  return fetchForecast();
 }
 
 // red selection marker on the airport whose deep-dive is open
@@ -2946,8 +2958,9 @@ function tickDeploy() {
   panelContent.querySelectorAll<HTMLElement>("[data-age-of]").forEach((el) => {
     el.textContent = ageWords(now - +el.dataset.ageOf!);
   });
-  // a departure time that has passed must not stay on screen as a plan, and a
-  // launch plan worked out 15 minutes ago is worked out again
+  // a departure time that has passed must not stay on screen as a plan, nor a
+  // 48 h line whose earliest hour has ended (fogCharacter), and a launch plan
+  // worked out 15 minutes ago is worked out again
   const passed = [...panelContent.querySelectorAll<HTMLElement>("[data-until]")].some((el) => +el.dataset.until! < now);
   if (passed || now - deployLaunchAt > PLAN_REFETCH_MS) fillDeployLaunch();
 }
@@ -3646,38 +3659,37 @@ function deployDep(home: Airport, c: DeployBase, fc: any | null | undefined, now
     title: `Latest departure ${chain}, arriving as its fog window opens (${zoneClock(r.d.openMs!, home.tz)}) with a 15 min buffer. The time is in ${home.icao}'s zone.${r.fog} Not factored into the ranking.` };
 }
 
-// next-48h fog character at one airport, in ITS local time, from the live
-// calibrated hourly curve: peak severity, the fog window, and burn-off
-function fogCharacter(a: Airport, fc: any): string | null {
+// One line of the NEXT 48 H list: the first fog window still ahead at a field,
+// by its day and hours in the FIELD's local time, the highest chance inside
+// that window, when it clears, the strongest window after it, and how deep
+// that first window gets. plan.ts fogAhead works it out from the hourly
+// forecast and the caller's clock; this only turns its words into HTML.
+// Until 2026-11-25 the number was the 48-hour peak printed beside the first
+// window, with no day: "KMFR fog (<1 mi) 47% · 08–09 local" when Thursday
+// 08–09 was 25% and the 47% was Friday 07, 47 hours out.
+// Every line carries data-until, the end of the earliest hour it counted, so
+// tickDeploy fills the list again on its first tick after that hour ends. The
+// rows had no such time: a line filled at 17:59:40Z kept the 17Z hour's 81%
+// on screen until 18:15Z.
+function fogCharacter(a: Airport, fc: any, now: number): string | null {
   const f = fc?.airports?.[a.icao];
   if (!f) return null;
-  const cyc = new Date(fc.meta.cycle);
-  const hrOf = (fhr: number) => +new Intl.DateTimeFormat("en-US",
-    { timeZone: a.tz, hour: "numeric", hour12: false })
-    .format(new Date(cyc.getTime() + fhr * 3600e3)) % 24;
-  const p10 = f.p.map((r: number[]) => r[0]);
-  const peak = Math.max(...p10);
-  if (peak < 15) return `<span class="chase-live dim">quiet next 48 h (peak ${peak}%)</span>`;
-  const inWin = f.fhrs.map((_: number, i: number) => p10[i] >= Math.max(15, peak * 0.4));
-  const first = inWin.indexOf(true);
-  // first CONTIGUOUS window only — spanning to the 48h-wide last foggy hour
-  // bridges the daytime gap and reads as a 30h fog event
-  let last = first;
-  while (last + 1 < f.fhrs.length && inWin[last + 1] && f.fhrs[last + 1] - f.fhrs[last] <= 3) last++;
-  const durH = Math.max(1, f.fhrs[last] - f.fhrs[first] + (f.fhrs[first] <= 25 ? 1 : 3));
-  const more = inWin.slice(last + 1).some(Boolean);
-  const p05 = Math.max(...f.p.map((r: number[]) => r[1]));
-  const p025 = Math.max(...f.p.map((r: number[]) => r[2]));
+  const ahead = fogAhead(f.fhrs, f.p, Date.parse(fc?.meta?.cycle), now);
+  if (!ahead) return null;   // every hour of this forecast has ended
+  const w = fogAheadWords(ahead, a.tz);
+  const until = ` data-until="${ahead.untilMs}"`;
+  if (w.quiet) return `<span class="chase-live dim"${until}>${escHtml(w.head)}</span>`;
+  const win = escHtml(`${w.window} local`);
   // one severity ladder, each rung labeled by its depth — never two bare "fog %"
-  const sev = p025 >= 25
-    ? `<span class="pill red" title="chance the fog deepens below ¼ mile at its worst hour">deepens to &lt;¼ mi: ${p025}%</span>`
-    : p05 >= 25
-    ? `<span class="pill amber" title="chance the fog deepens below ½ mile at its worst hour">deepens to &lt;½ mi: ${p05}%</span>`
-    : `<span class="pill dim" title="unlikely to get below ½ mile">stays marginal</span>`;
+  const sev = w.pill === "red"
+    ? `<span class="pill red" title="chance the fog deepens below ¼ mile at the worst hour of this window (${win}), not of the whole 48 h">${escHtml(w.pillWords)}</span>`
+    : w.pill === "amber"
+    ? `<span class="pill amber" title="chance the fog deepens below ½ mile at the worst hour of this window (${win}), not of the whole 48 h">${escHtml(w.pillWords)}</span>`
+    : `<span class="pill dim" title="unlikely to get below ½ mile in this window (${win})">${escHtml(w.pillWords)}</span>`;
   const per = persistenceTable?.[a.icao];
   const dur = per ? ` · usually lasts ~${per.medianH}h once in` : "";
-  return `<span class="chase-live"><span title="chance of visibility under 1 mile — the headline fog event">fog (&lt;1 mi) ${peak}%</span> · ${String(hrOf(f.fhrs[first])).padStart(2, "0")}–${String(hrOf(f.fhrs[last])).padStart(2, "0")} local (≈${durH}h)` +
-    `${last < f.fhrs.length - 1 ? `, clears ~${String(hrOf(f.fhrs[Math.min(last + 1, f.fhrs.length - 1)])).padStart(2, "0")}` : ""}${more ? " · again next night" : ""}${dur}</span> ${sev}`;
+  return `<span class="chase-live"${until}><span title="highest chance of visibility under 1 mile among the hours of this window (${win})">${escHtml(w.head)}</span> · ${escHtml(w.when)}` +
+    `${w.later ? ` · <span title="the strongest fog window after this one, with its own day and its own highest chance">${escHtml(w.later)}</span>` : ""}${dur}</span> ${sev}`;
 }
 
 // tiny inline 48h probability strip for a field — the "peek" that replaces
@@ -3689,8 +3701,8 @@ function miniStrip(a: Airport, fc: any): string {
   const p10: number[] = f.p.map((r: number[]) => r[0]);
   const peak = Math.max(...p10, 1);
   const bars = f.fhrs.map((fh: number, i: number) => {
-    const t = new Date(cyc.getTime() + fh * 3600e3);
-    const lab = t.toLocaleTimeString("en-US", { hour: "numeric", hour12: false, timeZone: a.tz });
+    // the weekday with the hour, in the field's zone: the strip runs across two nights
+    const lab = zoneDayHour(cyc.getTime() + fh * 3600e3, a.tz);
     return `<div title="+${fh}h (${lab}:00 local) — ${p10[i]}% fog" style="flex:1;align-self:flex-end;background:#9fd8ff;opacity:${p10[i] > 0 ? 0.25 + 0.75 * p10[i] / peak : 0.12};height:${Math.max(2, Math.round(26 * p10[i] / peak))}px"></div>`;
   }).join("");
   return `<div style="display:flex;gap:1px;height:28px;margin:6px 0 2px">${bars}</div>
@@ -4324,7 +4336,7 @@ async function fillDeployLaunch() {
     }
   }
   const lines = sel.contrib.slice(0, 5).map((x) => {
-    const ch = fogCharacter(x.a, fc);
+    const ch = fogCharacter(x.a, fc, now);   // the clock WHEELS UP and the base rows above were worked out on
     const bar = deployBarTag(x.a.icao, "hourly forecast check: ");
     const led = deployLedNote(x.a.icao, false); // LED approach lights at this field, if it has any
     return ch ? `<tr data-icao="${x.a.icao}" class="fpeek"><td><b>${x.a.icao}</b> <span class="chase-badges">${eteStr(x.nm / chasePrefs.speed)} out</span><br><span class="chase-badges">${x.a.name.length > 16 ? x.a.name.slice(0, 15) + "…" : x.a.name}${placeTxt(x.a) ? ` · ${placeTxt(x.a)}` : ""}</span>${bar ? `<br><span class="chase-badges">${bar}</span>` : ""}${led ? `<br><span class="chase-badges deploy-led">${led}</span>` : ""}</td><td>${ch}</td></tr>
@@ -4335,7 +4347,7 @@ async function fillDeployLaunch() {
     <div class="stratum-h"><b style="color:#9fd8ff">NEXT 48 H FROM ${sel.b.icao}</b><span></span><span>hourly forecast at the top fields in reach</span></div>
     ${launch}
     ${lines ? `<table class="rank-table"><tbody>${lines}</tbody></table>` : `<p class="note">no live forecast coverage at this base's top fields.</p>`}
-    <p class="note">Window = hours with fog probability ≥40% of its peak; severity pills show the strongest threshold with ≥25% chance. Times in these lines are each field's local time.${v.beyond48 ? ` Beyond 48 h in this plan: ${escHtml(v.beyond48)}` : ""}</p>`;
+    <p class="note">Each line is the first fog window still ahead at that field: the day and hours it falls on, and the highest chance of visibility under 1 mile inside it. A window is a run of hours at 40% or more of the field's highest chance still ahead, and never under 15%. “later” is the strongest window after it, with its own day and its own chance. The pill is for the first window only. Times in these lines are each field's local time.${v.beyond48 ? ` Beyond 48 h in this plan: ${escHtml(v.beyond48)}` : ""}</p>`;
   release();
   // row click = expand the peek in place (no navigation, planner state kept)
   el.querySelectorAll("tr.fpeek").forEach((tr) =>

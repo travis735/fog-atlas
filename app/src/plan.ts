@@ -33,6 +33,7 @@ export const PLAN_RETRY_MS: readonly number[] = [60_000, 120_000, 240_000, 480_0
 /** The UTC hour a day's forecast must run through to count as the whole day:
  *  the 3-hourly bulletin ends a date at 21Z (forecast/build_deploy.py, `cov`). */
 export const WHOLE_DAY_THROUGH_UTC = 21;
+export const HOURLY_TIMEOUT_MS = 60_000;      // its body is larger than the plan's (about 830 KB against 490 KB); a hung request must become a failed one
 export const HOURLY_OLD_MS = 3 * 3600_000;    // the hourly forecast is issued every hour too
 export const HOURLY_DEAD_MS = 8 * 3600_000;   // build_deploy.py refuses a cycle this old; so does the launch time
 
@@ -281,6 +282,21 @@ export const retryDelayMs = (failures: number) =>
   PLAN_RETRY_MS[Math.max(1, failures) - 1] ?? PLAN_REFETCH_MS;
 
 /**
+ * One run at a time, shared by whoever asks: a call made while a run is
+ * pending gets that run's promise and starts nothing; once it has settled,
+ * either way, the next call starts a new run. The hourly forecast had no such
+ * guard (main.ts getForecast): the panel's 30 s tick asked for it again while
+ * the first request was still pending, and with the route hung for 30 minutes
+ * that was 44 requests where the live build made 2.
+ */
+export function singleFlight<T>(run: () => Promise<T>): () => Promise<T> {
+  let pending: Promise<T> | null = null;
+  // inside an async function a run that throws before it returns a promise is
+  // a failed run like any other; the slot is freed before any caller reads the answer
+  return () => (pending ??= (async () => run())().finally(() => { pending = null; }));
+}
+
+/**
  * Why a parsed /api/deploy body is not a plan, or null when it is one. The
  * function answers 503 with {"error": "no deploy data yet"}: that parsed, was
  * kept for the session and the panel printed "No expected fog within range of
@@ -453,4 +469,161 @@ export function launchChanceWords(c: ReturnType<typeof launchChance>, openMs: nu
   if (c.at == null) return "";
   return `${c.at}% at ${zoneClock(openMs, timeZone)}`
     + (c.top != null && c.topMs != null && c.top > c.at ? `, peak ${c.top}% at ${zoneClock(c.topMs, timeZone)}` : "");
+}
+
+// ---- the NEXT 48 H list ----
+
+const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+
+/** The weekday, two-digit clock hour and calendar date of an instant in `timeZone`. */
+function zoneHour(ms: number, timeZone?: string): { day: string; hh: string; date: string } {
+  if (!Number.isFinite(ms)) return { day: "", hh: "", date: "" };
+  const opts = { weekday: "short", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hour12: false } as const;
+  let f: Intl.DateTimeFormat;
+  // No zone, or a name the engine does not know: the viewer's own zone, as
+  // zoneClock does without one. A list line must never throw over it.
+  try { f = new Intl.DateTimeFormat("en-US", { ...opts, timeZone: timeZone || undefined }); }
+  catch { f = new Intl.DateTimeFormat("en-US", opts); }
+  const parts = f.formatToParts(new Date(ms));
+  const get = (t: string) => parts.find((x) => x.type === t)?.value ?? "";
+  // "24" is how some engines write the midnight hour of a 24-hour clock
+  return { day: get("weekday"), hh: get("hour") === "24" ? "00" : get("hour"), date: `${get("year")}-${get("month")}-${get("day")}` };
+}
+
+/** "Fri 01": the weekday and clock hour of a forecast hour, in the FIELD's zone. */
+export function zoneDayHour(ms: number, timeZone?: string): string {
+  const z = zoneHour(ms, timeZone);
+  return `${z.day} ${z.hh}`.trim();
+}
+
+/**
+ * "Thu 08–09", or "Thu 22–Fri 07" when the last hour falls on another date in
+ * `timeZone`: a fog window by the weekday of its first hour. `single`: a
+ * one-hour window is "Fri 07", not "Fri 07–07".
+ */
+export function windowWords(fromMs: number, toMs: number, timeZone?: string, single = false): string {
+  const a = zoneHour(fromMs, timeZone), b = zoneHour(toMs, timeZone);
+  if (single && fromMs === toMs) return `${a.day} ${a.hh}`.trim();
+  return `${a.day} ${a.hh}–${b.date === a.date ? "" : `${b.day} `}${b.hh}`.trim();
+}
+
+/** A run of forecast hours at or above a field's bar. `top` is the highest chance among ITS hours. */
+export interface FogWindow { fromMs: number; toMs: number; fromFhr: number; toFhr: number; top: number }
+
+export interface FogAhead {
+  /** the highest chance of visibility under 1 mile among the hours that have not ended */
+  peak: number;
+  /** the bar a window's hours clear: max(15, 40% of `peak`) */
+  thr: number;
+  /** the first window still ahead; null when `peak` is under 15 (the quiet line) */
+  first: FogWindow | null;
+  /** its length in hours, as the list has always counted it */
+  durH: number;
+  /** the forecast hour after the first window; null when it runs to the last hour of the forecast */
+  clearsMs: number | null;
+  /** the strongest window after the first, or null */
+  later: FogWindow | null;
+  /** the highest chance under 1/2 mile and under 1/4 mile among the hours of the FIRST window */
+  half: number; quarter: number;
+  /** when the earliest hour counted here ends: the line is this one until then, and has to be worked out again from then on */
+  untilMs: number;
+}
+
+/**
+ * One line of the NEXT 48 H list: the first fog window STILL AHEAD at a field,
+ * with numbers that belong to that window.
+ *
+ * Until 2026-11-25 the line took the field's peak over the whole 48 hours,
+ * drew the window from the first run of hours at 40% of it, and printed that
+ * peak beside the window, with clock hours and no day. At 17:41Z the 16Z
+ * forecast read "KMFR fog (<1 mi) 47% · 08–09 local (≈2h), clears ~10 · again
+ * next night". Thursday 08 and 09 PST were 25% and 19%; the 47%, and the
+ * pill's 42%, were Friday 07 PST, 47 hours out, while WHEELS UP right above
+ * said 25% at Thu 08:00 PST. "KCVO 35% · 01–07 local" was Friday, 39 hours
+ * out, with no day on the line: 51 of 75 lines started 24 h or more ahead and
+ * so read a day early. Hours already behind the clock were counted too.
+ *
+ * `fhrs`: the field's forecast hours, ascending. `p`: for each, the chance of
+ * visibility under 1 mile, under 1/2 mile and under 1/4 mile.
+ *   - an hour counts until it ends (its valid time plus one hour), and not after
+ *   - `peak` is the highest under-1-mile chance among those hours; under 15 the
+ *     line is the quiet one
+ *   - a window is a run of them at max(15, 40% of peak) or more, each no more
+ *     than `gapH` after the one before (hourly at short leads, 3-hourly later)
+ *   - `first.top`, `half` and `quarter` are maxima over the FIRST window's own hours
+ *   - `later` is the window after it with the highest `top`, the earliest on a tie
+ *   - `untilMs` is the end of the earliest hour counted. Nothing here changes
+ *     before it. The page puts it on the line, and its tick fills the list
+ *     again once it has passed: without it a line kept an ended hour's numbers
+ *     on screen for up to 15 minutes (KMWH read 81% from 18:00Z to 18:15Z on
+ *     2026-11-25, the 17Z hour's chance)
+ * null: no forecast hour is still ahead (or there is no forecast to read).
+ */
+export function fogAhead(fhrs: readonly number[], p: readonly (readonly number[])[], cycMs: number, nowMs: number, gapH = 3): FogAhead | null {
+  if (!Array.isArray(fhrs) || !Array.isArray(p)) return null;
+  const hs: { fhr: number; ms: number; r: readonly number[] }[] = [];
+  for (let i = 0; i < fhrs.length; i++) {
+    const fhr = fhrs[i], r = p[i];
+    if (!isNum(fhr) || !Array.isArray(r) || !isNum(r[0])) continue;   // an hour without a number is not an hour
+    const ms = cycMs + fhr * 3600e3;
+    if (ms + 3600e3 > nowMs) hs.push({ fhr, ms, r });
+  }
+  if (!hs.length) return null;
+  hs.sort((x, y) => x.fhr - y.fhr);
+  const untilMs = hs[0].ms + 3600e3;
+  const peak = Math.max(...hs.map((h) => h.r[0]));
+  const thr = Math.max(15, peak * 0.4);
+  if (peak < 15) return { peak, thr, first: null, durH: 0, clearsMs: null, later: null, half: 0, quarter: 0, untilMs };
+  const runs: [number, number][] = [];   // first and last index in `hs`
+  for (let i = 0; i < hs.length; i++) {
+    if (hs[i].r[0] < thr) continue;
+    const run = runs[runs.length - 1];
+    if (run && run[1] === i - 1 && hs[i].fhr - hs[i - 1].fhr <= gapH) run[1] = i; else runs.push([i, i]);
+  }
+  const top = (k: number, [a, b]: [number, number]) => Math.max(...hs.slice(a, b + 1).map((h) => (isNum(h.r[k]) ? h.r[k] : 0)));
+  const win = (run: [number, number]): FogWindow => ({
+    fromMs: hs[run[0]].ms, toMs: hs[run[1]].ms, fromFhr: hs[run[0]].fhr, toFhr: hs[run[1]].fhr, top: top(0, run),
+  });
+  const first = win(runs[0]);
+  let later: FogWindow | null = null;
+  for (const run of runs.slice(1)) {
+    const w = win(run);
+    if (!later || w.top > later.top) later = w;
+  }
+  return {
+    peak, thr, first, later,
+    // an hourly point stands for one hour and a 3-hourly one for three
+    durH: Math.max(1, first.toFhr - first.fromFhr + (first.fromFhr <= 25 ? 1 : 3)),
+    clearsMs: runs[0][1] < hs.length - 1 ? hs[runs[0][1] + 1].ms : null,
+    half: top(1, runs[0]), quarter: top(2, runs[0]),
+    untilMs,
+  };
+}
+
+export interface FogAheadWords {
+  quiet: boolean;
+  /** "fog (<1 mi) 25%", or "quiet next 48 h (peak 6%)" */
+  head: string;
+  /** "Thu 08–09": the first window, by its day in the field's zone */
+  window: string;
+  /** "Thu 08–09 local (≈2h), clears ~10" */
+  when: string;
+  /** "later Fri 01–07: 47%", or "" without a later window */
+  later: string;
+  /** red: under 1/4 mile at 25% or more in the first window; amber: under 1/2 mile; dim: neither */
+  pill: "red" | "amber" | "dim";
+  /** "deepens to <¼ mi: 31%", "deepens to <½ mi: 34%", "stays marginal" */
+  pillWords: string;
+}
+
+/** The words of one NEXT 48 H line, as plain text, with every time in `timeZone` (the field's). */
+export function fogAheadWords(a: FogAhead, timeZone?: string): FogAheadWords {
+  if (!a.first) return { quiet: true, head: `quiet next 48 h (peak ${a.peak}%)`, window: "", when: "", later: "", pill: "dim", pillWords: "" };
+  const window = windowWords(a.first.fromMs, a.first.toMs, timeZone);
+  const clears = a.clearsMs == null ? "" : `, clears ~${zoneHour(a.clearsMs, timeZone).hh}`;
+  const later = a.later ? `later ${windowWords(a.later.fromMs, a.later.toMs, timeZone, true)}: ${a.later.top}%` : "";
+  // one severity ladder, each rung labeled by its depth: never two bare "fog %"
+  const [pill, pillWords]: [FogAheadWords["pill"], string] = a.quarter >= 25 ? ["red", `deepens to <¼ mi: ${a.quarter}%`]
+    : a.half >= 25 ? ["amber", `deepens to <½ mi: ${a.half}%`] : ["dim", "stays marginal"];
+  return { quiet: false, head: `fog (<1 mi) ${a.first.top}%`, window, when: `${window} local (≈${a.durH}h)${clears}`, later, pill, pillWords };
 }
