@@ -336,41 +336,155 @@ def _vis_mi(v):
     return float(v)
 
 
-def taf_summary(rec, tz, horizon_h=30) -> dict | None:
-    """Reduce a decoded TAF to the one thing the page asks: does the airport's
-    own terminal forecast call for dense fog (vis < 1 mi) in the next ~30 h?"""
+def _epoch(v):
+    """An AWC epoch-seconds field as a UTC time; None when it is missing or
+    not a usable number (third-party data: a string or a null in this field
+    must not stop the bake)."""
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or v <= 0:
+        return None
+    try:
+        return datetime.fromtimestamp(v, tz=timezone.utc)
+    except (OverflowError, OSError, ValueError):
+        return None
+
+
+def taf_window(rec, horizon_h=30):
+    """(issued, valid to, end) for a TAF record. `end` is the end of the
+    stretch a page speaks for: the TAF's own validity end or issue time +
+    horizon_h, whichever comes first. A record with no usable validTimeTo is
+    held to issue + horizon_h alone — no TAF is valid for longer than 30 h, so
+    that can only end it early, never keep it alive. None when the record has
+    no forecast groups or its issue time cannot be read."""
     if not rec or not rec.get("fcsts"):
         return None
-    issue = rec.get("issueTime", "")
     try:
-        t_issue = datetime.fromisoformat(issue.replace("Z", "+00:00"))
+        t_issue = datetime.fromisoformat(str(rec.get("issueTime") or "").replace("Z", "+00:00"))
     except ValueError:
         return None
+    if t_issue.tzinfo is None:  # AWC times are UTC
+        t_issue = t_issue.replace(tzinfo=timezone.utc)
     end = t_issue + timedelta(hours=horizon_h)
-    valid_to = datetime.fromtimestamp(rec["validTimeTo"], tz=timezone.utc) if rec.get("validTimeTo") else end
-    end = min(end, valid_to)
+    valid_to = _epoch(rec.get("validTimeTo")) or end
+    return t_issue, valid_to, min(end, valid_to)
+
+
+def taf_expired(rec, now_utc, horizon_h=30) -> bool:
+    """True when the stretch this TAF speaks for had ended by the build time
+    (ending exactly at the build counts as ended)."""
+    w = taf_window(rec, horizon_h)
+    return w is not None and w[2] <= now_utc
+
+
+def drop_expired_tafs(tafs: dict, now_utc) -> dict:
+    """The TAFs that still have something to say at this build. AWC returns a
+    station's most recent TAF however old it is, and awc_with_last_good only
+    age-limits what it reuses from its cache, so the fresh pass can carry a
+    forecast that ended days ago (VABP's page said "dense fog Thursday" on
+    2026-11-25 from a TAF issued on the 18th). taf_summary() refuses those on
+    its own; dropping them here too puts the number in the bake log."""
+    live = {ic: rec for ic, rec in tafs.items() if not taf_expired(rec, now_utc)}
+    if len(live) < len(tafs):
+        print(f"  awc taf: {len(tafs) - len(live)} of {len(tafs)} had ended before this build — not quoted")
+    return live
+
+
+def _taf_passing(f) -> bool:
+    """A TEMPO / PROB group: weather that may come and go, not the prevailing line."""
+    return bool((f.get("fcstChange") or "") in ("TEMPO", "PROB") or f.get("probability"))
+
+
+def taf_group_ends(fcsts, valid_to) -> list:
+    """When each group of a decoded TAF stops applying (UTC), None where the
+    record does not say. A TEMPO/PROB group ends at its own timeTo. A
+    prevailing group (the opening line, an FM, a BECMG) holds until the next
+    FM or BECMG has taken over, and for a BECMG that is the END of its
+    transition (timeBec): until then the earlier conditions can still be there.
+    A prevailing group with no FM or BECMG after it is the forecast's last
+    word: it holds to the end of the TAF, `valid_to` (taf_window's: the
+    record's validTimeTo, or issue + 30 h for a record without one).
+
+    AWC's timeTo is not that moment. It stops a group where the next BECMG
+    STARTS — two hours early for fog that "BECMG 1601/1603 9999 NSW" is
+    clearing — and when a BECMG opens at the start of validity it leaves the
+    opening line running to the end of the TAF (EIKN, 2026-11-28: "1500 BR …
+    BECMG 2800/2802 9999 NSW" would read as under a mile all day). So the
+    next change decides whenever there is one that follows this group in
+    time. And when AWC fails to decode a TAF's final change group it still
+    stops the group before it where the lost one began (MDBH, 2026-11-15:
+    "… BECMG 1600/1602 00000KT" is missing from the decoded record and the
+    opening line ends at 16 00:00Z, 18 h before the TAF does — had that line
+    been fog, the page would have said "does not forecast dense fog" for
+    those 18 h). So the last prevailing group is never ended before the TAF
+    is. AWC's timeTo is left to decide for a TEMPO/PROB group and for a group
+    whose next change is dated before it (a typo upstream); with `valid_to`
+    None it decides for the last prevailing group too."""
+    ends = []
+    for i, f in enumerate(fcsts):
+        t1 = _epoch(f.get("timeTo"))
+        passing = _taf_passing(f)
+        nxt = None if passing else next(
+            (g for g in fcsts[i + 1:] if g.get("fcstChange") in ("FM", "BECMG") and not g.get("probability")), None)
+        if nxt:
+            took_over = _epoch(nxt.get("timeFrom"))
+            done = _epoch(nxt.get("timeBec")) if nxt.get("fcstChange") == "BECMG" else None
+            if took_over and done and done > took_over:
+                took_over = done
+            t0 = _epoch(f.get("timeFrom"))
+            if took_over and t0 and took_over >= t0:
+                t1 = took_over
+        elif not passing and valid_to is not None and (t1 is None or t1 < valid_to):
+            t1 = valid_to
+        ends.append(t1)
+    return ends
+
+
+def taf_summary(rec, tz, now_utc, horizon_h=30) -> dict | None:
+    """Reduce a decoded TAF to the one thing the page asks: does the airport's
+    own terminal forecast call for dense fog (vis < 1 mi) in the next ~30 h?
+
+    `now_utc` is the build time, and the answer is about what is left of the
+    forecast at that moment. None for a TAF that had already ended (see
+    drop_expired_tafs); and inside a TAF that is still running, a group that
+    ended before the build counts for nothing — not the verdict, not the
+    lowest visibility, not the "from about" time. A page built Thursday
+    evening must not say "calls for dense fog from about Thursday 5 am"."""
+    w = taf_window(rec, horizon_h)
+    if w is None or w[2] <= now_utc:
+        return None
+    t_issue, valid_to, end = w
     dense, possible, mist, min_vis = [], [], [], 10.0
-    for f in rec["fcsts"]:
+    for f, t1 in zip(rec["fcsts"], taf_group_ends(rec["fcsts"], valid_to)):
         t0 = datetime.fromtimestamp(f["timeFrom"], tz=timezone.utc)
         if t0 >= end:
             continue
+        # begun and over before the page was built; a group with no usable
+        # end time cannot be shown to be over and is kept, as before
+        if t1 is not None and t0 <= now_utc and t1 <= now_utc:
+            continue
+        passing = _taf_passing(f)
         vis = _vis_mi(f.get("visib"))
         wx = f.get("wxString") or ""
         if vis is not None:
             min_vis = min(min_vis, vis)
         foggy = (vis is not None and vis < 1.0) or "FG" in wx.split()
-        change = f.get("fcstChange") or ""
         if foggy:
-            (possible if change in ("TEMPO", "PROB") or f.get("probability") else dense).append(t0)
+            (possible if passing else dense).append(t0)
         elif ("BR" in wx or "HZ" in wx) and vis is not None and vis < 6:
             mist.append((t0, vis))
     def when(t):
         loc = t.astimezone(tz)
         return f"{loc.strftime('%A')} {loc.strftime('%-I %p').lower()}"
+    # a group that began before the build and is still running is said as
+    # under way, with the build hour — never as a start time already past
+    under_way = f"already under way at page build ({when(now_utc)}),"
     if dense:
-        verdict, txt = "dense fog", f"calls for dense fog (visibility under 1 mile) from about {when(min(dense))}"
+        t = min(dense)
+        verdict, txt = "dense fog", ("calls for dense fog (visibility under 1 mile) " +
+                                     (f"from about {when(t)}" if t > now_utc else f"in a period {under_way}"))
     elif possible:
-        verdict, txt = "possible dense fog", f"carries a temporary/probability group with dense fog around {when(min(possible))}"
+        t = min(possible)
+        verdict, txt = "possible dense fog", ("carries a temporary/probability group with dense fog " +
+                                              (f"around {when(t)}" if t > now_utc else under_way))
     elif mist:
         t0, v = min(mist, key=lambda x: x[1])
         m = round(v * 1609 / 100) * 100
@@ -381,7 +495,10 @@ def taf_summary(rec, tz, horizon_h=30) -> dict | None:
             "validTo": valid_to.strftime("%Y-%m-%dT%H:%MZ"),
             "horizonEnd": end.strftime("%Y-%m-%dT%H:%MZ"),
             "verdict": verdict, "minVisMi": round(min_vis, 2) if min_vis < 10 else None,
-            "sentence": f"The airport's own terminal forecast (TAF issued {t_issue.strftime('%H:%MZ')}) {txt} through {when(end)}.",
+            # the issue stamp carries its date: an airport page shows no build
+            # time (the live script replaces the dated observation line), so
+            # the day after the bake "issued 17:00Z" alone would read as today's
+            "sentence": f"The airport's own terminal forecast (TAF issued {t_issue.strftime('%H:%MZ %-d %b')}) {txt} through {when(end)}.",
             "raw": rec.get("rawTAF")}
 
 
@@ -713,7 +830,7 @@ def page(a, ends, covered, r10_by_mh, fc, window, pers, now_utc, city_link=None,
     med = {"medianH": med["medianH"], "p25H": med["p25H"], "p75H": med["p75H"], "n": med["n"]} if med else None
     sp = season_profile(a)
     public_now = bool(fc and icao in set(fc.get("meta", {}).get("publicAirports", [])))
-    taf_s = taf_summary(taf, tz) if (taf and not public_now) else None
+    taf_s = taf_summary(taf, tz, now_utc) if (taf and not public_now) else None
     # the NWS public point forecast rides on public AND shadow pages (US only)
     nws_s = nws_summary(nws, tz, now_utc, points_entry=nws_pt) if nws else None
     answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc, sp=sp, taf=taf_s, nws=nws_s)
@@ -1142,7 +1259,7 @@ def city_page(city, stations, primary, fc, window, pers, r10, now_utc, taf=None,
     med = {"medianH": med["medianH"], "p25H": med["p25H"], "p75H": med["p75H"], "n": med["n"]} if med else None
     sp = season_profile(a)
     public_now = bool(fc and a["icao"] in set(fc.get("meta", {}).get("publicAirports", [])))
-    taf_s = taf_summary(taf, tz) if (taf and not public_now) else None
+    taf_s = taf_summary(taf, tz, now_utc) if (taf and not public_now) else None
     nws_s = nws_summary(nws, tz, now_utc, points_entry=nws_pt) if nws else None  # primary station's NWS point forecast
     answer_html, answer_plain, machine = bake_answer(a, fc, covered, now_utc, sp=sp, taf=taf_s, nws=nws_s)
     ob = obs_line(obs, tz) if obs else None
@@ -1872,6 +1989,8 @@ def main() -> None:
     tafs = awc_batch("taf", [i for i in all_icaos if i not in public_set])
     obs = awc_batch("metar", all_icaos)
     tafs, obs = awc_with_last_good(tafs, obs, now_utc)
+    # after the cache is saved: an ended TAF may sit in the cache, never on a page
+    tafs = drop_expired_tafs(tafs, now_utc)
     # the NWS public point forecast for every US airport (public AND shadow):
     # quoted verbatim on the page, attributed to the office, never a number
     pts = load_points()
